@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { Container } from "@/components/ui/container";
+import { WhatsAppIcon } from "@/features/home/components/whatsapp-action-link";
 import { faqIntro, faqItems } from "@/features/home/data/faq-content";
 
 function FaqIcon() {
@@ -10,17 +11,18 @@ function FaqIcon() {
       aria-hidden="true"
       className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-white shadow-[0_12px_30px_-12px_rgba(15,23,42,0.45)]"
     >
-      <svg viewBox="0 0 40 40" className="h-6 w-6" fill="none">
-        <path
-          stroke="currentColor"
-          strokeWidth="1.75"
-          d="M20 4 36 20 20 36 4 20 20 4z"
-        />
-        <path
-          stroke="currentColor"
-          strokeWidth="1.75"
-          d="M20 12 28 20 20 28 12 20 20 12z"
-        />
+      <svg
+        viewBox="0 0 24 24"
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+        <path d="M12 17h.01" />
       </svg>
     </div>
   );
@@ -63,7 +65,12 @@ export function FaqSection() {
               {faqIntro.title}
             </h2>
             <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
-              {faqIntro.subtitle}
+              {faqIntro.subtitleLead}
+              <span className="inline-flex items-center gap-1.5 align-middle font-medium text-slate-800">
+                <WhatsAppIcon className="h-[1.1em] w-[1.1em] shrink-0 text-[#25D366]" />
+                WhatsApp
+              </span>
+              {faqIntro.subtitleTail}
             </p>
           </div>
 

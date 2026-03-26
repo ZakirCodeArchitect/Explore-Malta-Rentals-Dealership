@@ -63,6 +63,9 @@ export const faqItems = [
 
 export const faqIntro = {
   title: "Frequently Asked Questions (FAQs)",
-  subtitle:
-    "Can't find what you're looking for? Reach out on WhatsApp or use the contact section below.",
+  /** Text before the WhatsApp callout (icon + label rendered in the section). */
+  subtitleLead:
+    "Can't find what you're looking for? Reach out on ",
+  /** Text after the WhatsApp callout. */
+  subtitleTail: " or use the contact section below.",
 } as const;

@@ -23,10 +23,26 @@ export const aboutBusiness = {
     "Our team is safety-minded, service-focused, and built around a tourist-friendly approach - because Malta should feel exciting, not stressful.",
   ],
   highlights: [
-    { label: "Who they are", value: "Service-focused Malta rental team" },
-    { label: "What we offer", value: "Motorcycle, ATV, and bicycle rentals + tours" },
-    { label: "Why tourists choose us", value: "Easy pickup, clear guidance, reliable vehicles" },
-    { label: "Malta exploration angle", value: "Road, trail, and town - at your own pace" },
+    {
+      id: "who-they-are",
+      label: "Who they are",
+      value: "Service-focused Malta rental team",
+    },
+    {
+      id: "what-we-offer",
+      label: "What we offer",
+      value: "Motorcycle, ATV, and bicycle rentals + tours",
+    },
+    {
+      id: "why-tourists",
+      label: "Why tourists choose us",
+      value: "Easy pickup, clear guidance, reliable vehicles",
+    },
+    {
+      id: "malta-exploration",
+      label: "Malta exploration angle",
+      value: "Road, trail, and town - at your own pace",
+    },
   ],
 } as const;
 

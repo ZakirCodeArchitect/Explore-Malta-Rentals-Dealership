@@ -54,3 +54,30 @@ a {
   color: #0f2233;
 }
 
+/* Testimonials: seamless horizontal loop (track is two identical halves) */
+@keyframes testimonial-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.testimonial-marquee-track {
+  animation: testimonial-marquee var(--testimonial-marquee-duration, 42s) linear
+    infinite;
+  will-change: transform;
+}
+
+.testimonial-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-marquee-track {
+    animation: none;
+    transform: none;
+  }
+}
+

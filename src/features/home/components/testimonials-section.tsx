@@ -1,43 +1,45 @@
-"use client";
-
-import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { testimonials } from "@/features/home/data/home-sections";
 
-const TRUST_GREEN = "#19b15c";
+/** Trustpilot brand green (star / ratings) */
+const TRUSTPILOT_GREEN = "#00b67a";
 
-function RatingSquares({ rating }: { rating: number }) {
+function RatingStars({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-1" aria-label={`${rating} out of 5`}>
+    <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5`}>
       {Array.from({ length: 5 }).map((_, idx) => {
         const filled = idx < rating;
         return (
-          <span
-            // Star badges in the screenshot are “square-ish”
+          <svg
             key={idx}
-            className="inline-flex h-6 w-6 items-center justify-center rounded-[0.45rem] border"
-            style={{
-              background: filled ? TRUST_GREEN : "transparent",
-              borderColor: filled ? TRUST_GREEN : "rgba(25,177,92,0.25)",
-            }}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="h-5 w-5 shrink-0"
           >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="h-4 w-4"
-              fill="none"
-            >
-              <path
-                d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                stroke={filled ? "white" : "rgba(16,35,53,0.35)"}
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
+            <path
+              d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+              fill={filled ? TRUSTPILOT_GREEN : "rgb(226 232 240)"}
+            />
+          </svg>
         );
       })}
     </div>
+  );
+}
+
+/** Trustpilot star mark (brand colour); wordmark is set in text beside it */
+function TrustpilotStarMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={className}
+    >
+      <path
+        fill={TRUSTPILOT_GREEN}
+        d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+      />
+    </svg>
   );
 }
 
@@ -57,22 +59,18 @@ function TestimonialCard({
   return (
     <article className="w-[340px] sm:w-[420px] shrink-0 rounded-2xl border border-slate-200 bg-[#f8fafc] p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.18)]">
       <div className="flex items-start justify-between gap-4">
-        <RatingSquares rating={rating} />
+        <RatingStars rating={rating} />
         <span
           aria-hidden="true"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-slate-200"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white"
         >
           <svg
             viewBox="0 0 24 24"
-            className="h-5 w-5 text-[var(--brand-blue)]"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.9"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            className="h-6 w-6 text-[var(--brand-blue)]"
+            fill="currentColor"
           >
-            <path d="M11 19H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h5v10Z" />
-            <path d="M22 19h-5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h5v10Z" />
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
           </svg>
         </span>
       </div>
@@ -95,45 +93,7 @@ function TestimonialCard({
 }
 
 export function TestimonialsSection() {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(true);
-
-  const cards = useMemo(() => testimonials, []);
-
-  const measure = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanLeft(el.scrollLeft > 2);
-    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
-  };
-
-  useEffect(() => {
-    measure();
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const onScroll = () => measure();
-    el.addEventListener("scroll", onScroll, { passive: true });
-    const onResize = () => measure();
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  const scrollByCards = (dir: -1 | 1) => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const cardWidth = 420; // keeps behavior stable with tailwind breakpoints
-    el.scrollBy({
-      left: dir * (cardWidth + 24),
-      behavior: "smooth",
-    });
-  };
+  const loop = [...testimonials, ...testimonials];
 
   return (
     <section
@@ -161,24 +121,9 @@ export function TestimonialsSection() {
 
             <div className="mt-7 inline-flex items-center gap-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_18px_50px_-45px_rgba(2,6,23,0.18)]">
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-5 w-5 items-center justify-center rounded bg-[rgba(25,177,92,0.12)]"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 text-[var(--brand-blue)]"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z" />
-                  </svg>
-                </span>
+                <TrustpilotStarMark className="h-5 w-5 shrink-0" />
                 <span className="text-sm font-semibold text-slate-900">
-                  TrustPilot
+                  Trustpilot
                 </span>
                 <span className="text-sm font-semibold text-[var(--brand-orange)]">
                   Excellent
@@ -188,13 +133,22 @@ export function TestimonialsSection() {
           </div>
         </div>
 
-        <div className="relative mt-12">
+        <div className="relative mt-12 overflow-hidden pb-4">
           <div
-            ref={scrollRef}
-            className="flex gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white via-white/95 to-transparent sm:w-28"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white via-white/95 to-transparent sm:w-28"
+          />
+          <div
+            className="testimonial-marquee-track flex w-max gap-6"
+            role="list"
+            aria-label="Customer testimonials, scrolling"
           >
-            {cards.map((t) => (
-              <div key={t.id} className="snap-start">
+            {loop.map((t, i) => (
+              <div key={`${t.id}-${i}`} className="shrink-0" role="listitem">
                 <TestimonialCard
                   name={t.name}
                   date={t.date}
@@ -205,51 +159,8 @@ export function TestimonialsSection() {
               </div>
             ))}
           </div>
-
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-end justify-end gap-3 pr-2">
-            <button
-              type="button"
-              onClick={() => scrollByCards(-1)}
-              disabled={!canLeft}
-              aria-label="Scroll testimonials left"
-              className="pointer-events-auto mb-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_20px_60px_-45px_rgba(2,6,23,0.35)] transition-opacity disabled:opacity-40"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => scrollByCards(1)}
-              disabled={!canRight}
-              aria-label="Scroll testimonials right"
-              className="pointer-events-auto mb-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_20px_60px_-45px_rgba(2,6,23,0.35)] transition-opacity disabled:opacity-40"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </button>
-          </div>
         </div>
       </Container>
     </section>
   );
 }
-

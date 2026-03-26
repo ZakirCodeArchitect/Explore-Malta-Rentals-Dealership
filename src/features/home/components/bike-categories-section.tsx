@@ -3,50 +3,48 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { bikeCategories } from "@/features/home/data/home-sections";
 import { SectionHeader } from "@/features/home/components/section-header";
 
-function BikeIcon({ variant }: { variant: "50cc" | "125cc" }) {
-  const accent =
-    variant === "50cc" ? "rgba(58,124,165,0.9)" : "rgba(255,169,57,0.95)";
+const categoryIconStroke = {
+  fill: "none" as const,
+  stroke: "currentColor",
+  strokeWidth: 1.9,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+/** 50cc: approachable ride; 125cc: more performance — same badge shell, distinct glyphs */
+function CategoryIcon({ variant }: { variant: "50cc" | "125cc" }) {
+  const tone =
+    variant === "50cc"
+      ? "text-[var(--brand-blue)]"
+      : "text-[var(--brand-orange)]";
 
   return (
-    <svg
-      viewBox="0 0 64 64"
+    <div
       aria-hidden="true"
-      className="h-10 w-10"
+      className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--surface-soft)] ${tone}`}
     >
-      <defs>
-        <linearGradient id={`g-${variant}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={accent} stopOpacity="1" />
-          <stop offset="1" stopColor="rgba(255,169,57,0.25)" />
-        </linearGradient>
-      </defs>
-      <circle
-        cx="32"
-        cy="32"
-        r="26"
-        fill={`url(#g-${variant})`}
-        opacity="0.22"
-      />
-      <path
-        d="M22 42c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4Zm20 0c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4Z"
-        fill="currentColor"
-        opacity="0.9"
-      />
-      <path
-        d="M31 20h10l-4 10h-8l2-10Zm-9 12 7-12m4 12-8 0"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M28 32l8 10"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-    </svg>
+      {variant === "50cc" ? (
+        <svg
+          viewBox="0 0 24 24"
+          className="h-6 w-6"
+          {...categoryIconStroke}
+        >
+          <circle cx="18.5" cy="17.5" r="3.5" />
+          <circle cx="5.5" cy="17.5" r="3.5" />
+          <circle cx="15" cy="5" r="1" />
+          <path d="M12 17.5V14l-3-3 4-3 2 3h2" />
+        </svg>
+      ) : (
+        <svg
+          viewBox="0 0 24 24"
+          className="h-6 w-6"
+          {...categoryIconStroke}
+        >
+          <path d="m12 14 4-4" />
+          <path d="M3.34 19a10 10 0 1 1 17.32 0" />
+        </svg>
+      )}
+    </div>
   );
 }
 
@@ -103,12 +101,12 @@ export function BikeCategoriesSection() {
                         {cat.title}
                       </h3>
                     </div>
-                    <div className="text-slate-900">
-                      <BikeIcon variant={cat.id as "50cc" | "125cc"} />
-                    </div>
+                    <CategoryIcon variant={cat.id as "50cc" | "125cc"} />
                   </div>
 
-                  <p className="mt-3 text-slate-600">{cat.description}</p>
+                  <p className="mt-4 text-slate-600 leading-relaxed">
+                    {cat.description}
+                  </p>
 
                   <ul className="mt-4 space-y-2">
                     {cat.bullets.map((b) => (
