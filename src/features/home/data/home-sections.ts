@@ -51,7 +51,7 @@ export const aboutBusiness = {
   /** Filename under `public/BikeImages/` */
   backgroundImage: "lex moto grey.jpg",
   paragraphs: [
-    "We rent motorcycles, ATVs, and bikes from Pietà, Malta—so exploring the island feels straightforward, not stressful.",
+    "We rent motorcycles, ATVs, and bikes from Pietà, Malta, so exploring the island feels straightforward, not stressful.",
     "We help you pick the right vehicle and plan; our team is safety-minded, service-focused, and built for visitors.",
   ],
 } as const;

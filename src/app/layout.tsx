@@ -11,7 +11,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Explore Malta Rentals | Motorcycle, ATV & Bicycle Hire",
   description:
-    "Based in Pietà, Explore Malta Rentals offers motorcycle, ATV, and bicycle rentals plus guided tours—explore Malta safely and comfortably at your own pace.",
+    "Based in Pietà, Explore Malta Rentals offers motorcycle, ATV, and bicycle rentals plus guided tours, explore Malta safely and comfortably at your own pace.",
 };
 
 export default function RootLayout({

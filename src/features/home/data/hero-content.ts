@@ -2,7 +2,7 @@ export const heroContent = {
   location: "Pietà, Malta",
   title: "Explore Malta Like Never Before.",
   description:
-    "Motorcycle, ATV, and bicycle rentals from Pietà, plus guided tours—explore Malta by road, trail, or town at your own pace.",
+    "Motorcycle, ATV, and bicycle rentals from Pietà, plus guided tours, explore Malta by road, trail, or town at your own pace.",
   primaryAction: {
     href: "#booking-preview",
     label: "Book Your Ride",

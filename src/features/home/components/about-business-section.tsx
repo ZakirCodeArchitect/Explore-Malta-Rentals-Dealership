@@ -98,7 +98,7 @@ export function AboutBusinessSection() {
           <div className="relative mx-auto h-[min(22rem,58vh)] w-full min-h-[18rem] overflow-hidden sm:h-[min(26rem,56vh)] sm:min-h-[20rem] lg:h-[min(30rem,32rem)]">
             <Image
               src={bgSrc}
-              alt="Motorcycle and rental fleet — Explore Malta Rentals"
+              alt="Motorcycle and rental fleet - Explore Malta Rentals"
               fill
               className="origin-center object-contain object-center scale-[1.16]"
               sizes="(min-width: 1024px) 42vw, 100vw"
