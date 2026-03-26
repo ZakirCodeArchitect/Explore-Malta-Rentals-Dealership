@@ -1,4 +1,4 @@
-import { Container } from "@/components/ui/container";
+import { SiteShell } from "@/components/site-shell";
 import { heroContent } from "@/features/home/data/hero-content";
 import { HeroBookingPanel } from "@/features/home/components/hero-booking-panel";
 
@@ -52,42 +52,43 @@ export function VideoHero() {
         >
           <source src={heroContent.media.videoSrc} type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-white/8" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(58,124,165,0.2),transparent_40%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(18,36,54,0.68)_0%,rgba(27,53,76,0.48)_30%,rgba(245,251,255,0.12)_58%,rgba(245,251,255,0.34)_100%)]" />
-        <div className="absolute inset-y-0 left-0 w-full bg-[linear-gradient(90deg,rgba(12,29,46,0.62)_0%,rgba(18,40,60,0.38)_34%,rgba(245,251,255,0)_68%)] lg:w-[68%]" />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-[linear-gradient(180deg,rgba(245,251,255,0)_0%,rgba(245,251,255,0.14)_42%,rgba(245,251,255,0.48)_100%)] sm:h-56" />
+        <div className="absolute inset-0 bg-slate-950/25" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(58,124,165,0.18),transparent_42%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(12,24,38,0.78)_0%,rgba(22,42,62,0.52)_32%,rgba(245,251,255,0.08)_58%,rgba(245,251,255,0.28)_100%)]" />
+        <div className="absolute inset-y-0 left-0 w-full bg-[linear-gradient(90deg,rgba(10,22,36,0.72)_0%,rgba(16,34,52,0.45)_38%,rgba(245,251,255,0)_72%)] lg:w-[72%]" />
+        <div className="absolute inset-x-0 bottom-0 h-52 bg-[linear-gradient(180deg,rgba(245,251,255,0)_0%,rgba(245,251,255,0.12)_38%,rgba(245,251,255,0.55)_100%)] sm:h-60" />
       </div>
 
-      <Container className="relative z-10">
-        <div className="flex min-h-[40rem] flex-col justify-between py-6 sm:min-h-[43rem] sm:py-7 lg:min-h-[46rem] lg:py-8">
-          <div className="flex flex-1 items-end pb-4 sm:pb-5 lg:items-center lg:pb-8">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 text-sm text-white/86">
-                <PinIcon />
-                <span>{heroContent.location}</span>
+      <div className="relative z-10">
+        <SiteShell>
+          <div className="flex min-h-[min(100svh,52rem)] flex-col justify-between pb-7 pt-24 sm:min-h-[min(100svh,54rem)] sm:pb-8 sm:pt-28 lg:min-h-[56rem] lg:pb-10 lg:pt-32">
+            <div className="flex min-h-0 flex-1 flex-col justify-center pb-8 sm:pb-10 lg:pb-12">
+              <div className="max-w-3xl">
+                <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90">
+                  <PinIcon />
+                  <span>{heroContent.location}</span>
+                </div>
+
+                <div className="mt-5 max-w-2xl sm:mt-6">
+                  <h1
+                    id="home-hero-title"
+                    className="max-w-4xl text-5xl font-bold tracking-[-0.045em] text-white sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
+                  >
+                    {heroContent.title}
+                  </h1>
+                  <p className="mt-5 max-w-xl text-base leading-7 text-white/88 sm:mt-6 sm:text-lg sm:leading-8">
+                    {heroContent.description}
+                  </p>
+                </div>
               </div>
+            </div>
 
-              <div className="mt-4 max-w-2xl">
-                <h1
-                  id="home-hero-title"
-                  className="max-w-4xl text-5xl font-medium tracking-[-0.05em] text-white sm:text-6xl sm:leading-[0.94] lg:text-[6rem]"
-                >
-                  {heroContent.title}
-                </h1>
-                <p className="mt-5 max-w-xl text-base leading-7 text-white/82 sm:text-lg sm:leading-8">
-                  {heroContent.description}
-                </p>
-              </div>
-
+            <div className="shrink-0">
+              <HeroBookingPanel />
+            </div>
           </div>
-          </div>
-
-          <div>
-            <HeroBookingPanel />
-          </div>
-        </div>
-      </Container>
+        </SiteShell>
+      </div>
     </section>
   );
 }

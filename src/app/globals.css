@@ -8,6 +8,8 @@
   --brand-orange: #ffa939;
   --brand-orange-strong: #f0930f;
   --surface-soft: #eaf4fb;
+  /* Hero booking inputs — light blue-gray tint */
+  --hero-field-bg: #e5f0f8;
 }
 
 @theme inline {

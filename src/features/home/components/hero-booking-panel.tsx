@@ -12,6 +12,7 @@ import Select, { type StylesConfig } from "react-select";
 import {
   type BookingOption,
 } from "@/features/home/data/hero-booking-options";
+import { SITE_SURFACE_RADIUS } from "@/components/site-shell";
 
 function ChevronDownIcon() {
   return (
@@ -146,7 +147,7 @@ export function HeroBookingPanel() {
   };
 
   const fieldClassName =
-    "relative min-w-0 flex min-h-[5.4rem] flex-col justify-between rounded-xl bg-[var(--surface-soft)] px-4 py-3.5 text-left";
+    "relative min-w-0 flex min-h-[5.25rem] flex-col justify-between rounded-[1.125rem] bg-[var(--hero-field-bg)] px-4 py-3.5 text-left ring-1 ring-slate-200/40 sm:min-h-[5.4rem]";
 
   const loadGlobalLocationOptions = async (
     inputValue: string,
@@ -206,34 +207,33 @@ export function HeroBookingPanel() {
     setReturnDate(value.toDate());
   };
 
+  const panelShellClass = [
+    "overflow-hidden border border-slate-200/70 bg-white p-5 text-slate-950 shadow-[0_28px_70px_-48px_rgba(15,34,53,0.45)] sm:p-6 lg:p-8",
+    SITE_SURFACE_RADIUS,
+  ].join(" ");
+
   if (!isMounted) {
     return (
-      <div
-        id="booking-preview"
-        className="rounded-[0.65rem] border border-[color:color-mix(in_srgb,var(--brand-blue)_20%,white)] bg-white/95 p-4 text-slate-950 shadow-[0_30px_90px_-45px_rgba(58,124,165,0.45)] backdrop-blur-md sm:p-5 lg:rounded-[0.75rem] lg:p-6"
-      >
+      <div id="booking-preview" className={panelShellClass}>
         <div className="grid gap-3 lg:grid-cols-6">
           {Array.from({ length: 5 }).map((_, index) => (
             <div
               key={`booking-skeleton-${index}`}
-              className={`min-h-[5.4rem] rounded-xl bg-[var(--surface-soft)] ${
+              className={`min-h-[5.25rem] rounded-[1.125rem] bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] ${
                 index === 0 ? "lg:col-span-2" : "lg:col-span-1"
               }`}
             />
           ))}
         </div>
-        <div className="mt-4 min-h-11 border-t border-slate-200 pt-4" />
+        <div className="mt-5 min-h-11 border-t border-slate-200/80 pt-5" />
       </div>
     );
   }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div
-        id="booking-preview"
-        className="rounded-[0.65rem] border border-[color:color-mix(in_srgb,var(--brand-blue)_20%,white)] bg-white/95 p-4 text-slate-950 shadow-[0_30px_90px_-45px_rgba(58,124,165,0.45)] backdrop-blur-md sm:p-5 lg:rounded-[0.75rem] lg:p-6"
-      >
-      <div className="grid gap-3 lg:grid-cols-6">
+      <div id="booking-preview" className={panelShellClass}>
+      <div className="grid gap-3 sm:gap-3.5 lg:grid-cols-6">
         <div className={`${fieldClassName} lg:col-span-2`}>
           <span className="text-xs font-medium text-slate-500">Pick-up location</span>
           <AsyncSelect
@@ -430,8 +430,8 @@ export function HeroBookingPanel() {
           </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-10">
+      <div className="mt-5 flex flex-col gap-4 border-t border-slate-200/80 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-10">
           <Toggle
             label="Return elsewhere"
             active={returnElsewhere}
@@ -446,7 +446,7 @@ export function HeroBookingPanel() {
 
         <button
           type="button"
-          className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[var(--brand-orange)] to-[var(--brand-orange-strong)] px-7 text-sm font-semibold tracking-wide text-white shadow-[0_10px_28px_-8px_rgba(255,169,57,0.55),0_2px_8px_-2px_rgba(15,23,42,0.08)] ring-1 ring-white/15 transition-[box-shadow,transform,filter] duration-200 hover:shadow-[0_14px_36px_-8px_rgba(255,169,57,0.6),0_4px_14px_-4px_rgba(15,23,42,0.12)] hover:brightness-[1.04] active:scale-[0.98] active:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[10rem]"
+          className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-2xl bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
         >
           Search
           <span

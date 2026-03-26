@@ -1,5 +1,7 @@
+import type { JSX, ReactNode } from "react";
+
 type ContainerProps = Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   as?: keyof JSX.IntrinsicElements;
 }>;
