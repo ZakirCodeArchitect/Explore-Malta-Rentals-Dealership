@@ -1,0 +1,68 @@
+export const faqItems = [
+  {
+    id: "trial",
+    question: "How do I book a bike or scooter?",
+    answer:
+      "Use the booking form at the top of this page to choose pick-up location, dates, and times. You can also message us on WhatsApp and we will walk you through availability and the best option for your trip.",
+  },
+  {
+    id: "plan",
+    question: "What licence do I need for 50cc vs 125cc?",
+    answer:
+      "Requirements depend on your licence and local rules. Tell us what licence you hold when you book and we will confirm which categories you can ride. We prioritise safety and compliance on every rental.",
+  },
+  {
+    id: "cancel",
+    question: "What is your cancellation policy?",
+    answer:
+      "Policies can vary by season and vehicle. Contact us with your booking details and we will explain the options. We aim to be fair and clear so you can plan your Malta trip with confidence.",
+  },
+  {
+    id: "invoice",
+    question: "Are helmets and safety gear included?",
+    answer:
+      "Helmets are included with rentals as part of our safety-first approach. If you need anything specific, ask when you book so we can have the right sizes ready at handover.",
+  },
+  {
+    id: "billing",
+    question: "How does pricing and billing work?",
+    answer:
+      "Rates are based on your rental period and vehicle category. You will see what applies before you confirm. For exact quotes or longer hires, WhatsApp us with your dates.",
+  },
+  {
+    id: "email",
+    question: "Can I return the bike somewhere other than Pietà?",
+    answer:
+      "We offer options like return elsewhere or hotel delivery where it applies. Toggle the relevant options in the booking flow or ask us on WhatsApp and we will confirm what is possible for your dates.",
+  },
+  {
+    id: "support",
+    question: "How does support work for tourists?",
+    answer:
+      "We are set up for visitors: clear handover instructions, practical tips for riding in Malta, and quick help on WhatsApp if something comes up during your rental.",
+  },
+  {
+    id: "tutorials",
+    question: "Do you offer guided tours?",
+    answer:
+      "Yes. We offer rentals plus guided tours so you can explore Malta with support if you prefer not to go alone. Ask when you book and we will share what is running during your stay.",
+  },
+  {
+    id: "projects",
+    question: "Can I extend my rental once I am in Malta?",
+    answer:
+      "Often yes, subject to availability. Message us before your return time and we will do our best to extend your booking.",
+  },
+  {
+    id: "team",
+    question: "Do I need to leave a deposit?",
+    answer:
+      "Deposit and ID requirements are explained at booking confirmation. If you are unsure, send us a WhatsApp message and we will outline exactly what is needed for your chosen vehicle.",
+  },
+] as const;
+
+export const faqIntro = {
+  title: "Frequently Asked Questions (FAQs)",
+  subtitle:
+    "Can't find what you're looking for? Reach out on WhatsApp or use the contact section below.",
+} as const;
