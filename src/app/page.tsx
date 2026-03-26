@@ -1,6 +1,6 @@
 import { VideoHero } from "@/features/home/components/video-hero";
-import { BikeCategoriesSection } from "@/features/home/components/bike-categories-section";
 import { AboutBusinessSection } from "@/features/home/components/about-business-section";
+import { BikeCategoriesSection } from "@/features/home/components/bike-categories-section";
 import { TestimonialsSection } from "@/features/home/components/testimonials-section";
 import { HighlightedServicesSection } from "@/features/home/components/highlighted-services-section";
 import { QuickBookingCtaSection } from "@/features/home/components/quick-booking-cta-section";
@@ -13,8 +13,8 @@ export default function Home() {
     <>
       <main className="flex flex-1 flex-col">
         <VideoHero />
-        <BikeCategoriesSection />
         <AboutBusinessSection />
+        <BikeCategoriesSection />
         <TestimonialsSection />
         <HighlightedServicesSection />
         <QuickBookingCtaSection />

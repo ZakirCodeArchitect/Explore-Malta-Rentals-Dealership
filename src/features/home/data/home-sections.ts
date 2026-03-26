@@ -46,32 +46,13 @@ export const bikeCategories = [
 
 export const aboutBusiness = {
   title: "About the Business",
+  tagline:
+    "Choose the right ride, get clear guidance, and explore Malta with confidence.",
+  /** Filename under `public/BikeImages/` */
+  backgroundImage: "lex moto grey.jpg",
   paragraphs: [
-    "We rent motorcycle, ATV, and bikes from Pietà, Malta, with a simple goal: make exploring Malta feel effortless.",
-    "From quick city loops to scenic countryside rides, we help tourists choose the right vehicle and the right plan - so you can focus on the experience.",
-    "Our team is safety-minded, service-focused, and built around a tourist-friendly approach - because Malta should feel exciting, not stressful.",
-  ],
-  highlights: [
-    {
-      id: "who-they-are",
-      label: "Who they are",
-      value: "Service-focused Malta rental team",
-    },
-    {
-      id: "what-we-offer",
-      label: "What we offer",
-      value: "Motorcycle, ATV, and bicycle rentals + tours",
-    },
-    {
-      id: "why-tourists",
-      label: "Why tourists choose us",
-      value: "Easy pickup, clear guidance, reliable vehicles",
-    },
-    {
-      id: "malta-exploration",
-      label: "Malta exploration angle",
-      value: "Road, trail, and town - at your own pace",
-    },
+    "We rent motorcycles, ATVs, and bikes from Pietà, Malta—so exploring the island feels straightforward, not stressful.",
+    "We help you pick the right vehicle and plan; our team is safety-minded, service-focused, and built for visitors.",
   ],
 } as const;
 
