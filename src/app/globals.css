@@ -17,9 +17,9 @@
   --color-foreground: var(--foreground);
   --color-brand-orange: var(--brand-orange);
   --color-brand-blue: var(--brand-blue);
-  --font-sans: var(--font-manrope);
-  --font-mono: var(--font-manrope);
-  --font-display: var(--font-manrope);
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-mono: var(--font-plus-jakarta-sans);
+  --font-display: var(--font-plus-jakarta-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,7 +41,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-manrope), sans-serif;
+  font-family: var(--font-plus-jakarta-sans), sans-serif;
 }
 
 a {
