@@ -1,3 +1,26 @@
+/** Plain filename, or file plus flag when the asset has a solid white box behind the bike */
+export type BikeImageEntry =
+  | string
+  | { readonly file: string; readonly whiteBg?: boolean };
+
+export function parseBikeImageEntry(entry: BikeImageEntry): {
+  file: string;
+  whiteBg: boolean;
+} {
+  if (typeof entry === "string") {
+    return { file: entry, whiteBg: false };
+  }
+  return { file: entry.file, whiteBg: Boolean(entry.whiteBg) };
+}
+
+export type BikeCategory = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly bullets: readonly string[];
+  readonly images: readonly BikeImageEntry[];
+};
+
 export const bikeCategories = [
   {
     id: "50cc",
@@ -5,6 +28,7 @@ export const bikeCategories = [
     description:
       "Easy to ride, perfect for cruising Malta's coast and city streets with confidence.",
     bullets: ["Beginner-friendly handling", "Comfort-focused setup"],
+    images: ["neco one.png", "neco one retro.png"],
   },
   {
     id: "125cc",
@@ -12,8 +36,13 @@ export const bikeCategories = [
     description:
       "For riders who want a bit more power and smooth performance on longer routes.",
     bullets: ["Great for day trips", "Balanced comfort + control"],
+    images: [
+      { file: "lex moto blk.jpg", whiteBg: true },
+      { file: "lex moto grey.jpg", whiteBg: true },
+      "lex moto red.png",
+    ],
   },
-] as const;
+] satisfies readonly BikeCategory[];
 
 export const aboutBusiness = {
   title: "About the Business",
