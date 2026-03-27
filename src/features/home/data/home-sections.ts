@@ -117,7 +117,7 @@ export const servicesHighlights = [
 export const quickBookingCta = {
   title: "Ready to explore Malta?",
   description:
-    "Book your ride in minutes. Choose your pick-up, dates, and preferences - then set off on your island adventure.",
+    "Book your scooter now and enjoy Malta at your own pace.",
   primaryCta: { href: "#booking-preview", label: "Book your ride" },
   secondaryCta: { href: "#fleet-preview", label: "See bike categories" },
 } as const;

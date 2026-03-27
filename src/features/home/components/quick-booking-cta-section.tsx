@@ -7,10 +7,14 @@ export function QuickBookingCtaSection() {
   return (
     <section
       aria-labelledby="quick-booking-title"
-      className="scroll-mt-28 border-t border-slate-200/70 bg-[#f8fafc] py-16"
+      className="scroll-mt-28 border-t border-slate-200/70 bg-cover bg-center py-16"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(248,250,252,0.86), rgba(248,250,252,0.86)), url('/GuidePageImages/disabled.jpg')",
+      }}
     >
       <Container>
-        <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white px-6 py-10 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] sm:px-10">
+        <div className="relative overflow-hidden rounded-[2rem] border border-[var(--brand-orange)]/50 bg-white/95 px-6 py-10 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] backdrop-blur-[1px] sm:px-10">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,169,57,0.1),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(58,124,165,0.1),transparent_50%)]"
@@ -19,7 +23,6 @@ export function QuickBookingCtaSection() {
             <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
               <div className="lg:col-span-6">
                 <SectionHeader
-                  kicker="Quick call-to-action"
                   title={quickBookingCta.title}
                   description={quickBookingCta.description}
                   tone="light"
@@ -44,9 +47,6 @@ export function QuickBookingCtaSection() {
                   </ButtonLink>
                 </div>
 
-                <p className="mt-5 text-sm leading-6 text-slate-600">
-                  Prefer WhatsApp? Use the chat button anytime while you scroll.
-                </p>
               </div>
             </div>
           </div>
