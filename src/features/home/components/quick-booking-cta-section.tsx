@@ -7,14 +7,16 @@ export function QuickBookingCtaSection() {
   return (
     <section
       aria-labelledby="quick-booking-title"
-      className="scroll-mt-28 border-t border-slate-200/70 bg-cover bg-center py-16"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(248,250,252,0.86), rgba(248,250,252,0.86)), url('/GuidePageImages/disabled.jpg')",
-      }}
+      className="scroll-mt-28 border-t border-slate-200/70 bg-slate-100 py-16"
     >
       <Container>
-        <div className="relative overflow-hidden rounded-[2rem] border border-[var(--brand-orange)]/50 bg-white/95 px-6 py-10 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] backdrop-blur-[1px] sm:px-10">
+        <div
+          className="relative overflow-hidden rounded-[2rem] border border-[var(--brand-orange)]/50 bg-cover bg-center px-6 py-10 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] sm:px-10"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(248,250,252,0.88), rgba(248,250,252,0.88)), url('/GuidePageImages/disabled.jpg')",
+          }}
+        >
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,169,57,0.1),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(58,124,165,0.1),transparent_50%)]"

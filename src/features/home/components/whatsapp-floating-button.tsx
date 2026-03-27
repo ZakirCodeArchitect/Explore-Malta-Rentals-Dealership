@@ -81,13 +81,14 @@ export function WhatsAppFloatingButton() {
 
         <button
           type="button"
+          aria-label="Open WhatsApp contact"
+          title="WhatsApp"
           aria-expanded={open}
           aria-controls={open ? panelId : undefined}
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-[0_18px_60px_-20px_rgba(37,211,102,0.65)] transition-transform duration-200 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_18px_60px_-20px_rgba(37,211,102,0.65)] transition-transform duration-200 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
           <WhatsAppIcon className="h-5 w-5 shrink-0" />
-          <span className="hidden sm:ml-2 sm:inline">WhatsApp</span>
         </button>
       </div>
     </div>
