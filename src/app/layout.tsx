@@ -8,10 +8,20 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
+const FAVICON_PATH = "/explore%20malta%20rentals%20logo%20favicon.png";
+
 export const metadata: Metadata = {
   title: "Explore Malta Rentals | Motorcycle, ATV & Bicycle Hire",
   description:
     "Based in Pietà, Explore Malta Rentals offers motorcycle, ATV, and bicycle rentals plus guided tours, explore Malta safely and comfortably at your own pace.",
+  icons: {
+    icon: {
+      url: FAVICON_PATH,
+      type: "image/png",
+      sizes: "any",
+    },
+    apple: { url: FAVICON_PATH, type: "image/png" },
+  },
 };
 
 export default function RootLayout({

@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination: "/explore%20malta%20rentals%20logo%20favicon.png",
+      },
+    ];
+  },
   /* Maps server-only .env key to client so UI can read the number */
   env: {
     NEXT_PUBLIC_WHATSAPP_NUMBER:
