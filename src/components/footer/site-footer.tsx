@@ -7,9 +7,8 @@ import { FooterNewsletterForm } from "./footer-newsletter-form";
 import { FooterSocialLinks } from "./footer-social-links";
 import { digitsOnlyForWa, getEnvValue, normalizeUrl } from "./footer-utils";
 
-/** Mdina / Malta — decorative footer backdrop (Unsplash). */
-const FOOTER_BACKDROP =
-  "https://images.unsplash.com/photo-1596484552834-6a58f0e21adb?auto=format&fit=crop&w=1920&q=70";
+/** Footer backdrop (`public/footer-image.jpg`). */
+const FOOTER_BACKDROP = "/footer-image.jpg";
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -73,15 +72,18 @@ export function SiteFooter() {
         alt=""
         fill
         sizes="100vw"
-        className="pointer-events-none object-cover opacity-[0.22]"
+        className="pointer-events-none object-cover object-center"
         aria-hidden
         priority={false}
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050d18]/95 via-[#0a1628]/92 to-[#050d18]/98"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050d18]/78 via-[#0a1628]/52 to-[#050d18]/82"
         aria-hidden
       />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(58,124,165,0.35),transparent)]" aria-hidden />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_0%,rgba(58,124,165,0.14),transparent_55%)]"
+        aria-hidden
+      />
 
       <Container className="relative z-10 py-14 sm:py-16 lg:py-20">
         <div
