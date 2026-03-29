@@ -38,7 +38,7 @@ export const bikeCategories = [
     bullets: ["Great for day trips", "Balanced comfort + control"],
     images: [
       { file: "lex moto blk.jpg", whiteBg: true },
-      { file: "lex moto grey.jpg", whiteBg: true },
+      { file: "lex moto grey.png", whiteBg: true },
       "lex moto red.png",
     ],
   },
@@ -49,7 +49,7 @@ export const aboutBusiness = {
   tagline:
     "Choose the right ride, get clear guidance, and explore Malta with confidence.",
   /** Filename under `public/BikeImages/` */
-  backgroundImage: "lex moto grey.jpg",
+  backgroundImage: "lex moto grey.png",
   paragraphs: [
     "We rent motorcycles, ATVs, and bikes from Pietà, Malta, so exploring the island feels straightforward, not stressful.",
     "We help you pick the right vehicle and plan; our team is safety-minded, service-focused, and built for visitors.",

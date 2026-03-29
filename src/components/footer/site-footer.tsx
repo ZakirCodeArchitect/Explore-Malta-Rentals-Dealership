@@ -46,7 +46,7 @@ export function SiteFooter() {
   ] as const;
 
   const companyLinks = [
-    { href: "/#about", label: "About us" },
+    { href: "/about", label: "About us" },
     { href: "/#contact", label: "Contact" },
     { href: "/#services", label: "How renting works" },
   ] as const;

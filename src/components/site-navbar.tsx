@@ -11,7 +11,7 @@ const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/#about", label: "About us" },
+  { href: "/about", label: "About us" },
   { href: "/#contact", label: "Contact us" },
   { href: "/#services", label: "Services" },
 ] as const;
