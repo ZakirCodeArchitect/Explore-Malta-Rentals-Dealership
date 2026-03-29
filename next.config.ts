@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
       process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ??
       "",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
