@@ -4,6 +4,7 @@ import { BikeCategoriesSection } from "@/features/home/components/bike-categorie
 import { TestimonialsSection } from "@/features/home/components/testimonials-section";
 import { HighlightedServicesSection } from "@/features/home/components/highlighted-services-section";
 import { QuickBookingCtaSection } from "@/features/home/components/quick-booking-cta-section";
+import { ContactSection } from "@/features/home/components/contact-section";
 import { FaqSection } from "@/features/home/components/faq-section";
 import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
 import { Footer } from "@/features/home/components/footer";
@@ -19,6 +20,7 @@ export default function Home() {
         <HighlightedServicesSection />
         <FaqSection />
         <QuickBookingCtaSection />
+        <ContactSection />
       </main>
       <Footer />
       <WhatsAppFloatingButton />

@@ -80,3 +80,46 @@ a {
     transform: none;
   }
 }
+
+/* Final conversion CTA — staggered entrance (no Framer Motion) */
+@keyframes final-cta-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.final-cta-fade-up {
+  animation: final-cta-fade-up 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.final-cta-delay-1 {
+  animation-delay: 0.06s;
+}
+.final-cta-delay-2 {
+  animation-delay: 0.12s;
+}
+.final-cta-delay-3 {
+  animation-delay: 0.2s;
+}
+.final-cta-delay-4 {
+  animation-delay: 0.28s;
+}
+.final-cta-delay-5 {
+  animation-delay: 0.36s;
+}
+.final-cta-delay-6 {
+  animation-delay: 0.44s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .final-cta-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
