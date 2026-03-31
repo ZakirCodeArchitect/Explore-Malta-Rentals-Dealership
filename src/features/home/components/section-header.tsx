@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 type SectionHeaderProps = Readonly<{
   kicker?: string;
-  title: string;
+  title: ReactNode;
   titleId?: string;
   description?: ReactNode;
   align?: "left" | "center";
