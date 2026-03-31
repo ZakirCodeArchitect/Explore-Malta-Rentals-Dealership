@@ -90,36 +90,52 @@ export const servicesHighlights = [
   {
     id: "easy-pickup",
     title: "Easy pickup",
-    description: "A fast, organised handover so you're riding sooner.",
+    description:
+      "A fast, organised handover — you’re on the road sooner, not stuck at the desk.",
   },
   {
     id: "helmets",
     title: "Helmets included",
-    description: "Safety-first setup included with your rental.",
+    description: "Safety-first kit bundled with your rental — no last-minute surprises.",
   },
   {
     id: "flexible",
     title: "Flexible rental periods",
-    description: "Choose the days that match your Malta itinerary.",
+    description: "Pick the days that fit your Malta plan — short stays or longer adventures.",
   },
   {
     id: "support",
     title: "Tourist-friendly support",
-    description: "We guide you with clear info, local tips, and quick help.",
+    description: "Clear answers, local tips, and quick help when you need it.",
   },
   {
     id: "hotel-delivery",
     title: "Hotel delivery / return",
-    description: "If applicable, we can help with convenient drop-off options.",
+    description: "Where it applies, we can help with convenient drop-off and collection.",
   },
 ] as const;
 
+/**
+ * Final homepage CTA (above footer). Copy tuned for emotion + conversion.
+ *
+ * Headline variants (A/B ideas):
+ * - "The island is waiting — make it yours."
+ * - "Your Malta story starts the moment you turn the key."
+ * - "Coast, culture, open road — on your clock, not a tour bus’s."
+ * - "Tomorrow’s memories start with today’s booking."
+ *
+ * Primary CTA label variants:
+ * - "Start your journey" · "Book your ride" · "Explore rentals" · "Reserve your dates"
+ *
+ * Secondary: keep "Contact us" or "Chat on WhatsApp" if linking to WhatsApp.
+ */
 export const quickBookingCta = {
-  title: "Ready to explore Malta?",
+  kicker: "Your next chapter",
+  title: "The island is waiting — make it yours.",
   description:
-    "Book your scooter now and enjoy Malta at your own pace.",
-  primaryCta: { href: "#booking-preview", label: "Book your ride" },
-  secondaryCta: { href: "#fleet-preview", label: "See bike categories" },
+    "Rent a motorcycle, ATV, or bicycle in Pietà and explore Malta at your pace. Sunlit coasts, quiet lanes, and roads that feel like a holiday — it starts with one booking.",
+  primaryCta: { href: "#booking-preview", label: "Start your journey" },
+  secondaryCta: { href: "#contact", label: "Contact us" },
 } as const;
 
 export const contactSection = {

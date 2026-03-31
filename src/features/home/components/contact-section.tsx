@@ -15,6 +15,7 @@ export function ContactSection() {
           <div className="lg:col-span-7">
             <SectionHeader
               title={contactSection.title}
+              titleId="contact-title"
               description={contactSection.description}
               tone="light"
               align="left"
