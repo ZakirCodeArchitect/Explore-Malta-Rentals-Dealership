@@ -148,7 +148,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
   if (success) {
     return (
       <aside
-        className="rounded-2xl border border-emerald-200/80 bg-gradient-to-b from-emerald-50/90 to-white p-6 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+5.25rem)]"
+        className="rounded-2xl border border-emerald-200/80 bg-gradient-to-b from-emerald-50/90 to-white p-6 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+3.75rem)]"
         aria-live="polite"
       >
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
@@ -188,7 +188,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
   }
 
   return (
-    <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] motion-safe:transition-shadow motion-safe:duration-300 hover:shadow-[0_28px_56px_-32px_rgba(58,124,165,0.22)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+5.25rem)]">
+    <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] motion-safe:transition-shadow motion-safe:duration-300 hover:shadow-[0_28px_56px_-32px_rgba(58,124,165,0.22)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+3.75rem)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm text-slate-600">From</p>
