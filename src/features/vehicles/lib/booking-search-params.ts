@@ -24,6 +24,32 @@ export function parseVehicleTypeSearchParam(
   return "All";
 }
 
+export function vehicleFilterTypeToUrlParam(value: VehicleType | "All"): string {
+  switch (value) {
+    case "All":
+      return "all";
+    case "Scooter":
+      return "scooter";
+    case "Motorcycle":
+      return "motorcycle";
+    case "ATV":
+      return "atv";
+    case "Bicycle":
+      return "bicycle";
+    default:
+      return "all";
+  }
+}
+
+export function parsePickupDateParam(raw: string | null): Date | null {
+  if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return null;
+  }
+  const [y, mo, da] = raw.split("-").map(Number);
+  const dt = new Date(y!, mo! - 1, da!);
+  return Number.isNaN(dt.getTime()) ? null : dt;
+}
+
 export function formatPickupDateParam(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");

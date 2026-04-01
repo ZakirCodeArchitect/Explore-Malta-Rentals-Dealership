@@ -19,17 +19,7 @@ import {
 } from "@/features/home/data/hero-booking-options";
 import { SITE_SURFACE_RADIUS } from "@/components/site-shell";
 import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-params";
-
-function filterMaltaPresetLocations(search: string): BookingOption[] {
-  const q = search.trim().toLowerCase();
-  if (!q) {
-    return [...locationOptions];
-  }
-  return locationOptions.filter(
-    (o) =>
-      o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q),
-  );
-}
+import { loadMaltaLocationOptions } from "@/features/vehicles/lib/malta-pickup-location";
 
 function Toggle({
   label,
@@ -151,7 +141,7 @@ export function HeroBookingPanel() {
     }),
     menu: (base) => ({
       ...base,
-      borderRadius: 12,
+      borderRadius: 8,
       border: "1px solid rgba(58,124,165,0.28)",
       boxShadow: "0 20px 44px -25px rgba(15, 23, 42, 0.45)",
       overflow: "hidden",
@@ -178,78 +168,12 @@ export function HeroBookingPanel() {
   };
 
   const fieldClassName =
-    "relative min-w-0 flex min-h-[5.25rem] flex-col justify-between rounded-[1.125rem] bg-[var(--hero-field-bg)] px-4 py-3.5 text-left ring-1 ring-slate-200/40 sm:min-h-[5.4rem]";
+    "relative min-w-0 flex min-h-[5.25rem] flex-col justify-between rounded-lg bg-[var(--hero-field-bg)] px-4 py-3.5 text-left ring-1 ring-slate-200/40 sm:min-h-[5.4rem]";
 
   const maltaDefaultLocationOptions = useMemo(
     () => [...locationOptions],
     [],
   );
-
-  const loadMaltaLocationOptions = async (
-    inputValue: string,
-  ): Promise<BookingOption[]> => {
-    const query = inputValue.trim();
-    const presetMatches = filterMaltaPresetLocations(inputValue);
-
-    if (query.length < 2) {
-      return presetMatches;
-    }
-
-    try {
-      const params = new URLSearchParams({
-        name: query,
-        count: "12",
-        language: "en",
-        format: "json",
-        countryCode: "MT",
-      });
-
-      const response = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`,
-      );
-
-      if (!response.ok) {
-        return presetMatches;
-      }
-
-      const payload = (await response.json()) as {
-        results?: Array<{
-          id: number;
-          name: string;
-          admin1?: string;
-          country?: string;
-          country_code?: string;
-          latitude: number;
-          longitude: number;
-        }>;
-      };
-
-      const fromApi = (payload.results ?? [])
-        .filter((item) => (item.country_code ?? "MT") === "MT")
-        .slice(0, 12)
-        .map((item) => ({
-          value: String(item.id),
-          label: [item.name, item.admin1, item.country]
-            .filter(Boolean)
-            .join(", "),
-        }));
-
-      const seen = new Set(
-        presetMatches.map((o) => o.label.toLowerCase()),
-      );
-      const merged: BookingOption[] = [...presetMatches];
-      for (const item of fromApi) {
-        const key = item.label.toLowerCase();
-        if (!seen.has(key)) {
-          seen.add(key);
-          merged.push(item);
-        }
-      }
-      return merged.slice(0, 24);
-    } catch {
-      return presetMatches;
-    }
-  };
 
   const onPickupDateChange = (value: Dayjs | null) => {
     if (!value) {
@@ -286,9 +210,9 @@ export function HeroBookingPanel() {
     return (
       <div id="booking-preview" className={panelShellClass}>
         <div className="grid gap-3 lg:grid-cols-4">
-          <div className="min-h-[5.25rem] rounded-[1.125rem] bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] lg:col-span-2" />
-          <div className="min-h-[5.25rem] rounded-[1.125rem] bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] lg:col-span-1" />
-          <div className="min-h-[5.25rem] rounded-[1.125rem] bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] lg:col-span-1" />
+          <div className="min-h-[5.25rem] rounded-lg bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] lg:col-span-2" />
+          <div className="min-h-[5.25rem] rounded-lg bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] lg:col-span-1" />
+          <div className="min-h-[5.25rem] rounded-lg bg-[var(--hero-field-bg)] ring-1 ring-slate-200/40 sm:min-h-[5.4rem] lg:col-span-1" />
         </div>
         <div className="mt-5 min-h-11 border-t border-slate-200/80 pt-5" />
       </div>
@@ -375,7 +299,7 @@ export function HeroBookingPanel() {
               },
               desktopPaper: {
                 sx: {
-                  borderRadius: "14px",
+                  borderRadius: "8px",
                   border: "1px solid rgba(58,124,165,0.32)",
                   boxShadow: "0 24px 48px -30px rgba(15,23,42,0.55)",
                 },
@@ -402,7 +326,7 @@ export function HeroBookingPanel() {
         <button
           type="button"
           onClick={handleSearch}
-          className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 self-end rounded-2xl bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:self-auto sm:px-7 sm:text-base"
+          className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 self-end rounded-lg bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:self-auto sm:px-7 sm:text-base"
         >
           Search
           <span

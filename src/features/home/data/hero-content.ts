@@ -1,3 +1,6 @@
+/** Shared full-bleed backdrop (home hero + vehicles listing header). File in `/public`. */
+export const emptyParkingBackdropPath = "/empty-parking.jpg" as const;
+
 export const heroContent = {
   location: "Pietà, Malta",
   title: "Explore Malta Like Never Before.",
@@ -14,6 +17,7 @@ export const heroContent = {
   media: {
     poster: null,
     videoSrc: "/hero-section.mp4",
+    backgroundImage: emptyParkingBackdropPath,
   },
 } as const;
 
