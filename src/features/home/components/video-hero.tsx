@@ -72,7 +72,7 @@ export function VideoHero() {
                 <div className="mt-5 max-w-2xl sm:mt-6">
                   <h1
                     id="home-hero-title"
-                    className="max-w-4xl text-5xl font-bold tracking-[-0.045em] text-white sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
+                    className="max-w-4xl text-[clamp(2.125rem,7vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.045em] text-white sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
                   >
                     {heroContent.title}
                   </h1>

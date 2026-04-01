@@ -39,7 +39,7 @@ export function WhatsAppFloatingButton() {
   return (
     <div
       ref={wrapRef}
-      className="pointer-events-none fixed bottom-6 right-6 z-50 sm:bottom-8 sm:right-8"
+      className="pointer-events-none fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-50 sm:bottom-[max(1.75rem,env(safe-area-inset-bottom))] sm:right-[max(1.75rem,env(safe-area-inset-right))]"
     >
       <div className="pointer-events-auto relative flex flex-col items-end gap-2">
         {open ? (

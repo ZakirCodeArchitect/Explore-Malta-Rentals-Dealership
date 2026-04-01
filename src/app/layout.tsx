@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { SiteNavbar } from "@/components/site-navbar";
 import "./globals.css";
@@ -9,6 +9,12 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 const FAVICON_PATH = "/explore%20malta%20rentals%20logo%20favicon.png";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "Explore Malta Rentals | Motorcycle, ATV & Bicycle Hire",
@@ -31,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${plusJakartaSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-[var(--background)] font-sans text-[var(--foreground)]">
+      <body className="flex min-h-dvh flex-col overflow-x-clip bg-[var(--background)] pb-[env(safe-area-inset-bottom)] font-sans text-[var(--foreground)]">
         <SiteNavbar />
         {children}
       </body>
