@@ -3,7 +3,7 @@ export const faqItems = [
     id: "trial",
     question: "How do I book a bike or scooter?",
     answer:
-      "Use the booking form at the top of this page to choose pick-up location, dates, and times. You can also message us on WhatsApp and we will walk you through availability and the best option for your trip.",
+      "Use the booking form at the top of this page to choose pick-up location, vehicle type, and pick-up date. You can also message us on WhatsApp and we will walk you through availability and the best option for your trip.",
   },
   {
     id: "plan",
@@ -33,7 +33,7 @@ export const faqItems = [
     id: "email",
     question: "Can I return the bike somewhere other than Pietà?",
     answer:
-      "We offer options like return elsewhere or hotel delivery where it applies. Toggle the relevant options in the booking flow or ask us on WhatsApp and we will confirm what is possible for your dates.",
+      "It depends on the vehicle and dates. Message us on WhatsApp with your plans and we will confirm whether return elsewhere or hotel delivery is possible.",
   },
   {
     id: "support",

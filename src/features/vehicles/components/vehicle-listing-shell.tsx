@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import type { Transmission, Vehicle, VehicleType } from "@/features/vehicles/data/vehicles";
+import {
+  formatPickupDateLabel,
+  parseVehicleTypeSearchParam,
+} from "@/features/vehicles/lib/booking-search-params";
 
 type SortOption = "recommended" | "price-low" | "price-high" | "rating";
 
@@ -12,10 +17,19 @@ type VehicleListingShellProps = Readonly<{
 }>;
 
 export function VehicleListingShell({ vehicles }: VehicleListingShellProps) {
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
+  const locationParam = searchParams.get("location");
+  const dateParam = searchParams.get("date");
+
   const [selectedType, setSelectedType] = useState<VehicleType | "All">("All");
   const [selectedTransmission, setSelectedTransmission] = useState<Transmission | "All">("All");
   const [sortBy, setSortBy] = useState<SortOption>("recommended");
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    setSelectedType(parseVehicleTypeSearchParam(typeParam));
+  }, [typeParam]);
 
   useEffect(() => {
     setIsRefreshing(true);
@@ -38,8 +52,30 @@ export function VehicleListingShell({ vehicles }: VehicleListingShellProps) {
     return sorted;
   }, [vehicles, selectedType, selectedTransmission, sortBy]);
 
+  const searchSummary = useMemo(() => {
+    const parts: string[] = [];
+    if (locationParam?.trim()) {
+      parts.push(`Pickup: ${locationParam.trim()}`);
+    }
+    const dateLabel = dateParam ? formatPickupDateLabel(dateParam) : null;
+    if (dateLabel) {
+      parts.push(dateLabel);
+    }
+    return parts.length > 0 ? parts.join(" · ") : null;
+  }, [locationParam, dateParam]);
+
   return (
     <div className="mt-8 space-y-6">
+      {searchSummary ? (
+        <p className="rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_28px_-22px_rgba(15,23,42,0.35)]">
+          <span className="font-semibold text-slate-900">Your search</span>
+          <span className="mx-2 text-slate-300" aria-hidden>
+            ·
+          </span>
+          {searchSummary}
+        </p>
+      ) : null}
+
       <VehicleFilters
         selectedType={selectedType}
         selectedTransmission={selectedTransmission}

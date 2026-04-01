@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
 import { VehicleListingShell } from "@/features/vehicles/components/vehicle-listing-shell";
 import { vehicles } from "@/features/vehicles/data/vehicles";
@@ -24,7 +25,16 @@ export default function VehiclesPage() {
           </p>
         </section>
 
-        <VehicleListingShell vehicles={vehicles} />
+        <Suspense
+          fallback={
+            <div
+              className="mt-8 h-72 animate-pulse rounded-2xl bg-slate-100/80"
+              aria-hidden
+            />
+          }
+        >
+          <VehicleListingShell vehicles={vehicles} />
+        </Suspense>
       </Container>
     </main>
   );
