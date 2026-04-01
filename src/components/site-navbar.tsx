@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   SITE_SHELL_OUTER,
   SITE_SHELL_CONTAINER,
@@ -22,7 +26,35 @@ function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function navLinkIsActive(href: string, pathname: string, hash: string): boolean {
+  if (href === "/#contact") {
+    return pathname === "/" && hash === "#contact";
+  }
+  if (href === "/#services") {
+    return pathname === "/" && hash === "#services";
+  }
+  if (href === "/") {
+    return pathname === "/" && hash !== "#contact" && hash !== "#services";
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const navLinkBaseClass =
+  "text-sm font-semibold tracking-[-0.02em] transition-colors";
+const navLinkInactiveClass = `${navLinkBaseClass} text-slate-800 hover:opacity-70`;
+const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]`;
+
 export function SiteNavbar() {
+  const pathname = usePathname();
+  const [hash, setHash] = useState("");
+
+  useEffect(() => {
+    const sync = () => setHash(typeof window !== "undefined" ? window.location.hash : "");
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, [pathname]);
+
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0px,env(safe-area-inset-top))]">
       <nav
@@ -59,16 +91,20 @@ export function SiteNavbar() {
                   "lg:gap-8",
                 )}
               >
-                {navLinks.map(({ href, label }) => (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      className="text-sm font-semibold tracking-[-0.02em] text-slate-800 transition-opacity hover:opacity-70"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
+                {navLinks.map(({ href, label }) => {
+                  const active = navLinkIsActive(href, pathname, hash);
+                  return (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        className={active ? navLinkActiveClass : navLinkInactiveClass}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
 
               <div className="flex shrink-0 items-center justify-self-end gap-2">
@@ -82,15 +118,24 @@ export function SiteNavbar() {
                     Menu
                   </summary>
                   <div className="absolute right-0 top-full z-30 mt-2 w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-slate-200 bg-white py-2 shadow-lg">
-                    {navLinks.map(({ href, label }) => (
-                      <Link
-                        key={href}
-                        href={href}
-                        className="block px-4 py-2.5 text-sm font-semibold tracking-[-0.02em] text-slate-800 hover:bg-slate-50"
-                      >
-                        {label}
-                      </Link>
-                    ))}
+                    {navLinks.map(({ href, label }) => {
+                      const active = navLinkIsActive(href, pathname, hash);
+                      return (
+                        <Link
+                          key={href}
+                          href={href}
+                          className={joinClasses(
+                            "block px-4 py-2.5 text-sm font-semibold tracking-[-0.02em] transition-colors hover:bg-slate-50",
+                            active
+                              ? "text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
+                              : "text-slate-800",
+                          )}
+                          aria-current={active ? "page" : undefined}
+                        >
+                          {label}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </details>
 
