@@ -96,8 +96,8 @@ export const vehicles: readonly Vehicle[] = [
     location: "Pieta, Malta",
     images: [
       "https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=1400&q=80",
     ],
     highlights: ["Strong uphill performance", "Stable ride feel", "Best for day adventures"],
     features: ["LED lighting", "Heavy-duty suspension", "Digital dash"],
