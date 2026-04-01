@@ -14,7 +14,7 @@ type VehicleFiltersProps = Readonly<{
 }>;
 
 const selectClassName =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/40";
+  "min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base font-medium text-slate-800 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/40 sm:text-sm";
 
 export function VehicleFilters({
   selectedType,
@@ -25,7 +25,10 @@ export function VehicleFilters({
   onSortChange,
 }: VehicleFiltersProps) {
   return (
-    <section aria-label="Vehicle filters and sorting" className="sticky top-18 z-20 rounded-2xl border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5">
+    <section
+      aria-label="Vehicle filters and sorting"
+      className="sticky top-[calc(env(safe-area-inset-top)+5rem)] z-20 rounded-2xl border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md sm:top-[calc(env(safe-area-inset-top)+5.25rem)] md:p-5"
+    >
       <div className="grid gap-3 md:grid-cols-3">
         <label className="text-sm font-semibold text-slate-700">
           Type
