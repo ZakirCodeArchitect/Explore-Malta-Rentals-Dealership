@@ -26,13 +26,13 @@ function joinClasses(...classes: Array<string | undefined>) {
 export function SiteNavbar() {
   return (
     <header
-      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-2 sm:pt-3 ${SITE_SHELL_OUTER}`}
+      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0.5rem,env(safe-area-inset-top))] sm:pt-3 ${SITE_SHELL_OUTER}`}
     >
       <div className={SITE_SHELL_CONTAINER}>
         <nav
           aria-label="Primary"
           className={joinClasses(
-            "site-navbar pointer-events-auto w-full overflow-hidden border border-white/25 bg-white/50 text-[var(--foreground)] shadow-[0_4px_24px_-16px_rgba(15,23,42,0.18)] backdrop-blur-xl backdrop-saturate-150",
+            "site-navbar pointer-events-auto w-full max-w-full overflow-hidden border border-white/25 bg-white/50 text-[var(--foreground)] shadow-[0_4px_24px_-16px_rgba(15,23,42,0.18)] backdrop-blur-xl backdrop-saturate-150",
             SITE_SURFACE_RADIUS,
           )}
         >
@@ -82,7 +82,7 @@ export function SiteNavbar() {
               <details className="relative md:hidden">
                 <summary
                   className={joinClasses(
-                    "flex cursor-pointer list-none items-center justify-center rounded-lg border border-white/30 bg-white/60 px-2 py-1.5 text-sm font-semibold tracking-[-0.02em] text-slate-800 backdrop-blur-md",
+                    "flex min-h-10 min-w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm font-semibold tracking-[-0.02em] text-slate-800 backdrop-blur-md",
                     "[&::-webkit-details-marker]:hidden",
                   )}
                 >
@@ -104,7 +104,7 @@ export function SiteNavbar() {
               <Link
                 href="/#booking-preview"
                 className={joinClasses(
-                  "inline-flex min-h-8 items-center justify-center rounded-full px-3.5 py-1.5 text-sm font-semibold tracking-[-0.03em] text-white sm:min-h-9 sm:px-4 sm:py-2",
+                  "inline-flex min-h-10 min-w-[2.75rem] items-center justify-center rounded-full px-3.5 py-2 text-sm font-semibold tracking-[-0.03em] text-white sm:min-h-9 sm:px-4 sm:py-2",
                   "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
                   "hover:bg-[var(--brand-orange-strong)]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
