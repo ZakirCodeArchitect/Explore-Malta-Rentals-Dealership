@@ -11,6 +11,7 @@ const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/vehicles", label: "Vehicles" },
   { href: "/about", label: "About us" },
   { href: "/guide", label: "Guide" },
   { href: "/tours", label: "Tours" },
