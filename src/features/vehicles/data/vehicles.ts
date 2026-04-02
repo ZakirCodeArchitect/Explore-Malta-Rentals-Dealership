@@ -1,6 +1,19 @@
 export type VehicleType = "Scooter" | "Motorcycle" | "ATV" | "Bicycle";
 export type Transmission = "Automatic" | "Manual";
 
+/** Listing filter: exact seat count (1–3 only). */
+export type VehicleSeatsFilter = 1 | 2 | 3 | "All";
+
+/** Exterior / finish color used for listing filters. */
+export type VehicleColor =
+  | "Black"
+  | "White"
+  | "Gray"
+  | "Red"
+  | "Blue"
+  | "Silver"
+  | "Orange";
+
 export type VehicleAddOn = Readonly<{
   id: string;
   name: string;
@@ -16,6 +29,7 @@ export type Vehicle = Readonly<{
   pricePerDay: number;
   seats: number;
   transmission: Transmission;
+  color: VehicleColor;
   engine: string;
   rating: number;
   reviewCount: number;
@@ -37,6 +51,7 @@ export const vehicles: readonly Vehicle[] = [
     pricePerDay: 39,
     seats: 2,
     transmission: "Automatic",
+    color: "Gray",
     engine: "125cc",
     rating: 4.9,
     reviewCount: 118,
@@ -64,6 +79,7 @@ export const vehicles: readonly Vehicle[] = [
     pricePerDay: 29,
     seats: 2,
     transmission: "Automatic",
+    color: "White",
     engine: "50cc",
     rating: 4.7,
     reviewCount: 86,
@@ -90,6 +106,7 @@ export const vehicles: readonly Vehicle[] = [
     pricePerDay: 89,
     seats: 2,
     transmission: "Automatic",
+    color: "Orange",
     engine: "450cc",
     rating: 4.9,
     reviewCount: 64,
@@ -116,6 +133,7 @@ export const vehicles: readonly Vehicle[] = [
     pricePerDay: 54,
     seats: 2,
     transmission: "Manual",
+    color: "Red",
     engine: "125cc",
     rating: 4.8,
     reviewCount: 73,
@@ -142,6 +160,7 @@ export const vehicles: readonly Vehicle[] = [
     pricePerDay: 21,
     seats: 1,
     transmission: "Manual",
+    color: "Blue",
     engine: "N/A",
     rating: 4.8,
     reviewCount: 95,

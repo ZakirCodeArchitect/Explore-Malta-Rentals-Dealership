@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Select, {
@@ -7,7 +8,12 @@ import Select, {
   type DropdownIndicatorProps,
 } from "react-select";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
-import type { Transmission, VehicleType } from "@/features/vehicles/data/vehicles";
+import type {
+  Transmission,
+  VehicleColor,
+  VehicleSeatsFilter,
+  VehicleType,
+} from "@/features/vehicles/data/vehicles";
 import {
   VehiclePickupDateField,
   VehiclePickupLocationField,
@@ -24,6 +30,14 @@ type VehicleFiltersProps = Readonly<{
   selectedTransmission: Transmission | "All";
   onTypeChange: (value: VehicleType | "All") => void;
   onTransmissionChange: (value: Transmission | "All") => void;
+  selectedSeats: VehicleSeatsFilter;
+  onSeatsChange: (value: VehicleSeatsFilter) => void;
+  /** When true, seats are only in the sidebar (e.g. vehicles page rail). */
+  hideSeatsFilter?: boolean;
+  /** Below-lg vehicles listing: color filter in the card (with heading). */
+  colorFilterOptions?: readonly (VehicleColor | "All")[];
+  selectedColor?: VehicleColor | "All";
+  onColorChange?: (value: VehicleColor | "All") => void;
   hotelDelivery: boolean;
   onHotelDeliveryChange: (value: boolean) => void;
   onSearch: () => void;
@@ -41,6 +55,13 @@ const TRANSMISSION_FILTER_OPTIONS: readonly BookingOption[] = [
   { value: "All", label: "All" },
   { value: "Automatic", label: "Automatic" },
   { value: "Manual", label: "Manual" },
+];
+
+const SEATS_FILTER_OPTIONS: readonly BookingOption[] = [
+  { value: "All", label: "Any" },
+  { value: "1", label: "1 seat" },
+  { value: "2", label: "2 seats" },
+  { value: "3", label: "3 seats" },
 ];
 
 function optionByValue(
@@ -139,115 +160,220 @@ export function VehicleFilters({
   selectedTransmission,
   onTypeChange,
   onTransmissionChange,
+  selectedSeats,
+  onSeatsChange,
+  hideSeatsFilter = false,
+  colorFilterOptions,
+  selectedColor,
+  onColorChange,
   hotelDelivery,
   onHotelDeliveryChange,
   onSearch,
 }: VehicleFiltersProps) {
+  const hasColorFilter =
+    colorFilterOptions != null &&
+    colorFilterOptions.length > 0 &&
+    onColorChange != null &&
+    selectedColor !== undefined;
+
+  const colorSelectOptions = useMemo((): BookingOption[] => {
+    if (!colorFilterOptions?.length) return [];
+    return colorFilterOptions.map((c) =>
+      c === "All"
+        ? { value: "All", label: "Any color" }
+        : { value: c, label: c },
+    );
+  }, [colorFilterOptions]);
+
+  const mainGridClass = (() => {
+    const n =
+      4 +
+      (hideSeatsFilter ? 0 : 1) +
+      (hasColorFilter ? 1 : 0);
+    if (n === 6) {
+      return "grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3";
+    }
+    if (n === 5) {
+      return "grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5";
+    }
+    return "grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4";
+  })();
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <section aria-label="Vehicle filters" className="sticky top-18 z-20 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5">
-      <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="min-w-0">
-          <VehiclePickupLocationField
-            pickupLocation={pickupLocation}
-            onPickupLocationChange={onPickupLocationChange}
-          />
-        </div>
-        <div className="min-w-0">
-          <VehiclePickupDateField
-            pickupDate={pickupDate}
-            onPickupDateChange={onPickupDateChange}
-          />
-        </div>
-        <label className={filterCellClass} htmlFor="vehicles-filter-type">
-          Type
-          <div className={filterShellClass}>
-            <Select<BookingOption, false>
-              inputId="vehicles-filter-type"
-              instanceId="vehicles-filter-type"
-              aria-label="Vehicle type"
-              value={optionByValue(TYPE_FILTER_OPTIONS, selectedType)}
-              onChange={(opt) =>
-                opt && onTypeChange(opt.value as VehicleType | "All")
-              }
-              options={[...TYPE_FILTER_OPTIONS]}
-              isSearchable={false}
-              styles={vehicleFilterReactSelectStyles}
-              components={filterSelectComponents}
-              menuPortalTarget={
-                typeof document !== "undefined" ? document.body : null
-              }
-              menuPosition="fixed"
-              className="w-full min-w-0"
-              classNamePrefix="vehicle-filter-type"
+      <section
+        aria-label="Vehicle search"
+        className="sticky top-18 z-20 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
+      >
+        <div className={mainGridClass}>
+          <div className="min-w-0">
+            <VehiclePickupLocationField
+              pickupLocation={pickupLocation}
+              onPickupLocationChange={onPickupLocationChange}
             />
           </div>
-        </label>
-
-        <label className={filterCellClass} htmlFor="vehicles-filter-transmission">
-          Transmission
-          <div className={filterShellClass}>
-            <Select<BookingOption, false>
-              inputId="vehicles-filter-transmission"
-              instanceId="vehicles-filter-transmission"
-              aria-label="Transmission"
-              value={optionByValue(
-                TRANSMISSION_FILTER_OPTIONS,
-                selectedTransmission,
-              )}
-              onChange={(opt) =>
-                opt &&
-                onTransmissionChange(opt.value as Transmission | "All")
-              }
-              options={[...TRANSMISSION_FILTER_OPTIONS]}
-              isSearchable={false}
-              styles={vehicleFilterReactSelectStyles}
-              components={filterSelectComponents}
-              menuPortalTarget={
-                typeof document !== "undefined" ? document.body : null
-              }
-              menuPosition="fixed"
-              className="w-full min-w-0"
-              classNamePrefix="vehicle-filter-transmission"
+          <div className="min-w-0">
+            <VehiclePickupDateField
+              pickupDate={pickupDate}
+              onPickupDateChange={onPickupDateChange}
             />
           </div>
-        </label>
-      </div>
+          <label className={filterCellClass} htmlFor="vehicles-filter-type">
+            Type
+            <div className={filterShellClass}>
+              <Select<BookingOption, false>
+                inputId="vehicles-filter-type"
+                instanceId="vehicles-filter-type"
+                aria-label="Vehicle type"
+                value={optionByValue(TYPE_FILTER_OPTIONS, selectedType)}
+                onChange={(opt) =>
+                  opt && onTypeChange(opt.value as VehicleType | "All")
+                }
+                options={[...TYPE_FILTER_OPTIONS]}
+                isSearchable={false}
+                styles={vehicleFilterReactSelectStyles}
+                components={filterSelectComponents}
+                menuPortalTarget={
+                  typeof document !== "undefined" ? document.body : null
+                }
+                menuPosition="fixed"
+                className="w-full min-w-0"
+                classNamePrefix="vehicle-filter-type"
+              />
+            </div>
+          </label>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-4">
-        <div role="group" aria-label="Booking options" className="min-w-0">
-          <VehicleFilterToggle
-            label="Need hotel delivery"
-            switchId="vehicles-filter-hotel-delivery"
-            checked={hotelDelivery}
-            onCheckedChange={onHotelDeliveryChange}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={onSearch}
-          className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
-        >
-          Search
-          <span
-            aria-hidden="true"
-            className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+          <label
+            className={filterCellClass}
+            htmlFor="vehicles-filter-transmission"
           >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            Transmission
+            <div className={filterShellClass}>
+              <Select<BookingOption, false>
+                inputId="vehicles-filter-transmission"
+                instanceId="vehicles-filter-transmission"
+                aria-label="Transmission"
+                value={optionByValue(
+                  TRANSMISSION_FILTER_OPTIONS,
+                  selectedTransmission,
+                )}
+                onChange={(opt) =>
+                  opt &&
+                  onTransmissionChange(opt.value as Transmission | "All")
+                }
+                options={[...TRANSMISSION_FILTER_OPTIONS]}
+                isSearchable={false}
+                styles={vehicleFilterReactSelectStyles}
+                components={filterSelectComponents}
+                menuPortalTarget={
+                  typeof document !== "undefined" ? document.body : null
+                }
+                menuPosition="fixed"
+                className="w-full min-w-0"
+                classNamePrefix="vehicle-filter-transmission"
+              />
+            </div>
+          </label>
+
+          {!hideSeatsFilter ? (
+            <label className={filterCellClass} htmlFor="vehicles-filter-seats">
+              Seats
+              <div className={filterShellClass}>
+                <Select<BookingOption, false>
+                  inputId="vehicles-filter-seats"
+                  instanceId="vehicles-filter-seats"
+                  aria-label="Seats"
+                  value={optionByValue(
+                    SEATS_FILTER_OPTIONS,
+                    selectedSeats === "All" ? "All" : String(selectedSeats),
+                  )}
+                  onChange={(opt) => {
+                    if (!opt || typeof onSeatsChange !== "function") return;
+                    const v = opt.value;
+                    if (v === "All") onSeatsChange("All");
+                    else onSeatsChange(Number(v) as 1 | 2 | 3);
+                  }}
+                  options={[...SEATS_FILTER_OPTIONS]}
+                  isSearchable={false}
+                  styles={vehicleFilterReactSelectStyles}
+                  components={filterSelectComponents}
+                  menuPortalTarget={
+                    typeof document !== "undefined" ? document.body : null
+                  }
+                  menuPosition="fixed"
+                  className="w-full min-w-0"
+                  classNamePrefix="vehicle-filter-seats"
+                />
+              </div>
+            </label>
+          ) : null}
+
+          {hasColorFilter ? (
+            <label className={filterCellClass} htmlFor="vehicles-filter-color">
+              Color
+              <div className={filterShellClass}>
+                <Select<BookingOption, false>
+                  inputId="vehicles-filter-color"
+                  instanceId="vehicles-filter-color"
+                  aria-label="Color"
+                  value={optionByValue(
+                    colorSelectOptions,
+                    selectedColor === "All" ? "All" : selectedColor,
+                  )}
+                  onChange={(opt) => {
+                    if (!opt || !onColorChange) return;
+                    onColorChange(opt.value as VehicleColor | "All");
+                  }}
+                  options={colorSelectOptions}
+                  isSearchable={false}
+                  styles={vehicleFilterReactSelectStyles}
+                  components={filterSelectComponents}
+                  menuPortalTarget={
+                    typeof document !== "undefined" ? document.body : null
+                  }
+                  menuPosition="fixed"
+                  className="w-full min-w-0"
+                  classNamePrefix="vehicle-filter-color"
+                />
+              </div>
+            </label>
+          ) : null}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-4">
+          <div role="group" aria-label="Booking options" className="min-w-0">
+            <VehicleFilterToggle
+              label="Need hotel delivery"
+              switchId="vehicles-filter-hotel-delivery"
+              checked={hotelDelivery}
+              onCheckedChange={onHotelDeliveryChange}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={onSearch}
+            className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
+          >
+            Search
+            <span
+              aria-hidden="true"
+              className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
             >
-              <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
-            </svg>
-          </span>
-        </button>
-      </div>
-    </section>
+              <svg
+                viewBox="0 0 20 20"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      </section>
     </LocalizationProvider>
   );
 }

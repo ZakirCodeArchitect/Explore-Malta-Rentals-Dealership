@@ -1,19 +1,59 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
 import { emptyParkingBackdropPath } from "@/features/home/data/hero-content";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
-import type { Transmission, Vehicle, VehicleType } from "@/features/vehicles/data/vehicles";
+import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
+import type {
+  Transmission,
+  Vehicle,
+  VehicleColor,
+  VehicleSeatsFilter,
+  VehicleType,
+} from "@/features/vehicles/data/vehicles";
 import {
   formatPickupDateParam,
+  parseColorSearchParam,
   parsePickupDateParam,
+  parseSeatsSearchParam,
+  parseTransmissionSearchParam,
   parseVehicleTypeSearchParam,
+  seatsFilterToUrlParam,
+  transmissionToUrlParam,
+  vehicleColorToUrlParam,
   vehicleFilterTypeToUrlParam,
 } from "@/features/vehicles/lib/booking-search-params";
+
+/** Tailwind `lg` — sidebar rail visible; hero omits seats/color there. */
+const LG_MIN_PX = 1024;
+
+function subscribeMinWidthLg(onChange: () => void) {
+  const mq = window.matchMedia(`(min-width: ${LG_MIN_PX}px)`);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+function getMinWidthLgSnapshot() {
+  return window.matchMedia(`(min-width: ${LG_MIN_PX}px)`).matches;
+}
+
+function useIsLgViewport() {
+  return useSyncExternalStore(
+    subscribeMinWidthLg,
+    getMinWidthLgSnapshot,
+    () => false,
+  );
+}
 
 type VehicleListingShellProps = Readonly<{
   vehicles: readonly Vehicle[];
@@ -32,11 +72,18 @@ export function VehicleListingShell({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
+  const transmissionParam = searchParams.get("transmission");
+  const colorParam = searchParams.get("color");
+  const seatsParam = searchParams.get("seats");
   const locationParam = searchParams.get("location");
   const dateParam = searchParams.get("date");
   const hotelDeliveryParam = searchParams.get("hotelDelivery");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
+  const initialTransmission =
+    parseTransmissionSearchParam(transmissionParam);
+  const initialColor = parseColorSearchParam(colorParam);
+  const initialSeats = parseSeatsSearchParam(seatsParam);
   const initialDate = parsePickupDateParam(dateParam) ?? new Date(2026, 5, 12);
   const initialLocation: BookingOption | null = locationParam
     ? { value: `url:${locationParam}`, label: locationParam }
@@ -49,18 +96,28 @@ export function VehicleListingShell({
   const [selectedType, setSelectedType] =
     useState<VehicleType | "All">(initialType);
   const [selectedTransmission, setSelectedTransmission] =
-    useState<Transmission | "All">("All");
+    useState<Transmission | "All">(initialTransmission);
+  const [selectedColor, setSelectedColor] = useState<VehicleColor | "All">(
+    initialColor,
+  );
+  const [selectedSeats, setSelectedSeats] =
+    useState<VehicleSeatsFilter>(initialSeats);
 
   const [appliedType, setAppliedType] =
     useState<VehicleType | "All">(initialType);
   const [appliedTransmission, setAppliedTransmission] =
-    useState<Transmission | "All">("All");
+    useState<Transmission | "All">(initialTransmission);
+  const [appliedColor, setAppliedColor] =
+    useState<VehicleColor | "All">(initialColor);
+  const [appliedSeats, setAppliedSeats] =
+    useState<VehicleSeatsFilter>(initialSeats);
 
   const [hotelDelivery, setHotelDelivery] = useState(
     hotelDeliveryParam === "1",
   );
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [filtersCollapsed, setFiltersCollapsed] = useState(false);
 
   const replaceQuery = useCallback(
     (mutate: (params: URLSearchParams) => void) => {
@@ -77,6 +134,24 @@ export function VehicleListingShell({
     setSelectedType(t);
     setAppliedType(t);
   }, [typeParam]);
+
+  useEffect(() => {
+    const tr = parseTransmissionSearchParam(transmissionParam);
+    setSelectedTransmission(tr);
+    setAppliedTransmission(tr);
+  }, [transmissionParam]);
+
+  useEffect(() => {
+    const c = parseColorSearchParam(colorParam);
+    setSelectedColor(c);
+    setAppliedColor(c);
+  }, [colorParam]);
+
+  useEffect(() => {
+    const s = parseSeatsSearchParam(seatsParam);
+    setSelectedSeats(s);
+    setAppliedSeats(s);
+  }, [seatsParam]);
 
   useEffect(() => {
     if (locationParam) {
@@ -112,24 +187,47 @@ export function VehicleListingShell({
     setPickupDate(date);
   }, []);
 
-  const handleTypeChange = useCallback((value: VehicleType | "All") => {
-    setSelectedType(value);
-  }, []);
-
-  const handleTransmissionChange = useCallback(
-    (value: Transmission | "All") => {
-      setSelectedTransmission(value);
+  const persistListingFilters = useCallback(
+    (next: {
+      type?: VehicleType | "All";
+      transmission?: Transmission | "All";
+      color?: VehicleColor | "All";
+      seats?: VehicleSeatsFilter;
+    }) => {
+      const t = next.type ?? selectedType;
+      const tr = next.transmission ?? selectedTransmission;
+      const c = next.color ?? selectedColor;
+      const s = next.seats ?? selectedSeats;
+      setSelectedType(t);
+      setAppliedType(t);
+      setSelectedTransmission(tr);
+      setAppliedTransmission(tr);
+      setSelectedColor(c);
+      setAppliedColor(c);
+      setSelectedSeats(s);
+      setAppliedSeats(s);
+      replaceQuery((p) => {
+        p.set("type", vehicleFilterTypeToUrlParam(t));
+        p.set("transmission", transmissionToUrlParam(tr));
+        p.set("color", vehicleColorToUrlParam(c));
+        p.set("seats", seatsFilterToUrlParam(s));
+      });
     },
-    [],
+    [replaceQuery, selectedColor, selectedSeats, selectedTransmission, selectedType],
   );
 
   const handleSearchResults = useCallback(() => {
     setAppliedType(selectedType);
     setAppliedTransmission(selectedTransmission);
+    setAppliedColor(selectedColor);
+    setAppliedSeats(selectedSeats);
     setIsRefreshing(true);
     window.setTimeout(() => setIsRefreshing(false), 220);
     replaceQuery((p) => {
       p.set("type", vehicleFilterTypeToUrlParam(selectedType));
+      p.set("transmission", transmissionToUrlParam(selectedTransmission));
+      p.set("color", vehicleColorToUrlParam(selectedColor));
+      p.set("seats", seatsFilterToUrlParam(selectedSeats));
       if (pickupLocation?.label) {
         p.set("location", pickupLocation.label);
       } else {
@@ -148,7 +246,25 @@ export function VehicleListingShell({
         .getElementById("vehicle-listing-results")
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  }, [hotelDelivery, pickupDate, pickupLocation, replaceQuery, selectedTransmission, selectedType]);
+  }, [
+    hotelDelivery,
+    pickupDate,
+    pickupLocation,
+    replaceQuery,
+    selectedColor,
+    selectedSeats,
+    selectedTransmission,
+    selectedType,
+  ]);
+
+  const vehicleListingColorOptions = useMemo(() => {
+    const unique = new Set<VehicleColor>();
+    for (const v of vehicles) {
+      unique.add(v.color);
+    }
+    const sorted = [...unique].sort((a, b) => a.localeCompare(b));
+    return ["All" as const, ...sorted];
+  }, [vehicles]);
 
   const filteredVehicles = useMemo(() => {
     const typeFiltered =
@@ -161,9 +277,24 @@ export function VehicleListingShell({
         : typeFiltered.filter(
             (vehicle) => vehicle.transmission === appliedTransmission,
           );
+    const colorFiltered =
+      appliedColor === "All"
+        ? transmissionFiltered
+        : transmissionFiltered.filter(
+            (vehicle) => vehicle.color === appliedColor,
+          );
+    const seatsFiltered =
+      appliedSeats === "All"
+        ? colorFiltered
+        : colorFiltered.filter((vehicle) => vehicle.seats === appliedSeats);
 
-    return [...transmissionFiltered];
-  }, [vehicles, appliedType, appliedTransmission]);
+    return [...seatsFiltered];
+  }, [vehicles, appliedColor, appliedSeats, appliedType, appliedTransmission]);
+
+  const showListingSidebar = pathname === "/vehicles";
+  const isLg = useIsLgViewport();
+  const hideSeatsInHero = showListingSidebar && isLg;
+  const showListingExtrasInHero = showListingSidebar && !isLg;
 
   const filters = (
     <VehicleFilters
@@ -173,13 +304,42 @@ export function VehicleListingShell({
       onPickupDateChange={handlePickupDateChange}
       selectedType={selectedType}
       selectedTransmission={selectedTransmission}
-      onTypeChange={handleTypeChange}
-      onTransmissionChange={handleTransmissionChange}
+      onTypeChange={(v) => persistListingFilters({ type: v })}
+      onTransmissionChange={(v) => persistListingFilters({ transmission: v })}
+      selectedSeats={selectedSeats}
+      onSeatsChange={(v) => persistListingFilters({ seats: v })}
+      hideSeatsFilter={hideSeatsInHero}
+      colorFilterOptions={
+        showListingExtrasInHero ? vehicleListingColorOptions : undefined
+      }
+      selectedColor={showListingExtrasInHero ? selectedColor : undefined}
+      onColorChange={
+        showListingExtrasInHero
+          ? (v: VehicleColor | "All") => persistListingFilters({ color: v })
+          : undefined
+      }
       hotelDelivery={hotelDelivery}
       onHotelDeliveryChange={setHotelDelivery}
       onSearch={handleSearchResults}
     />
   );
+
+  const listingSidebar = showListingSidebar ? (
+    <VehicleListingSidebar
+      variant="rail"
+      collapsed={filtersCollapsed}
+      onToggleCollapsed={() => setFiltersCollapsed((c) => !c)}
+      colorOptions={vehicleListingColorOptions}
+      selectedType={selectedType}
+      onTypeChange={(v) => persistListingFilters({ type: v })}
+      selectedTransmission={selectedTransmission}
+      onTransmissionChange={(v) => persistListingFilters({ transmission: v })}
+      selectedColor={selectedColor}
+      onColorChange={(v) => persistListingFilters({ color: v })}
+      selectedSeats={selectedSeats}
+      onSeatsChange={(v) => persistListingFilters({ seats: v })}
+    />
+  ) : null;
 
   const results = (
     <div id="vehicle-listing-results" className="space-y-6 scroll-mt-28">
@@ -217,7 +377,7 @@ export function VehicleListingShell({
             No exact match found
           </h3>
           <p className="mt-2 text-sm text-slate-600">
-            Try another type or transmission.
+            Try another type, transmission, seats, or color.
           </p>
         </div>
       )}
@@ -225,44 +385,114 @@ export function VehicleListingShell({
   );
 
   if (heroIntro) {
+    const heroSection = (
+      <section
+        aria-labelledby="vehicles-heading"
+        className="relative isolate overflow-hidden pb-12 pt-28 sm:pb-14 sm:pt-32"
+      >
+        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+          <div
+            className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat"
+            style={{
+              backgroundImage: `url("${emptyParkingBackdropPath}")`,
+            }}
+          />
+          <div className="absolute inset-0 bg-slate-950/35" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.72)_0%,rgba(15,23,42,0.38)_55%,rgba(15,23,42,0.12)_100%)]" />
+        </div>
+        <Container className="relative z-10">
+          <h1
+            id="vehicles-heading"
+            className="text-4xl font-semibold tracking-[-0.04em] text-white drop-shadow-[0_1px_24px_rgba(15,23,42,0.35)] sm:text-5xl"
+          >
+            {heroIntro.title}
+          </h1>
+          <p className="mt-4 max-w-3xl text-base leading-relaxed text-white/90 sm:text-lg">
+            {heroIntro.description}
+          </p>
+          <div className="mt-8">{filters}</div>
+        </Container>
+      </section>
+    );
+
+    const resultsBlock = (
+      <Container className="pb-16 pt-8">{results}</Container>
+    );
+
+    if (listingSidebar) {
+      return (
+        <div className="flex w-full flex-col lg:flex-row lg:items-start">
+          <aside
+            aria-label="Vehicle filters"
+            className={[
+              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm lg:self-start",
+              filtersCollapsed
+                ? "lg:w-12 lg:max-w-12 lg:min-w-12"
+                : "lg:w-[min(15.5rem,calc(100vw-1rem))] lg:max-w-[15.5rem]",
+            ].join(" ")}
+          >
+            <div
+              className={[
+                "px-4 py-6 sm:px-4 sm:py-6",
+                filtersCollapsed
+                  ? "lg:px-2 lg:pt-3 lg:pb-5"
+                  : "lg:px-4 lg:pt-4 lg:pb-7",
+              ].join(" ")}
+            >
+              {listingSidebar}
+            </div>
+          </aside>
+          <div className="order-1 flex min-w-0 flex-1 flex-col lg:order-2">
+            {heroSection}
+            {resultsBlock}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <>
-        <section
-          aria-labelledby="vehicles-heading"
-          className="relative isolate overflow-hidden pb-12 pt-28 sm:pb-14 sm:pt-32"
-        >
-          <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-            <div
-              className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat"
-              style={{
-                backgroundImage: `url("${emptyParkingBackdropPath}")`,
-              }}
-            />
-            <div className="absolute inset-0 bg-slate-950/35" />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.72)_0%,rgba(15,23,42,0.38)_55%,rgba(15,23,42,0.12)_100%)]" />
-          </div>
-          <Container className="relative z-10">
-            <h1
-              id="vehicles-heading"
-              className="text-4xl font-semibold tracking-[-0.04em] text-white drop-shadow-[0_1px_24px_rgba(15,23,42,0.35)] sm:text-5xl"
-            >
-              {heroIntro.title}
-            </h1>
-            <p className="mt-4 max-w-3xl text-base leading-relaxed text-white/90 sm:text-lg">
-              {heroIntro.description}
-            </p>
-            <div className="mt-8">{filters}</div>
-          </Container>
-        </section>
-        <Container className="pb-16 pt-8">{results}</Container>
+        {heroSection}
+        {resultsBlock}
       </>
     );
   }
 
   return (
     <div className="mt-8 space-y-6">
-      {filters}
-      {results}
+      {listingSidebar ? (
+        <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-0">
+          <aside
+            aria-label="Vehicle filters"
+            className={[
+              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm lg:self-start",
+              filtersCollapsed
+                ? "lg:w-12 lg:max-w-12 lg:min-w-12"
+                : "lg:w-[min(15.5rem,calc(100vw-1rem))] lg:max-w-[15.5rem]",
+            ].join(" ")}
+          >
+            <div
+              className={[
+                "px-4 py-6 sm:px-4 sm:py-6",
+                filtersCollapsed
+                  ? "lg:px-2 lg:pt-3 lg:pb-5"
+                  : "lg:px-4 lg:pt-4 lg:pb-7",
+              ].join(" ")}
+            >
+              {listingSidebar}
+            </div>
+          </aside>
+          <div className="order-1 flex min-w-0 flex-1 flex-col gap-6 lg:order-2">
+            {filters}
+            {results}
+          </div>
+        </div>
+      ) : (
+        <>
+          {filters}
+          {results}
+        </>
+      )}
     </div>
   );
 }
