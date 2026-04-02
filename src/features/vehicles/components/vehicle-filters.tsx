@@ -40,6 +40,7 @@ type VehicleFiltersProps = Readonly<{
   onColorChange?: (value: VehicleColor | "All") => void;
   hotelDelivery: boolean;
   onHotelDeliveryChange: (value: boolean) => void;
+  onClearFilters?: () => void;
   onSearch: () => void;
 }>;
 
@@ -168,6 +169,7 @@ export function VehicleFilters({
   onColorChange,
   hotelDelivery,
   onHotelDeliveryChange,
+  onClearFilters,
   onSearch,
 }: VehicleFiltersProps) {
   const hasColorFilter =
@@ -349,29 +351,40 @@ export function VehicleFilters({
               onCheckedChange={onHotelDeliveryChange}
             />
           </div>
-          <button
-            type="button"
-            onClick={onSearch}
-            className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
-          >
-            Search
-            <span
-              aria-hidden="true"
-              className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
-            >
-              <svg
-                viewBox="0 0 20 20"
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+          <div className="flex items-center gap-3 sm:gap-4">
+            {onClearFilters ? (
+              <button
+                type="button"
+                onClick={onClearFilters}
+                className="mr-1 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 sm:mr-2"
               >
-                <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
-              </svg>
-            </span>
-          </button>
+                Clear filters
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={onSearch}
+              className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
+            >
+              Search
+              <span
+                aria-hidden="true"
+                className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
+                </svg>
+              </span>
+            </button>
+          </div>
         </div>
       </section>
     </LocalizationProvider>

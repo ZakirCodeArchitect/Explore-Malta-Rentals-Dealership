@@ -196,6 +196,12 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             EUR {vehicle.pricePerDay}
             <span className="ml-1 text-base font-medium text-slate-500">/ day</span>
           </p>
+          {vehicle.securityDepositEUR != null ? (
+            <p className="mt-2 text-sm text-slate-600">
+              Security deposit{" "}
+              <span className="font-semibold text-slate-900">EUR {vehicle.securityDepositEUR}</span>
+            </p>
+          ) : null}
         </div>
         <span className="shrink-0 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--brand-blue-strong)]">
           Free cancellation request

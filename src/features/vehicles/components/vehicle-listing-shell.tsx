@@ -36,6 +36,7 @@ import {
 
 /** Tailwind `lg` — sidebar rail visible; hero omits seats/color there. */
 const LG_MIN_PX = 1024;
+const DEFAULT_PICKUP_DATE = new Date(2026, 5, 12);
 
 function subscribeMinWidthLg(onChange: () => void) {
   const mq = window.matchMedia(`(min-width: ${LG_MIN_PX}px)`);
@@ -84,7 +85,7 @@ export function VehicleListingShell({
     parseTransmissionSearchParam(transmissionParam);
   const initialColor = parseColorSearchParam(colorParam);
   const initialSeats = parseSeatsSearchParam(seatsParam);
-  const initialDate = parsePickupDateParam(dateParam) ?? new Date(2026, 5, 12);
+  const initialDate = parsePickupDateParam(dateParam) ?? DEFAULT_PICKUP_DATE;
   const initialLocation: BookingOption | null = locationParam
     ? { value: `url:${locationParam}`, label: locationParam }
     : null;
@@ -257,6 +258,31 @@ export function VehicleListingShell({
     selectedType,
   ]);
 
+  const handleClearFilters = useCallback(() => {
+    setPickupLocation(null);
+    setPickupDate(DEFAULT_PICKUP_DATE);
+    setHotelDelivery(false);
+    setSelectedType("All");
+    setAppliedType("All");
+    setSelectedTransmission("All");
+    setAppliedTransmission("All");
+    setSelectedColor("All");
+    setAppliedColor("All");
+    setSelectedSeats("All");
+    setAppliedSeats("All");
+    setIsRefreshing(false);
+    replaceQuery((p) => {
+      p.set("type", vehicleFilterTypeToUrlParam("All"));
+      p.set("transmission", transmissionToUrlParam("All"));
+      p.set("color", vehicleColorToUrlParam("All"));
+      p.set("seats", seatsFilterToUrlParam("All"));
+      p.delete("location");
+      p.delete("date");
+      p.delete("hotelDelivery");
+      p.delete("returnElsewhere");
+    });
+  }, [replaceQuery]);
+
   const vehicleListingColorOptions = useMemo(() => {
     const unique = new Set<VehicleColor>();
     for (const v of vehicles) {
@@ -320,6 +346,7 @@ export function VehicleListingShell({
       }
       hotelDelivery={hotelDelivery}
       onHotelDeliveryChange={setHotelDelivery}
+      onClearFilters={handleClearFilters}
       onSearch={handleSearchResults}
     />
   );
