@@ -3,6 +3,14 @@ export type BookingOption = Readonly<{
   label: string;
 }>;
 
+export const vehicleTypeOptions: readonly BookingOption[] = [
+  { value: "all", label: "All vehicles" },
+  { value: "scooter", label: "Scooters" },
+  { value: "motorcycle", label: "Motorcycles" },
+  { value: "atv", label: "ATVs" },
+  { value: "bicycle", label: "Bicycles" },
+] as const;
+
 export const locationOptions: readonly BookingOption[] = [
   { value: "pieta", label: "Pietà, Malta" },
   { value: "valletta", label: "Valletta, Malta" },

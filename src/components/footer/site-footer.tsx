@@ -165,7 +165,7 @@ export function SiteFooter() {
                 alt={brandName}
                 width={300}
                 height={52}
-                className="h-11 w-auto max-w-full object-contain object-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
+                className="h-11 w-auto max-w-full rounded-md object-contain object-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
               />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">

@@ -1,6 +1,19 @@
 export type VehicleType = "Scooter" | "Motorcycle" | "ATV" | "Bicycle";
 export type Transmission = "Automatic" | "Manual";
 
+/** Listing filter: exact seat count (1–3 only). */
+export type VehicleSeatsFilter = 1 | 2 | 3 | "All";
+
+/** Exterior / finish color used for listing filters. */
+export type VehicleColor =
+  | "Black"
+  | "White"
+  | "Gray"
+  | "Red"
+  | "Blue"
+  | "Silver"
+  | "Orange";
+
 export type VehicleAddOn = Readonly<{
   id: string;
   name: string;
@@ -14,8 +27,12 @@ export type Vehicle = Readonly<{
   tagline: string;
   description: string;
   pricePerDay: number;
+  /** Security deposit held for this model (EUR). Omit if not fixed per vehicle. */
+  securityDepositEUR?: number;
   seats: number;
   transmission: Transmission;
+  fuel: string;
+  color: VehicleColor;
   engine: string;
   rating: number;
   reviewCount: number;
@@ -28,134 +45,141 @@ export type Vehicle = Readonly<{
 
 export const vehicles: readonly Vehicle[] = [
   {
-    slug: "yamaha-nmax-125",
-    name: "Yamaha NMAX 125",
+    slug: "lex-moto-aura-125cc-grey",
+    name: "LEX MOTO AURA 125cc (Grey)",
     type: "Scooter",
-    tagline: "Smooth city cruising with premium comfort.",
+    tagline: "Lexmoto Aura 125 in matte grey — full-size automatic with twin discs.",
     description:
-      "A top choice for first-time Malta riders and couples. Light handling, stable braking, and plenty of comfort for coast and town loops.",
-    pricePerDay: 39,
+      "The Aura 125 is a full-sized commuter scooter: fuel-injected 125cc single, CVT automatic, and hydraulic discs front and rear. This unit is the grey finish. Typical manufacturer figures include an 8L tank, ~134kg dry weight, and under-seat storage; ideal for two-up coastal runs when ridden within licence rules.",
+    pricePerDay: 10,
+    securityDepositEUR: 350,
     seats: 2,
     transmission: "Automatic",
-    engine: "125cc",
-    rating: 4.9,
-    reviewCount: 118,
+    fuel: "Petrol",
+    color: "Gray",
+    engine: "125cc (air-cooled single, fuel injected)",
+    rating: 4.8,
+    reviewCount: 18,
     location: "Pieta, Malta",
     images: [
-      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1400&q=80",
+      "/product-images/lex moto grey.png",
     ],
-    highlights: ["Great for city + coast", "Beginner-friendly", "Phone mount included"],
-    features: ["USB charging", "Under-seat storage", "Dual-disc brakes", "Fuel efficient"],
+    highlights: ["From EUR 10/day", "Deposit EUR 350", "2 helmets included"],
+    features: [
+      "Automatic CVT (twist-and-go)",
+      "Fuel injection",
+      "Hydraulic disc brakes front & rear",
+      "8L fuel tank (typical Aura 125)",
+      "Under-seat storage",
+      "LED lighting & digital dash (model-dependent trim)",
+      "Optional accessories available",
+    ],
     addOns: [
-      { id: "extra-helmet", name: "Extra helmet", pricePerDay: 4 },
-      { id: "phone-holder", name: "Premium phone holder", pricePerDay: 2 },
-      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 12 },
+      { id: "optional-accessories", name: "Optional accessories pack", pricePerDay: 3 },
+      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 8 },
     ],
   },
   {
-    slug: "kymco-agility-50",
-    name: "Kymco Agility 50",
+    slug: "lex-moto-aura-125cc-red",
+    name: "LEX MOTO AURA 125cc (Red)",
     type: "Scooter",
-    tagline: "Simple, agile, and easy for short Malta routes.",
+    tagline: "Same Aura 125 platform in red — 125cc automatic with confident braking.",
     description:
-      "Affordable and efficient for urban routes and short scenic rides. Ideal if you want a relaxed way to explore Valletta and nearby spots.",
-    pricePerDay: 29,
+      "Mechanically the same Lexmoto Aura 125 as the grey bike: 125cc air-cooled single with CVT automatic and disc brakes both ends. The difference here is the red colourway. Suited to riders stepping up from smaller scooters who want stable motorway-capable performance where legally allowed.",
+    pricePerDay: 10,
+    securityDepositEUR: 350,
     seats: 2,
     transmission: "Automatic",
-    engine: "50cc",
+    fuel: "Petrol",
+    color: "Red",
+    engine: "125cc (air-cooled single, fuel injected)",
     rating: 4.7,
-    reviewCount: 86,
+    reviewCount: 12,
     location: "Pieta, Malta",
     images: [
-      "https://images.unsplash.com/photo-1558981285-6f0c94958bb6?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1517846693594-1567da72af75?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&w=1400&q=80",
+      "/product-images/lex moto red.png",
     ],
-    highlights: ["Budget-friendly", "Easy automatic ride", "Quick pickup"],
-    features: ["Top box option", "Low fuel usage", "Compact parking"],
+    highlights: ["From EUR 10/day", "Deposit EUR 350", "2 helmets included"],
+    features: [
+      "Automatic CVT (twist-and-go)",
+      "Fuel injection",
+      "Hydraulic disc brakes front & rear",
+      "8L fuel tank (typical Aura 125)",
+      "Under-seat storage",
+      "LED lighting & digital dash (model-dependent trim)",
+      "Optional accessories available",
+    ],
     addOns: [
-      { id: "extra-helmet", name: "Extra helmet", pricePerDay: 4 },
-      { id: "rain-poncho", name: "Rain poncho set", pricePerDay: 3 },
+      { id: "optional-accessories", name: "Optional accessories pack", pricePerDay: 3 },
+      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 8 },
     ],
   },
   {
-    slug: "cfmoto-cforce-450",
-    name: "CFMOTO CForce 450",
-    type: "ATV",
-    tagline: "Power and stability for adventurous routes.",
+    slug: "neco-one-retro",
+    name: "NECO ONE RETRO",
+    type: "Scooter",
+    tagline: "Retro-styled NECO — compact automatic, classic look.",
     description:
-      "Designed for riders who want stronger road presence and confidence on mixed terrain. Great for west-coast viewpoints and longer day trips.",
-    pricePerDay: 89,
+      "The NECO ONE RETRO pairs vintage-inspired bodywork with a light, easy automatic package. In line with NECO’s One 12″–class urban scooters sold in Malta: 50cc four-stroke, CVT, and a small wheelbase suited to tight town streets. Check your licence category for 50cc use.",
+    pricePerDay: 10,
     seats: 2,
     transmission: "Automatic",
-    engine: "450cc",
-    rating: 4.9,
-    reviewCount: 64,
+    fuel: "Petrol",
+    color: "Silver",
+    engine: "50cc (air-cooled single, typical One 12″ class)",
+    rating: 4.7,
+    reviewCount: 9,
     location: "Pieta, Malta",
     images: [
-      "https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=1400&q=80",
+      "/product-images/neco one retro.png",
     ],
-    highlights: ["Strong uphill performance", "Stable ride feel", "Best for day adventures"],
-    features: ["LED lighting", "Heavy-duty suspension", "Digital dash"],
+    highlights: ["From EUR 10/day", "Light 50cc urban scooter", "2 helmets included"],
+    features: [
+      "Automatic CVT",
+      "50cc air-cooled 4-stroke (One 12″ class)",
+      "Compact 12″ wheel format",
+      "Retro bodywork & classic styling cues",
+      "Linked / combined braking (CBS) typical on range",
+      "Electronic fuel injection (typical current stock)",
+      "Under-seat storage (varies by exact trim)",
+    ],
     addOns: [
-      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 15 },
-      { id: "action-cam", name: "Action camera mount kit", pricePerDay: 5 },
+      { id: "top-box", name: "Top box & rack", pricePerDay: 2 },
+      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 8 },
     ],
   },
   {
-    slug: "honda-cb125r",
-    name: "Honda CB125R",
-    type: "Motorcycle",
-    tagline: "Sporty style with everyday comfort.",
+    slug: "neco-one",
+    name: "NECO ONE",
+    type: "Scooter",
+    tagline: "NECO One 12″ — lightweight 50cc commuter for Valletta loops.",
     description:
-      "A balanced choice for riders who want sharper handling and extra punch while still keeping city navigation easy.",
-    pricePerDay: 54,
+      "The standard NECO ONE is a modern urban scooter in the NECO One 12″ line: 50cc automatic, low weight, and simple ergonomics for filtering traffic. Figures published for this family often include ~5–5.5L fuel tanks, 12″ wheels, and EFI — exact trim may vary; ask at pickup if you need a specific feature.",
+    pricePerDay: 10,
     seats: 2,
-    transmission: "Manual",
-    engine: "125cc",
+    transmission: "Automatic",
+    fuel: "Petrol",
+    color: "Black",
+    engine: "50cc (air-cooled single, typical One 12″ class)",
     rating: 4.8,
-    reviewCount: 73,
+    reviewCount: 11,
     location: "Pieta, Malta",
     images: [
-      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1558981285-6f0c94958bb6?auto=format&fit=crop&w=1400&q=80",
+      "/product-images/neco one.png",
     ],
-    highlights: ["Sport-inspired ride", "Manual control", "Premium look"],
-    features: ["ABS braking", "LED headlamp", "Comfort seat"],
+    highlights: ["From EUR 10/day", "Nimble 50cc automatic", "2 helmets included"],
+    features: [
+      "Automatic CVT",
+      "50cc air-cooled 4-stroke",
+      "12″ wheels — easy in traffic",
+      "Low seat height (typical ~735mm class)",
+      "CBS linked brakes on many One 12 builds",
+      "EFI (typical current stock)",
+      "Practical under-seat space for essentials",
+    ],
     addOns: [
-      { id: "extra-helmet", name: "Extra helmet", pricePerDay: 4 },
-      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 12 },
-    ],
-  },
-  {
-    slug: "trek-fx-2",
-    name: "Trek FX 2 Hybrid",
-    type: "Bicycle",
-    tagline: "Light, fast, and perfect for harbor rides.",
-    description:
-      "Great for scenic cycling in Sliema, Valletta, and coastal promenades. Comfortable geometry with dependable braking for daily exploring.",
-    pricePerDay: 21,
-    seats: 1,
-    transmission: "Manual",
-    engine: "N/A",
-    rating: 4.8,
-    reviewCount: 95,
-    location: "Pieta, Malta",
-    images: [
-      "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1400&q=80",
-    ],
-    highlights: ["Lightweight frame", "Best for town routes", "Low daily price"],
-    features: ["Multi-speed gearing", "Disc brakes", "Comfort grips"],
-    addOns: [
-      { id: "helmet", name: "Helmet", pricePerDay: 2 },
-      { id: "child-seat", name: "Child seat", pricePerDay: 5 },
+      { id: "top-box", name: "Top box & rack", pricePerDay: 2 },
+      { id: "full-insurance", name: "Full coverage upgrade", pricePerDay: 8 },
     ],
   },
 ];

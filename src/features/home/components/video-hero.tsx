@@ -23,6 +23,11 @@ function PinIcon() {
 export function VideoHero() {
   const poster = heroContent.media.poster ?? undefined;
   const posterProps = poster ? { poster } : {};
+  const backgroundImage =
+    "backgroundImage" in heroContent.media &&
+    typeof heroContent.media.backgroundImage === "string"
+      ? heroContent.media.backgroundImage
+      : null;
 
   return (
     <section
@@ -30,28 +35,38 @@ export function VideoHero() {
       className="relative isolate overflow-hidden bg-[var(--background)] text-[var(--foreground)]"
     >
       <div className="absolute inset-0">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-[center_30%] bg-no-repeat"
-          style={
-            poster
-              ? { backgroundImage: `url("${poster}")` }
-              : undefined
-          }
-        />
-        <video
-          aria-hidden="true"
-          className="absolute inset-0 hidden h-full w-full object-cover object-[center_28%] motion-safe:block motion-reduce:hidden"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          disablePictureInPicture
-          {...posterProps}
-        >
-          <source src={heroContent.media.videoSrc} type="video/mp4" />
-        </video>
+        {backgroundImage ? (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat"
+            style={{ backgroundImage: `url("${backgroundImage}")` }}
+          />
+        ) : (
+          <>
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-cover bg-[center_30%] bg-no-repeat"
+              style={
+                poster
+                  ? { backgroundImage: `url("${poster}")` }
+                  : undefined
+              }
+            />
+            <video
+              aria-hidden="true"
+              className="absolute inset-0 hidden h-full w-full object-cover object-[center_28%] motion-safe:block motion-reduce:hidden"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              disablePictureInPicture
+              {...posterProps}
+            >
+              <source src={heroContent.media.videoSrc} type="video/mp4" />
+            </video>
+          </>
+        )}
         <div className="absolute inset-0 bg-slate-950/25" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(58,124,165,0.18),transparent_42%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(12,24,38,0.78)_0%,rgba(22,42,62,0.52)_32%,rgba(245,251,255,0.08)_58%,rgba(245,251,255,0.28)_100%)]" />
@@ -72,7 +87,7 @@ export function VideoHero() {
                 <div className="mt-5 max-w-2xl sm:mt-6">
                   <h1
                     id="home-hero-title"
-                    className="max-w-4xl text-5xl font-bold tracking-[-0.045em] text-white sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
+                    className="max-w-4xl text-[clamp(2.125rem,7vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.045em] text-white sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
                   >
                     {heroContent.title}
                   </h1>
