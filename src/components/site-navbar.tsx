@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   SITE_SHELL_OUTER,
   SITE_SHELL_CONTAINER,
@@ -14,6 +14,7 @@ const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/booking", label: "Booking" },
   { href: "/vehicles", label: "Vehicles" },
   { href: "/about", label: "About us" },
   { href: "/guide", label: "Guide" },
@@ -47,6 +48,12 @@ const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover
 export function SiteNavbar() {
   const pathname = usePathname();
   const [hash, setHash] = useState("");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
+  const mobileMenuId = useId();
+
+  const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
 
   useEffect(() => {
     const sync = () => setHash(typeof window !== "undefined" ? window.location.hash : "");
@@ -55,11 +62,40 @@ export function SiteNavbar() {
     return () => window.removeEventListener("hashchange", sync);
   }, [pathname]);
 
+  useEffect(() => {
+    closeMobileNav();
+  }, [pathname, hash, closeMobileNav]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMobileNav();
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      const root = mobileNavRef.current;
+      if (root && !root.contains(e.target as Node)) {
+        closeMobileNav();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown, true);
+    };
+  }, [mobileNavOpen, closeMobileNav]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const link = mobilePanelRef.current?.querySelector<HTMLElement>("a[href]");
+    requestAnimationFrame(() => link?.focus());
+  }, [mobileNavOpen]);
+
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0px,env(safe-area-inset-top))]">
       <nav
         aria-label="Primary"
-        className="site-navbar pointer-events-auto w-full max-w-full overflow-hidden border-b border-slate-200/90 bg-slate-100 text-[var(--foreground)] shadow-[0_1px_0_rgba(15,23,42,0.04)]"
+        className="site-navbar pointer-events-auto w-full max-w-full border-b border-slate-200/90 bg-slate-100 text-[var(--foreground)] shadow-[0_1px_0_rgba(15,23,42,0.04)]"
       >
         <div className="h-0.5 w-full shrink-0 bg-red-600" aria-hidden />
         <div className={SITE_SHELL_OUTER}>
@@ -108,36 +144,55 @@ export function SiteNavbar() {
               </ul>
 
               <div className="flex shrink-0 items-center justify-self-end gap-2">
-                <details className="relative md:hidden">
-                  <summary
+                <div ref={mobileNavRef} className="relative z-[60] md:hidden">
+                  <button
+                    type="button"
+                    id={`${mobileMenuId}-trigger`}
                     className={joinClasses(
-                      "flex min-h-8 min-w-8 cursor-pointer list-none items-center justify-center rounded-md border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs font-semibold tracking-[-0.02em] text-slate-800 hover:bg-slate-50 sm:text-sm",
-                      "[&::-webkit-details-marker]:hidden",
+                      "flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-md border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs font-semibold tracking-[-0.02em] text-slate-800 hover:bg-slate-50 sm:text-sm",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)] focus-visible:ring-offset-2",
+                      mobileNavOpen ? "border-slate-400 bg-slate-50" : undefined,
+                    )}
+                    aria-expanded={mobileNavOpen}
+                    aria-controls={mobileMenuId}
+                    onClick={() => setMobileNavOpen((open) => !open)}
+                  >
+                    {mobileNavOpen ? "Close" : "Menu"}
+                  </button>
+                  <div
+                    ref={mobilePanelRef}
+                    id={mobileMenuId}
+                    role="region"
+                    aria-label="Site pages"
+                    className={joinClasses(
+                      "absolute right-0 top-[calc(100%+0.5rem)] w-[min(18rem,calc(100vw-1.5rem))] origin-top-right rounded-xl border border-slate-200 bg-white py-2 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.22)]",
+                      mobileNavOpen ? undefined : "hidden",
                     )}
                   >
-                    Menu
-                  </summary>
-                  <div className="absolute right-0 top-full z-30 mt-2 w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-slate-200 bg-white py-2 shadow-lg">
-                    {navLinks.map(({ href, label }) => {
-                      const active = navLinkIsActive(href, pathname, hash);
-                      return (
-                        <Link
-                          key={href}
-                          href={href}
-                          className={joinClasses(
-                            "block px-4 py-2.5 text-sm font-semibold tracking-[-0.02em] transition-colors hover:bg-slate-50",
-                            active
-                              ? "text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
-                              : "text-slate-800",
-                          )}
-                          aria-current={active ? "page" : undefined}
-                        >
-                          {label}
-                        </Link>
-                      );
-                    })}
+                    <ul className="m-0 list-none p-0">
+                      {navLinks.map(({ href, label }) => {
+                        const active = navLinkIsActive(href, pathname, hash);
+                        return (
+                          <li key={href}>
+                            <Link
+                              href={href}
+                              className={joinClasses(
+                                "block px-4 py-2.5 text-sm font-semibold tracking-[-0.02em] transition-colors hover:bg-slate-50",
+                                active
+                                  ? "text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
+                                  : "text-slate-800",
+                              )}
+                              aria-current={active ? "page" : undefined}
+                              onClick={closeMobileNav}
+                            >
+                              {label}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
-                </details>
+                </div>
 
                 <Link
                   href="/#booking-preview"

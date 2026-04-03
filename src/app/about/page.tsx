@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 
 import { AboutContent } from "@/features/about/components/about-content";
-import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
-import { Footer } from "@/features/home/components/footer";
 import { getEnvValue } from "@/components/footer/footer-utils";
 
 export const metadata: Metadata = {
@@ -18,12 +16,8 @@ export default function AboutPage() {
   const contact = { companyName };
 
   return (
-    <>
-      <main className="flex flex-1 flex-col">
-        <AboutContent contact={contact} />
-      </main>
-      <Footer />
-      <WhatsAppFloatingButton />
-    </>
+    <main className="flex flex-1 flex-col">
+      <AboutContent contact={contact} />
+    </main>
   );
 }
