@@ -19,7 +19,7 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border border-slate-200 p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] transition-[background-color,box-shadow] duration-300 ease-out hover:shadow-[0_22px_55px_-30px_rgba(2,6,23,0.16)] ${
+      className={`group relative min-w-0 overflow-hidden rounded-2xl border border-slate-200 p-4 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] transition-[background-color,box-shadow] duration-300 ease-out hover:shadow-[0_22px_55px_-30px_rgba(2,6,23,0.16)] sm:p-6 ${
         tone === "white" ? "bg-white" : "bg-[#f8fafc]"
       }`}
     >
@@ -34,29 +34,25 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
         />
       </div>
 
-      <div className="relative min-h-[17rem] sm:min-h-[15.5rem]">
-        <BikeCategoryImageCarousel
-          images={cat.images}
-          title={cat.title}
-          onCardToneChange={setTone}
-        />
-
-        <div className="relative z-10 max-w-[min(100%,22rem)] sm:max-w-[58%]">
+      <div className="relative flex min-w-0 flex-col-reverse gap-5 md:flex-row md:items-start md:gap-5 lg:gap-6">
+        <div className="relative z-10 min-w-0 flex-1 basis-0">
           <div>
             <p className="text-xs font-semibold tracking-[0.12em] text-[var(--brand-blue)]">
               {cat.id.toUpperCase()}
             </p>
-            <h3 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-slate-950">
+            <h3 className="mt-2 text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">
               {cat.title}
             </h3>
           </div>
 
-          <p className="mt-4 text-slate-600 leading-relaxed">{cat.description}</p>
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:mt-4 sm:text-base">
+            {cat.description}
+          </p>
 
           <ul className="mt-4 space-y-2">
             {cat.bullets.map((b) => (
-              <li key={b} className="flex items-center gap-2 text-sm text-slate-700">
-                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-slate-200">
+              <li key={b} className="flex items-start gap-2 text-sm text-slate-700">
+                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-slate-200">
                   <svg
                     viewBox="0 0 20 20"
                     aria-hidden="true"
@@ -70,15 +66,15 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
                     />
                   </svg>
                 </span>
-                <span>{b}</span>
+                <span className="min-w-0 leading-snug">{b}</span>
               </li>
             ))}
           </ul>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
             <ButtonLink
               href="#booking-preview"
-              className="min-w-[10.5rem] gap-2 focus-visible:ring-offset-white"
+              className="w-full justify-center gap-2 sm:w-auto sm:min-w-[10.5rem] focus-visible:ring-offset-white"
             >
               <BookCtaIcon />
               Book {cat.id}
@@ -86,12 +82,18 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
             <ButtonLink
               href="#services"
               variant="secondary"
-              className="min-w-[10.5rem] border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50 focus-visible:ring-offset-white"
+              className="w-full justify-center border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[10.5rem] focus-visible:ring-offset-white"
             >
               See benefits
             </ButtonLink>
           </div>
         </div>
+
+        <BikeCategoryImageCarousel
+          images={cat.images}
+          title={cat.title}
+          onCardToneChange={setTone}
+        />
       </div>
     </div>
   );

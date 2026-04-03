@@ -75,7 +75,18 @@ export function BikeCategoryImageCarousel({
 
   return (
     <div
-      className="absolute -right-2 bottom-0 top-0 z-0 w-[min(100%,17rem)] sm:-right-4 sm:w-[min(100%,20rem)]"
+      className={[
+        "relative z-0 shrink-0",
+        /* Stacked / narrow: full-width strip */
+        "mx-auto h-44 w-full max-w-[min(100%,18rem)] sm:h-52 sm:max-w-[min(100%,22rem)]",
+        /*
+         * Side-by-side with copy (flex row on card): percentage + max cap so narrow grid
+         * columns and wide columns both get a predictable rail — never overlaps text.
+         */
+        "md:mx-0 md:h-56 md:w-[min(42%,13.75rem)] md:max-w-[13.75rem]",
+        "lg:h-60 lg:w-[min(40%,15rem)] lg:max-w-[15rem]",
+        "xl:h-[15.5rem] xl:w-[min(38%,17.5rem)] xl:max-w-[17.5rem]",
+      ].join(" ")}
       role="region"
       aria-roledescription="carousel"
       aria-label={`${title} — photo gallery`}
@@ -99,8 +110,8 @@ export function BikeCategoryImageCarousel({
               src={bikeImageSrc(file)}
               alt={`${title} — ${file.replace(/\.[^.]+$/, "")}`}
               fill
-              sizes="(min-width: 768px) 320px, 272px"
-              className="object-contain object-right object-bottom"
+              sizes="(min-width: 1280px) 280px, (min-width: 1024px) 240px, (min-width: 768px) 200px, (min-width: 640px) 352px, 288px"
+              className="object-contain object-bottom md:object-right md:object-bottom"
               priority={i === 0}
             />
           </div>
@@ -109,7 +120,7 @@ export function BikeCategoryImageCarousel({
 
       {n > 1 && (
         <div
-          className="pointer-events-auto absolute bottom-1 right-0 z-10 flex items-center gap-0.5 sm:bottom-2"
+          className="pointer-events-auto absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-0.5 md:left-auto md:right-1.5 md:translate-x-0"
           role="group"
           aria-label={`${title} photos`}
         >

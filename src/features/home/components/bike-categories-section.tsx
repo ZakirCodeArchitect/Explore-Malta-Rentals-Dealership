@@ -29,7 +29,7 @@ export function BikeCategoriesSection() {
             tone="light"
           />
 
-          <div className="mt-6 grid gap-5 sm:mt-8 md:grid-cols-2">
+          <div className="mt-6 grid min-w-0 gap-5 sm:mt-8 md:grid-cols-2">
             {bikeCategories.map((cat) => (
               <BikeCategoryCard key={cat.id} cat={cat} />
             ))}
