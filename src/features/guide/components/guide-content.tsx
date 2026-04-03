@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { MapPin } from "lucide-react";
 
 import { Container } from "@/components/ui/container";
 import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-underlined-text";
@@ -8,6 +9,15 @@ import { SectionHeader } from "@/features/home/components/section-header";
 const TOURIST_GUIDE_MAP_SRC = "/guide%20map.png";
 const MALTA_BACKDROP_SRC = "/malta.png";
 
+function isHttpUrl(value: string) {
+  try {
+    const u = new URL(value.trim());
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function GuideContent({
   location,
   address,
@@ -15,8 +25,14 @@ export function GuideContent({
   location: string;
   address: string;
 }>) {
-  const mapQuery = encodeURIComponent(location);
+  const mapsPageUrl = isHttpUrl(location) ? location.trim() : undefined;
+  const embedQuery = mapsPageUrl ? address : location;
+  const mapQuery = encodeURIComponent(embedQuery);
   const mapEmbedSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
+  const locationTitle = mapsPageUrl ? address : location;
+  const openMapsHref =
+    mapsPageUrl ??
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
 
   return (
     <>
@@ -55,18 +71,34 @@ export function GuideContent({
               <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm ring-1 ring-slate-950/[0.04]">
                 <div className="grid gap-0 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
                   <iframe
-                    title={`Map location for ${location}`}
+                    title={`Map location for ${embedQuery}`}
                     src={mapEmbedSrc}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     className="h-[min(23rem,56svh)] w-full border-0 md:h-[min(28rem,62svh)]"
                   />
                   <div className="flex flex-col justify-center border-t border-slate-200/80 bg-slate-50/80 px-5 py-5 md:border-t-0 md:border-l">
-                    <p className="text-xs font-semibold tracking-wide text-[var(--brand-orange)]">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[var(--brand-orange)]">
+                      <MapPin
+                        className="size-3.5 shrink-0 stroke-[2.25]"
+                        aria-hidden
+                      />
                       Current location
                     </p>
-                    <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-slate-950">{location}</h3>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">{address}</p>
+                    <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-slate-950">
+                      {locationTitle}
+                    </h3>
+                    {mapsPageUrl ? null : (
+                      <p className="mt-3 text-sm leading-6 text-slate-600">{address}</p>
+                    )}
+                    <a
+                      href={openMapsHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex w-fit text-sm font-semibold text-[var(--brand-blue)] underline decoration-[var(--brand-blue)]/35 underline-offset-4 hover:decoration-[var(--brand-blue)]"
+                    >
+                      Open in Google Maps
+                    </a>
                   </div>
                 </div>
               </div>
