@@ -6,24 +6,17 @@ import { HighlightedServicesSection } from "@/features/home/components/highlight
 import { QuickBookingCtaSection } from "@/features/home/components/quick-booking-cta-section";
 import { ContactSection } from "@/features/home/components/contact-section";
 import { FaqSection } from "@/features/home/components/faq-section";
-import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
-import { Footer } from "@/features/home/components/footer";
-
 export default function Home() {
   return (
-    <>
-      <main className="flex flex-1 flex-col">
-        <VideoHero />
-        <AboutBusinessSection />
-        <BikeCategoriesSection />
-        <TestimonialsSection />
-        <HighlightedServicesSection />
-        <FaqSection />
-        <QuickBookingCtaSection />
-        <ContactSection />
-      </main>
-      <Footer />
-      <WhatsAppFloatingButton />
-    </>
+    <main className="flex flex-1 flex-col">
+      <VideoHero />
+      <AboutBusinessSection />
+      <BikeCategoriesSection />
+      <TestimonialsSection />
+      <HighlightedServicesSection />
+      <FaqSection />
+      <QuickBookingCtaSection />
+      <ContactSection />
+    </main>
   );
 }

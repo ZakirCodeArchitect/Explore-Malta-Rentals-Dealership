@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 
 import { getEnvValue } from "@/components/footer/footer-utils";
 import { TourContent } from "@/features/tours/components/tour-content";
-import { Footer } from "@/features/home/components/footer";
-import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
 
 export const metadata: Metadata = {
   title: "Tours",
@@ -18,12 +16,8 @@ export default function ToursPage() {
   const contact = { companyName };
 
   return (
-    <>
-      <main className="flex flex-1 flex-col">
-        <TourContent contact={contact} />
-      </main>
-      <Footer />
-      <WhatsAppFloatingButton />
-    </>
+    <main className="flex flex-1 flex-col">
+      <TourContent contact={contact} />
+    </main>
   );
 }

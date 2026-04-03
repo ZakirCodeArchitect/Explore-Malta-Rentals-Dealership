@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-day-picker/style.css";
 
 :root {
   --background: #f5fbff;
@@ -52,6 +53,16 @@ a {
 ::selection {
   background: color-mix(in srgb, var(--brand-orange) 45%, white);
   color: #0f2233;
+}
+
+/* react-day-picker — align with brand */
+.rdp-root {
+  --rdp-accent-color: var(--brand-orange);
+  --rdp-accent-background-color: color-mix(in srgb, var(--brand-orange) 18%, white);
+  --rdp-range_middle-background-color: color-mix(in srgb, var(--brand-orange) 12%, white);
+  --rdp-range_start-background-color: var(--brand-orange);
+  --rdp-range_end-background-color: var(--brand-orange);
+  font-family: inherit;
 }
 
 /* Testimonials: seamless horizontal loop (track is two identical halves) */

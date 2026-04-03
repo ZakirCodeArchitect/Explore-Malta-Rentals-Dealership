@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { SiteNavbar } from "@/components/site-navbar";
+import { Footer } from "@/features/home/components/footer";
+import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -34,6 +36,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-[var(--background)] font-sans text-[var(--foreground)]">
         <SiteNavbar />
         {children}
+        <Footer />
+        <WhatsAppFloatingButton />
       </body>
     </html>
   );

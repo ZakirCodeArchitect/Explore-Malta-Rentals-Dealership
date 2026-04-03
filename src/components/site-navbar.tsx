@@ -11,6 +11,7 @@ const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/booking", label: "Booking" },
   { href: "/vehicles", label: "Vehicles" },
   { href: "/about", label: "About us" },
   { href: "/guide", label: "Guide" },
@@ -102,7 +103,7 @@ export function SiteNavbar() {
               </details>
 
               <Link
-                href="/#booking-preview"
+                href="/booking"
                 className={joinClasses(
                   "inline-flex min-h-8 items-center justify-center rounded-full px-3.5 py-1.5 text-sm font-semibold tracking-[-0.03em] text-white sm:min-h-9 sm:px-4 sm:py-2",
                   "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
@@ -110,7 +111,7 @@ export function SiteNavbar() {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
                 )}
               >
-                book us
+                Book now
               </Link>
             </div>
           </div>
