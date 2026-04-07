@@ -36,14 +36,9 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
 
       <div className="relative flex min-w-0 flex-col-reverse gap-5 md:flex-row md:items-start md:gap-5 lg:gap-6">
         <div className="relative z-10 min-w-0 flex-1 basis-0">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.12em] text-[var(--brand-blue)]">
-              {cat.id.toUpperCase()}
-            </p>
-            <h3 className="mt-2 text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">
-              {cat.title}
-            </h3>
-          </div>
+          <h3 className="text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">
+            {cat.title}
+          </h3>
 
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:mt-4 sm:text-base">
             {cat.description}
