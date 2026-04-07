@@ -1,11 +1,5 @@
 import { Euro } from "lucide-react";
-
-const MOTORCYCLE_SCOOTER_RATES = [
-  { label: "1 day", price: "€25", suffix: "/ day" },
-  { label: "2 days", price: "€18", suffix: "/ day" },
-  { label: "3 days – 3 weeks", price: "€15", suffix: "/ day" },
-  { label: "3 weeks or more", price: "€10", suffix: "/ day" },
-] as const;
+import { INDICATIVE_MOTORCYCLE_SCOOTER_TIERS } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -40,19 +34,17 @@ export function IndicativeDailyRatesCard({
         </p>
       </div>
       <dl className="grid gap-px bg-slate-200/80 sm:grid-cols-2">
-        {MOTORCYCLE_SCOOTER_RATES.map((row) => (
+        {INDICATIVE_MOTORCYCLE_SCOOTER_TIERS.map((tier) => (
           <div
-            key={row.label}
+            key={tier.cardLabel}
             className="flex items-baseline justify-between gap-4 bg-white px-6 py-3.5 sm:px-7 sm:py-4"
           >
-            <dt className="text-sm font-medium text-slate-800">{row.label}</dt>
+            <dt className="text-sm font-medium text-slate-800">{tier.cardLabel}</dt>
             <dd className="shrink-0 text-right text-sm tabular-nums">
               <span className="font-semibold text-[var(--brand-blue)]">
-                {row.price}
+                €{tier.dailyRateEur}
               </span>{" "}
-              <span className="text-xs font-normal text-slate-500">
-                {row.suffix}
-              </span>
+              <span className="text-xs font-normal text-slate-500">/ day</span>
             </dd>
           </div>
         ))}

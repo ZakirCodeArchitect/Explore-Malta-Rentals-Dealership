@@ -25,7 +25,10 @@ import {
 } from "@/features/booking/lib/booking-schema";
 import { TimeSlotSelect } from "@/features/booking/components/time-slot-select";
 import { buildVehiclesSearchUrl } from "@/features/booking/lib/build-vehicles-url";
-import { vehicles } from "@/features/vehicles/data/vehicles";
+import {
+  getIndicativeMotorcycleScooterDailyRateEur,
+  getIndicativeMotorcycleScooterTripTotalEur,
+} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 
 const inputShell =
   "flex w-full min-h-[3rem] items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
@@ -45,11 +48,6 @@ export function BookingSearchForm() {
   const [calOpen, setCalOpen] = useState(false);
   const [calendarMonths, setCalendarMonths] = useState(1);
   const minFrom = useMemo(() => startOfDay(new Date()), []);
-
-  const minDaily = useMemo(
-    () => Math.min(...vehicles.map((v) => v.pricePerDay)),
-    [],
-  );
 
   const { pickupDate: defPu, dropoffDate: defDo } = defaultDates();
   const defaultPickupTime = nextRoundedSlot(90);
@@ -107,6 +105,11 @@ export function BookingSearchForm() {
       parse(pickupDate, "yyyy-MM-dd", new Date()),
     ),
   );
+
+  const indicativeDailyEur =
+    getIndicativeMotorcycleScooterDailyRateEur(durationDays);
+  const indicativeTripTotalEur =
+    getIndicativeMotorcycleScooterTripTotalEur(durationDays);
 
   const pickupLabel =
     pickupId === CUSTOM_LOCATION_ID
@@ -370,7 +373,10 @@ export function BookingSearchForm() {
             {differentDropoff ? ` · Drop-off: ${dropLabel}` : ""}
           </p>
           <p className="mt-0.5 text-xs text-slate-600">
-            Indicative fleet rates from €{minDaily} / day · Final price depends on vehicle and add-ons.
+            Indicative motorcycles/scooters total ~€{indicativeTripTotalEur}{" "}
+            (€{indicativeDailyEur}/day × {durationDays}{" "}
+            {durationDays === 1 ? "day" : "days"}) · Final price depends on
+            vehicle and add-ons.
           </p>
         </div>
         <button
