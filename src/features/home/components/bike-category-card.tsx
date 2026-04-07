@@ -68,7 +68,7 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
 
           <div className="mt-6 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
             <ButtonLink
-              href="#booking-preview"
+              href="/booking"
               className="w-full justify-center gap-2 sm:w-auto sm:min-w-[10.5rem] focus-visible:ring-offset-white"
             >
               <BookCtaIcon />
