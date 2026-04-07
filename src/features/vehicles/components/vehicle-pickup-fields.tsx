@@ -5,15 +5,16 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { type Dayjs } from "dayjs";
 import AsyncSelect from "react-select/async";
 import type { GroupBase, StylesConfig } from "react-select";
+import { MapPin } from "lucide-react";
 import {
   type BookingOption,
   locationOptions,
 } from "@/features/home/data/hero-booking-options";
 import { loadMaltaLocationOptions } from "@/features/vehicles/lib/malta-pickup-location";
 
-/** Shared shell for all vehicle filter controls so boxes match size and alignment. */
+/** Shared shell for vehicle filter controls — matches the trip-date filter trigger styling. */
 export const vehicleFilterControlShellClass =
-  "mt-2 flex w-full min-w-0 min-h-[2.625rem] items-center rounded-sm border border-slate-200 bg-white px-3 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.25)]";
+  "mt-2 flex w-full min-w-0 min-h-[2.625rem] items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.25)] transition hover:border-slate-300 focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/40 focus-within:ring-offset-0";
 
 const fieldWrapClass = vehicleFilterControlShellClass;
 
@@ -31,8 +32,9 @@ export const vehicleFilterReactSelectStyles: StylesConfig<
     ...base,
     border: "none",
     boxShadow: "none",
-    minHeight: 36,
+    minHeight: 42,
     minWidth: 0,
+    flex: 1,
     width: "100%",
     alignItems: "center",
     background: "transparent",
@@ -42,7 +44,7 @@ export const vehicleFilterReactSelectStyles: StylesConfig<
   singleValue: (base) => ({
     ...base,
     margin: 0,
-    color: "#0f172a",
+    color: "#1e293b",
     fontWeight: 600,
     fontSize: "0.875rem",
     lineHeight: 1.25,
@@ -60,7 +62,7 @@ export const vehicleFilterReactSelectStyles: StylesConfig<
   dropdownIndicator: (base) => ({
     ...base,
     color: "#64748b",
-    padding: 2,
+    padding: "0 0 0 4px",
     ":hover": { color: "#334155" },
   }),
   menu: (base) => ({
@@ -111,11 +113,15 @@ export function VehiclePickupLocationField({
   const defaultLocationOptions = useMemo(() => [...locationOptions], []);
 
   return (
-    <label className="flex min-w-0 w-full flex-col text-sm font-semibold text-slate-700">
+    <label className="flex min-w-0 w-full flex-col text-xs font-semibold text-slate-500">
       Pick-up location
       <div className={fieldWrapClass}>
+        <MapPin
+          className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+          aria-hidden
+        />
         <AsyncSelect
-          className="w-full min-w-0"
+          className="min-w-0 flex-1"
           inputId="vehicles-pickup-location"
           instanceId="vehicles-pickup-location"
           value={pickupLocation}
@@ -160,7 +166,7 @@ export function VehiclePickupDateField({
   };
 
   return (
-    <label className="flex min-w-0 w-full flex-col text-sm font-semibold text-slate-700">
+    <label className="flex min-w-0 w-full flex-col text-xs font-semibold text-slate-500">
       Pick-up date
       <div className={fieldWrapClass}>
         <DatePicker

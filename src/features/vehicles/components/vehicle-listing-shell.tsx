@@ -7,6 +7,8 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { addDays } from "date-fns";
+import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
@@ -23,6 +25,7 @@ import type {
   VehicleType,
 } from "@/features/vehicles/data/vehicles";
 import {
+  clampTripEndDate,
   formatPickupDateParam,
   parseColorSearchParam,
   parsePickupDateParam,
@@ -38,6 +41,7 @@ import {
 /** Tailwind `lg` — sidebar rail visible; hero omits seats/color there. */
 const LG_MIN_PX = 1024;
 const DEFAULT_PICKUP_DATE = new Date(2026, 5, 12);
+const DEFAULT_RETURN_DATE = addDays(DEFAULT_PICKUP_DATE, TRIP_MIN_SPAN_DAYS);
 
 function subscribeMinWidthLg(onChange: () => void) {
   const mq = window.matchMedia(`(min-width: ${LG_MIN_PX}px)`);
@@ -79,6 +83,10 @@ export function VehicleListingShell({
   const seatsParam = searchParams.get("seats");
   const locationParam = searchParams.get("location");
   const dateParam = searchParams.get("date");
+  const returnDateParam = searchParams.get("returnDate");
+  /** From booking form `buildVehiclesSearchUrl` — fallback when `date` / `returnDate` absent. */
+  const pickupDateParam = searchParams.get("pickupDate");
+  const dropoffDateParam = searchParams.get("dropoffDate");
   const hotelDeliveryParam = searchParams.get("hotelDelivery");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
@@ -86,7 +94,16 @@ export function VehicleListingShell({
     parseTransmissionSearchParam(transmissionParam);
   const initialColor = parseColorSearchParam(colorParam);
   const initialSeats = parseSeatsSearchParam(seatsParam);
-  const initialDate = parsePickupDateParam(dateParam) ?? DEFAULT_PICKUP_DATE;
+  const initialPickup =
+    parsePickupDateParam(dateParam) ??
+    parsePickupDateParam(pickupDateParam) ??
+    DEFAULT_PICKUP_DATE;
+  const parsedReturn =
+    parsePickupDateParam(returnDateParam) ??
+    parsePickupDateParam(dropoffDateParam);
+  const initialReturn = parsedReturn
+    ? clampTripEndDate(initialPickup, parsedReturn)
+    : addDays(initialPickup, TRIP_MIN_SPAN_DAYS);
   const initialLocation: BookingOption | null = locationParam
     ? { value: `url:${locationParam}`, label: locationParam }
     : null;
@@ -94,7 +111,8 @@ export function VehicleListingShell({
   const [pickupLocation, setPickupLocation] = useState<BookingOption | null>(
     initialLocation,
   );
-  const [pickupDate, setPickupDate] = useState<Date>(initialDate);
+  const [pickupDate, setPickupDate] = useState<Date>(initialPickup);
+  const [returnDate, setReturnDate] = useState<Date>(initialReturn);
   const [selectedType, setSelectedType] =
     useState<VehicleType | "All">(initialType);
   const [selectedTransmission, setSelectedTransmission] =
@@ -168,11 +186,24 @@ export function VehicleListingShell({
   }, [locationParam]);
 
   useEffect(() => {
-    const parsed = parsePickupDateParam(dateParam);
-    if (parsed) {
-      setPickupDate(parsed);
+    const pu =
+      parsePickupDateParam(dateParam) ??
+      parsePickupDateParam(pickupDateParam);
+    const ret =
+      parsePickupDateParam(returnDateParam) ??
+      parsePickupDateParam(dropoffDateParam);
+    if (pu) {
+      setPickupDate(pu);
+      setReturnDate(
+        ret ? clampTripEndDate(pu, ret) : addDays(pu, TRIP_MIN_SPAN_DAYS),
+      );
     }
-  }, [dateParam]);
+  }, [
+    dateParam,
+    returnDateParam,
+    pickupDateParam,
+    dropoffDateParam,
+  ]);
 
   useEffect(() => {
     setHotelDelivery(hotelDeliveryParam === "1");
@@ -185,8 +216,9 @@ export function VehicleListingShell({
     [],
   );
 
-  const handlePickupDateChange = useCallback((date: Date) => {
-    setPickupDate(date);
+  const handleTripDatesChange = useCallback((start: Date, end: Date) => {
+    setPickupDate(start);
+    setReturnDate(end);
   }, []);
 
   const persistListingFilters = useCallback(
@@ -236,6 +268,9 @@ export function VehicleListingShell({
         p.delete("location");
       }
       p.set("date", formatPickupDateParam(pickupDate));
+      p.set("returnDate", formatPickupDateParam(returnDate));
+      p.delete("pickupDate");
+      p.delete("dropoffDate");
       p.delete("returnElsewhere");
       if (hotelDelivery) {
         p.set("hotelDelivery", "1");
@@ -251,6 +286,7 @@ export function VehicleListingShell({
   }, [
     hotelDelivery,
     pickupDate,
+    returnDate,
     pickupLocation,
     replaceQuery,
     selectedColor,
@@ -262,6 +298,7 @@ export function VehicleListingShell({
   const handleClearFilters = useCallback(() => {
     setPickupLocation(null);
     setPickupDate(DEFAULT_PICKUP_DATE);
+    setReturnDate(DEFAULT_RETURN_DATE);
     setHotelDelivery(false);
     setSelectedType("All");
     setAppliedType("All");
@@ -279,6 +316,9 @@ export function VehicleListingShell({
       p.set("seats", seatsFilterToUrlParam("All"));
       p.delete("location");
       p.delete("date");
+      p.delete("returnDate");
+      p.delete("pickupDate");
+      p.delete("dropoffDate");
       p.delete("hotelDelivery");
       p.delete("returnElsewhere");
     });
@@ -327,8 +367,9 @@ export function VehicleListingShell({
     <VehicleFilters
       pickupLocation={pickupLocation}
       onPickupLocationChange={handlePickupLocationChange}
-      pickupDate={pickupDate}
-      onPickupDateChange={handlePickupDateChange}
+      tripStart={pickupDate}
+      tripEnd={returnDate}
+      onTripDatesChange={handleTripDatesChange}
       selectedType={selectedType}
       selectedTransmission={selectedTransmission}
       onTypeChange={(v) => persistListingFilters({ type: v })}
@@ -445,10 +486,18 @@ export function VehicleListingShell({
 
     const resultsBlock = (
       <Container className="pb-16 pt-8">
-        <div className="mb-10 max-w-2xl">
-          <IndicativeDailyRatesCard />
-        </div>
         {results}
+        <div className="mt-10 w-full border-t border-slate-200/80 pt-10">
+          <section aria-label="Indicative daily rates">
+            <p className="max-w-2xl text-base leading-relaxed text-slate-600">
+              Ballpark per-calendar-day amounts for motorcycles and scooters before
+              extras, use these as a guide while you search.
+            </p>
+            <div className="mt-8 w-full">
+              <IndicativeDailyRatesCard />
+            </div>
+          </section>
+        </div>
       </Container>
     );
 

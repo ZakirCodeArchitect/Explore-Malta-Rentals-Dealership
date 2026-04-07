@@ -15,7 +15,7 @@ export function IndicativeDailyRatesCard({
   return (
     <div
       className={joinClasses(
-        "overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm ring-1 ring-slate-950/[0.04]",
+        "w-full overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm ring-1 ring-slate-950/[0.04]",
         className,
       )}
     >

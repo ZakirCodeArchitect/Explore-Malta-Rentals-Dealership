@@ -2,15 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs, { type Dayjs } from "dayjs";
+import { addDays } from "date-fns";
 import AsyncSelect from "react-select/async";
+import { Car, MapPin } from "lucide-react";
 import Select, {
   components as selectComponents,
   type DropdownIndicatorProps,
-  type StylesConfig,
 } from "react-select";
 import {
   type BookingOption,
@@ -18,8 +15,16 @@ import {
   vehicleTypeOptions,
 } from "@/features/home/data/hero-booking-options";
 import { SITE_SURFACE_RADIUS } from "@/components/site-shell";
+import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
+import {
+  vehicleFilterControlShellClass,
+  vehicleFilterReactSelectStyles,
+} from "@/features/vehicles/components/vehicle-pickup-fields";
+import { TripDateSelector } from "@/features/vehicles/components/trip-date-selector";
 import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-params";
 import { loadMaltaLocationOptions } from "@/features/vehicles/lib/malta-pickup-location";
+
+const DEFAULT_HERO_PICKUP_DATE = new Date(2026, 5, 12);
 
 function Toggle({
   label,
@@ -53,32 +58,21 @@ function Toggle({
   );
 }
 
-function ChevronDownIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-4 w-4 text-slate-500"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function VehicleTypeDropdownIndicator(
+function HeroFilterDropdownIndicator(
   props: DropdownIndicatorProps<BookingOption, false>,
 ) {
   return (
     <selectComponents.DropdownIndicator {...props}>
-      <ChevronDownIcon />
+      <span className="shrink-0 text-xs font-semibold text-slate-500">
+        Change
+      </span>
     </selectComponents.DropdownIndicator>
   );
 }
+
+const heroSelectComponents = {
+  DropdownIndicator: HeroFilterDropdownIndicator,
+};
 
 export function HeroBookingPanel() {
   const router = useRouter();
@@ -89,83 +83,16 @@ export function HeroBookingPanel() {
   const [vehicleType, setVehicleType] = useState<BookingOption>(
     vehicleTypeOptions[0]!,
   );
-  const [pickupDate, setPickupDate] = useState<Date>(new Date(2026, 5, 12));
+  const [pickupDate, setPickupDate] = useState<Date>(DEFAULT_HERO_PICKUP_DATE);
+  const [returnDate, setReturnDate] = useState<Date>(() =>
+    addDays(DEFAULT_HERO_PICKUP_DATE, TRIP_MIN_SPAN_DAYS),
+  );
   const [returnElsewhere, setReturnElsewhere] = useState(false);
   const [hotelDelivery, setHotelDelivery] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const selectStyles: StylesConfig<BookingOption, false> = {
-    control: (base) => ({
-      ...base,
-      border: "none",
-      boxShadow: "none",
-      minHeight: 28,
-      background: "transparent",
-      cursor: "pointer",
-    }),
-    valueContainer: (base) => ({
-      ...base,
-      padding: 0,
-    }),
-    singleValue: (base) => ({
-      ...base,
-      margin: 0,
-      color: "#0f172a",
-      fontWeight: 600,
-      fontSize: "0.95rem",
-      letterSpacing: "-0.01em",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      margin: 0,
-      color: "#64748b",
-      fontWeight: 600,
-      fontSize: "0.95rem",
-      letterSpacing: "-0.01em",
-    }),
-    indicatorsContainer: (base) => ({
-      ...base,
-      gap: 2,
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    dropdownIndicator: (base) => ({
-      ...base,
-      color: "#64748b",
-      padding: 2,
-      ":hover": { color: "#334155" },
-    }),
-    menu: (base) => ({
-      ...base,
-      borderRadius: 8,
-      border: "1px solid rgba(58,124,165,0.28)",
-      boxShadow: "0 20px 44px -25px rgba(15, 23, 42, 0.45)",
-      overflow: "hidden",
-      zIndex: 9999,
-      marginTop: 8,
-    }),
-    menuList: (base) => ({
-      ...base,
-      maxHeight: 300,
-      paddingTop: 4,
-      paddingBottom: 4,
-    }),
-    option: (base, state) => ({
-      ...base,
-      fontSize: "0.92rem",
-      background: state.isFocused ? "rgba(58,124,165,0.1)" : "#ffffff",
-      color: "#0f172a",
-      cursor: "pointer",
-    }),
-    menuPortal: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-  };
 
   const fieldClassName =
     "relative min-w-0 flex min-h-[5.25rem] flex-col justify-between rounded-lg bg-[var(--hero-field-bg)] px-4 py-3.5 text-left ring-1 ring-slate-200/40 sm:min-h-[5.4rem]";
@@ -175,12 +102,10 @@ export function HeroBookingPanel() {
     [],
   );
 
-  const onPickupDateChange = (value: Dayjs | null) => {
-    if (!value) {
-      return;
-    }
-    setPickupDate(value.toDate());
-  };
+  const handleTripDatesChange = useCallback((start: Date, end: Date) => {
+    setPickupDate(start);
+    setReturnDate(end);
+  }, []);
 
   const handleSearch = useCallback(() => {
     const params = new URLSearchParams();
@@ -189,12 +114,14 @@ export function HeroBookingPanel() {
       params.set("location", pickupLocation.label);
     }
     params.set("date", formatPickupDateParam(pickupDate));
+    params.set("returnDate", formatPickupDateParam(returnDate));
     params.set("returnElsewhere", returnElsewhere ? "1" : "0");
     params.set("hotelDelivery", hotelDelivery ? "1" : "0");
     router.push(`/vehicles?${params.toString()}`);
   }, [
     hotelDelivery,
     pickupDate,
+    returnDate,
     pickupLocation,
     returnElsewhere,
     router,
@@ -220,91 +147,79 @@ export function HeroBookingPanel() {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div id="booking-preview" className={panelShellClass}>
+    <div id="booking-preview" className={panelShellClass}>
       <div className="grid gap-3 sm:gap-3.5 lg:grid-cols-4">
         <div className={`${fieldClassName} lg:col-span-2`}>
-          <span className="text-xs font-medium text-slate-500">Pick-up location</span>
-          <AsyncSelect
-            inputId="pickup-location"
-            instanceId="pickup-location"
-            value={pickupLocation}
-            defaultOptions={maltaDefaultLocationOptions}
-            loadOptions={loadMaltaLocationOptions}
-            isSearchable
-            onChange={(option) => setPickupLocation(option)}
-            styles={selectStyles}
-            menuPortalTarget={typeof window !== "undefined" ? document.body : null}
-            menuPosition="fixed"
-            placeholder="enter your location"
-            noOptionsMessage={({ inputValue }) => {
-              const q = inputValue.trim();
-              if (!q) return null;
-              return `No locations match "${q}"`;
-            }}
-            loadingMessage={() => "Searching locations..."}
-            cacheOptions
-            aria-label="Pick-up location"
-          />
+          <span className="text-xs font-semibold text-slate-500">
+            Pick-up location
+          </span>
+          <div className={vehicleFilterControlShellClass}>
+            <MapPin
+              className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+              aria-hidden
+            />
+            <AsyncSelect
+              inputId="pickup-location"
+              instanceId="pickup-location"
+              className="min-w-0 flex-1"
+              value={pickupLocation}
+              defaultOptions={maltaDefaultLocationOptions}
+              loadOptions={loadMaltaLocationOptions}
+              isSearchable
+              onChange={(option) => setPickupLocation(option)}
+              styles={vehicleFilterReactSelectStyles}
+              components={heroSelectComponents}
+              menuPortalTarget={
+                typeof window !== "undefined" ? document.body : null
+              }
+              menuPosition="fixed"
+              placeholder="enter your location"
+              noOptionsMessage={({ inputValue }) => {
+                const q = inputValue.trim();
+                if (!q) return null;
+                return `No locations match "${q}"`;
+              }}
+              loadingMessage={() => "Searching locations..."}
+              cacheOptions
+              aria-label="Pick-up location"
+            />
+          </div>
         </div>
 
         <div className={`${fieldClassName} lg:col-span-1`}>
-          <span className="text-xs font-medium text-slate-500">Vehicle type</span>
-          <Select<BookingOption, false>
-            inputId="vehicle-type"
-            instanceId="vehicle-type"
-            value={vehicleType}
-            onChange={(option) => option && setVehicleType(option)}
-            options={[...vehicleTypeOptions]}
-            isSearchable={false}
-            styles={selectStyles}
-            menuPortalTarget={typeof window !== "undefined" ? document.body : null}
-            menuPosition="fixed"
-            components={{ DropdownIndicator: VehicleTypeDropdownIndicator }}
-            aria-label="Vehicle type"
-          />
+          <span className="text-xs font-semibold text-slate-500">
+            Vehicle type
+          </span>
+          <div className={vehicleFilterControlShellClass}>
+            <Car
+              className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+              aria-hidden
+            />
+            <Select<BookingOption, false>
+              inputId="vehicle-type"
+              instanceId="vehicle-type"
+              className="min-w-0 flex-1"
+              value={vehicleType}
+              onChange={(option) => option && setVehicleType(option)}
+              options={[...vehicleTypeOptions]}
+              isSearchable={false}
+              styles={vehicleFilterReactSelectStyles}
+              components={heroSelectComponents}
+              menuPortalTarget={
+                typeof window !== "undefined" ? document.body : null
+              }
+              menuPosition="fixed"
+              aria-label="Vehicle type"
+            />
+          </div>
         </div>
 
         <div className={`${fieldClassName} lg:col-span-1`}>
-          <span className="text-xs font-medium text-slate-500">Pick-up date</span>
-          <DatePicker
-            value={dayjs(pickupDate)}
-            onChange={onPickupDateChange}
-            minDate={dayjs("2026-06-01")}
-            format="DD MMM YYYY"
-            slotProps={{
-              textField: {
-                variant: "standard",
-                InputProps: { disableUnderline: true },
-                sx: {
-                  "& .MuiInputBase-root": {
-                    p: 0,
-                    fontSize: "0.95rem",
-                    fontWeight: 600,
-                    letterSpacing: "-0.01em",
-                    color: "#0f172a",
-                  },
-                  "& .MuiInputBase-input": {
-                    p: 0,
-                    cursor: "pointer",
-                  },
-                  "& .MuiIconButton-root": {
-                    color: "#64748b",
-                    p: 0,
-                  },
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "1.1rem",
-                  },
-                },
-              },
-              desktopPaper: {
-                sx: {
-                  borderRadius: "8px",
-                  border: "1px solid rgba(58,124,165,0.32)",
-                  boxShadow: "0 24px 48px -30px rgba(15,23,42,0.55)",
-                },
-              },
-            }}
+          <TripDateSelector
+            tripStart={pickupDate}
+            tripEnd={returnDate}
+            onRangeChange={handleTripDatesChange}
+            className="flex min-h-0 flex-1 flex-col justify-between"
           />
         </div>
       </div>
@@ -347,7 +262,6 @@ export function HeroBookingPanel() {
           </span>
         </button>
       </div>
-      </div>
-    </LocalizationProvider>
+    </div>
   );
 }

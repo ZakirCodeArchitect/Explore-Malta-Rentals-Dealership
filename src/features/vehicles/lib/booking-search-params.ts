@@ -1,3 +1,8 @@
+import { addDays, differenceInCalendarDays, startOfDay } from "date-fns";
+import {
+  TRIP_MAX_SPAN_DAYS,
+  TRIP_MIN_SPAN_DAYS,
+} from "@/features/booking/lib/booking-schema";
 import type {
   Transmission,
   VehicleColor,
@@ -126,6 +131,16 @@ export function formatPickupDateParam(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+/** Keeps trip end within booking min/max span vs pickup (calendar days). */
+export function clampTripEndDate(pickup: Date, end: Date): Date {
+  const start = startOfDay(pickup);
+  let e = startOfDay(end);
+  const span = differenceInCalendarDays(e, start);
+  if (span < TRIP_MIN_SPAN_DAYS) return addDays(start, TRIP_MIN_SPAN_DAYS);
+  if (span > TRIP_MAX_SPAN_DAYS) return addDays(start, TRIP_MAX_SPAN_DAYS);
+  return e;
 }
 
 export function formatPickupDateLabel(isoDate: string): string | null {

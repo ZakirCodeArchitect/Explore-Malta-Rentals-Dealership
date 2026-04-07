@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { differenceInCalendarDays, startOfDay } from "date-fns";
+import { Car, Gauge, Palette, Users } from "lucide-react";
 import Select, {
   components as selectComponents,
   type DropdownIndicatorProps,
@@ -15,17 +15,22 @@ import type {
   VehicleType,
 } from "@/features/vehicles/data/vehicles";
 import {
-  VehiclePickupDateField,
   VehiclePickupLocationField,
   vehicleFilterControlShellClass,
   vehicleFilterReactSelectStyles,
 } from "@/features/vehicles/components/vehicle-pickup-fields";
+import { TripDateSelector } from "@/features/vehicles/components/trip-date-selector";
+import {
+  getIndicativeMotorcycleScooterDailyRateEur,
+  getIndicativeMotorcycleScooterTripTotalEur,
+} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 
 type VehicleFiltersProps = Readonly<{
   pickupLocation: BookingOption | null;
   onPickupLocationChange: (value: BookingOption | null) => void;
-  pickupDate: Date;
-  onPickupDateChange: (date: Date) => void;
+  tripStart: Date;
+  tripEnd: Date;
+  onTripDatesChange: (start: Date, end: Date) => void;
   selectedType: VehicleType | "All";
   selectedTransmission: Transmission | "All";
   onTypeChange: (value: VehicleType | "All") => void;
@@ -77,18 +82,9 @@ function FilterDropdownIndicator(
 ) {
   return (
     <selectComponents.DropdownIndicator {...props}>
-      <svg
-        viewBox="0 0 20 20"
-        className="h-4 w-4 text-slate-500"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-      >
-        <path d="m6 8 4 4 4-4" />
-      </svg>
+      <span className="shrink-0 text-xs font-semibold text-slate-500">
+        Change
+      </span>
     </selectComponents.DropdownIndicator>
   );
 }
@@ -98,9 +94,9 @@ const filterSelectComponents = {
 };
 
 const filterCellClass =
-  "flex min-w-0 w-full flex-col text-sm font-semibold text-slate-700";
+  "flex min-w-0 w-full flex-col text-xs font-semibold text-slate-500";
 
-const filterShellClass = `${vehicleFilterControlShellClass} focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/40 focus-within:ring-offset-0`;
+const filterShellClass = vehicleFilterControlShellClass;
 
 function VehicleFilterToggle({
   label,
@@ -155,8 +151,9 @@ function VehicleFilterToggle({
 export function VehicleFilters({
   pickupLocation,
   onPickupLocationChange,
-  pickupDate,
-  onPickupDateChange,
+  tripStart,
+  tripEnd,
+  onTripDatesChange,
   selectedType,
   selectedTransmission,
   onTypeChange,
@@ -201,28 +198,49 @@ export function VehicleFilters({
     return "grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4";
   })();
 
+  const durationDays = useMemo(
+    () =>
+      Math.max(
+        1,
+        differenceInCalendarDays(
+          startOfDay(tripEnd),
+          startOfDay(tripStart),
+        ),
+      ),
+    [tripStart, tripEnd],
+  );
+
+  const indicativeDailyEur =
+    getIndicativeMotorcycleScooterDailyRateEur(durationDays);
+  const indicativeTripTotalEur =
+    getIndicativeMotorcycleScooterTripTotalEur(durationDays);
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <section
-        aria-label="Vehicle search"
-        className="sticky top-18 z-20 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
-      >
-        <div className={mainGridClass}>
-          <div className="min-w-0">
-            <VehiclePickupLocationField
-              pickupLocation={pickupLocation}
-              onPickupLocationChange={onPickupLocationChange}
-            />
-          </div>
-          <div className="min-w-0">
-            <VehiclePickupDateField
-              pickupDate={pickupDate}
-              onPickupDateChange={onPickupDateChange}
-            />
-          </div>
+    <section
+      aria-label="Vehicle search"
+      className="sticky top-18 z-20 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
+    >
+      <div className={mainGridClass}>
+        <div className="min-w-0">
+          <VehiclePickupLocationField
+            pickupLocation={pickupLocation}
+            onPickupLocationChange={onPickupLocationChange}
+          />
+        </div>
+        <div className="min-w-0">
+          <TripDateSelector
+            tripStart={tripStart}
+            tripEnd={tripEnd}
+            onRangeChange={onTripDatesChange}
+          />
+        </div>
           <label className={filterCellClass} htmlFor="vehicles-filter-type">
             Type
             <div className={filterShellClass}>
+              <Car
+                className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                aria-hidden
+              />
               <Select<BookingOption, false>
                 inputId="vehicles-filter-type"
                 instanceId="vehicles-filter-type"
@@ -239,7 +257,7 @@ export function VehicleFilters({
                   typeof document !== "undefined" ? document.body : null
                 }
                 menuPosition="fixed"
-                className="w-full min-w-0"
+                className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-type"
               />
             </div>
@@ -251,6 +269,10 @@ export function VehicleFilters({
           >
             Transmission
             <div className={filterShellClass}>
+              <Gauge
+                className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                aria-hidden
+              />
               <Select<BookingOption, false>
                 inputId="vehicles-filter-transmission"
                 instanceId="vehicles-filter-transmission"
@@ -271,7 +293,7 @@ export function VehicleFilters({
                   typeof document !== "undefined" ? document.body : null
                 }
                 menuPosition="fixed"
-                className="w-full min-w-0"
+                className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-transmission"
               />
             </div>
@@ -281,6 +303,10 @@ export function VehicleFilters({
             <label className={filterCellClass} htmlFor="vehicles-filter-seats">
               Seats
               <div className={filterShellClass}>
+                <Users
+                  className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                  aria-hidden
+                />
                 <Select<BookingOption, false>
                   inputId="vehicles-filter-seats"
                   instanceId="vehicles-filter-seats"
@@ -303,7 +329,7 @@ export function VehicleFilters({
                     typeof document !== "undefined" ? document.body : null
                   }
                   menuPosition="fixed"
-                  className="w-full min-w-0"
+                  className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-seats"
                 />
               </div>
@@ -314,6 +340,10 @@ export function VehicleFilters({
             <label className={filterCellClass} htmlFor="vehicles-filter-color">
               Color
               <div className={filterShellClass}>
+                <Palette
+                  className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                  aria-hidden
+                />
                 <Select<BookingOption, false>
                   inputId="vehicles-filter-color"
                   instanceId="vehicles-filter-color"
@@ -334,7 +364,7 @@ export function VehicleFilters({
                     typeof document !== "undefined" ? document.body : null
                   }
                   menuPosition="fixed"
-                  className="w-full min-w-0"
+                  className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-color"
                 />
               </div>
@@ -342,51 +372,64 @@ export function VehicleFilters({
           ) : null}
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-4">
-          <div role="group" aria-label="Booking options" className="min-w-0">
-            <VehicleFilterToggle
-              label="Need hotel delivery"
-              switchId="vehicles-filter-hotel-delivery"
-              checked={hotelDelivery}
-              onCheckedChange={onHotelDeliveryChange}
-            />
+        <div className="mt-4 border-t border-slate-200/80 pt-4">
+          <div className="mb-3 min-w-0">
+            <p className="text-sm font-semibold text-slate-900">
+              {durationDays} day{durationDays === 1 ? "" : "s"}
+              {pickupLocation?.label ? ` · Pickup: ${pickupLocation.label}` : ""}
+            </p>
+            <p className="mt-0.5 text-xs text-slate-600 sm:text-sm">
+              Indicative motorcycles/scooters total ~€{indicativeTripTotalEur}{" "}
+              (€{indicativeDailyEur}/day × {durationDays}{" "}
+              {durationDays === 1 ? "day" : "days"}) · Final price depends on
+              vehicle and add-ons.
+            </p>
           </div>
-          <div className="flex items-center gap-3 sm:gap-4">
-            {onClearFilters ? (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div role="group" aria-label="Booking options" className="min-w-0">
+              <VehicleFilterToggle
+                label="Need hotel delivery"
+                switchId="vehicles-filter-hotel-delivery"
+                checked={hotelDelivery}
+                onCheckedChange={onHotelDeliveryChange}
+              />
+            </div>
+            <div className="flex items-center gap-3 sm:gap-4">
+              {onClearFilters ? (
+                <button
+                  type="button"
+                  onClick={onClearFilters}
+                  className="mr-1 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 sm:mr-2"
+                >
+                  Clear filters
+                </button>
+              ) : null}
               <button
                 type="button"
-                onClick={onClearFilters}
-                className="mr-1 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 sm:mr-2"
+                onClick={onSearch}
+                className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
               >
-                Clear filters
-              </button>
-            ) : null}
-            <button
-              type="button"
-              onClick={onSearch}
-              className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
-            >
-              Search
-              <span
-                aria-hidden="true"
-                className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
-              >
-                <svg
-                  viewBox="0 0 20 20"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                Search
+                <span
+                  aria-hidden="true"
+                  className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
                 >
-                  <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
-                </svg>
-              </span>
-            </button>
+                  <svg
+                    viewBox="0 0 20 20"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
-      </section>
-    </LocalizationProvider>
+    </section>
   );
 }
