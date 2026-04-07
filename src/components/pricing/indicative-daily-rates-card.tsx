@@ -1,3 +1,5 @@
+import { Euro } from "lucide-react";
+
 const MOTORCYCLE_SCOOTER_RATES = [
   { label: "1 day", price: "€25", suffix: "/ day" },
   { label: "2 days", price: "€18", suffix: "/ day" },
@@ -25,7 +27,8 @@ export function IndicativeDailyRatesCard({
     >
       <div className="flex flex-col gap-1 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[#f0f7fc] px-6 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          <h3 className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+            <Euro className="size-3.5 shrink-0 text-slate-500" aria-hidden />
             Indicative daily rates
           </h3>
           <p className="mt-0.5 text-base font-semibold tracking-tight text-slate-800">

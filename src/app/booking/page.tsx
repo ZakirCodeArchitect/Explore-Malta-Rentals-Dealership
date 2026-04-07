@@ -76,9 +76,9 @@ export default function BookingPage() {
             </h2>
             <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-600">
               Ballpark per-calendar-day amounts for motorcycles and scooters before
-              extras — use these as a guide while you search.
+              extras, use these as a guide while you search.
             </p>
-            <div className="mt-8 max-w-2xl">
+            <div className="mt-8 w-full">
               <IndicativeDailyRatesCard />
             </div>
           </div>
