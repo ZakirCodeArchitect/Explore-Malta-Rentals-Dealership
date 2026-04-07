@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { differenceInCalendarDays, isAfter, parse, startOfDay } from "date-fns";
-import { CUSTOM_LOCATION_ID } from "@/features/booking/data/locations";
+import { needsLocationDetailField } from "@/features/booking/data/locations";
 
 /** Calendar-day span between pickup and drop-off dates (`differenceInCalendarDays`). */
 export const TRIP_MIN_SPAN_DAYS = 1;
@@ -19,12 +19,12 @@ export const bookingFormSchema = z
     dropoffTime: z.string().min(1, "Select drop-off time"),
   })
   .superRefine((data, ctx) => {
-    if (data.pickupLocationId === CUSTOM_LOCATION_ID) {
+    if (needsLocationDetailField(data.pickupLocationId)) {
       const t = data.pickupCustom?.trim() ?? "";
       if (t.length < 3) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Enter your pickup address or hotel name",
+          message: "Enter your hotel, address, or delivery details",
           path: ["pickupCustom"],
         });
       }
@@ -37,12 +37,12 @@ export const bookingFormSchema = z
           path: ["dropoffLocationId"],
         });
       }
-      if (data.dropoffLocationId === CUSTOM_LOCATION_ID) {
+      if (data.dropoffLocationId && needsLocationDetailField(data.dropoffLocationId)) {
         const t = data.dropoffCustom?.trim() ?? "";
         if (t.length < 3) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Enter your drop-off address",
+            message: "Enter your drop-off hotel, address, or delivery details",
             path: ["dropoffCustom"],
           });
         }

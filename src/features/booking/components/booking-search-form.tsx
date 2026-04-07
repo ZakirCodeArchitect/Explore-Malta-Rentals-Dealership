@@ -15,7 +15,12 @@ import {
 } from "date-fns";
 import { CalendarDays, Loader2, MapPin } from "lucide-react";
 import { BookingLocationSelect } from "@/features/booking/components/booking-location-select";
-import { CUSTOM_LOCATION_ID, locationLabelById } from "@/features/booking/data/locations";
+import {
+  CUSTOM_LOCATION_ID,
+  HOTEL_DELIVERY_ID,
+  locationLabelById,
+  needsLocationDetailField,
+} from "@/features/booking/data/locations";
 import { nextRoundedSlot } from "@/features/booking/lib/time-slots";
 import {
   bookingFormSchema,
@@ -32,8 +37,6 @@ import {
 
 const inputShell =
   "flex w-full min-h-[3rem] items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
-const selectClass =
-  "w-full cursor-pointer appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none";
 
 function defaultDates() {
   const from = startOfDay(new Date());
@@ -111,14 +114,25 @@ export function BookingSearchForm() {
   const indicativeTripTotalEur =
     getIndicativeMotorcycleScooterTripTotalEur(durationDays);
 
-  const pickupLabel =
-    pickupId === CUSTOM_LOCATION_ID
-      ? watch("pickupCustom")?.trim() || "Custom address"
-      : locationLabelById(pickupId) ?? "—";
+  const pickupLabel = (() => {
+    if (pickupId === CUSTOM_LOCATION_ID) {
+      return watch("pickupCustom")?.trim() || "Custom address";
+    }
+    if (pickupId === HOTEL_DELIVERY_ID) {
+      return watch("pickupCustom")?.trim() || (locationLabelById(pickupId) ?? "—");
+    }
+    return locationLabelById(pickupId) ?? "—";
+  })();
   const dropLabel = differentDropoff
-    ? dropId === CUSTOM_LOCATION_ID
-      ? watch("dropoffCustom")?.trim() || "Custom address"
-      : locationLabelById(dropId ?? "") ?? "—"
+    ? (() => {
+        if (dropId === CUSTOM_LOCATION_ID) {
+          return watch("dropoffCustom")?.trim() || "Custom address";
+        }
+        if (dropId === HOTEL_DELIVERY_ID) {
+          return watch("dropoffCustom")?.trim() || (locationLabelById(dropId ?? "") ?? "—");
+        }
+        return locationLabelById(dropId ?? "") ?? "—";
+      })()
     : pickupLabel;
 
   const onSubmit = async (values: BookingFormValues) => {
@@ -166,10 +180,14 @@ export function BookingSearchForm() {
                 )}
               />
             </div>
-            {pickupId === CUSTOM_LOCATION_ID && (
+            {needsLocationDetailField(pickupId) && (
               <input
                 {...register("pickupCustom")}
-                placeholder="Hotel name, street, area…"
+                placeholder={
+                  pickupId === HOTEL_DELIVERY_ID
+                    ? "Hotel name, address, or delivery instructions…"
+                    : "Street, area, or landmark…"
+                }
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
               />
             )}
@@ -348,10 +366,14 @@ export function BookingSearchForm() {
                   )}
                 />
               </div>
-              {dropId === CUSTOM_LOCATION_ID && (
+              {dropId && needsLocationDetailField(dropId) && (
                 <input
                   {...register("dropoffCustom")}
-                  placeholder="Drop-off address"
+                  placeholder={
+                    dropId === HOTEL_DELIVERY_ID
+                      ? "Hotel name, address, or delivery instructions…"
+                      : "Street, area, or landmark…"
+                  }
                   className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
                 />
               )}

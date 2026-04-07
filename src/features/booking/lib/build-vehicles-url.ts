@@ -1,8 +1,16 @@
 import type { BookingFormValues } from "@/features/booking/lib/booking-schema";
-import { CUSTOM_LOCATION_ID, locationLabelById } from "@/features/booking/data/locations";
+import {
+  CUSTOM_LOCATION_ID,
+  HOTEL_DELIVERY_ID,
+  locationLabelById,
+} from "@/features/booking/data/locations";
 
 function resolvePlace(id: string, custom: string | undefined): string {
   if (id === CUSTOM_LOCATION_ID) return (custom ?? "").trim();
+  if (id === HOTEL_DELIVERY_ID) {
+    const t = (custom ?? "").trim();
+    return t || (locationLabelById(id) ?? id);
+  }
   return locationLabelById(id) ?? id;
 }
 

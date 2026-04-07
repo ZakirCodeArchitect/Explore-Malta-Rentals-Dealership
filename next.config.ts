@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
       "",
   },
   images: {
+    /* Default in Next 16 is [75]; `quality={80}` in components must be listed here */
+    qualities: [75, 80],
     remotePatterns: [
       {
         protocol: "https",

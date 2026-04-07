@@ -48,6 +48,10 @@ export const aboutBusiness = {
   title: "About the Business",
   tagline:
     "Choose the right ride, get clear guidance, and explore Malta with confidence.",
+  /** Shown as a pricing callout in the about section (matches entry fleet rates). */
+  pricingFromLabel: "From €10 / day",
+  pricingFromSupporting:
+    "Straightforward daily rates on selected scooters and bikes — check each vehicle for full pricing, deposits, and add-ons.",
   /** Filename under `public/BikeImages/` */
   backgroundImage: "lex moto grey.png",
   paragraphs: [
