@@ -82,6 +82,23 @@ export function AboutBusinessSection() {
                   {p}
                 </p>
               ))}
+
+              <div
+                className="mt-7 rounded-2xl border border-slate-200/90 bg-gradient-to-br from-white via-white to-[color-mix(in_srgb,var(--brand-orange)_6%,white)] p-4 shadow-[0_12px_40px_-28px_rgba(15,23,42,0.2)] sm:p-5"
+                role="note"
+                aria-label="Starting prices"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--brand-orange)]">
+                  Pricing
+                </p>
+                <p className="mt-2 text-lg font-bold tracking-[-0.02em] text-slate-950 sm:text-xl">
+                  {aboutBusiness.pricingFromLabel}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+                  {aboutBusiness.pricingFromSupporting}
+                </p>
+              </div>
+
               <div className="mt-7 flex flex-wrap gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm">
                   <BadgeTouristIcon />

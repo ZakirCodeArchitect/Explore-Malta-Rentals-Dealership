@@ -16,9 +16,10 @@ import {
 import { CalendarDays, Clock, Loader2, MapPin } from "lucide-react";
 import {
   CUSTOM_LOCATION_ID,
-  LOCATION_ENTRIES,
+  HOTEL_DELIVERY_ID,
   groupedLocationOptions,
   locationLabelById,
+  needsLocationDetailField,
 } from "@/features/booking/data/locations";
 import { TIME_SLOTS, nextRoundedSlot } from "@/features/booking/lib/time-slots";
 import {
@@ -107,14 +108,25 @@ export function BookingSearchForm() {
     ),
   );
 
-  const pickupLabel =
-    pickupId === CUSTOM_LOCATION_ID
-      ? watch("pickupCustom")?.trim() || "Custom address"
-      : locationLabelById(pickupId) ?? "—";
+  const pickupLabel = (() => {
+    if (pickupId === CUSTOM_LOCATION_ID) {
+      return watch("pickupCustom")?.trim() || "Custom address";
+    }
+    if (pickupId === HOTEL_DELIVERY_ID) {
+      return watch("pickupCustom")?.trim() || (locationLabelById(pickupId) ?? "—");
+    }
+    return locationLabelById(pickupId) ?? "—";
+  })();
   const dropLabel = differentDropoff
-    ? dropId === CUSTOM_LOCATION_ID
-      ? watch("dropoffCustom")?.trim() || "Custom address"
-      : locationLabelById(dropId ?? "") ?? "—"
+    ? (() => {
+        if (dropId === CUSTOM_LOCATION_ID) {
+          return watch("dropoffCustom")?.trim() || "Custom address";
+        }
+        if (dropId === HOTEL_DELIVERY_ID) {
+          return watch("dropoffCustom")?.trim() || (locationLabelById(dropId ?? "") ?? "—");
+        }
+        return locationLabelById(dropId ?? "") ?? "—";
+      })()
     : pickupLabel;
 
   const onSubmit = async (values: BookingFormValues) => {
@@ -152,10 +164,14 @@ export function BookingSearchForm() {
                 ))}
               </select>
             </div>
-            {pickupId === CUSTOM_LOCATION_ID && (
+            {needsLocationDetailField(pickupId) && (
               <input
                 {...register("pickupCustom")}
-                placeholder="Hotel name, street, area…"
+                placeholder={
+                  pickupId === HOTEL_DELIVERY_ID
+                    ? "Hotel name, address, or delivery instructions…"
+                    : "Street, area, or landmark…"
+                }
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
               />
             )}
@@ -285,17 +301,25 @@ export function BookingSearchForm() {
                 <MapPin className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
                 <select {...register("dropoffLocationId")} className={selectClass}>
                   <option value="">Drop-off location</option>
-                  {LOCATION_ENTRIES.map((e) => (
-                    <option key={`drop-${e.id}`} value={e.id}>
-                      {e.label}
-                    </option>
+                  {[...groups.entries()].map(([group, entries]) => (
+                    <optgroup key={`drop-${group}`} label={group}>
+                      {entries.map((e) => (
+                        <option key={`drop-${e.id}`} value={e.id}>
+                          {e.label}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
               </div>
-              {dropId === CUSTOM_LOCATION_ID && (
+              {dropId && needsLocationDetailField(dropId) && (
                 <input
                   {...register("dropoffCustom")}
-                  placeholder="Drop-off address"
+                  placeholder={
+                    dropId === HOTEL_DELIVERY_ID
+                      ? "Hotel name, address, or delivery instructions…"
+                      : "Street, area, or landmark…"
+                  }
                   className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
                 />
               )}
