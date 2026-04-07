@@ -54,7 +54,7 @@ export function SiteFooter() {
   const supportLinks = [
     { href: "/#faq", label: "Help center" },
     { href: "/#contact", label: "Talk to us" },
-    { href: "/#booking-preview", label: "Book a rental" },
+    { href: "/booking", label: "Book a rental" },
   ] as const;
 
   const legalLinks = [
@@ -107,7 +107,7 @@ export function SiteFooter() {
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-              <ButtonLink href="/#booking-preview">Book a rental</ButtonLink>
+              <ButtonLink href="/booking">Book a rental</ButtonLink>
               <Link
                 href="/#fleet-preview"
                 className={joinClasses(
