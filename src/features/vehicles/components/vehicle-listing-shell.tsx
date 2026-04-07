@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
 import { emptyParkingBackdropPath } from "@/features/home/data/hero-content";
@@ -443,7 +444,12 @@ export function VehicleListingShell({
     );
 
     const resultsBlock = (
-      <Container className="pb-16 pt-8">{results}</Container>
+      <Container className="pb-16 pt-8">
+        <div className="mb-10 max-w-2xl">
+          <IndicativeDailyRatesCard />
+        </div>
+        {results}
+      </Container>
     );
 
     if (listingSidebar) {

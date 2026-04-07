@@ -13,18 +13,17 @@ import {
   parse,
   startOfDay,
 } from "date-fns";
-import { CalendarDays, Clock, Loader2, MapPin } from "lucide-react";
-import {
-  CUSTOM_LOCATION_ID,
-  LOCATION_ENTRIES,
-  groupedLocationOptions,
-  locationLabelById,
-} from "@/features/booking/data/locations";
-import { TIME_SLOTS, nextRoundedSlot } from "@/features/booking/lib/time-slots";
+import { CalendarDays, Loader2, MapPin } from "lucide-react";
+import { BookingLocationSelect } from "@/features/booking/components/booking-location-select";
+import { CUSTOM_LOCATION_ID, locationLabelById } from "@/features/booking/data/locations";
+import { nextRoundedSlot } from "@/features/booking/lib/time-slots";
 import {
   bookingFormSchema,
+  TRIP_MAX_SPAN_DAYS,
+  TRIP_MIN_SPAN_DAYS,
   type BookingFormValues,
 } from "@/features/booking/lib/booking-schema";
+import { TimeSlotSelect } from "@/features/booking/components/time-slot-select";
 import { buildVehiclesSearchUrl } from "@/features/booking/lib/build-vehicles-url";
 import { vehicles } from "@/features/vehicles/data/vehicles";
 
@@ -91,6 +90,8 @@ export function BookingSearchForm() {
   const pickupDate = watch("pickupDate");
   const dropoffDate = watch("dropoffDate");
   const pickupId = watch("pickupLocationId");
+  const pickupCustomVal = watch("pickupCustom");
+  const dropoffCustomVal = watch("dropoffCustom");
   const dropId = watch("dropoffLocationId");
   const differentDropoff = watch("differentDropoff");
 
@@ -127,30 +128,40 @@ export function BookingSearchForm() {
       ? `${format(parse(pickupDate, "yyyy-MM-dd", new Date()), "d MMM")} → ${format(parse(dropoffDate, "yyyy-MM-dd", new Date()), "d MMM yyyy")}`
       : "Select dates";
 
-  const groups = groupedLocationOptions();
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <div className="rounded-[1.35rem] border border-slate-200/80 bg-white/95 p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:p-5 lg:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-3">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-3">
           <div className="min-w-0 flex-1 lg:max-w-[22rem]">
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            <label
+              id="booking-pickup-location-label"
+              className="mb-1.5 block text-xs font-semibold text-slate-500"
+            >
               Pickup location
             </label>
-            <div className={inputShell}>
+            <div className={`${inputShell} gap-1`}>
               <MapPin className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-              <select {...register("pickupLocationId")} className={selectClass}>
-                <option value="">Select your pickup location</option>
-                {[...groups.entries()].map(([group, entries]) => (
-                  <optgroup key={group} label={group}>
-                    {entries.map((e) => (
-                      <option key={e.id} value={e.id}>
-                        {e.label}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+              <Controller
+                name="pickupLocationId"
+                control={control}
+                render={({ field }) => (
+                  <BookingLocationSelect
+                    id="booking-pickup-location"
+                    aria-labelledby="booking-pickup-location-label"
+                    locationId={field.value}
+                    locationCustom={pickupCustomVal ?? ""}
+                    onChange={(next) => {
+                      field.onChange(next.locationId);
+                      setValue("pickupCustom", next.locationCustom, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    onBlur={field.onBlur}
+                    placeholder="Select your pickup location"
+                  />
+                )}
+              />
             </div>
             {pickupId === CUSTOM_LOCATION_ID && (
               <input
@@ -168,7 +179,7 @@ export function BookingSearchForm() {
           </div>
 
           <div className="min-w-0 flex-[1.15]">
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            <label className="mb-1.5 block text-xs font-semibold text-slate-500">
               Trip dates
             </label>
             <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
@@ -191,13 +202,21 @@ export function BookingSearchForm() {
                     mode="range"
                     numberOfMonths={calendarMonths}
                     selected={range}
+                    max={TRIP_MAX_SPAN_DAYS}
                     onSelect={(r) => {
                       if (!r?.from) return;
-                      const to = r.to ?? addDays(r.from, 1);
-                      setValue("pickupDate", format(startOfDay(r.from), "yyyy-MM-dd"), {
+                      const from = startOfDay(r.from);
+                      let to = r.to != null ? startOfDay(r.to) : addDays(from, TRIP_MIN_SPAN_DAYS);
+                      const span = differenceInCalendarDays(to, from);
+                      if (span < TRIP_MIN_SPAN_DAYS) {
+                        to = addDays(from, TRIP_MIN_SPAN_DAYS);
+                      } else if (span > TRIP_MAX_SPAN_DAYS) {
+                        to = addDays(from, TRIP_MAX_SPAN_DAYS);
+                      }
+                      setValue("pickupDate", format(from, "yyyy-MM-dd"), {
                         shouldValidate: true,
                       });
-                      setValue("dropoffDate", format(startOfDay(to), "yyyy-MM-dd"), {
+                      setValue("dropoffDate", format(to, "yyyy-MM-dd"), {
                         shouldValidate: true,
                       });
                     }}
@@ -207,7 +226,8 @@ export function BookingSearchForm() {
               </Popover.Portal>
             </Popover.Root>
             <p className="mt-1.5 text-xs text-slate-500">
-              Tap start and end dates — we default the return to the next day after your first tap.
+              Tap start and end dates, trips from {TRIP_MIN_SPAN_DAYS} to {TRIP_MAX_SPAN_DAYS} days. We
+              default the return to the day after your first tap.
             </p>
             {errors.pickupDate && (
               <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupDate.message}</p>
@@ -219,34 +239,48 @@ export function BookingSearchForm() {
 
           <div className="grid flex-1 grid-cols-2 gap-3 md:max-w-md lg:max-w-none">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+              <label
+                id="booking-pickup-time-label"
+                className="mb-1.5 block text-xs font-semibold text-slate-500"
+              >
                 Pickup time
               </label>
-              <div className={inputShell}>
-                <Clock className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-                <select {...register("pickupTime")} className={selectClass}>
-                  {TIME_SLOTS.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Controller
+                name="pickupTime"
+                control={control}
+                render={({ field }) => (
+                  <TimeSlotSelect
+                    ref={field.ref}
+                    id="booking-pickup-time"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    aria-labelledby="booking-pickup-time-label"
+                  />
+                )}
+              />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+              <label
+                id="booking-dropoff-time-label"
+                className="mb-1.5 block text-xs font-semibold text-slate-500"
+              >
                 Drop-off time
               </label>
-              <div className={inputShell}>
-                <Clock className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-                <select {...register("dropoffTime")} className={selectClass}>
-                  {TIME_SLOTS.map((t) => (
-                    <option key={`d-${t}`} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Controller
+                name="dropoffTime"
+                control={control}
+                render={({ field }) => (
+                  <TimeSlotSelect
+                    ref={field.ref}
+                    id="booking-dropoff-time"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    aria-labelledby="booking-dropoff-time-label"
+                  />
+                )}
+              />
             </div>
           </div>
         </div>
@@ -281,16 +315,35 @@ export function BookingSearchForm() {
 
           {differentDropoff && (
             <div className="w-full sm:max-w-md">
-              <div className={inputShell}>
+              <label
+                id="booking-dropoff-location-label"
+                className="mb-1.5 block text-xs font-semibold text-slate-500"
+              >
+                Drop-off location
+              </label>
+              <div className={`${inputShell} gap-1`}>
                 <MapPin className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-                <select {...register("dropoffLocationId")} className={selectClass}>
-                  <option value="">Drop-off location</option>
-                  {LOCATION_ENTRIES.map((e) => (
-                    <option key={`drop-${e.id}`} value={e.id}>
-                      {e.label}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="dropoffLocationId"
+                  control={control}
+                  render={({ field }) => (
+                    <BookingLocationSelect
+                      id="booking-dropoff-location"
+                      aria-labelledby="booking-dropoff-location-label"
+                      locationId={field.value ?? ""}
+                      locationCustom={dropoffCustomVal ?? ""}
+                      onChange={(next) => {
+                        field.onChange(next.locationId);
+                        setValue("dropoffCustom", next.locationCustom, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      }}
+                      onBlur={field.onBlur}
+                      placeholder="Select drop-off location"
+                    />
+                  )}
+                />
               </div>
               {dropId === CUSTOM_LOCATION_ID && (
                 <input

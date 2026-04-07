@@ -1,6 +1,10 @@
 import { z } from "zod";
-import { isAfter, parse } from "date-fns";
+import { differenceInCalendarDays, isAfter, parse, startOfDay } from "date-fns";
 import { CUSTOM_LOCATION_ID } from "@/features/booking/data/locations";
+
+/** Calendar-day span between pickup and drop-off dates (`differenceInCalendarDays`). */
+export const TRIP_MIN_SPAN_DAYS = 1;
+export const TRIP_MAX_SPAN_DAYS = 30;
 
 export const bookingFormSchema = z
   .object({
@@ -43,6 +47,23 @@ export const bookingFormSchema = z
           });
         }
       }
+    }
+
+    const pickupDay = startOfDay(parse(data.pickupDate, "yyyy-MM-dd", new Date()));
+    const dropoffDay = startOfDay(parse(data.dropoffDate, "yyyy-MM-dd", new Date()));
+    const spanDays = differenceInCalendarDays(dropoffDay, pickupDay);
+    if (spanDays < TRIP_MIN_SPAN_DAYS) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Trip must be at least ${TRIP_MIN_SPAN_DAYS} day`,
+        path: ["dropoffDate"],
+      });
+    } else if (spanDays > TRIP_MAX_SPAN_DAYS) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Trip cannot exceed ${TRIP_MAX_SPAN_DAYS} days`,
+        path: ["dropoffDate"],
+      });
     }
 
     const pickup = parse(`${data.pickupDate} ${data.pickupTime}`, "yyyy-MM-dd HH:mm", new Date());

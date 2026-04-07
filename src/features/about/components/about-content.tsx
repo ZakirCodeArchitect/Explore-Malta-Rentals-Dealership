@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { SiteShell } from "@/components/site-shell";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
@@ -17,13 +18,6 @@ const COMPANY_STORY_BIKE_SRC = `/BikeImages/${encodeURIComponent("lex moto grey.
 
 const FLEET_NECO_ONE_SRC = `/BikeImages/${encodeURIComponent("neco one.png")}`;
 const FLEET_LEX_AURA_SRC = `/BikeImages/${encodeURIComponent("lex moto grey.png")}`;
-
-const fleetRates = [
-  { label: "1 day", value: "€25 / day" },
-  { label: "2 days", value: "€18 / day" },
-  { label: "3 days – 3 weeks", value: "€15 / day" },
-  { label: "3 weeks or more", value: "€10 / day" },
-] as const;
 
 export type AboutSiteContact = Readonly<{
   companyName: string;
@@ -370,32 +364,8 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
             </FleetModelCard>
           </div>
 
-          <div className="mt-10 overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm ring-1 ring-slate-950/[0.04]">
-            <div className="flex flex-col gap-1 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[#f0f7fc] px-6 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                  Indicative daily rates
-                </h3>
-                <p className="mt-0.5 text-sm text-slate-600">Motorcycles / scooters</p>
-              </div>
-              <p className="text-xs text-slate-500 sm:text-right">Per calendar day, before extras</p>
-            </div>
-            <dl className="grid gap-px bg-slate-200/80 sm:grid-cols-2">
-              {fleetRates.map((row) => (
-                <div
-                  key={row.label}
-                  className="flex items-baseline justify-between gap-4 bg-white px-6 py-3.5 sm:px-7 sm:py-4"
-                >
-                  <dt className="text-sm font-medium text-slate-800">{row.label}</dt>
-                  <dd className="shrink-0 text-sm font-semibold tabular-nums text-[var(--brand-blue)]">
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <p className="border-t border-slate-100 bg-slate-50/50 px-6 py-3.5 text-xs leading-relaxed text-slate-500 sm:px-7">
-              Final price depends on vehicle, season, and availability — message us for a quote.
-            </p>
+          <div className="mt-10">
+            <IndicativeDailyRatesCard />
           </div>
         </Container>
       </section>
