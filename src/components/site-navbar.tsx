@@ -195,7 +195,7 @@ export function SiteNavbar() {
                 </div>
 
                 <Link
-                  href="/#booking-preview"
+                  href="/booking"
                   className={joinClasses(
                     "inline-flex min-h-8 min-w-[2.5rem] items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold tracking-[-0.03em] text-white sm:min-h-8 sm:px-3.5 sm:py-2 sm:text-sm",
                     "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
