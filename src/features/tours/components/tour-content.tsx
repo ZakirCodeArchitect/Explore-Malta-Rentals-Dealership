@@ -253,7 +253,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
-                  href="#tour-contact"
+                  href="/booking"
                   className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--brand-orange)] px-5 py-2.5 text-sm font-medium tracking-tight text-slate-950 transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 >
                   Request a tour

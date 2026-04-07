@@ -138,7 +138,7 @@ export const quickBookingCta = {
   title: "The island is waiting — make it yours.",
   description:
     "Rent a motorcycle, ATV, or bicycle in Pietà and explore Malta at your pace. Sunlit coasts, quiet lanes, and roads that feel like a holiday — it starts with one booking.",
-  primaryCta: { href: "#booking-preview", label: "Start your journey" },
+  primaryCta: { href: "/booking", label: "Start your journey" },
   secondaryCta: { href: "#contact", label: "Contact us" },
 } as const;
 
