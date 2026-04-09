@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 const HERO_INTRO = {
-  title: "Find your perfect Malta ride",
+  title: "Find your perfect Malta ride. Explore Malta your way.",
   description:
-    "Compare curated rentals by price, type, and ride style. Built for quick decisions with premium clarity and zero clutter.",
+    "Compare scooters by engine size and colour, then lock in your dates. Transparent pricing and quick booking.",
 } as const;
 
 export default function VehiclesPage() {

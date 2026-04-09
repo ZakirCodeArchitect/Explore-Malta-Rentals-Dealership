@@ -19,7 +19,7 @@ const navLinks = [
   { href: "/about", label: "About us" },
   { href: "/guide", label: "Guide" },
   { href: "/tours", label: "Tours" },
-  { href: "/#contact", label: "Contact us" },
+  { href: "/contact", label: "Contact us" },
   { href: "/#services", label: "Services" },
 ] as const;
 
@@ -28,8 +28,8 @@ function joinClasses(...classes: Array<string | undefined>) {
 }
 
 function navLinkIsActive(href: string, pathname: string, hash: string): boolean {
-  if (href === "/#contact") {
-    return pathname === "/" && hash === "#contact";
+  if (href === "/contact") {
+    return pathname === "/contact" || (pathname === "/" && hash === "#contact");
   }
   if (href === "/#services") {
     return pathname === "/" && hash === "#services";
@@ -117,6 +117,7 @@ export function SiteNavbar() {
                   width={320}
                   height={56}
                   className="h-10 w-auto max-w-full rounded-md object-contain object-left sm:h-11"
+                  style={{ width: "auto" }}
                   priority
                 />
               </Link>
@@ -203,7 +204,7 @@ export function SiteNavbar() {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
                   )}
                 >
-                  book us
+                  Book Now
                 </Link>
               </div>
             </div>

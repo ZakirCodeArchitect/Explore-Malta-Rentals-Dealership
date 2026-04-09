@@ -21,7 +21,7 @@ export const faqItems = [
     id: "invoice",
     question: "Are helmets and safety gear included?",
     answer:
-      "Helmets are included with rentals as part of our safety-first approach. If you need anything specific, ask when you book so we can have the right sizes ready at handover.",
+      "Yes — helmets are included with rentals, along with a phone holder accessory for navigation. If you need a specific helmet size or have other safety questions, tell us when you book so we can have everything ready at handover.",
   },
   {
     id: "billing",

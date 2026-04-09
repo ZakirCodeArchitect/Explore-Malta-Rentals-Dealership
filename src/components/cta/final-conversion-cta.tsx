@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button-link";
+import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 
 export type FinalConversionCtaProps = Readonly<{
   /** Section `aria-labelledby` target */
@@ -14,6 +15,8 @@ export type FinalConversionCtaProps = Readonly<{
   imageSrc: string;
   /** Empty string when image is decorative */
   imageAlt?: string;
+  /** Override default full-bleed cover (e.g. logo with `object-contain`) */
+  imageClassName?: string;
 }>;
 
 function joinClasses(...classes: Array<string | undefined>) {
@@ -33,6 +36,7 @@ export function FinalConversionCta({
   secondaryCta,
   imageSrc,
   imageAlt = "",
+  imageClassName,
 }: FinalConversionCtaProps) {
   const decorativeImage = !imageAlt;
 
@@ -56,7 +60,7 @@ export function FinalConversionCta({
             sizes="100vw"
             loading="lazy"
             quality={80}
-            className="object-cover object-[center_35%]"
+            className={imageClassName ?? "object-cover object-[center_35%]"}
             aria-hidden={decorativeImage}
             priority={false}
           />
@@ -141,7 +145,7 @@ export function FinalConversionCta({
               secondaryCta ? "final-cta-delay-6" : "final-cta-delay-4",
             )}
           >
-            Based in Pietà · Motorcycles, ATVs & bicycles · Guided tours available
+            {SITE_LOCATION_KICKER} · {SITE_PRIMARY_TAGLINE.supporting}
           </p>
         </div>
       </div>

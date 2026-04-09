@@ -1,6 +1,8 @@
+import Image from "next/image";
 import { SiteShell } from "@/components/site-shell";
 import { heroContent } from "@/features/home/data/hero-content";
 import { HeroBookingPanel } from "@/features/home/components/hero-booking-panel";
+import { LOGO_PATH } from "@/lib/site-brand-copy";
 
 function PinIcon() {
   return (
@@ -82,6 +84,18 @@ export function VideoHero() {
                 <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90">
                   <PinIcon />
                   <span>{heroContent.location}</span>
+                </div>
+
+                <div className="mt-6 sm:mt-7">
+                  <Image
+                    src={LOGO_PATH}
+                    alt="Explore Malta Rentals"
+                    width={480}
+                    height={96}
+                    priority
+                    className="h-16 w-auto max-w-[min(100%,22rem)] object-contain object-left drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] sm:h-20 md:h-24 md:max-w-[min(100%,26rem)]"
+                    style={{ width: "auto" }}
+                  />
                 </div>
 
                 <div className="mt-5 max-w-2xl sm:mt-6">

@@ -1,13 +1,14 @@
+import { HOME_HERO } from "@/lib/site-brand-copy";
+
 /** Shared full-bleed backdrop (home hero + vehicles listing header). File in `/public`. */
 export const emptyParkingBackdropPath = "/empty-parking.jpg" as const;
 
 export const heroContent = {
-  location: "Pietà, Malta",
-  title: "Explore Malta Like Never Before.",
-  description:
-    "Motorcycle, ATV, and bicycle rentals from Pietà, plus guided tours, explore Malta by road, trail, or town at your own pace.",
+  location: HOME_HERO.location,
+  title: HOME_HERO.title,
+  description: HOME_HERO.description,
   primaryAction: {
-    href: "#booking-preview",
+    href: "/booking",
     label: "Book Your Ride",
   },
   secondaryAction: {

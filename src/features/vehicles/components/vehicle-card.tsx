@@ -25,12 +25,9 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
       </div>
 
       <div className="p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-950">{vehicle.name}</h3>
-            <p className="mt-1 text-sm text-slate-600">{vehicle.tagline}</p>
-          </div>
-          <p className="text-sm font-semibold text-slate-800">{vehicle.rating.toFixed(1)}★</p>
+        <div>
+          <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-950">{vehicle.name}</h3>
+          <p className="mt-1 text-sm text-slate-600">{vehicle.tagline}</p>
         </div>
 
         <ul className="mt-4 flex flex-wrap gap-2">

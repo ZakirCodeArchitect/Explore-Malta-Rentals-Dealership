@@ -14,6 +14,8 @@ type TimeSlotSelectProps = Readonly<{
   onChange: (value: string) => void;
   onBlur?: () => void;
   "aria-labelledby"?: string;
+  /** Defaults to full day; pass booking-only slots (e.g. 09:30–19:00) when needed. */
+  slots?: readonly string[];
 }>;
 
 export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>(
@@ -24,6 +26,7 @@ export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>
       onChange,
       onBlur,
       "aria-labelledby": ariaLabelledBy,
+      slots = TIME_SLOTS,
     },
     ref,
   ) {
@@ -64,7 +67,7 @@ export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>
             aria-labelledby={ariaLabelledBy}
             className="max-h-[min(260px,calc(100dvh-9rem))] overflow-y-auto overscroll-contain py-0.5 [scrollbar-color:rgba(148,163,184,0.6)_transparent] [scrollbar-width:thin]"
           >
-            {TIME_SLOTS.map((slot) => {
+            {slots.map((slot) => {
               const selected = slot === value;
               return (
                 <button

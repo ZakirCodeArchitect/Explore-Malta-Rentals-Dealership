@@ -5,9 +5,11 @@ import { Container } from "@/components/ui/container";
 import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-underlined-text";
 import { GuideParkingRulesSection } from "@/features/guide/components/guide-parking-rules-section";
 import { SectionHeader } from "@/features/home/components/section-header";
+import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 
 const TOURIST_GUIDE_MAP_SRC = "/guide%20map.png";
-const MALTA_BACKDROP_SRC = "/malta.png";
+/** Hero backdrop (`public/guide pge photo.webp`). */
+const GUIDE_PAGE_HERO_BACKDROP = `/${encodeURIComponent("guide pge photo.webp")}`;
 
 function isHttpUrl(value: string) {
   try {
@@ -46,8 +48,8 @@ export function GuideContent({
           className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: [
-              "linear-gradient(100deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.86) 45%, rgba(240,246,250,0.9) 100%)",
-              `url("${MALTA_BACKDROP_SRC}")`,
+              "linear-gradient(100deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.88) 45%, rgba(240,246,250,0.92) 100%)",
+              `url("${GUIDE_PAGE_HERO_BACKDROP}")`,
             ].join(", "),
           }}
         />
@@ -102,6 +104,43 @@ export function GuideContent({
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section
+        id="guide-pieta-brand"
+        aria-labelledby="guide-pieta-brand-title"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[#f8fafc] py-12 sm:py-14"
+      >
+        <Container>
+          <div
+            className={[
+              "relative isolate overflow-hidden rounded-2xl border border-white/10 bg-[#050d18] p-6 text-white shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10",
+              "motion-safe:transition-shadow motion-safe:duration-300",
+            ].join(" ")}
+          >
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_0%,rgba(58,124,165,0.14),transparent_55%)]"
+              aria-hidden
+            />
+            <div className="relative max-w-xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
+                {SITE_LOCATION_KICKER}
+              </p>
+              <h2
+                id="guide-pieta-brand-title"
+                className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl lg:text-[2rem] lg:leading-tight"
+              >
+                {SITE_PRIMARY_TAGLINE.headline}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
+                {SITE_PRIMARY_TAGLINE.body}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-white/65 sm:text-base">
+                {SITE_PRIMARY_TAGLINE.supporting}
+              </p>
             </div>
           </div>
         </Container>

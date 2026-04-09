@@ -36,9 +36,7 @@ function VehicleTitleBlock({
       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">{vehicle.type}</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">{vehicle.name}</h1>
       <p className="mt-3 text-base text-slate-600 sm:text-lg">{vehicle.tagline}</p>
-      <p className="mt-3 text-sm text-slate-500">
-        {vehicle.location} · {vehicle.rating.toFixed(1)} stars ({vehicle.reviewCount} reviews)
-      </p>
+      <p className="mt-3 text-sm text-slate-500">{vehicle.location}</p>
     </>
   );
 }

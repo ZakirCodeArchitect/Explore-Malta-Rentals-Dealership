@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,20 +15,19 @@ import {
   startOfDay,
 } from "date-fns";
 import { CalendarDays, Loader2, MapPin } from "lucide-react";
-import { BookingLocationSelect } from "@/features/booking/components/booking-location-select";
-import {
-  CUSTOM_LOCATION_ID,
-  HOTEL_DELIVERY_ID,
-  locationLabelById,
-  needsLocationDetailField,
-} from "@/features/booking/data/locations";
-import { nextRoundedSlot } from "@/features/booking/lib/time-slots";
+import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   bookingFormSchema,
+  OFF_SITE_SERVICE_FEE_EUR,
+  SECURITY_DEPOSIT_EUR,
   TRIP_MAX_SPAN_DAYS,
   TRIP_MIN_SPAN_DAYS,
   type BookingFormValues,
 } from "@/features/booking/lib/booking-schema";
+import {
+  BOOKING_TIME_SLOTS,
+  nextBookingSlotWithinHours,
+} from "@/features/booking/lib/time-slots";
 import { TimeSlotSelect } from "@/features/booking/components/time-slot-select";
 import { buildVehiclesSearchUrl } from "@/features/booking/lib/build-vehicles-url";
 import {
@@ -37,6 +37,9 @@ import {
 
 const inputShell =
   "flex w-full min-h-[3rem] items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
+
+const textareaClass =
+  "mt-2 w-full min-h-[5rem] rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 function defaultDates() {
   const from = startOfDay(new Date());
@@ -53,17 +56,17 @@ export function BookingSearchForm() {
   const minFrom = useMemo(() => startOfDay(new Date()), []);
 
   const { pickupDate: defPu, dropoffDate: defDo } = defaultDates();
-  const defaultPickupTime = nextRoundedSlot(90);
-  const defaultDropoffTime = "09:30";
+  const defaultPickupTime = nextBookingSlotWithinHours(90);
+  const defaultDropoffTime = "19:00";
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
-      pickupLocationId: "",
-      pickupCustom: "",
+      alternatePickupRequested: false,
+      alternatePickupAddress: "",
       differentDropoff: false,
-      dropoffLocationId: "",
-      dropoffCustom: "",
+      dropoffAddress: "",
+      depositPreference: "pay_at_meeting",
       pickupDate: defPu,
       dropoffDate: defDo,
       pickupTime: defaultPickupTime,
@@ -90,11 +93,10 @@ export function BookingSearchForm() {
 
   const pickupDate = watch("pickupDate");
   const dropoffDate = watch("dropoffDate");
-  const pickupId = watch("pickupLocationId");
-  const pickupCustomVal = watch("pickupCustom");
-  const dropoffCustomVal = watch("dropoffCustom");
-  const dropId = watch("dropoffLocationId");
+  const alternatePickupRequested = watch("alternatePickupRequested");
+  const alternatePickupAddress = watch("alternatePickupAddress");
   const differentDropoff = watch("differentDropoff");
+  const dropoffAddress = watch("dropoffAddress");
 
   const range: DateRange = {
     from: parse(pickupDate, "yyyy-MM-dd", new Date()),
@@ -114,26 +116,9 @@ export function BookingSearchForm() {
   const indicativeTripTotalEur =
     getIndicativeMotorcycleScooterTripTotalEur(durationDays);
 
-  const pickupLabel = (() => {
-    if (pickupId === CUSTOM_LOCATION_ID) {
-      return watch("pickupCustom")?.trim() || "Custom address";
-    }
-    if (pickupId === HOTEL_DELIVERY_ID) {
-      return watch("pickupCustom")?.trim() || (locationLabelById(pickupId) ?? "—");
-    }
-    return locationLabelById(pickupId) ?? "—";
-  })();
-  const dropLabel = differentDropoff
-    ? (() => {
-        if (dropId === CUSTOM_LOCATION_ID) {
-          return watch("dropoffCustom")?.trim() || "Custom address";
-        }
-        if (dropId === HOTEL_DELIVERY_ID) {
-          return watch("dropoffCustom")?.trim() || (locationLabelById(dropId ?? "") ?? "—");
-        }
-        return locationLabelById(dropId ?? "") ?? "—";
-      })()
-    : pickupLabel;
+  const offSiteLegs =
+    (alternatePickupRequested ? 1 : 0) + (differentDropoff ? 1 : 0);
+  const offSiteFeesEur = offSiteLegs * OFF_SITE_SERVICE_FEE_EUR;
 
   const onSubmit = async (values: BookingFormValues) => {
     await new Promise((r) => setTimeout(r, 320));
@@ -147,258 +132,282 @@ export function BookingSearchForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <div className="flex flex-wrap gap-2">
+        <p className="w-full text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          Quick filter by engine size
+        </p>
+        <Link
+          href="/vehicles?cc=125&type=scooter"
+          className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-blue)] hover:text-[var(--brand-blue-strong)]"
+        >
+          125cc — rent
+        </Link>
+        <Link
+          href="/vehicles?cc=50&type=scooter"
+          className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-blue)] hover:text-[var(--brand-blue-strong)]"
+        >
+          50cc — rent
+        </Link>
+        <Link
+          href="/#services"
+          className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
+        >
+          Services &amp; benefits
+        </Link>
+      </div>
+
       <div className="rounded-[1.35rem] border border-slate-200/80 bg-white/95 p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:p-5 lg:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-3">
-          <div className="min-w-0 flex-1 lg:max-w-[22rem]">
-            <label
-              id="booking-pickup-location-label"
-              className="mb-1.5 block text-xs font-semibold text-slate-500"
-            >
+        <div className="flex flex-col gap-5">
+          <div className="rounded-2xl border border-slate-100 bg-[var(--surface-soft)]/60 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
               Pickup location
-            </label>
-            <div className={`${inputShell} gap-1`}>
-              <MapPin className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-              <Controller
-                name="pickupLocationId"
-                control={control}
-                render={({ field }) => (
-                  <BookingLocationSelect
-                    id="booking-pickup-location"
-                    aria-labelledby="booking-pickup-location-label"
-                    locationId={field.value}
-                    locationCustom={pickupCustomVal ?? ""}
-                    onChange={(next) => {
-                      field.onChange(next.locationId);
-                      setValue("pickupCustom", next.locationCustom, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      });
-                    }}
-                    onBlur={field.onBlur}
-                    placeholder="Select your pickup location"
-                  />
-                )}
-              />
-            </div>
-            {needsLocationDetailField(pickupId) && (
-              <input
-                {...register("pickupCustom")}
-                placeholder={
-                  pickupId === HOTEL_DELIVERY_ID
-                    ? "Hotel name, address, or delivery instructions…"
-                    : "Street, area, or landmark…"
-                }
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
-              />
-            )}
-            {errors.pickupLocationId && (
-              <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupLocationId.message}</p>
-            )}
-            {errors.pickupCustom && (
-              <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupCustom.message}</p>
-            )}
-          </div>
-
-          <div className="min-w-0 flex-[1.15]">
-            <label className="mb-1.5 block text-xs font-semibold text-slate-500">
-              Trip dates
-            </label>
-            <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
-              <Popover.Trigger asChild>
-                <button type="button" className={`${inputShell} justify-between`}>
-                  <span className="flex min-w-0 items-center gap-2">
-                    <CalendarDays className="h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden />
-                    <span className="truncate">{dateSummary}</span>
-                  </span>
-                  <span className="shrink-0 text-xs font-semibold text-slate-500">Change</span>
-                </button>
-              </Popover.Trigger>
-              <Popover.Portal>
-                <Popover.Content
-                  sideOffset={8}
-                  align="start"
-                  className="z-[100] rounded-2xl border border-slate-200 bg-white p-3 shadow-xl"
-                >
-                  <DayPicker
-                    mode="range"
-                    numberOfMonths={calendarMonths}
-                    selected={range}
-                    max={TRIP_MAX_SPAN_DAYS}
-                    onSelect={(r) => {
-                      if (!r?.from) return;
-                      const from = startOfDay(r.from);
-                      let to = r.to != null ? startOfDay(r.to) : addDays(from, TRIP_MIN_SPAN_DAYS);
-                      const span = differenceInCalendarDays(to, from);
-                      if (span < TRIP_MIN_SPAN_DAYS) {
-                        to = addDays(from, TRIP_MIN_SPAN_DAYS);
-                      } else if (span > TRIP_MAX_SPAN_DAYS) {
-                        to = addDays(from, TRIP_MAX_SPAN_DAYS);
-                      }
-                      setValue("pickupDate", format(from, "yyyy-MM-dd"), {
-                        shouldValidate: true,
-                      });
-                      setValue("dropoffDate", format(to, "yyyy-MM-dd"), {
-                        shouldValidate: true,
-                      });
-                    }}
-                    disabled={{ before: minFrom }}
-                  />
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
-            <p className="mt-1.5 text-xs text-slate-500">
-              Tap start and end dates, trips from {TRIP_MIN_SPAN_DAYS} to {TRIP_MAX_SPAN_DAYS} days. We
-              default the return to the day after your first tap.
             </p>
-            {errors.pickupDate && (
-              <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupDate.message}</p>
-            )}
-            {errors.dropoffDate && (
-              <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffDate.message}</p>
-            )}
+            <p className="mt-1 flex items-start gap-2 text-sm font-semibold text-slate-900">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
+              Pietà — shop pickup at Explore Malta Rentals
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              Pickup and drop-off times are between <span className="font-semibold text-slate-800">09:30</span> and{" "}
+              <span className="font-semibold text-slate-800">19:00</span>.
+            </p>
           </div>
 
-          <div className="grid flex-1 grid-cols-2 gap-3 md:max-w-md lg:max-w-none">
-            <div>
-              <label
-                id="booking-pickup-time-label"
-                className="mb-1.5 block text-xs font-semibold text-slate-500"
-              >
-                Pickup time
-              </label>
-              <Controller
-                name="pickupTime"
-                control={control}
-                render={({ field }) => (
-                  <TimeSlotSelect
-                    ref={field.ref}
-                    id="booking-pickup-time"
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    aria-labelledby="booking-pickup-time-label"
-                  />
-                )}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)]"
+                {...register("alternatePickupRequested")}
               />
-            </div>
-            <div>
-              <label
-                id="booking-dropoff-time-label"
-                className="mb-1.5 block text-xs font-semibold text-slate-500"
-              >
-                Drop-off time
-              </label>
-              <Controller
-                name="dropoffTime"
-                control={control}
-                render={({ field }) => (
-                  <TimeSlotSelect
-                    ref={field.ref}
-                    id="booking-dropoff-time"
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    aria-labelledby="booking-dropoff-time-label"
-                  />
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <Controller
-            name="differentDropoff"
-            control={control}
-            render={({ field }) => (
-              <button
-                type="button"
-                role="switch"
-                aria-checked={field.value}
-                onClick={() => field.onChange(!field.value)}
-                className="inline-flex items-center gap-3 text-left"
-              >
-                <span className="text-sm font-semibold text-slate-800">Drop off at a different location</span>
-                <span
-                  className={`relative inline-flex h-7 w-12 items-center rounded-full p-1 transition ${
-                    field.value ? "bg-[var(--brand-orange)]" : "bg-slate-200"
-                  }`}
-                >
-                  <span
-                    className={`h-5 w-5 rounded-full bg-white shadow transition ${
-                      field.value ? "translate-x-5" : "translate-x-0"
-                    }`}
-                  />
+              <span>
+                <span className="text-sm font-semibold text-slate-900">Request pickup at a different address</span>
+                <span className="mt-1 block text-xs leading-relaxed text-slate-600">
+                  Subject to availability. Additional{" "}
+                  <span className="font-semibold text-slate-800">€{OFF_SITE_SERVICE_FEE_EUR}</span> — payable when you
+                  check out.
                 </span>
-              </button>
-            )}
-          />
+              </span>
+            </label>
 
-          {differentDropoff && (
-            <div className="w-full sm:max-w-md">
-              <label
-                id="booking-dropoff-location-label"
-                className="mb-1.5 block text-xs font-semibold text-slate-500"
-              >
-                Drop-off location
+            <Controller
+              name="differentDropoff"
+              control={control}
+              render={({ field }) => (
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left">
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)]"
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                  />
+                  <span>
+                    <span className="text-sm font-semibold text-slate-900">Drop off at a different address</span>
+                    <span className="mt-1 block text-xs leading-relaxed text-slate-600">
+                      Additional{" "}
+                      <span className="font-semibold text-slate-800">€{OFF_SITE_SERVICE_FEE_EUR}</span> — payable when you
+                      check out.
+                    </span>
+                  </span>
+                </label>
+              )}
+            />
+          </div>
+
+          {alternatePickupRequested ? (
+            <div>
+              <label htmlFor="alternate-pickup-address" className="text-xs font-semibold text-slate-500">
+                Exact pickup address
               </label>
-              <div className={`${inputShell} gap-1`}>
-                <MapPin className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-                <Controller
-                  name="dropoffLocationId"
-                  control={control}
-                  render={({ field }) => (
-                    <BookingLocationSelect
-                      id="booking-dropoff-location"
-                      aria-labelledby="booking-dropoff-location-label"
-                      locationId={field.value ?? ""}
-                      locationCustom={dropoffCustomVal ?? ""}
-                      onChange={(next) => {
-                        field.onChange(next.locationId);
-                        setValue("dropoffCustom", next.locationCustom, {
+              <textarea
+                id="alternate-pickup-address"
+                placeholder="Street, building, postcode, area…"
+                className={textareaClass}
+                {...register("alternatePickupAddress")}
+              />
+              {errors.alternatePickupAddress ? (
+                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.alternatePickupAddress.message}</p>
+              ) : null}
+              {alternatePickupAddress?.trim() ? (
+                <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                  <GoogleMapEmbed query={alternatePickupAddress} className="aspect-[16/9] min-h-[180px] w-full" />
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-slate-500">Map preview appears after you enter an address.</p>
+              )}
+            </div>
+          ) : null}
+
+          {differentDropoff ? (
+            <div>
+              <label htmlFor="dropoff-address" className="text-xs font-semibold text-slate-500">
+                Exact drop-off address
+              </label>
+              <textarea
+                id="dropoff-address"
+                placeholder="Street, building, postcode, area…"
+                className={textareaClass}
+                {...register("dropoffAddress")}
+              />
+              {errors.dropoffAddress ? (
+                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffAddress.message}</p>
+              ) : null}
+              {dropoffAddress?.trim() ? (
+                <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                  <GoogleMapEmbed query={dropoffAddress} className="aspect-[16/9] min-h-[180px] w-full" />
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-slate-500">Map preview appears after you enter an address.</p>
+              )}
+            </div>
+          ) : null}
+
+          {offSiteLegs > 0 ? (
+            <p className="rounded-xl border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-xs text-amber-950">
+              Off-site service total: <span className="font-semibold">€{offSiteFeesEur}</span> ({offSiteLegs} × €
+              {OFF_SITE_SERVICE_FEE_EUR}) — collected at checkout.
+            </p>
+          ) : null}
+
+          <fieldset>
+            <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+              Security deposit (EUR {SECURITY_DEPOSIT_EUR})
+            </legend>
+            <p className="mt-1 text-xs text-slate-600">
+              Choose whether you&apos;d like to pay the deposit online when you book, or at the first meeting when you
+              collect the bike.
+            </p>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
+                <input type="radio" value="pay_at_meeting" className="text-[var(--brand-orange)]" {...register("depositPreference")} />
+                Pay at first meeting
+              </label>
+              <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
+                <input type="radio" value="pay_online" className="text-[var(--brand-orange)]" {...register("depositPreference")} />
+                Pay online when booking
+              </label>
+            </div>
+          </fieldset>
+
+          <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
+            <div className="min-w-0">
+              <label className="mb-1.5 block text-xs font-semibold text-slate-500">Trip dates</label>
+              <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
+                <Popover.Trigger asChild>
+                  <button type="button" className={`${inputShell} justify-between`}>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <CalendarDays className="h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden />
+                      <span className="truncate">{dateSummary}</span>
+                    </span>
+                    <span className="shrink-0 text-xs font-semibold text-slate-500">Change</span>
+                  </button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    sideOffset={8}
+                    align="start"
+                    className="z-[100] rounded-2xl border border-slate-200 bg-white p-3 shadow-xl"
+                  >
+                    <DayPicker
+                      mode="range"
+                      numberOfMonths={calendarMonths}
+                      selected={range}
+                      max={TRIP_MAX_SPAN_DAYS}
+                      onSelect={(r) => {
+                        if (!r?.from) return;
+                        const from = startOfDay(r.from);
+                        let to = r.to != null ? startOfDay(r.to) : addDays(from, TRIP_MIN_SPAN_DAYS);
+                        const span = differenceInCalendarDays(to, from);
+                        if (span < TRIP_MIN_SPAN_DAYS) {
+                          to = addDays(from, TRIP_MIN_SPAN_DAYS);
+                        } else if (span > TRIP_MAX_SPAN_DAYS) {
+                          to = addDays(from, TRIP_MAX_SPAN_DAYS);
+                        }
+                        setValue("pickupDate", format(from, "yyyy-MM-dd"), {
                           shouldValidate: true,
-                          shouldDirty: true,
+                        });
+                        setValue("dropoffDate", format(to, "yyyy-MM-dd"), {
+                          shouldValidate: true,
                         });
                       }}
+                      disabled={{ before: minFrom }}
+                    />
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+              <p className="mt-1.5 text-xs text-slate-500">
+                Trips from {TRIP_MIN_SPAN_DAYS} to {TRIP_MAX_SPAN_DAYS} days.
+              </p>
+              {errors.pickupDate ? (
+                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupDate.message}</p>
+              ) : null}
+              {errors.dropoffDate ? (
+                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffDate.message}</p>
+              ) : null}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  id="booking-pickup-time-label"
+                  className="mb-1.5 block text-xs font-semibold text-slate-500"
+                >
+                  Pickup time
+                </label>
+                <Controller
+                  name="pickupTime"
+                  control={control}
+                  render={({ field }) => (
+                    <TimeSlotSelect
+                      ref={field.ref}
+                      id="booking-pickup-time"
+                      value={field.value}
+                      onChange={field.onChange}
                       onBlur={field.onBlur}
-                      placeholder="Select drop-off location"
+                      aria-labelledby="booking-pickup-time-label"
+                      slots={BOOKING_TIME_SLOTS}
                     />
                   )}
                 />
               </div>
-              {dropId && needsLocationDetailField(dropId) && (
-                <input
-                  {...register("dropoffCustom")}
-                  placeholder={
-                    dropId === HOTEL_DELIVERY_ID
-                      ? "Hotel name, address, or delivery instructions…"
-                      : "Street, area, or landmark…"
-                  }
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+              <div>
+                <label
+                  id="booking-dropoff-time-label"
+                  className="mb-1.5 block text-xs font-semibold text-slate-500"
+                >
+                  Drop-off time
+                </label>
+                <Controller
+                  name="dropoffTime"
+                  control={control}
+                  render={({ field }) => (
+                    <TimeSlotSelect
+                      ref={field.ref}
+                      id="booking-dropoff-time"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      aria-labelledby="booking-dropoff-time-label"
+                      slots={BOOKING_TIME_SLOTS}
+                    />
+                  )}
                 />
-              )}
-              {errors.dropoffLocationId && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffLocationId.message}</p>
-              )}
-              {errors.dropoffCustom && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffCustom.message}</p>
-              )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-[var(--surface-soft)]/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div>
           <p className="text-sm font-semibold text-slate-900">
-            {durationDays} day{durationDays === 1 ? "" : "s"} · Pickup: {pickupLabel}
-            {differentDropoff ? ` · Drop-off: ${dropLabel}` : ""}
+            {durationDays} day{durationDays === 1 ? "" : "s"} · Shop pickup Pietà
+            {alternatePickupRequested ? " · Off-site pickup requested" : ""}
+            {differentDropoff ? " · Different drop-off" : ""}
+            {offSiteLegs > 0 ? ` · +€${offSiteFeesEur} off-site` : ""}
           </p>
           <p className="mt-0.5 text-xs text-slate-600">
-            Indicative motorcycles/scooters total ~€{indicativeTripTotalEur}{" "}
-            (€{indicativeDailyEur}/day × {durationDays}{" "}
-            {durationDays === 1 ? "day" : "days"}) · Final price depends on
-            vehicle and add-ons.
+            Indicative motorcycles/scooters total ~€{indicativeTripTotalEur} (€{indicativeDailyEur}/day × {durationDays}{" "}
+            {durationDays === 1 ? "day" : "days"}) · Final price depends on vehicle and add-ons.
           </p>
         </div>
         <button

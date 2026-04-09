@@ -9,9 +9,7 @@ import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-
 import { GuideParkingRulesSlider } from "@/features/guide/components/guide-parking-rules-slider";
 
 /** Radial wash from bottom-left; taller ellipse so the glow reaches further up the left edge */
-const LINE_COLOR_CORNER_SHADE: Record<"yellow" | "blue" | "green", string> = {
-  yellow:
-    "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(253, 230, 138, 0.5) 0%, rgba(254, 243, 199, 0.16) 48%, rgba(248, 250, 252, 0) 78%)",
+const LINE_COLOR_CORNER_SHADE: Record<"blue" | "green", string> = {
   blue:
     "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(125, 211, 252, 0.44) 0%, rgba(224, 242, 254, 0.14) 48%, rgba(248, 250, 252, 0) 78%)",
   green:
@@ -22,7 +20,7 @@ const NEUTRAL_CORNER_SHADE =
   "radial-gradient(ellipse 125% 118% at 0% 100%, rgba(226, 232, 240, 0.32) 0%, rgba(241, 245, 249, 0.08) 50%, rgba(248, 250, 252, 0) 76%)";
 
 export function GuideParkingRulesSection() {
-  const [activeLineTint, setActiveLineTint] = useState<"yellow" | "blue" | "green" | null>("yellow");
+  const [activeLineTint, setActiveLineTint] = useState<"blue" | "green" | null>("blue");
 
   const shade =
     activeLineTint === null ? NEUTRAL_CORNER_SHADE : LINE_COLOR_CORNER_SHADE[activeLineTint];

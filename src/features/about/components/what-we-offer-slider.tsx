@@ -3,40 +3,44 @@
 import Image from "next/image";
 import { useCallback, useId, useState } from "react";
 
-const BASE = "/about-page-images";
+/** Paths under `/public` (spaces encoded for Next/Image). */
+const IMG_LEX_GREY = `/product-images/${encodeURIComponent("lex moto grey.png")}`;
+const IMG_ATV_QUAD = `/TourPage-images/${encodeURIComponent("TOURS PAGE PHOTO QUAD.jpg")}`;
+const IMG_BICYCLES = "/about-page-image/bicycles.png";
+const IMG_MALTA_MAP = `/${encodeURIComponent("guide map.png")}`;
 
 const SLIDES = [
   {
     id: "motorcycles",
     title: "Motorcycles & scooters",
     description:
-      "Zip along scenic coastal roads with nimble, well-prepared two-wheelers suited to Malta’s streets and day trips.",
-    imageSrc: `${BASE}/motorcycle-rentals.png`,
-    imageAlt: "Motorcycles and scooters for rent in Malta",
+      "Our fleet includes nimble scooters and motorbikes — well-prepared for Malta’s roads and day trips.",
+    imageSrc: IMG_LEX_GREY,
+    imageAlt: "Lex Moto scooter — available from Explore Malta Rentals",
   },
   {
     id: "atvs",
     title: "ATVs",
     description:
-      "Take on beaten-path trails and open stretches with a capable quad when you want more adventure off the main roads.",
-    imageSrc: `${BASE}/atv.png`,
-    imageAlt: "ATV rental for trails and open terrain in Malta",
+      "Quad bike hire when you want trails and open stretches beyond the main roads — ask what’s available.",
+    imageSrc: IMG_ATV_QUAD,
+    imageAlt: "ATV / quad bike hire in Malta",
   },
   {
     id: "bicycles",
     title: "Bicycles",
     description:
-      "Enjoy a relaxed pace through historic streets, promenades, and seaside routes — perfect for easy exploration.",
-    imageSrc: `${BASE}/bicycle-rentals.png`,
-    imageAlt: "Bicycle rental for exploring Malta by bike",
+      "Bicycle rental for a relaxed pace along promenades, lanes, and coastal routes.",
+    imageSrc: IMG_BICYCLES,
+    imageAlt: "Bicycle rental for exploring Malta",
   },
   {
     id: "tours",
     title: "Guided tours",
     description:
-      "Go beyond rentals with tours designed to showcase iconic landmarks and local treasures, first visit or a fresh look at the island.",
-    imageSrc: `${BASE}/guided-tours.jpg`,
-    imageAlt: "Guided tours of Malta’s landmarks and local highlights",
+      "Custom guided tours on request — discover top sights and hidden gems with local insight.",
+    imageSrc: IMG_MALTA_MAP,
+    imageAlt: "Map of Malta — guided tours and routes",
   },
 ] as const;
 

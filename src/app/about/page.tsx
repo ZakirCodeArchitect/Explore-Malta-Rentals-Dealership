@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 
 import { AboutContent } from "@/features/about/components/about-content";
 import { getEnvValue } from "@/components/footer/footer-utils";
+import { SITE_META } from "@/lib/site-brand-copy";
 
 export const metadata: Metadata = {
   title: "About us",
-  description:
-    "Learn about Explore Malta Rentals — motorcycle, ATV, and bicycle hire from Pietà, guided tours, fleet and licensing info, and how to get in touch.",
+  description: SITE_META.description,
 };
 
 export default function AboutPage() {

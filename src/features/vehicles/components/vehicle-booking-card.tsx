@@ -76,17 +76,18 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
   const rentalDays = getRentalDays(pickupDate, returnDate);
   const motorLicense = needsMotorLicense(vehicle.type);
 
-  const addOnTotalPerDay = useMemo(
-    () =>
-      vehicle.addOns
-        .filter((addOn) => selectedAddOns.includes(addOn.id))
-        .reduce((sum, addOn) => sum + addOn.pricePerDay, 0),
-    [selectedAddOns, vehicle.addOns],
-  );
+  const { addOnTotalPerDay, addOnTotalOnce } = useMemo(() => {
+    const selected = vehicle.addOns.filter((addOn) => selectedAddOns.includes(addOn.id));
+    return {
+      addOnTotalPerDay: selected.reduce((sum, addOn) => sum + (addOn.pricePerDay ?? 0), 0),
+      addOnTotalOnce: selected.reduce((sum, addOn) => sum + (addOn.priceOnce ?? 0), 0),
+    };
+  }, [selectedAddOns, vehicle.addOns]);
 
   const dailySubtotal = vehicle.pricePerDay + addOnTotalPerDay;
   const billableDays = rentalDays > 0 ? rentalDays : 0;
-  const estimatedTotal = billableDays > 0 ? billableDays * dailySubtotal : 0;
+  const estimatedTotal =
+    billableDays > 0 ? billableDays * dailySubtotal + addOnTotalOnce : 0;
 
   function validate(): FormErrors {
     const next: FormErrors = {};
@@ -426,7 +427,14 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                       />
                       {addOn.name}
                     </span>
-                    <span className="font-semibold text-slate-700">+EUR {addOn.pricePerDay}/day</span>
+                    <span className="font-semibold text-slate-700">
+                      +
+                      {addOn.pricePerDay != null ? (
+                        <>EUR {addOn.pricePerDay}/day</>
+                      ) : (
+                        <>EUR {addOn.priceOnce} one-time</>
+                      )}
+                    </span>
                   </label>
                 );
               })}

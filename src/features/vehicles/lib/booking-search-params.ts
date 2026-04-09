@@ -143,6 +143,22 @@ export function clampTripEndDate(pickup: Date, end: Date): Date {
   return e;
 }
 
+/** Filter scooters/motorcycles by engine class from URL (`cc=50` / `cc=125`). */
+export type EngineCcFilter = "All" | "50" | "125";
+
+export function parseCcSearchParam(raw: string | null): EngineCcFilter {
+  if (!raw) return "All";
+  const key = raw.trim().toLowerCase();
+  if (key === "50") return "50";
+  if (key === "125") return "125";
+  return "All";
+}
+
+export function engineCcToUrlParam(value: EngineCcFilter): string {
+  if (value === "All") return "all";
+  return value;
+}
+
 export function formatPickupDateLabel(isoDate: string): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return null;
   const [y, mo, da] = isoDate.split("-").map(Number);

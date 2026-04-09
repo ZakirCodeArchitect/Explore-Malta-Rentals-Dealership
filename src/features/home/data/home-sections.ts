@@ -99,7 +99,7 @@ export const servicesHighlights = [
   },
   {
     id: "helmets",
-    title: "Helmets included",
+    title: "Helmets and phone holders included",
     description: "Safety-first kit bundled with your rental — no last-minute surprises.",
   },
   {
@@ -135,9 +135,9 @@ export const servicesHighlights = [
  */
 export const quickBookingCta = {
   kicker: "Your next chapter",
-  title: "The island is waiting — make it yours.",
+  title: "Malta is waiting — make it yours.",
   description:
-    "Rent a motorcycle, ATV, or bicycle in Pietà and explore Malta at your pace. Sunlit coasts, quiet lanes, and roads that feel like a holiday — it starts with one booking.",
+    "Explore Malta Rentals — your go-to choice to experience Malta your way. From affordable self-drive options to guided tours, we are passionate about helping locals and visitors experience the beauty of Malta in the most free, flexible, and affordable way possible. It starts with one booking.",
   primaryCta: { href: "/booking", label: "Start your journey" },
   secondaryCta: { href: "#contact", label: "Contact us" },
 } as const;
@@ -145,6 +145,6 @@ export const quickBookingCta = {
 export const contactSection = {
   title: "Contact us",
   description:
-    "Questions or want help choosing the right ride? Send us a WhatsApp message and we'll respond quickly.",
+    "Call, message, or visit — we’re here to help you choose the right ride. Your mobile number and map location are below.",
 } as const;
 

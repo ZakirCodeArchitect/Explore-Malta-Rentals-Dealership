@@ -1,34 +1,34 @@
 import type { BookingFormValues } from "@/features/booking/lib/booking-schema";
-import {
-  CUSTOM_LOCATION_ID,
-  HOTEL_DELIVERY_ID,
-  locationLabelById,
-} from "@/features/booking/data/locations";
+import { BOOKING_SHOP_LABEL } from "@/features/booking/lib/booking-schema";
 
-function resolvePlace(id: string, custom: string | undefined): string {
-  if (id === CUSTOM_LOCATION_ID) return (custom ?? "").trim();
-  if (id === HOTEL_DELIVERY_ID) {
-    const t = (custom ?? "").trim();
-    return t || (locationLabelById(id) ?? id);
+function buildPickupLabel(values: BookingFormValues): string {
+  if (values.alternatePickupRequested && values.alternatePickupAddress?.trim()) {
+    return `${BOOKING_SHOP_LABEL} · Off-site pickup: ${values.alternatePickupAddress.trim()}`;
   }
-  return locationLabelById(id) ?? id;
+  return BOOKING_SHOP_LABEL;
+}
+
+function buildDropoffLabel(values: BookingFormValues): string {
+  if (!values.differentDropoff) {
+    return buildPickupLabel(values);
+  }
+  return values.dropoffAddress?.trim() ?? BOOKING_SHOP_LABEL;
 }
 
 export function buildVehiclesSearchUrl(values: BookingFormValues): string {
-  const pickupLabel = resolvePlace(values.pickupLocationId, values.pickupCustom);
-  const sameDrop =
-    !values.differentDropoff || !values.dropoffLocationId
-      ? pickupLabel
-      : resolvePlace(values.dropoffLocationId, values.dropoffCustom);
+  const pickupLabel = buildPickupLabel(values);
+  const dropLabel = buildDropoffLabel(values);
 
   const params = new URLSearchParams({
     pickupLocation: pickupLabel,
-    dropoffLocation: sameDrop,
+    dropoffLocation: dropLabel,
     pickupDate: values.pickupDate,
     dropoffDate: values.dropoffDate,
     pickupTime: values.pickupTime,
     dropoffTime: values.dropoffTime,
     differentDropoff: values.differentDropoff ? "1" : "0",
+    alternatePickup: values.alternatePickupRequested ? "1" : "0",
+    depositPref: values.depositPreference,
   });
 
   return `/vehicles?${params.toString()}`;

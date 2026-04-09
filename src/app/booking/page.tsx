@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import { BookingSearchForm } from "@/features/booking/components/booking-search-form";
-import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-underlined-text";
 
 /** Booking hero backdrop (`public/malta-1.jpg`). */
 const BOOKING_HERO_BACKDROP = "/malta-1.jpg";
@@ -11,7 +11,7 @@ const BOOKING_HERO_BACKDROP = "/malta-1.jpg";
 export const metadata: Metadata = {
   title: "Booking | Malta Rentals",
   description:
-    "Find, book and rent a bike easily — choose pickup location, dates, and times, then browse scooters, motorcycles, ATVs, and bicycles across Malta.",
+    "Find, book and rent easily with Explore Malta Rentals — Pietà pickup, optional off-site service, deposit options, then browse available scooters.",
 };
 
 export default function BookingPage() {
@@ -47,11 +47,11 @@ export default function BookingPage() {
                 id="booking-heading"
                 className="text-4xl font-bold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl"
               >
-                Find, book and rent a{" "}
-                <BrandBlueUnderlinedText>bike</BrandBlueUnderlinedText> easily
+                Find, Book and Rent easily with Explore Malta Rentals
               </h1>
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600 sm:mx-0 sm:text-lg">
-                Set your pickup, dates, and times in one place, then explore available vehicles that match your trip.
+                Shop pickup in Pietà, optional off-site pickup or drop-off (€20 each, payable at checkout), then browse
+                available scooters.
               </p>
             </header>
 
@@ -81,6 +81,15 @@ export default function BookingPage() {
             <div className="mt-8 w-full">
               <IndicativeDailyRatesCard />
             </div>
+            <p className="mt-8 text-center text-sm text-slate-600 sm:text-left">
+              Want the full picture on what&apos;s included?{" "}
+              <Link
+                href="/#services"
+                className="font-semibold text-[var(--brand-blue-strong)] underline decoration-[var(--brand-blue)]/35 underline-offset-4 hover:decoration-[var(--brand-blue)]"
+              >
+                Services &amp; benefits
+              </Link>
+            </p>
           </div>
         </Container>
       </section>

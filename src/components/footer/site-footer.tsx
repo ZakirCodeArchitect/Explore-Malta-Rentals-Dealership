@@ -1,14 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { GoogleMapEmbed } from "@/components/google-map-embed";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Container } from "@/components/ui/container";
+import { LOGO_PATH, SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 import { FooterColumn, FooterTrustItem } from "./footer-column";
 import { FooterNewsletterForm } from "./footer-newsletter-form";
 import { FooterSocialLinks } from "./footer-social-links";
 import { digitsOnlyForWa, getEnvValue, normalizeUrl } from "./footer-utils";
-
-/** Footer backdrop (`public/footer-image.jpg`). */
-const FOOTER_BACKDROP = "/footer-image.jpg";
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -27,7 +26,7 @@ function hasConfiguredSocialLinks() {
 export function SiteFooter() {
   const brandName =
     getEnvValue("NEXT_PUBLIC_SITE_NAME", "CompanyName", "businessName") ?? "Explore Malta Rentals";
-  const logoSrc = "/explore%20malta%20rentals%20logo.png";
+  const logoSrc = LOGO_PATH;
   const email = getEnvValue("email");
   const address = getEnvValue("address");
   const phoneRaw = getEnvValue("phone", "NEXT_PUBLIC_PHONE", "telephone");
@@ -47,13 +46,13 @@ export function SiteFooter() {
   const companyLinks = [
     { href: "/about", label: "About us" },
     { href: "/tours", label: "Tours" },
-    { href: "/#contact", label: "Contact" },
+    { href: "/contact", label: "Contact" },
     { href: "/#services", label: "How renting works" },
   ] as const;
 
   const supportLinks = [
     { href: "/#faq", label: "Help center" },
-    { href: "/#contact", label: "Talk to us" },
+    { href: "/contact", label: "Talk to us" },
     { href: "/booking", label: "Book a rental" },
   ] as const;
 
@@ -68,19 +67,6 @@ export function SiteFooter() {
       role="contentinfo"
       className="relative isolate overflow-hidden border-t border-white/10 bg-[#050d18] text-white"
     >
-      <Image
-        src={FOOTER_BACKDROP}
-        alt=""
-        fill
-        sizes="100vw"
-        className="pointer-events-none object-cover object-center"
-        aria-hidden
-        priority={false}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050d18]/78 via-[#0a1628]/52 to-[#050d18]/82"
-        aria-hidden
-      />
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_0%,rgba(58,124,165,0.14),transparent_55%)]"
         aria-hidden
@@ -96,14 +82,16 @@ export function SiteFooter() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
-                Based in Pietà
+                {SITE_LOCATION_KICKER}
               </p>
               <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl lg:text-[2rem] lg:leading-tight">
-                Motorcycle, ATV, and bicycle rentals from Pietà, plus guided tours — explore Malta by road,
-                trail, or town at your own pace.
+                {SITE_PRIMARY_TAGLINE.headline}
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-white/65 sm:text-base">
-                Quick booking, well-kept bikes and quads, and local advice so you can ride with confidence.
+              <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
+                {SITE_PRIMARY_TAGLINE.body}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-white/65 sm:text-base">
+                {SITE_PRIMARY_TAGLINE.supporting}
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
@@ -166,11 +154,11 @@ export function SiteFooter() {
                 width={300}
                 height={52}
                 className="h-11 w-auto max-w-full rounded-md object-contain object-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
+                style={{ width: "auto" }}
               />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">
-              Motorcycle, ATV, and bicycle rentals from Pietà, plus guided tours — explore Malta by road, trail,
-              or town at your own pace.
+              {SITE_PRIMARY_TAGLINE.body} {SITE_PRIMARY_TAGLINE.supporting}
             </p>
             {hasConfiguredSocialLinks() ? (
               <>
@@ -213,7 +201,7 @@ export function SiteFooter() {
                   <li>
                     <a
                       href={telHref}
-                      className="text-white/80 transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d18] rounded-sm"
+                      className="text-xl font-bold tracking-tight text-white transition-colors duration-200 hover:text-[var(--brand-orange)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d18] rounded-sm"
                     >
                       {phoneRaw}
                     </a>
@@ -243,13 +231,46 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-8 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 grid gap-8 border-t border-white/10 pt-10 lg:grid-cols-12 lg:items-stretch">
+          <div className="flex flex-col justify-center lg:col-span-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55">Visit and call</p>
+            {address ? (
+              <p className="mt-3 text-sm leading-relaxed text-white/80">{address}</p>
+            ) : (
+              <p className="mt-3 text-sm text-white/50">Add your address in environment config.</p>
+            )}
+            {phoneRaw && telHref ? (
+              <a
+                href={telHref}
+                className="mt-4 inline-flex text-2xl font-bold tracking-tight text-white transition-colors hover:text-[var(--brand-orange)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d18] sm:text-3xl"
+              >
+                {phoneRaw}
+              </a>
+            ) : null}
+          </div>
+          <div className="min-h-[200px] lg:col-span-5">
+            <GoogleMapEmbed
+              query={address}
+              className="h-full min-h-[200px] w-full rounded-xl border border-white/10 sm:min-h-[240px]"
+            />
+          </div>
+          <div className="flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-6 py-8 lg:col-span-3">
+            <Image
+              src={logoSrc}
+              alt={brandName}
+              width={320}
+              height={56}
+              className="h-16 w-auto max-w-full object-contain object-center sm:h-20"
+              style={{ width: "auto" }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-8 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {currentYear} {brandName}. All rights reserved.
           </p>
-          <p className="max-w-prose sm:text-right">
-            Explore Malta on two wheels or four — on your schedule.
-          </p>
+          <p className="max-w-prose sm:text-right">{SITE_PRIMARY_TAGLINE.supporting}</p>
         </div>
       </Container>
     </footer>

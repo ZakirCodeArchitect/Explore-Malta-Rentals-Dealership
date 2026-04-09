@@ -7,13 +7,14 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import Image from "next/image";
 import { addDays } from "date-fns";
 import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
-import { emptyParkingBackdropPath } from "@/features/home/data/hero-content";
+import { LOGO_PATH } from "@/lib/site-brand-copy";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
@@ -27,6 +28,7 @@ import type {
 import {
   clampTripEndDate,
   formatPickupDateParam,
+  parseCcSearchParam,
   parseColorSearchParam,
   parsePickupDateParam,
   parseSeatsSearchParam,
@@ -36,6 +38,7 @@ import {
   transmissionToUrlParam,
   vehicleColorToUrlParam,
   vehicleFilterTypeToUrlParam,
+  type EngineCcFilter,
 } from "@/features/vehicles/lib/booking-search-params";
 
 /** Tailwind `lg` — sidebar rail visible; hero omits seats/color there. */
@@ -88,6 +91,7 @@ export function VehicleListingShell({
   const pickupDateParam = searchParams.get("pickupDate");
   const dropoffDateParam = searchParams.get("dropoffDate");
   const hotelDeliveryParam = searchParams.get("hotelDelivery");
+  const ccParam = searchParams.get("cc");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
   const initialTransmission =
@@ -131,6 +135,9 @@ export function VehicleListingShell({
     useState<VehicleColor | "All">(initialColor);
   const [appliedSeats, setAppliedSeats] =
     useState<VehicleSeatsFilter>(initialSeats);
+  const [appliedCc, setAppliedCc] = useState<EngineCcFilter>(() =>
+    parseCcSearchParam(ccParam),
+  );
 
   const [hotelDelivery, setHotelDelivery] = useState(
     hotelDeliveryParam === "1",
@@ -208,6 +215,10 @@ export function VehicleListingShell({
   useEffect(() => {
     setHotelDelivery(hotelDeliveryParam === "1");
   }, [hotelDeliveryParam]);
+
+  useEffect(() => {
+    setAppliedCc(parseCcSearchParam(ccParam));
+  }, [ccParam]);
 
   const handlePickupLocationChange = useCallback(
     (option: BookingOption | null) => {
@@ -308,6 +319,7 @@ export function VehicleListingShell({
     setAppliedColor("All");
     setSelectedSeats("All");
     setAppliedSeats("All");
+    setAppliedCc("All");
     setIsRefreshing(false);
     replaceQuery((p) => {
       p.set("type", vehicleFilterTypeToUrlParam("All"));
@@ -321,6 +333,7 @@ export function VehicleListingShell({
       p.delete("dropoffDate");
       p.delete("hotelDelivery");
       p.delete("returnElsewhere");
+      p.delete("cc");
     });
   }, [replaceQuery]);
 
@@ -355,8 +368,24 @@ export function VehicleListingShell({
         ? colorFiltered
         : colorFiltered.filter((vehicle) => vehicle.seats === appliedSeats);
 
-    return [...seatsFiltered];
-  }, [vehicles, appliedColor, appliedSeats, appliedType, appliedTransmission]);
+    const ccFiltered =
+      appliedCc === "All"
+        ? seatsFiltered
+        : seatsFiltered.filter((vehicle) =>
+            appliedCc === "50"
+              ? /\b50cc\b/i.test(vehicle.engine)
+              : /\b125cc\b/i.test(vehicle.engine),
+          );
+
+    return [...ccFiltered];
+  }, [
+    vehicles,
+    appliedCc,
+    appliedColor,
+    appliedSeats,
+    appliedType,
+    appliedTransmission,
+  ]);
 
   const showListingSidebar = pathname === "/vehicles";
   const isLg = useIsLgViewport();
@@ -460,12 +489,16 @@ export function VehicleListingShell({
         className="relative isolate overflow-hidden pb-12 pt-28 sm:pb-14 sm:pt-32"
       >
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat"
-            style={{
-              backgroundImage: `url("${emptyParkingBackdropPath}")`,
-            }}
-          />
+          <div className="absolute inset-0 flex items-center justify-center bg-[#0b1624]">
+            <Image
+              src={LOGO_PATH}
+              alt=""
+              width={480}
+              height={96}
+              className="h-auto w-[min(88%,26rem)] max-w-full object-contain opacity-[0.38]"
+              priority={false}
+            />
+          </div>
           <div className="absolute inset-0 bg-slate-950/35" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.72)_0%,rgba(15,23,42,0.38)_55%,rgba(15,23,42,0.12)_100%)]" />
         </div>

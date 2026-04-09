@@ -7,14 +7,10 @@ import { SiteShell } from "@/components/site-shell";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { WhatWeOfferSlider } from "@/features/about/components/what-we-offer-slider";
-
-/** Full-bleed backdrop for the about page company story (under a light wash for text contrast). */
-const COMPANY_STORY_BACKDROP = "/GuidePageImages/disabled.jpg";
+import { LOGO_PATH, SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 
 /** Scenic Malta backdrop for the Explore Malta callout (`public/malta.png`). */
 const EXPLORE_MALTA_BACKDROP = "/malta.png";
-
-const COMPANY_STORY_BIKE_SRC = `/BikeImages/${encodeURIComponent("lex moto grey.png")}`;
 
 const FLEET_NECO_ONE_SRC = `/BikeImages/${encodeURIComponent("neco one.png")}`;
 const FLEET_LEX_AURA_SRC = `/BikeImages/${encodeURIComponent("lex moto grey.png")}`;
@@ -132,31 +128,13 @@ function FleetModelCard({
   );
 }
 
-function CompanyStoryHeroTitle({ titleId }: Readonly<{ titleId: string }>) {
+function AboutHeroTitle({ titleId }: Readonly<{ titleId: string }>) {
   return (
     <h1
       id={titleId}
-      className="text-4xl font-bold leading-[1.08] tracking-[-0.04em] text-slate-950 sm:text-5xl sm:leading-[1.06] lg:text-[3.25rem] lg:leading-[1.05]"
+      className="max-w-[22ch] text-4xl font-bold leading-[1.08] tracking-[-0.04em] text-white drop-shadow-[0_2px_28px_rgba(0,0,0,0.45)] sm:text-5xl sm:leading-[1.06] lg:max-w-[24ch] lg:text-[3.25rem] lg:leading-[1.05] xl:text-6xl xl:leading-[1.04]"
     >
-      <span className="block sm:inline">Find, book and rent a bike</span>{" "}
-      <span className="relative inline-block">
-        <span className="text-[var(--brand-blue)]">easily</span>
-        <svg
-          viewBox="0 0 132 16"
-          aria-hidden
-          className="pointer-events-none absolute -bottom-1 left-[-2%] h-[0.45em] w-[104%] max-w-none overflow-visible text-[var(--brand-blue)] sm:-bottom-1.5 sm:h-[0.5em]"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M4 11 C 32 15.5, 56 3.5, 88 9.5 C 100 11.5, 112 10.5, 128 7"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
+      Find, Book and Rent easily with Explore Malta Rentals
     </h1>
   );
 }
@@ -169,40 +147,26 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
       <section
         id="company-story"
         aria-labelledby="about-story-hero-title"
-        className="relative isolate flex min-h-svh w-full scroll-mt-28 flex-col overflow-hidden border-t border-slate-200/70 bg-[#f0f6fa] pt-20 sm:pt-24"
+        className="relative isolate flex min-h-svh w-full scroll-mt-28 flex-col overflow-hidden border-t border-slate-200/70 bg-[#0b1624] pt-20 sm:pt-24"
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat"
-          style={{
-            backgroundImage: [
-              "linear-gradient(100deg, rgba(255,255,255,0.94) 0%, rgba(248,250,252,0.86) 38%, rgba(245,251,255,0.72) 62%, rgba(240,246,250,0.78) 100%)",
-              `url("${COMPANY_STORY_BACKDROP}")`,
-            ].join(", "),
-          }}
-        />
+        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+          <div className="absolute inset-0 flex items-center justify-center bg-[#0b1624]">
+            <Image
+              src={LOGO_PATH}
+              alt=""
+              width={640}
+              height={128}
+              className="h-auto w-[min(92%,28rem)] max-w-full object-contain opacity-[0.38]"
+              priority
+            />
+          </div>
+          <div className="absolute inset-0 bg-slate-950/40" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.78)_0%,rgba(15,23,42,0.42)_50%,rgba(15,23,42,0.2)_100%)]" />
+        </div>
         <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center py-8 sm:py-10 lg:py-12">
           <SiteShell>
-            <div className="grid w-full items-center gap-10 text-left lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.48fr)] lg:gap-8 xl:gap-12">
-              <div className="min-w-0 max-w-3xl lg:max-w-none">
-                <CompanyStoryHeroTitle titleId="about-story-hero-title" />
-                <p className="mt-6 max-w-xl text-base font-normal leading-7 text-slate-900 sm:mt-7 sm:text-lg sm:leading-8">
-                  Explore Malta Rentals offers high-quality motorcycles, ATVs, and bicycles, giving you
-                  the freedom to discover Malta at your own pace. From scenic coastal rides to guided
-                  tours, they provide reliable vehicles and excellent service to ensure a smooth and
-                  unforgettable experience.
-                </p>
-              </div>
-              <div className="relative mx-auto h-[min(26rem,52svh)] w-full min-h-[18rem] max-w-2xl overflow-visible sm:h-[min(28rem,50svh)] sm:min-h-[20rem] lg:mx-0 lg:h-[min(40rem,64svh)] lg:max-w-none lg:min-h-[32rem] xl:h-[min(46rem,68svh)] xl:min-h-[36rem]">
-                <Image
-                  src={COMPANY_STORY_BIKE_SRC}
-                  alt={`${companyName} — Lex Moto rental motorcycle`}
-                  fill
-                  className="object-contain object-center [transform:scale(1.28)] sm:[transform:scale(1.3)] lg:[transform:scale(1.35)] xl:[transform:scale(1.38)]"
-                  sizes="(min-width: 1280px) 56vw, (min-width: 1024px) 54vw, 92vw"
-                  priority
-                />
-              </div>
+            <div className="w-full max-w-4xl text-left">
+              <AboutHeroTitle titleId="about-story-hero-title" />
             </div>
           </SiteShell>
         </div>
@@ -220,27 +184,31 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
             </header>
             <div className="mt-6 space-y-5 text-left text-sm leading-relaxed text-slate-600 sm:mt-7 sm:leading-7">
               <p>
-                Welcome to {companyName}, your gateway to discovering the beauty, culture, and hidden
-                gems of Malta in the most exciting and flexible way possible. Based in Pieta, we specialize
-                in providing high-quality Motorcycle&apos;s, ATV&apos;s, and bicycle&apos;s rentals, giving
-                you the freedom to explore the island at your own pace.
+                {companyName}, your go-to choice to experience Malta your way. From affordable self-drive
+                motorbike rental, quadbike hire and bicycles, to a guided tour around Malta.
               </p>
               <p>
-                Whether you&apos;re looking for the thrill of riding along Malta&apos;s scenic coastal
-                roads, the adventure of the beaten path trails on an ATV, or a relaxed cycling experience
-                through historic streets and seaside promenades, we have the perfect ride for you.
+                We are passionate about helping locals and visitors experience the beauty of Malta in the
+                most free, flexible, and affordable way possible.
               </p>
               <p>
-                At {companyName}, we go beyond just rentals. We also offer guided tours designed to
-                showcase the very best of Malta, from iconic landmarks to local treasures. Our goal is to
-                create unforgettable experiences for every customer, whether you&apos;re visiting for the
-                first time or rediscovering the island.
+                We specialize in Self-Drive Rentals, giving you the freedom to explore Malta at your own
+                pace.
               </p>
               <p>
-                We pride ourselves on excellent customer service, well-maintained vehicles, and a genuine
-                passion for helping you explore Malta safely and comfortably.
+                Whether you&apos;re cruising along the coast, discovering beaches, or navigating historic
+                sites, our reliable fleet ensures a smooth and enjoyable journey.
               </p>
-              
+              <p>
+                We pride ourselves on offering some of the cheapest rental prices in Malta without
+                compromising on quality or safety. Our vehicles are well-maintained, easy to ride, and
+                perfect for both beginners and experienced riders.
+              </p>
+              <p>
+                Looking for something more guided? We also provide custom tours on request, allowing you to
+                discover Malta&apos;s top attractions and hidden gems with expert local insight.
+              </p>
+              <p className="font-semibold text-slate-800">Your journey starts now.</p>
             </div>
           </div>
         </Container>
@@ -252,12 +220,34 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
         className="scroll-mt-28 border-t border-slate-200/70 bg-[#f8fafc] py-14 sm:py-16"
       >
         <Container>
-          <SectionHeader
-            titleId="about-offer-title"
-            title="What we offer"
-            tone="light"
-            description="From coastal runs to trail days and relaxed town rides, pick the experience that fits your Malta plan."
-          />
+          <div
+            className={[
+              "relative isolate overflow-hidden rounded-2xl border border-white/10 bg-[#050d18] p-6 text-white shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10",
+              "motion-safe:transition-shadow motion-safe:duration-300",
+            ].join(" ")}
+          >
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_0%,rgba(58,124,165,0.14),transparent_55%)]"
+              aria-hidden
+            />
+            <div className="relative max-w-xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
+                {SITE_LOCATION_KICKER}
+              </p>
+              <h2
+                id="about-offer-title"
+                className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl lg:text-[2rem] lg:leading-tight"
+              >
+                {SITE_PRIMARY_TAGLINE.headline}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
+                {SITE_PRIMARY_TAGLINE.body}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-white/65 sm:text-base">
+                {SITE_PRIMARY_TAGLINE.supporting}
+              </p>
+            </div>
+          </div>
           <WhatWeOfferSlider />
         </Container>
       </section>

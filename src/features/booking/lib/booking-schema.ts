@@ -1,51 +1,58 @@
 import { z } from "zod";
 import { differenceInCalendarDays, isAfter, parse, startOfDay } from "date-fns";
-import { needsLocationDetailField } from "@/features/booking/data/locations";
+import { BOOKING_TIME_SLOTS } from "@/features/booking/lib/time-slots";
 
 /** Calendar-day span between pickup and drop-off dates (`differenceInCalendarDays`). */
 export const TRIP_MIN_SPAN_DAYS = 1;
 export const TRIP_MAX_SPAN_DAYS = 30;
 
+export const BOOKING_SHOP_LABEL = "Pietà — Explore Malta Rentals (shop)" as const;
+/** Extra charge per off-site pickup or drop-off request (payable at checkout). */
+export const OFF_SITE_SERVICE_FEE_EUR = 20;
+export const SECURITY_DEPOSIT_EUR = 350;
+
+function isBookingTime(value: string) {
+  return (BOOKING_TIME_SLOTS as readonly string[]).includes(value);
+}
+
 export const bookingFormSchema = z
   .object({
-    pickupLocationId: z.string().min(1, "Select a pickup location"),
-    pickupCustom: z.string().optional(),
+    /** Shop pickup is always Pietà; optional off-site pickup is requested separately. */
+    alternatePickupRequested: z.boolean(),
+    alternatePickupAddress: z.string().optional(),
     differentDropoff: z.boolean(),
-    dropoffLocationId: z.string().optional(),
-    dropoffCustom: z.string().optional(),
+    dropoffAddress: z.string().optional(),
+    depositPreference: z.enum(["pay_online", "pay_at_meeting"]),
     pickupDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/u, "Invalid pickup date"),
     dropoffDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/u, "Invalid drop-off date"),
-    pickupTime: z.string().min(1, "Select pickup time"),
-    dropoffTime: z.string().min(1, "Select drop-off time"),
+    pickupTime: z
+      .string()
+      .min(1, "Select pickup time")
+      .refine(isBookingTime, "Pickup time must be between 09:30 and 19:00"),
+    dropoffTime: z
+      .string()
+      .min(1, "Select drop-off time")
+      .refine(isBookingTime, "Drop-off time must be between 09:30 and 19:00"),
   })
   .superRefine((data, ctx) => {
-    if (needsLocationDetailField(data.pickupLocationId)) {
-      const t = data.pickupCustom?.trim() ?? "";
-      if (t.length < 3) {
+    if (data.alternatePickupRequested) {
+      const t = data.alternatePickupAddress?.trim() ?? "";
+      if (t.length < 8) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Enter your hotel, address, or delivery details",
-          path: ["pickupCustom"],
+          message: "Enter the full address where you want pickup (we’ll confirm on WhatsApp).",
+          path: ["alternatePickupAddress"],
         });
       }
     }
     if (data.differentDropoff) {
-      if (!data.dropoffLocationId || data.dropoffLocationId.length === 0) {
+      const t = data.dropoffAddress?.trim() ?? "";
+      if (t.length < 8) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Select a drop-off location",
-          path: ["dropoffLocationId"],
+          message: "Enter the full drop-off address (we’ll confirm on WhatsApp).",
+          path: ["dropoffAddress"],
         });
-      }
-      if (data.dropoffLocationId && needsLocationDetailField(data.dropoffLocationId)) {
-        const t = data.dropoffCustom?.trim() ?? "";
-        if (t.length < 3) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Enter your drop-off hotel, address, or delivery details",
-            path: ["dropoffCustom"],
-          });
-        }
       }
     }
 
