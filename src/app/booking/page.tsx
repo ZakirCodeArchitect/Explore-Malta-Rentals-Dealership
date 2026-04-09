@@ -19,7 +19,7 @@ export default function BookingPage() {
     <main className="flex flex-1 flex-col">
       <section
         aria-labelledby="booking-heading"
-        className="relative isolate flex min-h-dvh scroll-mt-28 flex-col overflow-hidden border-b border-slate-200/70 bg-[#f0f6fa]"
+        className="relative isolate flex min-h-dvh scroll-mt-28 flex-col overflow-hidden border-b border-slate-200/70 bg-[var(--surface-elevated)]"
       >
         <div
           aria-hidden
@@ -64,7 +64,7 @@ export default function BookingPage() {
 
       <section
         aria-labelledby="booking-indicative-rates-heading"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[#f8fafc] py-12 sm:py-16"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-12 sm:py-16"
       >
         <Container>
           <div className="mx-auto max-w-5xl">
@@ -85,7 +85,7 @@ export default function BookingPage() {
               Want the full picture on what&apos;s included?{" "}
               <Link
                 href="/#services"
-                className="font-semibold text-[var(--brand-blue-strong)] underline decoration-[var(--brand-blue)]/35 underline-offset-4 hover:decoration-[var(--brand-blue)]"
+                className="font-semibold text-slate-900 underline decoration-[var(--brand-orange)]/45 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
               >
                 Services &amp; benefits
               </Link>

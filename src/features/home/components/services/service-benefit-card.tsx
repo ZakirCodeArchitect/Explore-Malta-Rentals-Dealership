@@ -19,7 +19,7 @@ const smoothMove =
   "duration-[700ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:duration-180 motion-reduce:ease-linear";
 
 const baseCard = joinClasses(
-  "group relative flex h-full flex-col rounded-2xl border border-slate-200/90 bg-white/90 text-left backdrop-blur-sm",
+  "group relative flex h-full flex-col rounded-2xl border border-slate-200/90 bg-[color-mix(in_srgb,var(--surface-card)_92%,var(--brand-blue)_8%)] text-left backdrop-blur-sm",
   /* Single static depth — depth does not morph on hover (avoids shadow interpolation jank). */
   "shadow-[0_18px_46px_-26px_rgba(15,23,42,0.28)]",
   "transform-gpu transition-transform",
@@ -29,11 +29,11 @@ const baseCard = joinClasses(
 );
 
 const iconWrapFeatured = joinClasses(
-  "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--surface-soft)] to-white text-[var(--brand-blue)] shadow-inner ring-1 ring-slate-200/60",
+  "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--surface-soft)] to-[var(--surface-card)] text-slate-700 shadow-inner ring-1 ring-slate-200/60",
 );
 
 const iconWrapCompact = joinClasses(
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--surface-soft)] to-white text-[var(--brand-blue)] shadow-inner ring-1 ring-slate-200/60",
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--surface-soft)] to-[var(--surface-card)] text-slate-700 shadow-inner ring-1 ring-slate-200/60",
 );
 
 export function ServiceBenefitCard({

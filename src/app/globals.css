@@ -2,15 +2,19 @@
 @import "react-day-picker/style.css";
 
 :root {
-  --background: #f5fbff;
+  /* Page wash — clearly blue-tinted (not stark white) */
+  --background: #d0e4f3;
   --foreground: #102235;
   --brand-blue: #3a7ca5;
   --brand-blue-strong: #2f6688;
   --brand-orange: #ffa939;
   --brand-orange-strong: #f0930f;
-  --surface-soft: #eaf4fb;
+  /* Section bands & cards — layered blues */
+  --surface-soft: #c4dff0;
+  --surface-elevated: #e4f0fa;
+  --surface-card: #f0f7fc;
   /* Hero booking inputs */
-  --hero-field-bg: #ffffff;
+  --hero-field-bg: #f5faff;
   /*
    * Fixed `SiteNavbar` stack height: safe-area + red bar + logo row (~min-h-10/11 + py).
    * Use for spacing page columns so content does not sit under the header.
@@ -30,7 +34,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #f5fbff;
+    --background: #d0e4f3;
     --foreground: #102235;
   }
 }

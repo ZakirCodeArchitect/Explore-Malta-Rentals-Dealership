@@ -31,7 +31,7 @@ function AboutUsHeadingWithWave({ titleId }: Readonly<{ titleId: string }>) {
         <svg
           viewBox="0 0 200 16"
           aria-hidden
-          className="-mt-1 block h-[0.65rem] w-[68%] max-w-[9.5rem] min-w-[5.5rem] overflow-visible text-[var(--brand-blue)] sm:-mt-1.5 sm:h-[0.7rem] sm:w-[70%] sm:max-w-[10rem] sm:min-w-[6rem]"
+          className="-mt-1 block h-[0.65rem] w-[68%] max-w-[9.5rem] min-w-[5.5rem] overflow-visible text-[var(--brand-orange)] sm:-mt-1.5 sm:h-[0.7rem] sm:w-[70%] sm:max-w-[10rem] sm:min-w-[6rem]"
           preserveAspectRatio="none"
         >
           <path
@@ -56,7 +56,7 @@ function FleetDisplacementBadge({
   const tone =
     variant === "orange"
       ? "border-orange-200/90 bg-orange-50/95 text-orange-950"
-      : "border-[var(--brand-blue)]/25 bg-[#eef6fb] text-[var(--brand-blue-strong)]";
+      : "border-slate-200/90 bg-slate-100 text-slate-800";
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[0.65rem] font-semibold tabular-nums leading-none shadow-none ${tone}`}

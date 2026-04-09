@@ -78,7 +78,7 @@ export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>
                   className={[
                     "flex w-full items-center rounded-xl px-3 py-2 text-left text-sm font-medium tabular-nums transition-colors",
                     selected
-                      ? "bg-[color-mix(in_srgb,var(--brand-orange)_16%,white)] text-[var(--brand-blue-strong)]"
+                      ? "bg-[color-mix(in_srgb,var(--brand-orange)_16%,white)] text-slate-900"
                       : "text-slate-800 hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none",
                   ].join(" ")}
                   onClick={() => {

@@ -163,7 +163,7 @@ function RadioRow({
     return (
       <label
         htmlFor={id}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-[13px] font-medium leading-snug text-slate-600 transition-[background-color,border-color,box-shadow,color] duration-150 hover:border-slate-200/70 hover:bg-white/60 has-[:checked]:border-[color-mix(in_srgb,var(--brand-blue)_20%,transparent)] has-[:checked]:bg-[color-mix(in_srgb,var(--brand-blue)_6%,white)] has-[:checked]:text-slate-800 has-[:checked]:shadow-[0_1px_3px_rgba(15,23,42,0.05)]"
+        className="flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-[13px] font-medium leading-snug text-slate-600 transition-[background-color,border-color,box-shadow,color] duration-150 hover:border-slate-200/70 hover:bg-white/60 has-[:checked]:border-[color-mix(in_srgb,var(--brand-orange)_28%,transparent)] has-[:checked]:bg-[color-mix(in_srgb,var(--brand-orange)_10%,white)] has-[:checked]:text-slate-800 has-[:checked]:shadow-[0_1px_3px_rgba(15,23,42,0.05)]"
       >
         <input
           id={id}
@@ -171,7 +171,7 @@ function RadioRow({
           type="radio"
           checked={checked}
           onChange={onChange}
-          className="size-3.5 shrink-0 border-slate-300/80 text-[var(--brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35"
+          className="size-3.5 shrink-0 border-slate-300/80 text-[var(--brand-orange)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35"
         />
         <span>{label}</span>
       </label>
@@ -188,7 +188,7 @@ function RadioRow({
         type="radio"
         checked={checked}
         onChange={onChange}
-        className="h-4 w-4 shrink-0 border-slate-300 text-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/35"
+        className="h-4 w-4 shrink-0 border-slate-300 text-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/35"
       />
       <span>{label}</span>
     </label>
@@ -400,7 +400,7 @@ export function VehicleListingSidebar({
         aria-expanded="true"
         aria-controls={filterPanelId}
         title="Hide filters"
-        className="hidden size-8 items-center justify-center rounded-full border border-slate-200/70 bg-white/90 text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[color,box-shadow,background-color] hover:border-slate-300/80 hover:bg-white hover:text-slate-800 hover:shadow-[0_2px_6px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 lg:inline-flex"
+        className="hidden size-8 items-center justify-center rounded-full border border-slate-200/70 bg-white/90 text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[color,box-shadow,background-color] hover:border-slate-300/80 hover:bg-white hover:text-slate-800 hover:shadow-[0_2px_6px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 lg:inline-flex"
       >
         <ChevronLeftIcon />
         <span className="sr-only">Hide filters</span>
@@ -430,7 +430,7 @@ export function VehicleListingSidebar({
         aria-expanded="false"
         aria-controls={filterPanelId}
         title="Show filters"
-        className="flex shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-2 text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 focus-visible:ring-offset-0"
+        className="flex shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-2 text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 focus-visible:ring-offset-0"
       >
         <CollapsedRailFilterIcon />
         <span className="sr-only">Show filters</span>

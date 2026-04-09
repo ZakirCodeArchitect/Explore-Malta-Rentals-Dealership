@@ -138,25 +138,25 @@ export function BookingSearchForm() {
         </p>
         <Link
           href="/vehicles?cc=125&type=scooter"
-          className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-blue)] hover:text-[var(--brand-blue-strong)]"
+          className="inline-flex rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)]/80 hover:text-[var(--brand-orange-strong)]"
         >
           125cc — rent
         </Link>
         <Link
           href="/vehicles?cc=50&type=scooter"
-          className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-blue)] hover:text-[var(--brand-blue-strong)]"
+          className="inline-flex rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)]/80 hover:text-[var(--brand-orange-strong)]"
         >
           50cc — rent
         </Link>
         <Link
           href="/#services"
-          className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
+          className="inline-flex rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
         >
           Services &amp; benefits
         </Link>
       </div>
 
-      <div className="rounded-[1.35rem] border border-slate-200/80 bg-white/95 p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:p-5 lg:p-6">
+      <div className="rounded-[1.35rem] border border-slate-200/80 bg-[color-mix(in_srgb,var(--surface-card)_96%,white)] p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:p-5 lg:p-6">
         <div className="flex flex-col gap-5">
           <div className="rounded-2xl border border-slate-100 bg-[var(--surface-soft)]/60 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
@@ -295,7 +295,7 @@ export function BookingSearchForm() {
                 <Popover.Trigger asChild>
                   <button type="button" className={`${inputShell} justify-between`}>
                     <span className="flex min-w-0 items-center gap-2">
-                      <CalendarDays className="h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden />
+                      <CalendarDays className="h-4 w-4 shrink-0 text-slate-600" aria-hidden />
                       <span className="truncate">{dateSummary}</span>
                     </span>
                     <span className="shrink-0 text-xs font-semibold text-slate-500">Change</span>

@@ -57,7 +57,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="tours-hero"
         aria-labelledby="tours-hero-title"
-        className="relative isolate flex min-h-svh scroll-mt-28 flex-col overflow-hidden border-t border-slate-200/70 bg-[#f0f6fa] pt-20 sm:pt-24"
+        className="relative isolate flex min-h-svh scroll-mt-28 flex-col overflow-hidden border-t border-slate-200/70 bg-[var(--surface-elevated)] pt-20 sm:pt-24"
       >
         <div
           aria-hidden
@@ -78,24 +78,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
                   className="flex flex-col items-start gap-1 text-4xl font-bold leading-[1.08] tracking-[-0.04em] text-slate-950 sm:gap-1.5 sm:text-5xl sm:leading-[1.06] lg:text-[3.15rem]"
                 >
                   <span className="text-slate-950">Malta Tours</span>
-                  <span className="relative inline-block">
-                    <span className="text-[var(--brand-blue)]">Explore Your Way</span>
-                    <svg
-                      viewBox="0 0 132 16"
-                      aria-hidden
-                      className="pointer-events-none absolute -bottom-1 left-[-2%] h-[0.45em] w-[104%] max-w-none overflow-visible text-[var(--brand-blue)] sm:-bottom-1.5 sm:h-[0.5em]"
-                      preserveAspectRatio="none"
-                    >
-                      <path
-                        d="M4 11 C 32 15.5, 56 3.5, 88 9.5 C 100 11.5, 112 10.5, 128 7"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
+                  <BrandBlueUnderlinedText>Explore Your Way</BrandBlueUnderlinedText>
                 </h1>
                 <p className="mt-6 max-w-xl text-base font-normal leading-7 text-slate-800 sm:text-lg sm:leading-8">
                   At <strong className="font-semibold text-slate-950">{companyName}</strong>, we offer{" "}
@@ -105,7 +88,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
                   needs.
                 </p>
               </div>
-              <div className="relative mx-auto hidden min-h-[min(18rem,42svh)] w-full max-w-md overflow-hidden rounded-xl border border-slate-200/90 bg-white/60 shadow-md ring-1 ring-slate-950/[0.04] sm:min-h-[min(20rem,44svh)] lg:block lg:max-w-none">
+              <div className="relative mx-auto hidden min-h-[min(18rem,42svh)] w-full max-w-md overflow-hidden rounded-xl border border-slate-200/90 bg-[color-mix(in_srgb,var(--surface-card)_88%,transparent)] shadow-md ring-1 ring-slate-950/[0.04] sm:min-h-[min(20rem,44svh)] lg:block lg:max-w-none">
                 <Image
                   src={TOUR_QUAD_PHOTO_SRC}
                   alt="Quad bike tour in Malta"
@@ -130,7 +113,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="custom-tours"
         aria-labelledby="custom-tours-title"
-        className="scroll-mt-28 border-t border-slate-200/80 bg-white py-12 sm:py-14 lg:py-16"
+        className="scroll-mt-28 border-t border-slate-200/80 bg-[var(--surface-elevated)] py-12 sm:py-14 lg:py-16"
       >
         <Container>
           <div className="mx-auto w-full max-w-prose">
@@ -147,7 +130,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
                 landmarks and scenic views to hidden beaches and local hotspots, we help you create the
                 perfect itinerary.
               </p>
-              <p className="rounded-xl border border-slate-200/90 bg-[#f8fafc] px-4 py-3 text-slate-700">
+              <p className="rounded-xl border border-slate-200/90 bg-[var(--surface-soft)] px-4 py-3 text-slate-700">
                 Ideal for couples, friends, and small groups looking for a{" "}
                 <strong className="font-semibold text-slate-900">Personalized Malta Experience</strong>.
               </p>
@@ -159,7 +142,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="guided-tours"
         aria-labelledby="guided-tours-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[#f8fafc] py-12 sm:py-14 lg:py-16"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-12 sm:py-14 lg:py-16"
       >
         <Container>
           <div className="mx-auto w-full max-w-prose">
@@ -182,7 +165,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="tour-options"
         aria-labelledby="tour-options-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-white py-14 sm:py-16"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-14 sm:py-16"
       >
         <Container>
           <SectionHeader
@@ -200,7 +183,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="why-choose-tours"
         aria-labelledby="why-choose-tours-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[#f1f5f9] py-14 sm:py-16"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-14 sm:py-16"
       >
         <Container>
           <SectionHeader
@@ -218,7 +201,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="book-tour-cta"
         aria-labelledby="book-tour-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[#f1f5f9] py-14 sm:py-16"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-14 sm:py-16"
       >
         <Container>
           <div className="relative isolate min-h-[min(18rem,48svh)] overflow-hidden rounded-lg border border-slate-200/60 shadow-md ring-1 ring-black/[0.04] sm:min-h-[min(19rem,44svh)]">
@@ -273,7 +256,7 @@ export function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>)
       <section
         id="tour-contact"
         aria-labelledby="tour-contact-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-white py-14 sm:py-16"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-14 sm:py-16"
       >
         <Container>
           <div className="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">

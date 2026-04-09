@@ -36,7 +36,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               {item}
             </li>
           ))}
-          <li className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-[var(--brand-blue-strong)]">
+          <li className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-slate-800">
             {vehicle.transmission}
           </li>
         </ul>

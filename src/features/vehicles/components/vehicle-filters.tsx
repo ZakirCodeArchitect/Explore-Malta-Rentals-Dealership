@@ -238,7 +238,7 @@ export function VehicleFilters({
             Type
             <div className={filterShellClass}>
               <Car
-                className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                className="h-4 w-4 shrink-0 text-slate-600"
                 aria-hidden
               />
               <Select<BookingOption, false>
@@ -270,7 +270,7 @@ export function VehicleFilters({
             Transmission
             <div className={filterShellClass}>
               <Gauge
-                className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                className="h-4 w-4 shrink-0 text-slate-600"
                 aria-hidden
               />
               <Select<BookingOption, false>
@@ -304,7 +304,7 @@ export function VehicleFilters({
               Seats
               <div className={filterShellClass}>
                 <Users
-                  className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                  className="h-4 w-4 shrink-0 text-slate-600"
                   aria-hidden
                 />
                 <Select<BookingOption, false>
@@ -341,7 +341,7 @@ export function VehicleFilters({
               Color
               <div className={filterShellClass}>
                 <Palette
-                  className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+                  className="h-4 w-4 shrink-0 text-slate-600"
                   aria-hidden
                 />
                 <Select<BookingOption, false>

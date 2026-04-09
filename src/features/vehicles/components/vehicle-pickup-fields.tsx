@@ -117,7 +117,7 @@ export function VehiclePickupLocationField({
       Pick-up location
       <div className={fieldWrapClass}>
         <MapPin
-          className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+          className="h-4 w-4 shrink-0 text-slate-600"
           aria-hidden
         />
         <AsyncSelect

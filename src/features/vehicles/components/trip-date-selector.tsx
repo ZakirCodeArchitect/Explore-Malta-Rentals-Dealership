@@ -71,7 +71,7 @@ export function TripDateSelector({
             aria-label={`Trip dates: ${dateSummary}. Change dates.`}
           >
             <span className="flex min-w-0 flex-1 items-center gap-2 text-left">
-              <CalendarDays className="h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden />
+              <CalendarDays className="h-4 w-4 shrink-0 text-slate-600" aria-hidden />
               <span className="truncate text-sm font-semibold text-slate-800">
                 {dateSummary}
               </span>

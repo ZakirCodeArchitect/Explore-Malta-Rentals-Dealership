@@ -8,7 +8,7 @@ export function BikeCategoriesSection() {
     <section
       id="fleet-preview"
       aria-labelledby="bike-categories-title"
-      className="scroll-mt-28 border-t border-slate-200/70 bg-white py-0"
+      className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-0"
     >
       <div className="relative overflow-hidden">
         <div

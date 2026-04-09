@@ -27,7 +27,7 @@ export function HighlightedServicesSection() {
     <section
       id="services"
       aria-labelledby="services-title"
-      className="relative scroll-mt-28 overflow-hidden border-t border-slate-200/80 bg-gradient-to-b from-[var(--surface-soft)] via-white to-[var(--background)] py-16 sm:py-20 lg:py-24"
+      className="relative scroll-mt-28 overflow-hidden border-t border-slate-200/80 bg-gradient-to-b from-[var(--surface-soft)] via-[var(--surface-elevated)] to-[var(--background)] py-16 sm:py-20 lg:py-24"
     >
       <div
         className="pointer-events-none absolute left-[max(-8rem,calc(50%-38rem))] top-0 h-72 w-72 rounded-full bg-[var(--brand-blue)]/[0.12] blur-[100px]"

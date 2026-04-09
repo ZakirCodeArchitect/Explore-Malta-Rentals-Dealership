@@ -41,7 +41,7 @@ export function GuideContent({
       <section
         id="guide-location"
         aria-labelledby="guide-location-title"
-        className="relative isolate flex min-h-svh scroll-mt-28 items-center overflow-hidden border-t border-slate-200/70 bg-[#f0f6fa] pt-24 pb-10 sm:pt-28 sm:pb-12"
+        className="relative isolate flex min-h-svh scroll-mt-28 items-center overflow-hidden border-t border-slate-200/70 bg-[var(--surface-elevated)] pt-24 pb-10 sm:pt-28 sm:pb-12"
       >
         <div
           aria-hidden
@@ -70,7 +70,7 @@ export function GuideContent({
                   </p>
                 </div>
               </div>
-              <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm ring-1 ring-slate-950/[0.04]">
+              <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-[var(--surface-card)] shadow-sm ring-1 ring-slate-950/[0.04]">
                 <div className="grid gap-0 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
                   <iframe
                     title={`Map location for ${embedQuery}`}
@@ -97,7 +97,7 @@ export function GuideContent({
                       href={openMapsHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-4 inline-flex w-fit text-sm font-semibold text-[var(--brand-blue)] underline decoration-[var(--brand-blue)]/35 underline-offset-4 hover:decoration-[var(--brand-blue)]"
+                      className="mt-4 inline-flex w-fit text-sm font-semibold text-slate-900 underline decoration-[var(--brand-orange)]/50 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
                     >
                       Open in Google Maps
                     </a>
@@ -112,7 +112,7 @@ export function GuideContent({
       <section
         id="guide-pieta-brand"
         aria-labelledby="guide-pieta-brand-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[#f8fafc] py-12 sm:py-14"
+        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-12 sm:py-14"
       >
         <Container>
           <div

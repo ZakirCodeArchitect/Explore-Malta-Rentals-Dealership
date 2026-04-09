@@ -57,16 +57,16 @@ function TestimonialCard({
   rating: number;
 }) {
   return (
-    <article className="w-[340px] sm:w-[420px] shrink-0 rounded-2xl border border-slate-200 bg-[#f8fafc] p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.18)]">
+    <article className="w-[340px] sm:w-[420px] shrink-0 rounded-2xl border border-slate-200/90 bg-[var(--surface-card)] p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.18)]">
       <div className="flex items-start justify-between gap-4">
         <RatingStars rating={rating} />
         <span
           aria-hidden="true"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/90 bg-[var(--surface-elevated)]"
         >
           <svg
             viewBox="0 0 24 24"
-            className="h-6 w-6 text-[var(--brand-blue)]"
+            className="h-6 w-6 text-slate-600"
             fill="currentColor"
           >
             <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
@@ -98,12 +98,12 @@ export function TestimonialsSection() {
   return (
     <section
       aria-labelledby="testimonials-title"
-      className="scroll-mt-28 border-t border-slate-200/70 bg-white py-16"
+      className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-16"
     >
       <Container>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold tracking-[0.14em] text-[var(--brand-blue)]">
+            <p className="text-xs font-semibold tracking-[0.14em] text-[var(--brand-orange)]">
               THOUSANDS TRUST OUR RENTALS
             </p>
             <h2
@@ -120,7 +120,7 @@ export function TestimonialsSection() {
             </p>
 
             <div className="mt-7 inline-flex items-center gap-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_18px_50px_-45px_rgba(2,6,23,0.18)]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 shadow-[0_18px_50px_-45px_rgba(2,6,23,0.18)]">
                 <TrustpilotStarMark className="h-5 w-5 shrink-0" />
                 <span className="text-sm font-semibold text-slate-900">
                   Trustpilot

@@ -34,7 +34,7 @@ function BadgeSafetyIcon() {
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className="h-4 w-4 shrink-0 text-[var(--brand-blue)]"
+      className="h-4 w-4 shrink-0 text-slate-600"
       {...iconStroke}
     >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />

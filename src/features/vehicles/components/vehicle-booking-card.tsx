@@ -204,13 +204,13 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             </p>
           ) : null}
         </div>
-        <span className="shrink-0 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--brand-blue-strong)]">
+        <span className="shrink-0 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold text-slate-800">
           Free cancellation request
         </span>
       </div>
 
       <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5 text-xs text-slate-600">
-        <Lock className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden />
+        <Lock className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" aria-hidden />
         <p>Your details are sent securely and only used to confirm your rental — never sold to third parties.</p>
       </div>
 
@@ -347,7 +347,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
         {/* Trip */}
         <fieldset className="space-y-4">
           <legend className={joinClasses(labelClass, "flex items-center gap-2 text-base tracking-[-0.02em]")}>
-            <CalendarRange className="h-4 w-4 text-[var(--brand-blue)]" aria-hidden />
+            <CalendarRange className="h-4 w-4 text-slate-600" aria-hidden />
             Trip dates
           </legend>
           <p className="text-xs text-slate-500">Rental length is calculated automatically from pickup and return.</p>
@@ -423,7 +423,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                               : previous.filter((value) => value !== addOn.id),
                           );
                         }}
-                        className="h-4 w-4 rounded border-slate-300 text-[var(--brand-blue)] focus:ring-[var(--brand-blue)]"
+                        className="h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)] focus:ring-[var(--brand-orange)]"
                       />
                       {addOn.name}
                     </span>
@@ -481,7 +481,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 onBlur={() => blurField("licenseConfirmed")}
                 aria-invalid={touched.licenseConfirmed && !!errors.licenseConfirmed}
                 aria-describedby={errors.licenseConfirmed ? "booking-license-error" : undefined}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[var(--brand-blue)] focus:ring-[var(--brand-blue)]"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[var(--brand-orange)] focus:ring-[var(--brand-orange)]"
               />
               <span>
                 <span className="font-semibold text-slate-900">Licence confirmation</span>
@@ -509,7 +509,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 onBlur={() => blurField("licenseConfirmed")}
                 aria-invalid={touched.licenseConfirmed && !!errors.licenseConfirmed}
                 aria-describedby={errors.licenseConfirmed ? "booking-bike-error" : undefined}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[var(--brand-blue)] focus:ring-[var(--brand-blue)]"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[var(--brand-orange)] focus:ring-[var(--brand-orange)]"
               />
               <span>
                 <span className="font-semibold text-slate-900">Rider confirmation</span>
