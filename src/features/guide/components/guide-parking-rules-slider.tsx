@@ -5,67 +5,103 @@ import { useCallback, useEffect, useId, useState } from "react";
 
 const GUIDE_IMAGES_BASE = "/GuidePageImages";
 
-/** Green line photo — swap the file at `public/GuidePageImages/green-line.png` to update. */
+/** Green line photo — `public/GuidePageImages/green-line.png`. */
 const IMG_GREEN_LINE = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("green-line.png")}`;
+/** White-line / legal parking example — swap for `public/white-lines.jpg` from your pack if you prefer. */
+const IMG_WHITE_LINES = `/${encodeURIComponent("Urban street comparison in daylight.png")}`;
+/** Blue disabled bay — `public/blue.png`. */
+const IMG_BLUE_DISABLED = "/blue.png";
+
+export type ActiveLineColorId = "yellow" | "blue" | "green" | "white";
 
 const LINE_COLOR_SUBRULES = [
   {
-    id: "blue",
-    title: "Blue",
-    tag: "Blue Parking",
+    id: "yellow" as const,
+    title: "Yellow",
+    tag: "Yellow lines",
     description:
-      "Use dedicated motorcycle (MC) bays and valid white-line car spaces where allowed — park inside the markings or between two cars as per local rules.",
+      "Never park on yellow markings — they are for garages, reserved parking, and no-stopping zones. Do not use these spaces.",
     images: [
       {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("mc parking.png")}`,
-        alt: "Motorcycle parking bay — blue parking for scooters",
+        src: "/double-yellow-lines.jpg",
+        alt: "Double yellow lines at the road edge — do not park",
       },
       {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("white parking.jpg")}`,
-        alt: "White-line parking space between vehicles",
+        src: "/reserved.jpg",
+        alt: "Reserved parking bay with yellow markings — do not park",
+      },
+      {
+        src: "/Yellow_lines_1.jpg",
+        alt: "Yellow line road marking — do not park here",
       },
     ],
   },
   {
-    id: "green",
-    title: "Green",
-    tag: "Green Lines",
+    id: "blue" as const,
+    title: "Blue",
+    tag: "Blue disabled bays",
     description:
-      "Green markings indicate resident-only or restricted zones — do not park unless you are authorised.",
+      "Blue markings are reserved for disabled permit holders. Do not park unless you display a valid disabled permit.",
+    images: [
+      {
+        src: IMG_BLUE_DISABLED,
+        alt: "Blue-marked disabled parking bay — reserved for permit holders",
+      },
+    ],
+  },
+  {
+    id: "green" as const,
+    title: "Green",
+    tag: "Green lines",
+    description:
+      "Green markings indicate resident-only or locally restricted zones — do not park unless you are authorised.",
     images: [{ src: IMG_GREEN_LINE, alt: "Green line road marking — resident or restricted parking" }],
+  },
+  {
+    id: "white" as const,
+    title: "White",
+    tag: "White lines (OK)",
+    description:
+      "Always park within marked motorcycle (MC) bays, or between two cars in a valid white-line car space where local rules allow.",
+    images: [
+      {
+        src: IMG_WHITE_LINES,
+        alt: "White-line parking — use MC bays or valid white spaces between cars",
+      },
+    ],
   },
 ] as const;
 
-const LINE_COLOR_TAG_STYLES: Record<(typeof LINE_COLOR_SUBRULES)[number]["id"], string> = {
+const LINE_COLOR_TAG_STYLES: Record<ActiveLineColorId, string> = {
+  yellow: "border-amber-200/90 bg-amber-50 text-amber-950",
   blue: "border-sky-200/90 bg-sky-50 text-sky-950",
   green: "border-emerald-200/90 bg-emerald-50 text-emerald-950",
+  white: "border-slate-200/90 bg-slate-50 text-slate-900",
 };
 
-/** Keyboard focus ring per line colour (no brand blue on selected tags) */
-const LINE_COLOR_FOCUS_RING: Record<(typeof LINE_COLOR_SUBRULES)[number]["id"], string> = {
+const LINE_COLOR_FOCUS_RING: Record<ActiveLineColorId, string> = {
+  yellow: "focus-visible:ring-amber-500/55",
   blue: "focus-visible:ring-sky-500/55",
   green: "focus-visible:ring-emerald-500/55",
+  white: "focus-visible:ring-slate-500/55",
 };
 
 const MAJOR_RULES = [
   {
     id: "line-colors",
-    title: "Blue parking and green lines",
-    description: "Blue parking and green line zones work differently — check both before you leave your scooter.",
+    title: "Parking line colours",
+    description:
+      "Never park on yellow, blue, or green road markings unless you are authorised. Yellow: garages and reserved / no parking. Blue: disabled bays. Green: residents. Always use MC spaces or valid white-line spaces between cars where permitted.",
   },
   {
     id: "valid-spaces",
-    title: "Always park in valid scooter/motorcycle spaces",
+    title: "Where to park legally",
     description:
-      "Always park within marked MC parking spaces, or between any two cars in a valid white parking space.",
+      "Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space, following local rules.",
     images: [
       {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("mc parking.png")}`,
-        alt: "Dedicated MC parking space for scooters and motorcycles",
-      },
-      {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("white parking.jpg")}`,
-        alt: "White parking space between two parked cars",
+        src: IMG_WHITE_LINES,
+        alt: "Park in marked MC bays or authorised white-line spaces",
       },
     ],
   },
@@ -81,12 +117,15 @@ function ChevronRight({ className }: { className?: string }) {
 
 const LINE_COLOR_COUNT = LINE_COLOR_SUBRULES.length;
 
-export type ActiveLineColorId = (typeof LINE_COLOR_SUBRULES)[number]["id"];
-
 export type GuideParkingRulesSliderProps = Readonly<{
-  /** Fires when the visible line-colour tab changes, or `null` when the “valid spaces” slide is active. */
   onActiveLineColorChange?: (id: ActiveLineColorId | null) => void;
 }>;
+
+function imageGridClass(imageCount: number) {
+  if (imageCount >= 3) return "grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3";
+  if (imageCount === 2) return "grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3";
+  return "grid w-[min(15rem,82vw)] max-w-full grid-cols-1 sm:w-[17rem]";
+}
 
 export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkingRulesSliderProps = {}) {
   const [majorIndex, setMajorIndex] = useState(0);
@@ -104,10 +143,10 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
   }, [majorIndex]);
 
   useEffect(() => {
-    onActiveLineColorChange?.(majorIndex === 0 ? LINE_COLOR_SUBRULES[lineColorIndex].id : null);
+    onActiveLineColorChange?.(majorIndex === 0 ? LINE_COLOR_SUBRULES[lineColorIndex]!.id : null);
   }, [majorIndex, lineColorIndex, onActiveLineColorChange]);
 
-  const activeLineColorRule = LINE_COLOR_SUBRULES[lineColorIndex];
+  const activeLineColorRule = LINE_COLOR_SUBRULES[lineColorIndex]!;
   const lineColorSingleImage = activeLineColorRule.images.length === 1;
 
   return (
@@ -193,13 +232,7 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
                           aria-hidden={lineColorIndex !== i}
                           className={lineColorIndex === i ? "block" : "hidden"}
                         >
-                          <div
-                            className={
-                              sub.images.length > 1
-                                ? "grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3"
-                                : "grid w-[min(15rem,82vw)] max-w-full grid-cols-1 sm:w-[17rem]"
-                            }
-                          >
+                          <div className={imageGridClass(sub.images.length)}>
                             {sub.images.map((img, imgIdx) => (
                               <figure
                                 key={img.src}
@@ -212,9 +245,11 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
                                   height={900}
                                   className="block h-full w-full object-cover"
                                   sizes={
-                                    sub.images.length > 1
-                                      ? "(min-width: 640px) 18vw, 44vw"
-                                      : "(max-width: 640px) min(82vw, 15rem), 17rem"
+                                    sub.images.length > 2
+                                      ? "(min-width: 640px) 28vw, 88vw"
+                                      : sub.images.length > 1
+                                        ? "(min-width: 640px) 18vw, 44vw"
+                                        : "(max-width: 640px) min(82vw, 15rem), 17rem"
                                   }
                                   priority={i === 0 && imgIdx === 0}
                                 />
@@ -246,18 +281,19 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
 
                 <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                   <div className="relative min-w-0 flex-1 overflow-hidden rounded-lg bg-slate-100 p-2 sm:p-3">
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {rule.images.map((image) => (
-                        <Image
-                          key={image.src}
-                          src={image.src}
-                          alt={image.alt}
-                          width={1200}
-                          height={900}
-                          className="h-[12rem] w-full rounded-md object-cover object-center sm:h-[16rem] lg:h-[20rem]"
-                          sizes="(min-width: 1024px) 24vw, 92vw"
-                        />
-                      ))}
+                    <div className="mx-auto max-w-lg">
+                      {"images" in rule &&
+                        rule.images.map((image) => (
+                          <Image
+                            key={image.src}
+                            src={image.src}
+                            alt={image.alt}
+                            width={1200}
+                            height={900}
+                            className="h-auto w-full rounded-md object-cover object-center"
+                            sizes="(min-width: 1024px) 28rem, 92vw"
+                          />
+                        ))}
                     </div>
                   </div>
                   <button

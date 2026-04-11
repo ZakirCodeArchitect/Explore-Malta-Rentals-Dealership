@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CalendarRange, Globe, Lock, Mail, ShieldCheck, User, Phone } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CalendarRange, Globe, Lock, Mail, Package, ShieldCheck, User, Phone } from "lucide-react";
 import type { Vehicle, VehicleType } from "@/features/vehicles/data/vehicles";
 
 type VehicleBookingCardProps = Readonly<{
@@ -60,6 +60,8 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const storageDialogRef = useRef<HTMLDialogElement>(null);
+  const storagePopupShownRef = useRef(false);
 
   const [fullName, setFullName] = useState("");
   const [nationality, setNationality] = useState("");
@@ -76,6 +78,15 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
   const rentalDays = getRentalDays(pickupDate, returnDate);
   const motorLicense = needsMotorLicense(vehicle.type);
 
+  const storageAddOn = useMemo(
+    () => vehicle.addOns.find((addOn) => addOn.id === "storage-box"),
+    [vehicle.addOns],
+  );
+  const inlineAddOns = useMemo(
+    () => vehicle.addOns.filter((addOn) => addOn.id !== "storage-box"),
+    [vehicle.addOns],
+  );
+
   const { addOnTotalPerDay, addOnTotalOnce } = useMemo(() => {
     const selected = vehicle.addOns.filter((addOn) => selectedAddOns.includes(addOn.id));
     return {
@@ -83,6 +94,13 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
       addOnTotalOnce: selected.reduce((sum, addOn) => sum + (addOn.priceOnce ?? 0), 0),
     };
   }, [selectedAddOns, vehicle.addOns]);
+
+  useEffect(() => {
+    if (!storageAddOn || rentalDays <= 0 || storagePopupShownRef.current) return;
+    storagePopupShownRef.current = true;
+    const id = window.setTimeout(() => storageDialogRef.current?.showModal(), 500);
+    return () => window.clearTimeout(id);
+  }, [rentalDays, storageAddOn]);
 
   const dailySubtotal = vehicle.pricePerDay + addOnTotalPerDay;
   const billableDays = rentalDays > 0 ? rentalDays : 0;
@@ -177,6 +195,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             setPickupDate("");
             setReturnDate("");
             setSelectedAddOns([]);
+            storagePopupShownRef.current = false;
             setTouched({});
             setErrors({});
           }}
@@ -190,6 +209,61 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
 
   return (
     <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] motion-safe:transition-shadow motion-safe:duration-300 hover:shadow-[0_28px_56px_-32px_rgba(58,124,165,0.22)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+3.75rem)]">
+      {storageAddOn ? (
+        <dialog
+          ref={storageDialogRef}
+          className="fixed left-1/2 top-1/2 z-[200] w-[min(100%,24rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl [&::backdrop]:bg-slate-950/55"
+        >
+          <div className="border-b border-slate-100 px-5 py-4">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--brand-orange)]">
+              <Package className="h-4 w-4" aria-hidden />
+              Optional extra
+            </p>
+            <h3 className="mt-1 text-lg font-semibold tracking-[-0.02em] text-slate-950">{storageAddOn.name}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Add a secure top box for luggage or shopping — one-time add-on for this booking.
+            </p>
+          </div>
+          <div className="px-5 py-4">
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-sm">
+              <input
+                type="checkbox"
+                checked={selectedAddOns.includes("storage-box")}
+                onChange={(event) => {
+                  setSelectedAddOns((previous) =>
+                    event.target.checked
+                      ? [...previous.filter((id) => id !== "storage-box"), "storage-box"]
+                      : previous.filter((id) => id !== "storage-box"),
+                  );
+                }}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[var(--brand-orange)] focus:ring-[var(--brand-orange)]"
+              />
+              <span>
+                <span className="font-semibold text-slate-900">Include storage box</span>
+                <span className="mt-0.5 block text-slate-600">
+                  +EUR {storageAddOn.priceOnce} one-time (optional)
+                </span>
+              </span>
+            </label>
+          </div>
+          <div className="flex flex-col gap-2 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 sm:w-auto"
+              onClick={() => storageDialogRef.current?.close()}
+            >
+              Skip for now
+            </button>
+            <button
+              type="button"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[var(--brand-orange)] px-5 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-[var(--brand-orange-strong)] sm:w-auto"
+              onClick={() => storageDialogRef.current?.close()}
+            >
+              Continue
+            </button>
+          </div>
+        </dialog>
+      ) : null}
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm text-slate-600">From</p>
@@ -402,10 +476,24 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             </div>
           </div>
 
-          <fieldset>
-            <legend className="text-sm font-semibold text-slate-900">Optional add-ons</legend>
+          <div role="group" aria-labelledby="booking-addons-label">
+            <p id="booking-addons-label" className="text-sm font-semibold text-slate-900">
+              Optional add-ons
+            </p>
+            {storageAddOn ? (
+              <p className="mt-1 text-xs text-slate-500">
+                <button
+                  type="button"
+                  onClick={() => storageDialogRef.current?.showModal()}
+                  className="font-semibold text-[var(--brand-blue)] underline decoration-[var(--brand-orange)]/40 underline-offset-2 transition hover:text-[var(--brand-orange-strong)]"
+                >
+                  Storage box
+                </button>{" "}
+                — opens in a quick prompt (EUR {storageAddOn.priceOnce} one-time, optional).
+              </p>
+            ) : null}
             <div className="mt-2 space-y-2">
-              {vehicle.addOns.map((addOn) => {
+              {inlineAddOns.map((addOn) => {
                 const checked = selectedAddOns.includes(addOn.id);
                 return (
                   <label
@@ -439,7 +527,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 );
               })}
             </div>
-          </fieldset>
+          </div>
         </fieldset>
 
         {/* Summary + licence */}

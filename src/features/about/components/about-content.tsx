@@ -14,6 +14,8 @@ const EXPLORE_MALTA_BACKDROP = "/malta.png";
 
 const FLEET_NECO_ONE_SRC = `/BikeImages/${encodeURIComponent("neco one.png")}`;
 const FLEET_LEX_AURA_SRC = `/BikeImages/${encodeURIComponent("lex moto grey.png")}`;
+/** About narrative section photo (`public/about_us.jpg`). */
+const ABOUT_US_PHOTO = "/about_us.jpg";
 
 export type AboutSiteContact = Readonly<{
   companyName: string;
@@ -182,7 +184,17 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
             <header className="text-center">
               <AboutUsHeadingWithWave titleId="company-story-narrative-title" />
             </header>
-            <div className="mt-6 space-y-5 text-left text-sm leading-relaxed text-slate-600 sm:mt-7 sm:leading-7">
+            <div className="mt-8 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-50 shadow-sm ring-1 ring-slate-950/[0.04]">
+              <Image
+                src={ABOUT_US_PHOTO}
+                alt="Explore Malta Rentals — about us"
+                width={1200}
+                height={800}
+                className="h-auto w-full object-cover object-center"
+                sizes="(min-width: 1024px) 42rem, 100vw"
+              />
+            </div>
+            <div className="mt-8 space-y-5 text-left text-sm leading-relaxed text-slate-600 sm:mt-9 sm:leading-7">
               <p>
                 {companyName}, your go-to choice to experience Malta your way. From affordable self-drive
                 motorbike rental, quadbike hire and bicycles, to a guided tour around Malta.

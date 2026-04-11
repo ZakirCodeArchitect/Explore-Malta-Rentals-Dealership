@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { SiteShell } from "@/components/site-shell";
 import { heroContent } from "@/features/home/data/hero-content";
-import { HeroBookingPanel } from "@/features/home/components/hero-booking-panel";
+import { BookingSearchForm } from "@/features/booking/components/booking-search-form";
 import { LOGO_PATH } from "@/lib/site-brand-copy";
 
 function PinIcon() {
@@ -78,8 +78,8 @@ export function VideoHero() {
 
       <div className="relative z-10">
         <SiteShell>
-          <div className="flex min-h-[min(100svh,52rem)] flex-col justify-between pb-7 pt-24 sm:min-h-[min(100svh,54rem)] sm:pb-8 sm:pt-28 lg:min-h-[56rem] lg:pb-10 lg:pt-32">
-            <div className="flex min-h-0 flex-1 flex-col justify-center pb-8 sm:pb-10 lg:pb-12">
+          <div className="flex min-h-[min(100svh,48rem)] flex-col justify-between gap-10 pb-10 pt-24 sm:min-h-0 sm:pb-12 sm:pt-28 lg:gap-12 lg:pb-14 lg:pt-32">
+            <div className="flex min-h-0 flex-1 flex-col justify-center pb-4 sm:pb-6 lg:pb-8">
               <div className="max-w-3xl">
                 <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90">
                   <PinIcon />
@@ -112,8 +112,8 @@ export function VideoHero() {
               </div>
             </div>
 
-            <div className="shrink-0">
-              <HeroBookingPanel />
+            <div className="w-full max-w-5xl shrink-0">
+              <BookingSearchForm />
             </div>
           </div>
         </SiteShell>

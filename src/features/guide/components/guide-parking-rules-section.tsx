@@ -6,21 +6,28 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
 
 import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-underlined-text";
-import { GuideParkingRulesSlider } from "@/features/guide/components/guide-parking-rules-slider";
+import {
+  GuideParkingRulesSlider,
+  type ActiveLineColorId,
+} from "@/features/guide/components/guide-parking-rules-slider";
 
-/** Radial wash from bottom-left; taller ellipse so the glow reaches further up the left edge */
-const LINE_COLOR_CORNER_SHADE: Record<"blue" | "green", string> = {
+/** Radial wash from bottom-left — keyed by active line-colour tab */
+const LINE_COLOR_CORNER_SHADE: Record<ActiveLineColorId, string> = {
+  yellow:
+    "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(253, 230, 138, 0.5) 0%, rgba(254, 243, 199, 0.16) 48%, rgba(248, 250, 252, 0) 78%)",
   blue:
     "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(125, 211, 252, 0.44) 0%, rgba(224, 242, 254, 0.14) 48%, rgba(248, 250, 252, 0) 78%)",
   green:
     "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(110, 231, 183, 0.42) 0%, rgba(209, 250, 229, 0.12) 48%, rgba(248, 250, 252, 0) 78%)",
+  white:
+    "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(226, 232, 240, 0.4) 0%, rgba(241, 245, 249, 0.12) 48%, rgba(248, 250, 252, 0) 78%)",
 };
 
 const NEUTRAL_CORNER_SHADE =
   "radial-gradient(ellipse 125% 118% at 0% 100%, rgba(226, 232, 240, 0.32) 0%, rgba(241, 245, 249, 0.08) 50%, rgba(248, 250, 252, 0) 76%)";
 
 export function GuideParkingRulesSection() {
-  const [activeLineTint, setActiveLineTint] = useState<"blue" | "green" | null>("blue");
+  const [activeLineTint, setActiveLineTint] = useState<ActiveLineColorId | null>("yellow");
 
   const shade =
     activeLineTint === null ? NEUTRAL_CORNER_SHADE : LINE_COLOR_CORNER_SHADE[activeLineTint];
@@ -45,7 +52,7 @@ export function GuideParkingRulesSection() {
             </>
           }
           tone="light"
-          description="Quick parking essentials to avoid fines and keep scooters parked legally."
+          description="Never park on yellow, blue, or green markings unless authorised. Yellow: garages and reserved / no parking. Blue: disabled bays. Green: residents. Always use MC spaces or valid white-line spaces between cars where permitted."
         />
 
         <GuideParkingRulesSlider onActiveLineColorChange={setActiveLineTint} />
