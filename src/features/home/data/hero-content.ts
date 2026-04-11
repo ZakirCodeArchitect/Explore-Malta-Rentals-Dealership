@@ -16,9 +16,8 @@ export const heroContent = {
     label: "View Fleet",
   },
   media: {
-    poster: null,
-    videoSrc: "/hero-section.mp4",
-    backgroundImage: emptyParkingBackdropPath,
+    poster: emptyParkingBackdropPath,
+    videoSrc: "/hero.mp4",
   },
 } as const;
 
