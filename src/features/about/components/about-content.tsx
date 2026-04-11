@@ -165,7 +165,7 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
           <div className="absolute inset-0 bg-slate-950/40" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.78)_0%,rgba(15,23,42,0.42)_50%,rgba(15,23,42,0.2)_100%)]" />
         </div>
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center py-8 sm:py-10 lg:py-12">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-end pb-12 pt-8 sm:pb-16 sm:pt-10 lg:pb-20 lg:pt-12">
           <SiteShell>
             <div className="w-full max-w-4xl text-left">
               <AboutHeroTitle titleId="about-story-hero-title" />
