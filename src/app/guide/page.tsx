@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { getEnvValue } from "@/components/footer/footer-utils";
 import { GuideContent } from "@/features/guide/components/guide-content";
+import { SITE_CONTACT, SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 
 export const metadata: Metadata = {
   title: "Guide",
@@ -10,8 +11,8 @@ export const metadata: Metadata = {
 };
 
 export default function GuidePage() {
-  const location = getEnvValue("location") ?? "Pieta, Malta";
-  const address = getEnvValue("address") ?? "Pieta, Malta";
+  const location = getEnvValue("location") ?? SITE_GOOGLE_MAPS_URL;
+  const address = getEnvValue("address") ?? SITE_CONTACT.address;
 
   return (
     <main className="flex flex-1 flex-col">

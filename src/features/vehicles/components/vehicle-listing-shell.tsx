@@ -496,6 +496,7 @@ export function VehicleListingShell({
               width={480}
               height={96}
               className="h-auto w-[min(88%,26rem)] max-w-full object-contain opacity-[0.38]"
+              style={{ height: "auto" }}
               priority={false}
             />
           </div>

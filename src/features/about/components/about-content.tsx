@@ -159,6 +159,7 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
               width={640}
               height={128}
               className="h-auto w-[min(92%,28rem)] max-w-full object-contain opacity-[0.38]"
+              style={{ height: "auto" }}
               priority
             />
           </div>

@@ -3,7 +3,12 @@ import Link from "next/link";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Container } from "@/components/ui/container";
-import { LOGO_PATH, SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
+import {
+  LOGO_PATH,
+  SITE_GOOGLE_MAPS_URL,
+  SITE_LOCATION_KICKER,
+  SITE_PRIMARY_TAGLINE,
+} from "@/lib/site-brand-copy";
 import { FooterColumn, FooterTrustItem } from "./footer-column";
 import { FooterNewsletterForm } from "./footer-newsletter-form";
 import { FooterSocialLinks } from "./footer-social-links";
@@ -239,6 +244,14 @@ export function SiteFooter() {
             ) : (
               <p className="mt-3 text-sm text-white/50">Add your address in environment config.</p>
             )}
+            <a
+              href={SITE_GOOGLE_MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex text-sm font-semibold text-[var(--brand-orange)] underline decoration-white/25 underline-offset-4 transition-colors hover:text-white hover:decoration-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d18]"
+            >
+              Open in Google Maps
+            </a>
             {phoneRaw && telHref ? (
               <a
                 href={telHref}

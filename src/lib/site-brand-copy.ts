@@ -30,3 +30,7 @@ export const SITE_CONTACT = {
   email: "info@exploremaltarentals.com",
   address: "42, Triq il- Marina, Pieta, PTA 9046",
 } as const;
+
+/** Google Maps place link — used for “Open in Google Maps” and as the default guide `location` when env is unset. */
+export const SITE_GOOGLE_MAPS_URL =
+  "https://maps.app.goo.gl/saSz4cZPAsfKd1Qy7" as const;

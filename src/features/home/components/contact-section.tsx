@@ -4,7 +4,7 @@ import { SectionHeader } from "@/features/home/components/section-header";
 import { contactSection } from "@/features/home/data/home-sections";
 import { WhatsAppActionLink } from "@/features/home/components/whatsapp-action-link";
 import { getEnvValue } from "@/components/footer/footer-utils";
-import { SITE_CONTACT } from "@/lib/site-brand-copy";
+import { SITE_CONTACT, SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 
 export function ContactSection() {
   const phoneRaw =
@@ -64,6 +64,14 @@ export function ContactSection() {
             <div className="rounded-2xl border border-slate-200/90 bg-[var(--surface-card)] px-6 py-4 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)]">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Address</p>
               <p className="mt-2 text-sm font-medium leading-relaxed text-slate-800">{address}</p>
+              <a
+                href={SITE_GOOGLE_MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex text-sm font-semibold text-slate-900 underline decoration-[var(--brand-orange)]/45 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
+              >
+                Open in Google Maps
+              </a>
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-[var(--surface-card)] shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)]">
