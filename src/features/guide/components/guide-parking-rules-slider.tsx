@@ -5,33 +5,58 @@ import { useCallback, useEffect, useId, useState } from "react";
 
 const GUIDE_IMAGES_BASE = "/GuidePageImages";
 
-/** Green line photo — `public/GuidePageImages/green-line.png`. */
+/** Green line — `public/GuidePageImages/green-line.png`. */
 const IMG_GREEN_LINE = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("green-line.png")}`;
-/** White-line / legal parking example — swap for `public/white-lines.jpg` from your pack if you prefer. */
-const IMG_WHITE_LINES = `/${encodeURIComponent("Urban street comparison in daylight.png")}`;
-/** Blue disabled bay — `public/blue.png`. */
-const IMG_BLUE_DISABLED = "/blue.png";
+/** White line markings (street examples) — `white-lines-street-comparison.png`. */
+const IMG_WHITE_LINES_MARKINGS = `${GUIDE_IMAGES_BASE}/white-lines-street-comparison.png`;
+/** White parking bay — `white parking.jpg`. */
+const IMG_WHITE_PARKING = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("white parking.jpg")}`;
+/** Motorcycle (MC) bay — `mc parking.png`. */
+const IMG_MC_PARKING = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("mc parking.png")}`;
+/** Disabled bay — `disabled.jpg`. */
+const IMG_BLUE_DISABLED = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("disabled.jpg")}`;
 
-export type ActiveLineColorId = "yellow" | "blue" | "green" | "white";
+export type ActiveLineColorId = "white" | "yellow" | "blue" | "green";
 
 const LINE_COLOR_SUBRULES = [
   {
-    id: "yellow" as const,
-    title: "Yellow",
-    tag: "Yellow lines",
+    id: "white" as const,
+    title: "White",
+    tag: "White lines — correct parking",
     description:
-      "Never park on yellow markings — they are for garages, reserved parking, and no-stopping zones. Do not use these spaces.",
+      "White lines mark the correct parking spots. Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
     images: [
       {
-        src: "/double-yellow-lines.jpg",
+        src: IMG_WHITE_LINES_MARKINGS,
+        alt: "White line road markings — correct parking context on the street",
+      },
+      {
+        src: IMG_WHITE_PARKING,
+        alt: "White parking bay — park between cars in marked white spaces where rules allow",
+      },
+      {
+        src: IMG_MC_PARKING,
+        alt: "Motorcycle (MC) parking bay — use dedicated MC spaces",
+      },
+    ],
+  },
+  {
+    id: "yellow" as const,
+    title: "Yellow",
+    tag: "Yellow — do not park",
+    description:
+      "Do not park on yellow markings. Yellow is for garages and reserved parking / no parking.",
+    images: [
+      {
+        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("double-yellow-lines.jpg")}`,
         alt: "Double yellow lines at the road edge — do not park",
       },
       {
-        src: "/reserved.jpg",
+        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("reserved.jpg")}`,
         alt: "Reserved parking bay with yellow markings — do not park",
       },
       {
-        src: "/Yellow_lines_1.jpg",
+        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("Yellow_lines_1.jpg")}`,
         alt: "Yellow line road marking — do not park here",
       },
     ],
@@ -39,9 +64,8 @@ const LINE_COLOR_SUBRULES = [
   {
     id: "blue" as const,
     title: "Blue",
-    tag: "Blue disabled bays",
-    description:
-      "Blue markings are reserved for disabled permit holders. Do not park unless you display a valid disabled permit.",
+    tag: "Blue — do not park",
+    description: "Do not park on blue markings. Blue is reserved for disabled permit holders.",
     images: [
       {
         src: IMG_BLUE_DISABLED,
@@ -52,38 +76,25 @@ const LINE_COLOR_SUBRULES = [
   {
     id: "green" as const,
     title: "Green",
-    tag: "Green lines",
+    tag: "Green — do not park",
     description:
-      "Green markings indicate resident-only or locally restricted zones — do not park unless you are authorised.",
-    images: [{ src: IMG_GREEN_LINE, alt: "Green line road marking — resident or restricted parking" }],
-  },
-  {
-    id: "white" as const,
-    title: "White",
-    tag: "White lines (OK)",
-    description:
-      "Always park within marked motorcycle (MC) bays, or between two cars in a valid white-line car space where local rules allow.",
-    images: [
-      {
-        src: IMG_WHITE_LINES,
-        alt: "White-line parking — use MC bays or valid white spaces between cars",
-      },
-    ],
+      "Do not park on green markings. Green is for residents in the local area.",
+    images: [{ src: IMG_GREEN_LINE, alt: "Green line road marking — residents in the local area — do not park" }],
   },
 ] as const;
 
 const LINE_COLOR_TAG_STYLES: Record<ActiveLineColorId, string> = {
+  white: "border-slate-200/90 bg-slate-50 text-slate-900",
   yellow: "border-amber-200/90 bg-amber-50 text-amber-950",
   blue: "border-sky-200/90 bg-sky-50 text-sky-950",
   green: "border-emerald-200/90 bg-emerald-50 text-emerald-950",
-  white: "border-slate-200/90 bg-slate-50 text-slate-900",
 };
 
 const LINE_COLOR_FOCUS_RING: Record<ActiveLineColorId, string> = {
+  white: "focus-visible:ring-slate-500/55",
   yellow: "focus-visible:ring-amber-500/55",
   blue: "focus-visible:ring-sky-500/55",
   green: "focus-visible:ring-emerald-500/55",
-  white: "focus-visible:ring-slate-500/55",
 };
 
 const MAJOR_RULES = [
@@ -91,17 +102,17 @@ const MAJOR_RULES = [
     id: "line-colors",
     title: "Parking line colours",
     description:
-      "Never park on yellow, blue, or green road markings unless you are authorised. Yellow: garages and reserved / no parking. Blue: disabled bays. Green: residents. Always use MC spaces or valid white-line spaces between cars where permitted.",
+      "White lines mark the correct parking spot. Never park on yellow, blue, or green parking line colours. Yellow: garages and reserved parking / no parking. Blue: reserved for disabled permit holders. Green: residents in the local area. Always park within MC parking spaces or between any two cars in a white parking space.",
   },
   {
     id: "valid-spaces",
     title: "Where to park legally",
     description:
-      "Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space, following local rules.",
+      "Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
     images: [
       {
-        src: IMG_WHITE_LINES,
-        alt: "Park in marked MC bays or authorised white-line spaces",
+        src: IMG_MC_PARKING,
+        alt: "Motorcycle (MC) parking — always use marked MC bays or white spaces between cars where permitted",
       },
     ],
   },

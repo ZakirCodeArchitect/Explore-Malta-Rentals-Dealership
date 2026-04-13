@@ -13,21 +13,21 @@ import {
 
 /** Radial wash from bottom-left — keyed by active line-colour tab */
 const LINE_COLOR_CORNER_SHADE: Record<ActiveLineColorId, string> = {
+  white:
+    "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(226, 232, 240, 0.4) 0%, rgba(241, 245, 249, 0.12) 48%, rgba(248, 250, 252, 0) 78%)",
   yellow:
     "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(253, 230, 138, 0.5) 0%, rgba(254, 243, 199, 0.16) 48%, rgba(248, 250, 252, 0) 78%)",
   blue:
     "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(125, 211, 252, 0.44) 0%, rgba(224, 242, 254, 0.14) 48%, rgba(248, 250, 252, 0) 78%)",
   green:
     "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(110, 231, 183, 0.42) 0%, rgba(209, 250, 229, 0.12) 48%, rgba(248, 250, 252, 0) 78%)",
-  white:
-    "radial-gradient(ellipse 130% 125% at 0% 100%, rgba(226, 232, 240, 0.4) 0%, rgba(241, 245, 249, 0.12) 48%, rgba(248, 250, 252, 0) 78%)",
 };
 
 const NEUTRAL_CORNER_SHADE =
   "radial-gradient(ellipse 125% 118% at 0% 100%, rgba(226, 232, 240, 0.32) 0%, rgba(241, 245, 249, 0.08) 50%, rgba(248, 250, 252, 0) 76%)";
 
 export function GuideParkingRulesSection() {
-  const [activeLineTint, setActiveLineTint] = useState<ActiveLineColorId | null>("yellow");
+  const [activeLineTint, setActiveLineTint] = useState<ActiveLineColorId | null>("white");
 
   const shade =
     activeLineTint === null ? NEUTRAL_CORNER_SHADE : LINE_COLOR_CORNER_SHADE[activeLineTint];
@@ -52,7 +52,7 @@ export function GuideParkingRulesSection() {
             </>
           }
           tone="light"
-          description="Never park on yellow, blue, or green markings unless authorised. Yellow: garages and reserved / no parking. Blue: disabled bays. Green: residents. Always use MC spaces or valid white-line spaces between cars where permitted."
+          description="White lines mark the correct parking spot. Never park on yellow, blue, or green line colours: yellow for garages and reserved parking / no parking; blue for disabled bays; green for residents in the local area. Always park within MC spaces or between any two cars in a white parking space."
         />
 
         <GuideParkingRulesSlider onActiveLineColorChange={setActiveLineTint} />
