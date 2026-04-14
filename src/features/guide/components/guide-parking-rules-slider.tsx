@@ -7,8 +7,6 @@ const GUIDE_IMAGES_BASE = "/GuidePageImages";
 
 /** Green line — `public/GuidePageImages/green-line.png`. */
 const IMG_GREEN_LINE = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("green-line.png")}`;
-/** White line markings (street examples) — `white-lines-street-comparison.png`. */
-const IMG_WHITE_LINES_MARKINGS = `${GUIDE_IMAGES_BASE}/white-lines-street-comparison.png`;
 /** White parking bay — `white parking.jpg`. */
 const IMG_WHITE_PARKING = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("white parking.jpg")}`;
 /** Motorcycle (MC) bay — `mc parking.png`. */
@@ -26,10 +24,6 @@ const LINE_COLOR_SUBRULES = [
     description:
       "White lines mark the correct parking spots. Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
     images: [
-      {
-        src: IMG_WHITE_LINES_MARKINGS,
-        alt: "White line road markings — correct parking context on the street",
-      },
       {
         src: IMG_WHITE_PARKING,
         alt: "White parking bay — park between cars in marked white spaces where rules allow",
