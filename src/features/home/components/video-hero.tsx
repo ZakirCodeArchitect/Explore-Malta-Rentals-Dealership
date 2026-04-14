@@ -50,7 +50,8 @@ export function VideoHero() {
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
+              webkit-playsinline
               disablePictureInPicture
             >
               <source src={heroContent.media.videoSrc} type="video/mp4" />
