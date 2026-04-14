@@ -33,4 +33,4 @@ export const SITE_CONTACT = {
 
 /** Google Maps place link — used for “Open in Google Maps” and as the default guide `location` when env is unset. */
 export const SITE_GOOGLE_MAPS_URL =
-  "https://maps.app.goo.gl/saSz4cZPAsfKd1Qy7" as const;
+  "https://www.google.com/maps/place/Explore+Malta+Rentals/@35.8930132,14.4967482,750m/data=!3m2!1e3!4b1!4m6!3m5!1s0x130e5b980a72a821:0x4d9e8f6a230b051d!8m2!3d35.8930132!4d14.4967482!16s%2Fg%2F11z48crtyp?entry=ttu&g_ep=EgoyMDI2MDQwOC4wIKXMDSoASAFQAw%3D%3D" as const;

@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-underlined-text";
 import { GuideParkingRulesSection } from "@/features/guide/components/guide-parking-rules-section";
 import { SectionHeader } from "@/features/home/components/section-header";
-import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
+import { SITE_GOOGLE_MAPS_URL, SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 
 const TOURIST_GUIDE_MAP_SRC = "/guide%20map.png";
 /** Hero backdrop (`public/guide pge photo.webp`). */
@@ -28,13 +28,13 @@ export function GuideContent({
   address: string;
 }>) {
   const mapsPageUrl = isHttpUrl(location) ? location.trim() : undefined;
-  const embedQuery = mapsPageUrl ? address : location;
-  const mapQuery = encodeURIComponent(embedQuery);
-  const mapEmbedSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
   const locationTitle = mapsPageUrl ? address : location;
-  const openMapsHref =
-    mapsPageUrl ??
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+  // Always use SITE_GOOGLE_MAPS_URL for the "Open in Google Maps" link.
+  const openMapsHref = SITE_GOOGLE_MAPS_URL;
+  // Embed using exact business name + coordinates so the iframe pins the right place.
+  const mapEmbedSrc =
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_URL?.trim() ||
+    `https://maps.google.com/maps?q=Explore+Malta+Rentals,+Pieta,+Malta&ll=35.8930132,14.4967482&z=16&hl=en&output=embed`;
 
   return (
     <>
@@ -73,7 +73,7 @@ export function GuideContent({
               <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-[var(--surface-card)] shadow-sm ring-1 ring-slate-950/[0.04]">
                 <div className="grid gap-0 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
                   <iframe
-                    title={`Map location for ${embedQuery}`}
+                    title={`Map location — Explore Malta Rentals, Pietà`}
                     src={mapEmbedSrc}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
