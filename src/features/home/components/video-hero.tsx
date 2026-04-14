@@ -34,42 +34,44 @@ export function VideoHero() {
       aria-labelledby="home-hero-title"
       className="relative isolate overflow-hidden bg-[var(--background)] text-white"
     >
-      <div className="absolute inset-x-0 bottom-0 top-[var(--site-header-offset)] overflow-hidden">
-        {backgroundImage ? (
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="sticky top-[var(--site-header-offset)] h-[calc(100svh-var(--site-header-offset))] overflow-hidden">
+          {backgroundImage ? (
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat [mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)]"
+              style={{ backgroundImage: `url("${backgroundImage}")` }}
+            />
+          ) : (
+            <video
+              aria-hidden="true"
+              className="absolute left-0 right-0 top-0 hidden h-auto w-full motion-safe:block motion-reduce:hidden"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              disablePictureInPicture
+            >
+              <source src={heroContent.media.videoSrc} type="video/mp4" />
+            </video>
+          )}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat [mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)]"
-            style={{ backgroundImage: `url("${backgroundImage}")` }}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(58vh,34rem)] sm:h-[min(54vh,36rem)]"
+            style={{
+              background: `linear-gradient(
+                to top,
+                color-mix(in srgb, var(--background) 90%, transparent) 0%,
+                color-mix(in srgb, var(--background) 72%, transparent) 20%,
+                color-mix(in srgb, var(--background) 48%, transparent) 42%,
+                color-mix(in srgb, var(--background) 24%, transparent) 62%,
+                color-mix(in srgb, var(--background) 8%, transparent) 80%,
+                transparent 100%
+              )`,
+            }}
           />
-        ) : (
-          <video
-            aria-hidden="true"
-            className="absolute bottom-0 left-0 right-0 hidden h-[135%] w-full object-cover object-bottom [mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] motion-safe:block motion-reduce:hidden"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            disablePictureInPicture
-          >
-            <source src={heroContent.media.videoSrc} type="video/mp4" />
-          </video>
-        )}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(72vh,40rem)] sm:h-[min(68vh,44rem)]"
-          style={{
-            background: `linear-gradient(
-              to top,
-              var(--background) 0%,
-              color-mix(in srgb, var(--background) 94%, transparent) 22%,
-              color-mix(in srgb, var(--background) 72%, transparent) 44%,
-              color-mix(in srgb, var(--background) 38%, transparent) 64%,
-              color-mix(in srgb, var(--background) 14%, transparent) 82%,
-              transparent 100%
-            )`,
-          }}
-        />
+        </div>
       </div>
 
       <div className="relative z-10">

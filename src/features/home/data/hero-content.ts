@@ -13,7 +13,7 @@ export const heroContent = {
     label: "View Fleet",
   },
   media: {
-    videoSrc: "/hero.mp4",
+    videoSrc: "/Untitled-1.mp4?v=2",
   },
 } as const;
 
