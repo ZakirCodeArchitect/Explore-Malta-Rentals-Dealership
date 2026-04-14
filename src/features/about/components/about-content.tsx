@@ -7,15 +7,15 @@ import { SiteShell } from "@/components/site-shell";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { WhatWeOfferSlider } from "@/features/about/components/what-we-offer-slider";
-import { LOGO_PATH, SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
+import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 
 /** Scenic Malta backdrop for the Explore Malta callout (`public/malta.png`). */
 const EXPLORE_MALTA_BACKDROP = "/malta.png";
+/** About page hero + narrative photo (`public/about-us-image.png`). */
+const ABOUT_US_IMAGE = "/about-us-image.png";
 
 const FLEET_NECO_ONE_SRC = `/BikeImages/${encodeURIComponent("neco one.png")}`;
 const FLEET_LEX_AURA_SRC = `/BikeImages/${encodeURIComponent("lex moto grey.png")}`;
-/** About narrative section photo (`public/about_us.jpg`). */
-const ABOUT_US_PHOTO = "/about_us.jpg";
 
 export type AboutSiteContact = Readonly<{
   companyName: string;
@@ -152,19 +152,19 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
         className="relative isolate flex min-h-svh w-full scroll-mt-28 flex-col overflow-hidden border-t border-slate-200/70 bg-[#0b1624] pt-20 sm:pt-24"
       >
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-          <div className="absolute inset-0 flex items-center justify-center bg-[#0b1624]">
+          <div className="absolute inset-0 bg-[#0b1624]">
             <Image
-              src={LOGO_PATH}
+              src={ABOUT_US_IMAGE}
               alt=""
-              width={640}
-              height={128}
-              className="h-auto w-[min(92%,28rem)] max-w-full object-contain opacity-[0.38]"
-              style={{ height: "auto" }}
+              fill
+              unoptimized
+              className="object-cover object-center"
+              sizes="100vw"
               priority
             />
           </div>
-          <div className="absolute inset-0 bg-slate-950/40" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.78)_0%,rgba(15,23,42,0.42)_50%,rgba(15,23,42,0.2)_100%)]" />
+          <div className="absolute inset-0 bg-slate-950/18" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.5)_0%,rgba(15,23,42,0.24)_50%,rgba(15,23,42,0.1)_100%)]" />
         </div>
         <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-end pb-12 pt-8 sm:pb-16 sm:pt-10 lg:pb-20 lg:pt-12">
           <SiteShell>
@@ -187,10 +187,11 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
             </header>
             <div className="mt-8 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-50 shadow-sm ring-1 ring-slate-950/[0.04]">
               <Image
-                src={ABOUT_US_PHOTO}
+                src={ABOUT_US_IMAGE}
                 alt="Explore Malta Rentals — about us"
                 width={1200}
                 height={800}
+                unoptimized
                 className="h-auto w-full object-cover object-center"
                 sizes="(min-width: 1024px) 42rem, 100vw"
               />
