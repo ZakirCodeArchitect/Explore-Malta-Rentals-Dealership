@@ -14,7 +14,7 @@ import {
   parse,
   startOfDay,
 } from "date-fns";
-import { CalendarDays, Loader2, MapPin } from "lucide-react";
+import { CalendarDays, Gauge, Loader2, MapPin, Sparkles } from "lucide-react";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   bookingFormSchema,
@@ -40,6 +40,11 @@ const inputShell =
 
 const textareaClass =
   "mt-2 w-full min-h-[5rem] rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
+
+const quickFilterChipClass =
+  "group inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white px-2.5 py-1 text-xs font-semibold text-[var(--brand-orange-strong)] shadow-sm transition-[transform,box-shadow,border-color,background-color,color] hover:-translate-y-px hover:border-[var(--brand-orange)] hover:bg-[var(--brand-orange)] hover:text-white hover:shadow-[0_10px_28px_-16px_rgba(255,147,15,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-1 active:translate-y-0";
+
+const quickFilterChipIcon = "size-3.5 shrink-0";
 
 function defaultDates() {
   const from = startOfDay(new Date());
@@ -133,26 +138,20 @@ export function BookingSearchForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <div className="flex flex-wrap gap-2">
-        <p className="w-full text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+        <p className="w-full text-xs font-semibold tracking-normal text-[var(--brand-orange-strong)]">
           Quick filter by engine size
         </p>
-        <Link
-          href="/vehicles?cc=125&type=scooter"
-          className="inline-flex rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)]/80 hover:text-[var(--brand-orange-strong)]"
-        >
-          125cc — rent
+        <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
+          <Gauge className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
+          <span className="tabular-nums tracking-tight">125cc rent</span>
         </Link>
-        <Link
-          href="/vehicles?cc=50&type=scooter"
-          className="inline-flex rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)]/80 hover:text-[var(--brand-orange-strong)]"
-        >
-          50cc — rent
+        <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
+          <Gauge className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
+          <span className="tabular-nums tracking-tight">50cc rent</span>
         </Link>
-        <Link
-          href="/#services"
-          className="inline-flex rounded-full border border-slate-200/90 bg-[var(--surface-card)] px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
-        >
-          Services &amp; benefits
+        <Link href="/#services" className={quickFilterChipClass}>
+          <Sparkles className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
+          <span className="tracking-tight">Services &amp; benefits</span>
         </Link>
       </div>
 

@@ -1,8 +1,5 @@
 import { HOME_HERO } from "@/lib/site-brand-copy";
 
-/** Shared full-bleed backdrop (home hero + vehicles listing header). File in `/public`. */
-export const emptyParkingBackdropPath = "/empty-parking.jpg" as const;
-
 export const heroContent = {
   location: HOME_HERO.location,
   title: HOME_HERO.title,
@@ -16,7 +13,6 @@ export const heroContent = {
     label: "View Fleet",
   },
   media: {
-    poster: emptyParkingBackdropPath,
     videoSrc: "/hero.mp4",
   },
 } as const;

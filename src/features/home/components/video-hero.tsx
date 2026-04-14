@@ -23,8 +23,6 @@ function PinIcon() {
 }
 
 export function VideoHero() {
-  const poster = heroContent.media.poster ?? undefined;
-  const posterProps = poster ? { poster } : {};
   const backgroundImage =
     "backgroundImage" in heroContent.media &&
     typeof heroContent.media.backgroundImage === "string"
@@ -34,54 +32,52 @@ export function VideoHero() {
   return (
     <section
       aria-labelledby="home-hero-title"
-      className="relative isolate overflow-hidden bg-[var(--background)] text-[var(--foreground)]"
+      className="relative isolate overflow-hidden bg-[var(--background)] text-white"
     >
-      <div className="absolute inset-0">
+      <div className="absolute inset-x-0 bottom-0 top-[var(--site-header-offset)] overflow-hidden">
         {backgroundImage ? (
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat"
+            className="absolute inset-0 bg-cover bg-[center_40%] bg-no-repeat [mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)]"
             style={{ backgroundImage: `url("${backgroundImage}")` }}
           />
         ) : (
-          <>
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 bg-cover bg-[center_30%] bg-no-repeat"
-              style={
-                poster
-                  ? { backgroundImage: `url("${poster}")` }
-                  : undefined
-              }
-            />
-            <video
-              aria-hidden="true"
-              className="absolute inset-0 hidden h-full w-full object-cover object-[center_28%] motion-safe:block motion-reduce:hidden"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              disablePictureInPicture
-              {...posterProps}
-            >
-              <source src={heroContent.media.videoSrc} type="video/mp4" />
-            </video>
-          </>
+          <video
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 right-0 hidden h-[135%] w-full object-cover object-bottom [mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_52%,transparent_100%)] motion-safe:block motion-reduce:hidden"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            disablePictureInPicture
+          >
+            <source src={heroContent.media.videoSrc} type="video/mp4" />
+          </video>
         )}
-        <div className="absolute inset-0 bg-slate-950/25" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(58,124,165,0.18),transparent_42%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(12,24,38,0.78)_0%,rgba(22,42,62,0.52)_32%,rgba(245,251,255,0.08)_58%,rgba(245,251,255,0.28)_100%)]" />
-        <div className="absolute inset-y-0 left-0 w-full bg-[linear-gradient(90deg,rgba(10,22,36,0.72)_0%,rgba(16,34,52,0.45)_38%,rgba(245,251,255,0)_72%)] lg:w-[72%]" />
-        <div className="absolute inset-x-0 bottom-0 h-52 bg-[linear-gradient(180deg,rgba(245,251,255,0)_0%,rgba(245,251,255,0.12)_38%,rgba(245,251,255,0.55)_100%)] sm:h-60" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(72vh,40rem)] sm:h-[min(68vh,44rem)]"
+          style={{
+            background: `linear-gradient(
+              to top,
+              var(--background) 0%,
+              color-mix(in srgb, var(--background) 94%, transparent) 22%,
+              color-mix(in srgb, var(--background) 72%, transparent) 44%,
+              color-mix(in srgb, var(--background) 38%, transparent) 64%,
+              color-mix(in srgb, var(--background) 14%, transparent) 82%,
+              transparent 100%
+            )`,
+          }}
+        />
       </div>
 
       <div className="relative z-10">
         <SiteShell>
-          <div className="flex min-h-[min(100svh,48rem)] flex-col justify-between gap-10 pb-10 pt-24 sm:min-h-0 sm:pb-12 sm:pt-28 lg:gap-12 lg:pb-14 lg:pt-32">
-            <div className="flex min-h-0 flex-1 flex-col justify-center pb-4 sm:pb-6 lg:pb-8">
+          <div className="flex min-h-[min(100svh,48rem)] flex-col justify-between gap-10 pb-10 pt-[calc(var(--site-header-offset)_+_2.5rem)] sm:min-h-0 sm:pb-12 sm:pt-[calc(var(--site-header-offset)_+_3rem)] lg:gap-12 lg:pb-14 lg:pt-[calc(var(--site-header-offset)_+_3.5rem)]">
+            <div className="flex min-h-0 flex-1 flex-col justify-start pb-4 sm:pb-6 lg:pb-8">
               <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90">
+                <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.85)]">
                   <PinIcon />
                   <span>{heroContent.location}</span>
                 </div>
@@ -101,11 +97,11 @@ export function VideoHero() {
                 <div className="mt-5 max-w-2xl sm:mt-6">
                   <h1
                     id="home-hero-title"
-                    className="max-w-4xl text-[clamp(2.125rem,7vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.045em] text-white sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
+                    className="max-w-4xl text-[clamp(2.125rem,7vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.045em] text-white [text-shadow:0_2px_32px_rgba(0,0,0,0.75)] sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
                   >
                     {heroContent.title}
                   </h1>
-                  <p className="mt-5 max-w-xl text-base leading-7 text-white/88 sm:mt-6 sm:text-lg sm:leading-8">
+                  <p className="mt-5 max-w-xl text-base leading-7 text-white/88 [text-shadow:0_1px_18px_rgba(0,0,0,0.75)] sm:mt-6 sm:text-lg sm:leading-8">
                     {heroContent.description}
                   </p>
                 </div>
