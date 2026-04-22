@@ -1,43 +1,56 @@
 "use client";
 
-import { differenceInCalendarDays, parse } from "date-fns";
+import { useMemo } from "react";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import {
-  getIndicativeMotorcycleScooterTripTotalEur,
-} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
-import { SECURITY_DEPOSIT_EUR } from "@/features/booking/lib/booking-schema";
-import { pricingService } from "@/lib/pricing/service";
+  calculateBookingPrice,
+  formatEur,
+  getCdwLabel,
+} from "@/lib/pricing/calculate-booking-price";
 
 export function BookingSummaryStep() {
   const { state, updateSection } = useBookingFlow();
-  const rentalDays = Math.max(
-    0,
-    differenceInCalendarDays(
-      parse(state.rental.returnDate || "1970-01-01", "yyyy-MM-dd", new Date()),
-      parse(state.rental.pickupDate || "1970-01-01", "yyyy-MM-dd", new Date()),
-    ),
+  const pricing = useMemo(
+    () =>
+      calculateBookingPrice({
+        rental: {
+          vehicle: {
+            id: state.rental.vehicleId,
+            slug: state.rental.vehicleSlug,
+            name: state.rental.vehicleName,
+            type: state.rental.vehicleType,
+          },
+          pickupDate: state.rental.pickupDate,
+          returnDate: state.rental.returnDate,
+          pickupTime: state.rental.pickupTime,
+          returnTime: state.rental.returnTime,
+        },
+        delivery: {
+          pickupOption: state.delivery.pickupOption,
+          pickupAddress: state.delivery.pickupAddress,
+          dropoffOption: state.delivery.dropoffOption,
+          dropoffAddress: state.delivery.dropoffAddress,
+        },
+        addons: {
+          cdwOption: state.addons.cdwPlan,
+          additionalDriver: state.addons.additionalDriver,
+          storageBox: state.addons.storageBox,
+          helmetSize1: state.addons.helmetSize1,
+          helmetSize2: state.addons.helmetSize2,
+        },
+        additionalDriver: {
+          enabled: state.addons.additionalDriver,
+        },
+        deposit: {
+          method: state.deposit.depositMethod,
+        },
+      }),
+    [state],
   );
-  const rentalSubtotal = getIndicativeMotorcycleScooterTripTotalEur(rentalDays);
-  const offSiteQuote = pricingService.quoteOffSiteService({
-    pickupOffSite: state.delivery.pickupOption === "delivery",
-    dropoffOffSite: state.delivery.dropoffOption === "dropoff",
-  });
-  const deliveryTotal = offSiteQuote.totalEur;
-  const cdwCost =
-    state.addons.cdwPlan === "scooter_50" || state.addons.cdwPlan === "scooter_125"
-      ? 3
-      : state.addons.cdwPlan === "scooter_full"
-        ? 8
-        : state.addons.cdwPlan === "atv_full"
-          ? 15
-          : 0;
-  const additionalDriverCost = state.addons.additionalDriver ? 5 : 0;
-  const equipmentCost = state.addons.storageBox ? 10 : 0;
-  const addOnsTotal = cdwCost + additionalDriverCost + equipmentCost;
-  const subtotal = rentalSubtotal + deliveryTotal + addOnsTotal;
+
   const addOnList = [
-    state.addons.cdw ? `CDW plan: ${state.addons.cdwPlan}` : "CDW: none",
+    pricing ? `CDW selected: ${getCdwLabel(pricing.cdwOptionApplied)}` : "CDW selected: -",
     `Additional driver: ${state.addons.additionalDriver ? "yes" : "no"}`,
     `Helmet size 1: ${state.addons.helmetSize1 || "-"}`,
     `Helmet size 2: ${state.addons.helmetSize2 || "-"}`,
@@ -61,7 +74,10 @@ export function BookingSummaryStep() {
               Rental dates: {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} to{" "}
               {state.rental.returnDate || "-"} {state.rental.returnTime || ""}
             </li>
-            <li>Rental duration: {rentalDays} day(s)</li>
+            <li>
+              Billable duration: {pricing ? `${pricing.rentalDays} day(s)` : "-"}
+              {pricing ? ` (actual ${pricing.actualDurationHours.toFixed(1)}h)` : ""}
+            </li>
             <li>Pickup method: {state.delivery.pickupOption}</li>
             <li>Pickup address: {state.delivery.pickupAddress || "-"}</li>
             <li>Drop-off method: {state.delivery.dropoffOption}</li>
@@ -74,31 +90,41 @@ export function BookingSummaryStep() {
 
         <div className="rounded-2xl border border-slate-200 p-4 text-sm text-slate-700">
           <p className="text-sm font-semibold text-slate-900">Section 2 - Pricing Summary</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            <li>Rental cost: EUR {rentalSubtotal}</li>
-            <li>
-              Delivery / drop-off charges: EUR {deliveryTotal}
-              {offSiteQuote.hasBundleDiscount ? ` (includes EUR ${offSiteQuote.discountEur} bundle discount)` : ""}
-            </li>
-            <li>CDW cost: EUR {cdwCost}</li>
-            <li>Additional driver cost: EUR {additionalDriverCost}</li>
-            <li>Equipment cost: EUR {equipmentCost}</li>
-          </ul>
-          <p className="mt-3 font-semibold text-slate-900">Subtotal (rental + add-ons): EUR {subtotal}</p>
+          {pricing ? (
+            <>
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                <li>Rental Cost: {formatEur(pricing.rentalCost)}</li>
+                <li>
+                  Delivery / Drop-off: {formatEur(pricing.deliveryTotal)} (pickup{" "}
+                  {formatEur(pricing.deliveryFee)} + drop-off {formatEur(pricing.dropoffFee)}
+                  {pricing.deliveryDiscount > 0
+                    ? ` - ${formatEur(pricing.deliveryDiscount)} bundle discount`
+                    : ""}
+                  )
+                </li>
+                <li>CDW: {formatEur(pricing.cdwCost)}</li>
+                <li>Additional Driver: {formatEur(pricing.additionalDriverCost)}</li>
+                <li>Storage Box: {formatEur(pricing.storageBoxCost)}</li>
+              </ul>
+              <p className="mt-3 font-semibold text-slate-900">
+                Subtotal: {formatEur(pricing.subtotal)}
+              </p>
+            </>
+          ) : (
+            <p className="mt-2 text-xs text-slate-500">
+              Pricing preview will appear once vehicle and rental dates/times are valid.
+            </p>
+          )}
         </div>
 
         <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 text-sm text-slate-700">
-          <p className="text-sm font-semibold text-slate-900">
-            Section 3 - Security Deposit (separate block)
+          <p className="text-sm font-semibold text-slate-900">Section 3 - Deposit & Totals</p>
+          <p className="mt-2 font-semibold">
+            Security deposit: {formatEur(pricing?.depositAmount ?? 250)}
           </p>
-          <p className="mt-2 font-semibold">Security deposit: EUR {SECURITY_DEPOSIT_EUR}</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            <li>A refundable security deposit of EUR {SECURITY_DEPOSIT_EUR} is required.</li>
-            <li>Deposit is held for 7-10 days after return.</li>
-          </ul>
 
           <div className="mt-3">
-            <p className="font-semibold text-slate-900">Deposit method selection</p>
+            <p className="font-semibold text-slate-900">Deposit method</p>
             <div className="mt-2 flex flex-col gap-2 sm:flex-row">
               <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
                 <input
@@ -121,9 +147,24 @@ export function BookingSummaryStep() {
                 Pay in person at pickup
               </label>
             </div>
+            {pricing ? (
+              <div className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-3">
+                <p className="font-semibold text-slate-900">
+                  Total Due Online: {formatEur(pricing.totalDueOnline)}
+                </p>
+                <p className="mt-1 text-sm text-slate-700">
+                  Due at Pickup / Later: {formatEur(pricing.totalDueLater)}
+                </p>
+              </div>
+            ) : null}
             {state.deposit.depositMethod === "in_person" ? (
               <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-                Your deposit must be paid in full upon collection of the vehicle before your rental begins.
+                Deposit will be paid at pickup and is not included in the online total.
+              </p>
+            ) : null}
+            {state.deposit.depositMethod === "online" ? (
+              <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+                Deposit is included in the online payable amount.
               </p>
             ) : null}
           </div>

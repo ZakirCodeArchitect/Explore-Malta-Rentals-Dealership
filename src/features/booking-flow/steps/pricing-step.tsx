@@ -2,23 +2,42 @@
 
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { getBookingPricingBreakdown } from "@/features/booking-flow/lib/pricing";
-import { getVehicleBySlug } from "@/features/vehicles/data/vehicles";
+import {
+  calculateBookingPrice,
+  formatEur,
+} from "@/lib/pricing/calculate-booking-price";
 
 export function PricingStep() {
   const { state, updateSection } = useBookingFlow();
-  const selectedVehicle = state.rental.vehicleSlug
-    ? getVehicleBySlug(state.rental.vehicleSlug)
-    : null;
-  const pricing = selectedVehicle
-    ? getBookingPricingBreakdown(
-        selectedVehicle.type,
-        state.rental.pickupDate,
-        state.rental.pickupTime,
-        state.rental.returnDate,
-        state.rental.returnTime,
-      )
-    : null;
+  const pricing = calculateBookingPrice({
+    rental: {
+      vehicle: {
+        id: state.rental.vehicleId,
+        slug: state.rental.vehicleSlug,
+        name: state.rental.vehicleName,
+        type: state.rental.vehicleType,
+      },
+      pickupDate: state.rental.pickupDate,
+      returnDate: state.rental.returnDate,
+      pickupTime: state.rental.pickupTime,
+      returnTime: state.rental.returnTime,
+    },
+    delivery: {
+      pickupOption: "office",
+      dropoffOption: "office",
+    },
+    addons: {
+      additionalDriver: false,
+      storageBox: false,
+      cdwOption: "no_cdw",
+    },
+    additionalDriver: {
+      enabled: false,
+    },
+    deposit: {
+      method: "",
+    },
+  });
 
   return (
     <StepShell
@@ -34,20 +53,12 @@ export function PricingStep() {
           <div className="space-y-2">
             <p className="font-semibold text-slate-900">Pricing Summary</p>
             <ul className="list-disc space-y-1 pl-5 text-sm">
-              <li>Category: {pricing.categoryLabel}</li>
-              <li>Duration: {pricing.billableDays} day(s) billed</li>
-              <li>Base rate: EUR {pricing.baseDailyRateEur}/day</li>
+              <li>Duration: {pricing.rentalDays} day(s) billed</li>
+              <li>Actual duration: {pricing.actualDurationHours.toFixed(1)} hours</li>
               <li>
-                Duration discount: EUR {pricing.discountPerDayEur}/day off (from EUR{" "}
-                {pricing.standardDailyRateEur}/day), estimated savings EUR{" "}
-                {pricing.estimatedDurationSavingsEur}
+                Sunday override days (bicycle/ATV): {pricing.sundayDaysCharged}
               </li>
-              {pricing.sundayRateEur ? (
-                <li>
-                  Sunday override: {pricing.sundayDays} Sunday day(s) at EUR {pricing.sundayRateEur}/day
-                </li>
-              ) : null}
-              <li>Estimated rental total: EUR {pricing.totalEur}</li>
+              <li>Estimated rental total: {formatEur(pricing.rentalCost)}</li>
             </ul>
           </div>
         ) : (

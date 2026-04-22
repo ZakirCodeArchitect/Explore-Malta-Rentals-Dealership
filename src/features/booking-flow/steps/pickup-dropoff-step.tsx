@@ -2,7 +2,7 @@
 
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { pricingService } from "@/lib/pricing/service";
+import { calculateDeliveryFees, formatEur } from "@/lib/pricing/calculate-booking-price";
 
 export function PickupDropoffStep() {
   const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
@@ -10,22 +10,13 @@ export function PickupDropoffStep() {
   const dropoffDeliverySelected = state.delivery.dropoffOption === "dropoff";
   const pickupAddress = state.delivery.pickupAddress ?? "";
   const dropoffAddress = state.delivery.dropoffAddress ?? "";
-  const offSiteQuote = pricingService.quoteOffSiteService({
-    pickupOffSite: pickupDeliverySelected,
-    dropoffOffSite: dropoffDeliverySelected,
-  });
-  const deliveryOnlyQuote = pricingService.quoteOffSiteService({
-    pickupOffSite: true,
-    dropoffOffSite: false,
-  });
-  const dropoffOnlyQuote = pricingService.quoteOffSiteService({
-    pickupOffSite: false,
-    dropoffOffSite: true,
-  });
-  const bothQuote = pricingService.quoteOffSiteService({
-    pickupOffSite: true,
-    dropoffOffSite: true,
-  });
+  const offSiteQuote = calculateDeliveryFees(
+    state.delivery.pickupOption,
+    state.delivery.dropoffOption,
+  );
+  const deliveryOnlyQuote = calculateDeliveryFees("delivery", "office");
+  const dropoffOnlyQuote = calculateDeliveryFees("office", "dropoff");
+  const bothQuote = calculateDeliveryFees("delivery", "dropoff");
 
   return (
     <StepShell
@@ -147,17 +138,17 @@ export function PickupDropoffStep() {
       </div>
 
       <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        <p>Delivery only: EUR {deliveryOnlyQuote.totalEur}</p>
-        <p>Drop-off only: EUR {dropoffOnlyQuote.totalEur}</p>
+        <p>Delivery only: {formatEur(deliveryOnlyQuote.deliveryTotal)}</p>
+        <p>Drop-off only: {formatEur(dropoffOnlyQuote.deliveryTotal)}</p>
         <p className="font-semibold">
-          Both: EUR {bothQuote.totalEur}
-          {bothQuote.hasBundleDiscount ? ` (You get EUR ${bothQuote.discountEur} off)` : ""}
+          Both: {formatEur(bothQuote.deliveryTotal)}
+          {bothQuote.discount > 0 ? ` (You get ${formatEur(bothQuote.discount)} off)` : ""}
         </p>
-        {offSiteQuote.selectedLegs > 0 ? (
+        {offSiteQuote.deliveryFee + offSiteQuote.dropoffFee > 0 ? (
           <p className="text-xs">
-            Current chosen setup total: EUR {offSiteQuote.totalEur} ({offSiteQuote.selectedLegs} x
-            EUR {offSiteQuote.perLegFeeEur}
-            {offSiteQuote.hasBundleDiscount ? ` - EUR ${offSiteQuote.discountEur} bundle discount` : ""}
+            Current chosen setup total: {formatEur(offSiteQuote.deliveryTotal)} (
+            {formatEur(offSiteQuote.deliveryFee)} pickup + {formatEur(offSiteQuote.dropoffFee)} drop-off
+            {offSiteQuote.discount > 0 ? ` - ${formatEur(offSiteQuote.discount)} bundle discount` : ""}
             )
           </p>
         ) : null}
