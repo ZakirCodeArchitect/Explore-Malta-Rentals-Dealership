@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  FAILED
+}
+
+enum VehicleType {
+  MOTORBIKE_50CC
+  MOTORBIKE_125CC
+  BICYCLE
+  ATV
+}
+
+enum PickupOption {
+  OFFICE
+  DELIVERY
+}
+
+enum DropoffOption {
+  OFFICE
+  DROPOFF
+}
+
+enum DepositMethod {
+  ONLINE
+  IN_PERSON
+}
+
+enum LicenseCategory {
+  AM
+  A1
+  A2
+  A
+  B
+}
+
+enum CdwOption {
+  NO_CDW
+  REDUCE_350_50CC
+  REDUCE_500_125CC
+  FULL_COVERAGE_50CC_125CC
+  REDUCE_800_ATV
+}
+
+enum HelmetSize {
+  S
+  M
+  L
+}
+
+enum ConfirmationEmailStatus {
+  NOT_SENT
+  QUEUED
+  SENT
+  FAILED
+}
+
+model Booking {
+  id               String        @id @default(cuid())
+  bookingReference String        @unique
+  status           BookingStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  vehicleType         VehicleType
+  pickupDateTime      DateTime
+  returnDateTime      DateTime
+  actualDurationHours Decimal     @db.Decimal(8, 2)
+  billableDays        Int
+
+  pickupOption     PickupOption
+  pickupAddress    String?
+  pickupLatitude   Decimal?      @db.Decimal(9, 6)
+  pickupLongitude  Decimal?      @db.Decimal(9, 6)
+  dropoffOption    DropoffOption
+  dropoffAddress   String?
+  dropoffLatitude  Decimal?      @db.Decimal(9, 6)
+  dropoffLongitude Decimal?      @db.Decimal(9, 6)
+
+  customerFullName        String
+  customerPhone           String
+  customerEmail           String
+  customerNationality     String
+  customerDateOfBirth     DateTime
+  customerLicenseCategory LicenseCategory
+  customerSpecialNotes    String?
+
+  customerLicenseUploadPath          String?
+  customerPassportUploadPath         String?
+  customerWillPresentLicenseAtPickup Boolean @default(false)
+  customerWillPresentIdAtPickup      Boolean @default(false)
+
+  additionalDriverEnabled                    Boolean          @default(false)
+  additionalDriverFullName                   String?
+  additionalDriverPhone                      String?
+  additionalDriverEmail                      String?
+  additionalDriverNationality                String?
+  additionalDriverDateOfBirth                DateTime?
+  additionalDriverLicenseCategory            LicenseCategory?
+  additionalDriverLicenseUploadPath          String?
+  additionalDriverPassportUploadPath         String?
+  additionalDriverWillPresentLicenseAtPickup Boolean          @default(false)
+  additionalDriverWillPresentIdAtPickup      Boolean          @default(false)
+
+  cdwOption                 CdwOption   @default(NO_CDW)
+  cdwDailyRate              Decimal     @default(0) @db.Decimal(10, 2)
+  cdwTotal                  Decimal     @default(0) @db.Decimal(10, 2)
+  additionalDriverDailyRate Decimal     @default(0) @db.Decimal(10, 2)
+  additionalDriverTotal     Decimal     @default(0) @db.Decimal(10, 2)
+  helmetSize1               HelmetSize?
+  helmetSize2               HelmetSize?
+  storageBoxSelected        Boolean     @default(false)
+  storageBoxCost            Decimal     @default(0) @db.Decimal(10, 2)
+  rentalCost                Decimal     @default(0) @db.Decimal(10, 2)
+  deliveryFee               Decimal     @default(0) @db.Decimal(10, 2)
+  dropoffFee                Decimal     @default(0) @db.Decimal(10, 2)
+  deliveryTotal             Decimal     @default(0) @db.Decimal(10, 2)
+  subtotal                  Decimal     @default(0) @db.Decimal(10, 2)
+
+  depositAmount  Decimal       @default(0) @db.Decimal(10, 2)
+  depositMethod  DepositMethod
+  totalDueOnline Decimal       @default(0) @db.Decimal(10, 2)
+  totalDueLater  Decimal       @default(0) @db.Decimal(10, 2)
+
+  termsAccepted           Boolean                 @default(false)
+  termsAcceptedAt         DateTime?
+  termsVersion            String?
+  consentSource           String?
+  confirmationEmailSentAt DateTime?
+  confirmationEmailStatus ConfirmationEmailStatus @default(NOT_SENT)
+
+  @@index([status, createdAt])
+  @@index([pickupDateTime, returnDateTime])
+  @@index([vehicleType, pickupDateTime])
+  @@index([customerEmail, customerPhone])
+}
