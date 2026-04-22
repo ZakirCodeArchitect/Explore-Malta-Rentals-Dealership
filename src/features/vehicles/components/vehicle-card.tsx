@@ -30,27 +30,31 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
           <p className="mt-1 text-sm text-slate-600">{vehicle.tagline}</p>
         </div>
 
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {vehicle.highlights.slice(0, 2).map((item) => (
-            <li key={item} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-              {item}
-            </li>
-          ))}
-          <li className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-slate-800">
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-slate-800">
             {vehicle.transmission}
-          </li>
-        </ul>
-
-        <div className="mt-5 flex items-end justify-between">
-          <p className="text-sm text-slate-600">
-            From <span className="text-xl font-semibold text-slate-950">EUR {vehicle.pricePerDay}</span> / day
+          </span>
+          <p className="text-xs text-slate-600">
+            <span className="mr-1.5">From</span>
+            <span className="text-lg font-semibold text-slate-950">EUR {vehicle.pricePerDay}</span> / day
           </p>
-          <Link
-            href={`/vehicles/${vehicle.slug}`}
-            className="inline-flex items-center rounded-full bg-[var(--brand-orange)] px-4 py-2 text-sm font-semibold text-slate-950 transition-colors duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
-          >
-            View details
-          </Link>
+        </div>
+
+        <div className="mt-5 flex justify-end border-t border-slate-200 pt-3">
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/vehicles/${vehicle.slug}`}
+              className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
+            >
+              View details
+            </Link>
+            <Link
+              href={`/booking?vehicle=${encodeURIComponent(vehicle.slug)}`}
+              className="inline-flex items-center rounded-md bg-[var(--brand-orange)] px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
+            >
+              Book now
+            </Link>
+          </div>
         </div>
       </div>
     </article>

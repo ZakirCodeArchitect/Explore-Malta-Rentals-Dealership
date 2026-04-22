@@ -18,7 +18,6 @@ import { CalendarDays, Gauge, Loader2, MapPin, Sparkles } from "lucide-react";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   bookingFormSchema,
-  OFF_SITE_SERVICE_FEE_EUR,
   SECURITY_DEPOSIT_EUR,
   TRIP_MAX_SPAN_DAYS,
   TRIP_MIN_SPAN_DAYS,
@@ -34,6 +33,7 @@ import {
   getIndicativeMotorcycleScooterDailyRateEur,
   getIndicativeMotorcycleScooterTripTotalEur,
 } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
+import { pricingService } from "@/lib/pricing/service";
 
 const inputShell =
   "flex w-full min-h-[3rem] items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
@@ -121,9 +121,14 @@ export function BookingSearchForm() {
   const indicativeTripTotalEur =
     getIndicativeMotorcycleScooterTripTotalEur(durationDays);
 
-  const offSiteLegs =
-    (alternatePickupRequested ? 1 : 0) + (differentDropoff ? 1 : 0);
-  const offSiteFeesEur = offSiteLegs * OFF_SITE_SERVICE_FEE_EUR;
+  const offSiteQuote = pricingService.quoteOffSiteService({
+    pickupOffSite: alternatePickupRequested,
+    dropoffOffSite: differentDropoff,
+  });
+  const singleLegOffSiteQuote = pricingService.quoteOffSiteService({
+    pickupOffSite: true,
+    dropoffOffSite: false,
+  });
 
   const onSubmit = async (values: BookingFormValues) => {
     await new Promise((r) => setTimeout(r, 320));
@@ -182,8 +187,8 @@ export function BookingSearchForm() {
                 <span className="text-sm font-semibold text-slate-900">Request pickup at a different address</span>
                 <span className="mt-1 block text-xs leading-relaxed text-slate-600">
                   Subject to availability. Additional{" "}
-                  <span className="font-semibold text-slate-800">€{OFF_SITE_SERVICE_FEE_EUR}</span> — payable when you
-                  check out.
+                  <span className="font-semibold text-slate-800">€{singleLegOffSiteQuote.perLegFeeEur}</span> —
+                  payable when you check out.
                 </span>
               </span>
             </label>
@@ -203,8 +208,8 @@ export function BookingSearchForm() {
                     <span className="text-sm font-semibold text-slate-900">Drop off at a different address</span>
                     <span className="mt-1 block text-xs leading-relaxed text-slate-600">
                       Additional{" "}
-                      <span className="font-semibold text-slate-800">€{OFF_SITE_SERVICE_FEE_EUR}</span> — payable when you
-                      check out.
+                      <span className="font-semibold text-slate-800">€{singleLegOffSiteQuote.perLegFeeEur}</span> —
+                      payable when you check out.
                     </span>
                   </span>
                 </label>
@@ -260,10 +265,12 @@ export function BookingSearchForm() {
             </div>
           ) : null}
 
-          {offSiteLegs > 0 ? (
+          {offSiteQuote.selectedLegs > 0 ? (
             <p className="rounded-xl border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-xs text-amber-950">
-              Off-site service total: <span className="font-semibold">€{offSiteFeesEur}</span> ({offSiteLegs} × €
-              {OFF_SITE_SERVICE_FEE_EUR}) — collected at checkout.
+              Off-site service total: <span className="font-semibold">€{offSiteQuote.totalEur}</span> (
+              {offSiteQuote.selectedLegs} × €{offSiteQuote.perLegFeeEur}
+              {offSiteQuote.hasBundleDiscount ? ` - €${offSiteQuote.discountEur} bundle discount` : ""}) —
+              collected at checkout.
             </p>
           ) : null}
 
@@ -402,7 +409,7 @@ export function BookingSearchForm() {
             {durationDays} day{durationDays === 1 ? "" : "s"} · Shop pickup Pietà
             {alternatePickupRequested ? " · Off-site pickup requested" : ""}
             {differentDropoff ? " · Different drop-off" : ""}
-            {offSiteLegs > 0 ? ` · +€${offSiteFeesEur} off-site` : ""}
+            {offSiteQuote.selectedLegs > 0 ? ` · +€${offSiteQuote.totalEur} off-site` : ""}
           </p>
           <p className="mt-0.5 text-xs text-slate-600">
             Indicative motorcycles/scooters total ~€{indicativeTripTotalEur} (€{indicativeDailyEur}/day × {durationDays}{" "}

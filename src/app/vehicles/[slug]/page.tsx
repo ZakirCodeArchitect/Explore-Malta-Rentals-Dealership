@@ -37,6 +37,14 @@ function VehicleTitleBlock({
       <h1 className="mt-2 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">{vehicle.name}</h1>
       <p className="mt-3 text-base text-slate-600 sm:text-lg">{vehicle.tagline}</p>
       <p className="mt-3 text-sm text-slate-500">{vehicle.location}</p>
+      <div className="mt-5">
+        <Link
+          href={`/booking?vehicle=${encodeURIComponent(vehicle.slug)}`}
+          className="inline-flex items-center rounded-full bg-[var(--brand-orange)] px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
+        >
+          Book now
+        </Link>
+      </div>
     </>
   );
 }
