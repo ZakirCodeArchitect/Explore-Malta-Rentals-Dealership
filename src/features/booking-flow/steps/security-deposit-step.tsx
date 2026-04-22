@@ -5,7 +5,7 @@ import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-con
 import { SECURITY_DEPOSIT_EUR } from "@/features/booking/lib/booking-schema";
 
 export function SecurityDepositStep() {
-  const { state, updateSection } = useBookingFlow();
+  const { state, updateSection, getFieldError } = useBookingFlow();
 
   return (
     <StepShell
@@ -24,8 +24,9 @@ export function SecurityDepositStep() {
             type="radio"
             name="depositMethod"
             value="online"
-            checked={state.securityDeposit.method === "online"}
-            onChange={() => updateSection("securityDeposit", { method: "online" })}
+            data-field="deposit.depositMethod"
+            checked={state.deposit.depositMethod === "online"}
+            onChange={() => updateSection("deposit", { depositMethod: "online" })}
           />
           Pay online
         </label>
@@ -35,11 +36,15 @@ export function SecurityDepositStep() {
             type="radio"
             name="depositMethod"
             value="in_person"
-            checked={state.securityDeposit.method === "in_person"}
-            onChange={() => updateSection("securityDeposit", { method: "in_person" })}
+            data-field="deposit.depositMethod"
+            checked={state.deposit.depositMethod === "in_person"}
+            onChange={() => updateSection("deposit", { depositMethod: "in_person" })}
           />
           Pay in person
         </label>
+        {getFieldError("deposit.depositMethod") ? (
+          <p className="text-xs text-red-600">{getFieldError("deposit.depositMethod")}</p>
+        ) : null}
       </div>
     </StepShell>
   );

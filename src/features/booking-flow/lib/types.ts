@@ -1,22 +1,20 @@
+export type LicenseCategory = "" | "B" | "AM" | "A" | "A1" | "A2";
+
 export type BookingFlowState = {
-  vehicle: {
-    selectedVehicleId: string;
-    selectedVehicleSlug: string;
-    selectedVehicleName: string;
-    selectedVehicleType: string;
-  };
-  rentalDates: {
+  rental: {
+    vehicleId: string;
+    vehicleSlug: string;
+    vehicleName: string;
+    vehicleType: string;
     pickupDate: string;
     pickupTime: string;
     returnDate: string;
     returnTime: string;
+    pricingAcknowledged: boolean;
   };
-  pricing: {
-    acknowledged: boolean;
-  };
-  pickupDropoff: {
-    pickupType: "office" | "delivery";
-    dropoffType: "office" | "delivery";
+  delivery: {
+    pickupOption: "office" | "delivery";
+    dropoffOption: "office" | "dropoff";
     pickupAddress: string;
     dropoffAddress: string;
   };
@@ -34,12 +32,12 @@ export type BookingFlowState = {
     phone: string;
     email: string;
     nationality: string;
-    dob: string;
-    licenseCategory: "" | "B" | "AM" | "A" | "A1" | "A2";
-    licenseUploadName: string;
-    idUploadName: string;
-    officeLicenseConfirmed: boolean;
-    officeIdConfirmed: boolean;
+    dateOfBirth: string;
+    licenseCategory: LicenseCategory;
+    driverLicenseUpload: string;
+    passportUpload: string;
+    licenseConfirmationCheckbox: boolean;
+    idConfirmationCheckbox: boolean;
     specialNotes: string;
   };
   additionalDriver: {
@@ -47,42 +45,36 @@ export type BookingFlowState = {
     phone: string;
     email: string;
     nationality: string;
-    dob: string;
-    licenseCategory: "" | "B" | "AM" | "A" | "A1" | "A2";
-    passportIdUploadName: string;
+    dateOfBirth: string;
+    licenseCategory: LicenseCategory;
+    passportIdUpload: string;
     officeIdConfirmed: boolean;
   };
-  securityDeposit: {
-    method: "online" | "in_person" | "";
+  deposit: {
+    depositMethod: "online" | "in_person" | "";
   };
-  summary: {
-    reviewed: boolean;
-  };
-  terms: {
-    accepted: boolean;
-    acceptedAtIso: string;
+  consent: {
+    summaryReviewed: boolean;
+    agreedToTerms: boolean;
+    agreedAt: string;
   };
 };
 
 export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
-  vehicle: {
-    selectedVehicleId: "",
-    selectedVehicleSlug: "",
-    selectedVehicleName: "",
-    selectedVehicleType: "",
-  },
-  rentalDates: {
+  rental: {
+    vehicleId: "",
+    vehicleSlug: "",
+    vehicleName: "",
+    vehicleType: "",
     pickupDate: "",
     pickupTime: "",
     returnDate: "",
     returnTime: "",
+    pricingAcknowledged: false,
   },
-  pricing: {
-    acknowledged: false,
-  },
-  pickupDropoff: {
-    pickupType: "office",
-    dropoffType: "office",
+  delivery: {
+    pickupOption: "office",
+    dropoffOption: "office",
     pickupAddress: "",
     dropoffAddress: "",
   },
@@ -100,12 +92,12 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     phone: "",
     email: "",
     nationality: "",
-    dob: "",
+    dateOfBirth: "",
     licenseCategory: "",
-    licenseUploadName: "",
-    idUploadName: "",
-    officeLicenseConfirmed: false,
-    officeIdConfirmed: false,
+    driverLicenseUpload: "",
+    passportUpload: "",
+    licenseConfirmationCheckbox: false,
+    idConfirmationCheckbox: false,
     specialNotes: "",
   },
   additionalDriver: {
@@ -113,19 +105,17 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     phone: "",
     email: "",
     nationality: "",
-    dob: "",
+    dateOfBirth: "",
     licenseCategory: "",
-    passportIdUploadName: "",
+    passportIdUpload: "",
     officeIdConfirmed: false,
   },
-  securityDeposit: {
-    method: "",
+  deposit: {
+    depositMethod: "",
   },
-  summary: {
-    reviewed: false,
-  },
-  terms: {
-    accepted: false,
-    acceptedAtIso: "",
+  consent: {
+    summaryReviewed: false,
+    agreedToTerms: false,
+    agreedAt: "",
   },
 };

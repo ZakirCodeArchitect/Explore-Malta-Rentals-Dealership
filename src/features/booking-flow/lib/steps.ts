@@ -1,13 +1,10 @@
 export const BOOKING_FLOW_SECTIONS = [
-  "select_vehicle",
-  "rental_dates",
-  "pricing",
-  "pickup_dropoff",
+  "rental",
+  "delivery",
   "addons",
-  "security_deposit",
-  "customer_details",
-  "booking_summary",
-  "terms_conditions",
+  "customer",
+  "deposit",
+  "consent",
 ] as const;
 
 export type BookingFlowSectionId = (typeof BOOKING_FLOW_SECTIONS)[number];
@@ -16,22 +13,22 @@ export const BOOKING_FLOW_STEPS = [
   {
     id: "rental_details",
     title: "Rental Details",
-    sections: ["select_vehicle", "rental_dates", "pricing"],
+    sections: ["rental"],
   },
   {
     id: "options_delivery",
     title: "Options & Delivery",
-    sections: ["pickup_dropoff", "addons"],
+    sections: ["delivery", "addons"],
   },
   {
     id: "your_information",
     title: "Your Information",
-    sections: ["customer_details"],
+    sections: ["customer"],
   },
   {
     id: "review_confirm",
     title: "Review & Confirm",
-    sections: ["booking_summary", "terms_conditions"],
+    sections: ["deposit", "consent"],
   },
 ] as const satisfies ReadonlyArray<{
   id: string;

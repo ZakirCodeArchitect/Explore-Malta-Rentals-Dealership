@@ -7,11 +7,12 @@ import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-con
 import { getVehicleBySlug } from "@/features/vehicles/data/vehicles";
 
 export function SelectVehicleStep() {
-  const { state } = useBookingFlow();
-  const hasSelectedVehicle = Boolean(state.vehicle.selectedVehicleId);
-  const selectedVehicle = state.vehicle.selectedVehicleSlug
-    ? getVehicleBySlug(state.vehicle.selectedVehicleSlug)
+  const { state, getFieldError } = useBookingFlow();
+  const hasSelectedVehicle = Boolean(state.rental.vehicleId);
+  const selectedVehicle = state.rental.vehicleSlug
+    ? getVehicleBySlug(state.rental.vehicleSlug)
     : null;
+  const vehicleError = getFieldError("rental.vehicleId");
 
   return (
     <StepShell
@@ -37,10 +38,10 @@ export function SelectVehicleStep() {
             ) : null}
             <div className="min-w-0">
               <p className="text-base font-semibold text-slate-900">
-                {state.vehicle.selectedVehicleName}
+                {state.rental.vehicleName}
               </p>
               <p className="mt-1 text-sm text-slate-700">
-                Category: {state.vehicle.selectedVehicleType}
+                Category: {state.rental.vehicleType}
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-700">
                 {selectedVehicle ? (
@@ -78,6 +79,7 @@ export function SelectVehicleStep() {
           </Link>
         </div>
       )}
+      {vehicleError ? <p className="mt-3 text-sm text-red-600">{vehicleError}</p> : null}
     </StepShell>
   );
 }

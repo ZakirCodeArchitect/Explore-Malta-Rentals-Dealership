@@ -36,13 +36,13 @@ const fieldClass =
   "mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function AddonsStep() {
-  const { state, updateSection } = useBookingFlow();
+  const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
   const [cdwMenuOpen, setCdwMenuOpen] = useState(false);
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const [helmetSize1MenuOpen, setHelmetSize1MenuOpen] = useState(false);
   const [helmetSize2MenuOpen, setHelmetSize2MenuOpen] = useState(false);
   const helmetEnabled = state.addons.helmet;
-  const selectedVehicleType = state.vehicle.selectedVehicleType.toLowerCase();
+  const selectedVehicleType = state.rental.vehicleType.toLowerCase();
   const supportsHelmet =
     selectedVehicleType === "motorbike" ||
     selectedVehicleType === "scooter" ||
@@ -55,12 +55,12 @@ export function AddonsStep() {
     LICENSE_CATEGORY_OPTIONS.find(
       (option) => option.value === state.additionalDriver.licenseCategory,
     ) ?? LICENSE_CATEGORY_OPTIONS[0];
-  const allowedLicenseOptions = getAllowedLicenseCategories(state.vehicle.selectedVehicleId);
+  const allowedLicenseOptions = getAllowedLicenseCategories(state.rental.vehicleId);
   const allowedLicenseCategoryOptions = LICENSE_CATEGORY_OPTIONS.filter(
     (option) =>
       option.value === "" || allowedLicenseOptions.includes(option.value as LicenseCategory),
   );
-  const licenseCategoryHint = getLicenseCategoryHint(state.vehicle.selectedVehicleId);
+  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleId);
   const selectedHelmetSize1Option =
     HELMET_SIZE_OPTIONS.find((option) => option.value === state.addons.helmetSize1) ??
     HELMET_SIZE_OPTIONS[0];
@@ -125,7 +125,12 @@ export function AddonsStep() {
                     <button
                       type="button"
                       aria-haspopup="listbox"
-                      className="mt-1 flex w-full items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-left text-sm text-slate-900 outline-none transition hover:border-slate-300 focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+                      data-field="addons.helmetSize1"
+                      className={`mt-1 flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm text-slate-900 outline-none transition focus:ring-2 ${
+                        isFieldInvalid("addons.helmetSize1")
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                          : "border-slate-200 hover:border-slate-300 focus:border-[var(--brand-blue)] focus:ring-[var(--brand-blue)]/20"
+                      }`}
                     >
                       <span>{selectedHelmetSize1Option.label}</span>
                       <ChevronDown
@@ -171,6 +176,9 @@ export function AddonsStep() {
                   </Popover.Portal>
                 </Popover.Root>
               </label>
+              {getFieldError("addons.helmetSize1") ? (
+                <p className="text-xs text-red-600">{getFieldError("addons.helmetSize1")}</p>
+              ) : null}
               <label className="text-sm font-medium text-slate-700">
                 Helmet size 2
                 <Popover.Root open={helmetSize2MenuOpen} onOpenChange={setHelmetSize2MenuOpen}>
@@ -178,7 +186,12 @@ export function AddonsStep() {
                     <button
                       type="button"
                       aria-haspopup="listbox"
-                      className="mt-1 flex w-full items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-left text-sm text-slate-900 outline-none transition hover:border-slate-300 focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+                      data-field="addons.helmetSize2"
+                      className={`mt-1 flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm text-slate-900 outline-none transition focus:ring-2 ${
+                        isFieldInvalid("addons.helmetSize2")
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                          : "border-slate-200 hover:border-slate-300 focus:border-[var(--brand-blue)] focus:ring-[var(--brand-blue)]/20"
+                      }`}
                     >
                       <span>{selectedHelmetSize2Option.label}</span>
                       <ChevronDown
@@ -224,6 +237,9 @@ export function AddonsStep() {
                   </Popover.Portal>
                 </Popover.Root>
               </label>
+              {getFieldError("addons.helmetSize2") ? (
+                <p className="text-xs text-red-600">{getFieldError("addons.helmetSize2")}</p>
+              ) : null}
             </div>
           ) : supportsHelmet ? (
             <p className="mt-2 text-xs text-slate-600">
@@ -255,56 +271,91 @@ export function AddonsStep() {
                   Full name
                   <input
                     type="text"
+                    name="additionalDriver.fullName"
+                    data-field="additionalDriver.fullName"
                     value={state.additionalDriver.fullName}
                     onChange={(event) =>
                       updateSection("additionalDriver", { fullName: event.target.value })
                     }
-                    className={fieldClass}
+                    className={`${fieldClass} ${isFieldInvalid("additionalDriver.fullName") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
                   />
+                  {getFieldError("additionalDriver.fullName") ? (
+                    <span className="mt-1 block text-xs text-red-600">
+                      {getFieldError("additionalDriver.fullName")}
+                    </span>
+                  ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                   Phone number
                   <input
                     type="tel"
+                    name="additionalDriver.phone"
+                    data-field="additionalDriver.phone"
                     value={state.additionalDriver.phone}
                     onChange={(event) =>
                       updateSection("additionalDriver", { phone: event.target.value })
                     }
-                    className={fieldClass}
+                    className={`${fieldClass} ${isFieldInvalid("additionalDriver.phone") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
                   />
+                  {getFieldError("additionalDriver.phone") ? (
+                    <span className="mt-1 block text-xs text-red-600">
+                      {getFieldError("additionalDriver.phone")}
+                    </span>
+                  ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                   Email
                   <input
                     type="email"
+                    name="additionalDriver.email"
+                    data-field="additionalDriver.email"
                     value={state.additionalDriver.email}
                     onChange={(event) =>
                       updateSection("additionalDriver", { email: event.target.value })
                     }
-                    className={fieldClass}
+                    className={`${fieldClass} ${isFieldInvalid("additionalDriver.email") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
                   />
+                  {getFieldError("additionalDriver.email") ? (
+                    <span className="mt-1 block text-xs text-red-600">
+                      {getFieldError("additionalDriver.email")}
+                    </span>
+                  ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                   Nationality
                   <input
                     type="text"
+                    name="additionalDriver.nationality"
+                    data-field="additionalDriver.nationality"
                     value={state.additionalDriver.nationality}
                     onChange={(event) =>
                       updateSection("additionalDriver", { nationality: event.target.value })
                     }
-                    className={fieldClass}
+                    className={`${fieldClass} ${isFieldInvalid("additionalDriver.nationality") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
                   />
+                  {getFieldError("additionalDriver.nationality") ? (
+                    <span className="mt-1 block text-xs text-red-600">
+                      {getFieldError("additionalDriver.nationality")}
+                    </span>
+                  ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                   Date of birth
                   <input
                     type="date"
-                    value={state.additionalDriver.dob}
+                    name="additionalDriver.dateOfBirth"
+                    data-field="additionalDriver.dateOfBirth"
+                    value={state.additionalDriver.dateOfBirth}
                     onChange={(event) =>
-                      updateSection("additionalDriver", { dob: event.target.value })
+                      updateSection("additionalDriver", { dateOfBirth: event.target.value })
                     }
-                    className={fieldClass}
+                    className={`${fieldClass} ${isFieldInvalid("additionalDriver.dateOfBirth") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
                   />
+                  {getFieldError("additionalDriver.dateOfBirth") ? (
+                    <span className="mt-1 block text-xs text-red-600">
+                      {getFieldError("additionalDriver.dateOfBirth")}
+                    </span>
+                  ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                   License category
@@ -361,6 +412,11 @@ export function AddonsStep() {
                     </Popover.Portal>
                   </Popover.Root>
                   <p className="mt-1 text-xs text-slate-500">{licenseCategoryHint}</p>
+                  {getFieldError("additionalDriver.licenseCategory") ? (
+                    <p className="mt-1 text-xs text-red-600">
+                      {getFieldError("additionalDriver.licenseCategory")}
+                    </p>
+                  ) : null}
                 </label>
               </div>
 
@@ -371,22 +427,24 @@ export function AddonsStep() {
                 <p className="mt-1 text-xs text-slate-600">
                   Delivery pickup requires photo upload. Office pickup requires in-person ID confirmation.
                 </p>
-                {state.pickupDropoff.pickupType === "delivery" ? (
+                {state.delivery.pickupOption === "delivery" ? (
                   <label className="mt-2 block text-sm font-medium text-slate-700">
                     Passport/ID photo upload
                     <input
                       type="file"
+                      name="additionalDriver.passportIdUpload"
+                      data-field="additionalDriver.passportIdUpload"
                       accept="image/*,.pdf"
                       onChange={(event) =>
                         updateSection("additionalDriver", {
-                          passportIdUploadName: event.target.files?.[0]?.name ?? "",
+                          passportIdUpload: event.target.files?.[0]?.name ?? "",
                         })
                       }
                       className={fieldClass}
                     />
-                    {state.additionalDriver.passportIdUploadName ? (
+                    {state.additionalDriver.passportIdUpload ? (
                       <span className="mt-1 block text-xs text-slate-600">
-                        Selected: {state.additionalDriver.passportIdUploadName}
+                        Selected: {state.additionalDriver.passportIdUpload}
                       </span>
                     ) : null}
                   </label>

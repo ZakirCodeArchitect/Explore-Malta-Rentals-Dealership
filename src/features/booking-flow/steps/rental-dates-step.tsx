@@ -8,8 +8,8 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function RentalDatesStep() {
-  const { state, updateSection } = useBookingFlow();
-  const { pickupDate, pickupTime, returnDate, returnTime } = state.rentalDates;
+  const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
+  const { pickupDate, pickupTime, returnDate, returnTime } = state.rental;
   const today = new Date();
   const pickupMinDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
     today.getDate(),
@@ -45,9 +45,14 @@ export function RentalDatesStep() {
             type="date"
             value={pickupDate}
             min={pickupMinDate}
-            onChange={(event) => updateSection("rentalDates", { pickupDate: event.target.value })}
-            className={inputClass}
+            name="rental.pickupDate"
+            data-field="rental.pickupDate"
+            onChange={(event) => updateSection("rental", { pickupDate: event.target.value })}
+            className={`${inputClass} ${isFieldInvalid("rental.pickupDate") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
           />
+          {getFieldError("rental.pickupDate") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("rental.pickupDate")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
@@ -57,9 +62,14 @@ export function RentalDatesStep() {
             value={returnDate}
             min={returnMinDate}
             max={returnMaxDate}
-            onChange={(event) => updateSection("rentalDates", { returnDate: event.target.value })}
-            className={inputClass}
+            name="rental.returnDate"
+            data-field="rental.returnDate"
+            onChange={(event) => updateSection("rental", { returnDate: event.target.value })}
+            className={`${inputClass} ${isFieldInvalid("rental.returnDate") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
           />
+          {getFieldError("rental.returnDate") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("rental.returnDate")}</span>
+          ) : null}
         </label>
 
         <p className="sm:col-span-2 text-sm font-semibold text-slate-900">Section: Rental Time</p>
@@ -68,9 +78,14 @@ export function RentalDatesStep() {
           <input
             type="time"
             value={pickupTime}
-            onChange={(event) => updateSection("rentalDates", { pickupTime: event.target.value })}
-            className={inputClass}
+            name="rental.pickupTime"
+            data-field="rental.pickupTime"
+            onChange={(event) => updateSection("rental", { pickupTime: event.target.value })}
+            className={`${inputClass} ${isFieldInvalid("rental.pickupTime") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
           />
+          {getFieldError("rental.pickupTime") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("rental.pickupTime")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
@@ -78,9 +93,14 @@ export function RentalDatesStep() {
           <input
             type="time"
             value={returnTime}
-            onChange={(event) => updateSection("rentalDates", { returnTime: event.target.value })}
-            className={inputClass}
+            name="rental.returnTime"
+            data-field="rental.returnTime"
+            onChange={(event) => updateSection("rental", { returnTime: event.target.value })}
+            className={`${inputClass} ${isFieldInvalid("rental.returnTime") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
           />
+          {getFieldError("rental.returnTime") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("rental.returnTime")}</span>
+          ) : null}
         </label>
 
         <p className="sm:col-span-2 text-sm font-semibold text-slate-900">

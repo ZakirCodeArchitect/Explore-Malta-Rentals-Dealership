@@ -7,16 +7,16 @@ import { getVehicleBySlug } from "@/features/vehicles/data/vehicles";
 
 export function PricingStep() {
   const { state, updateSection } = useBookingFlow();
-  const selectedVehicle = state.vehicle.selectedVehicleSlug
-    ? getVehicleBySlug(state.vehicle.selectedVehicleSlug)
+  const selectedVehicle = state.rental.vehicleSlug
+    ? getVehicleBySlug(state.rental.vehicleSlug)
     : null;
   const pricing = selectedVehicle
     ? getBookingPricingBreakdown(
         selectedVehicle.type,
-        state.rentalDates.pickupDate,
-        state.rentalDates.pickupTime,
-        state.rentalDates.returnDate,
-        state.rentalDates.returnTime,
+        state.rental.pickupDate,
+        state.rental.pickupTime,
+        state.rental.returnDate,
+        state.rental.returnTime,
       )
     : null;
 
@@ -27,8 +27,8 @@ export function PricingStep() {
     >
       <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/70 p-4 text-sm text-slate-700">
         <p>
-          Vehicle: {state.vehicle.selectedVehicleName || "Not selected yet"}
-          {state.vehicle.selectedVehicleType ? ` (${state.vehicle.selectedVehicleType})` : ""}
+          Vehicle: {state.rental.vehicleName || "Not selected yet"}
+          {state.rental.vehicleType ? ` (${state.rental.vehicleType})` : ""}
         </p>
         {pricing ? (
           <div className="space-y-2">
@@ -58,9 +58,11 @@ export function PricingStep() {
         <label className="flex items-start gap-2">
           <input
             type="checkbox"
-            checked={state.pricing.acknowledged}
+            name="rental.pricingAcknowledged"
+            data-field="rental.pricingAcknowledged"
+            checked={state.rental.pricingAcknowledged}
             onChange={(event) =>
-              updateSection("pricing", { acknowledged: event.target.checked })
+              updateSection("rental", { pricingAcknowledged: event.target.checked })
             }
             className="mt-0.5 h-4 w-4"
           />

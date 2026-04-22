@@ -15,11 +15,11 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function CustomerDetailsStep() {
-  const { state, updateSection } = useBookingFlow();
+  const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
-  const requiresUploads = state.pickupDropoff.pickupType === "delivery";
-  const allowedLicenseOptions = getAllowedLicenseCategories(state.vehicle.selectedVehicleId);
-  const licenseCategoryHint = getLicenseCategoryHint(state.vehicle.selectedVehicleId);
+  const requiresUploads = state.delivery.pickupOption === "delivery";
+  const allowedLicenseOptions = getAllowedLicenseCategories(state.rental.vehicleId);
+  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleId);
   const licenseCategoryOptions = [
     { value: "", label: "Select category" },
     ...allowedLicenseOptions.map((option) => ({ value: option, label: option })),
@@ -50,54 +50,79 @@ export function CustomerDetailsStep() {
           Full name
           <input
             type="text"
+            name="customer.fullName"
+            data-field="customer.fullName"
             value={state.customer.fullName}
             onChange={(event) => updateSection("customer", { fullName: event.target.value })}
-            className={inputClass}
+            className={`${inputClass} ${isFieldInvalid("customer.fullName") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
             placeholder="e.g. Alex Borg"
           />
+          {getFieldError("customer.fullName") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.fullName")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
           Phone
           <input
             type="tel"
+            name="customer.phone"
+            data-field="customer.phone"
             value={state.customer.phone}
             onChange={(event) => updateSection("customer", { phone: event.target.value })}
-            className={inputClass}
+            className={`${inputClass} ${isFieldInvalid("customer.phone") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
             placeholder="e.g. +356 9912 3456"
           />
+          {getFieldError("customer.phone") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.phone")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
           Email
           <input
             type="email"
+            name="customer.email"
+            data-field="customer.email"
             value={state.customer.email}
             onChange={(event) => updateSection("customer", { email: event.target.value })}
-            className={inputClass}
+            className={`${inputClass} ${isFieldInvalid("customer.email") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
             placeholder="e.g. alex@email.com"
           />
+          {getFieldError("customer.email") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.email")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
           Nationality
           <input
             type="text"
+            name="customer.nationality"
+            data-field="customer.nationality"
             value={state.customer.nationality}
             onChange={(event) => updateSection("customer", { nationality: event.target.value })}
-            className={inputClass}
+            className={`${inputClass} ${isFieldInvalid("customer.nationality") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
             placeholder="e.g. Maltese"
           />
+          {getFieldError("customer.nationality") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.nationality")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
           Date of birth
           <input
             type="date"
-            value={state.customer.dob}
-            onChange={(event) => updateSection("customer", { dob: event.target.value })}
-            className={inputClass}
+            name="customer.dateOfBirth"
+            data-field="customer.dateOfBirth"
+            value={state.customer.dateOfBirth}
+            onChange={(event) => updateSection("customer", { dateOfBirth: event.target.value })}
+            className={`${inputClass} ${isFieldInvalid("customer.dateOfBirth") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
           />
+          {getFieldError("customer.dateOfBirth") ? (
+            <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.dateOfBirth")}</span>
+          ) : null}
         </label>
 
         <label className="text-sm font-medium text-slate-700">
@@ -157,6 +182,9 @@ export function CustomerDetailsStep() {
           <p className="mt-1 text-xs text-slate-500">
             {licenseCategoryHint}
           </p>
+          {getFieldError("customer.licenseCategory") ? (
+            <p className="mt-1 text-xs text-red-600">{getFieldError("customer.licenseCategory")}</p>
+          ) : null}
         </label>
       </div>
 
@@ -176,18 +204,25 @@ export function CustomerDetailsStep() {
           </span>
           <input
             type="file"
+            name="customer.driverLicenseUpload"
+            data-field="customer.driverLicenseUpload"
             accept="image/*,.pdf"
             disabled={!requiresUploads}
             onChange={(event) =>
               updateSection("customer", {
-                licenseUploadName: event.target.files?.[0]?.name ?? "",
+                driverLicenseUpload: event.target.files?.[0]?.name ?? "",
               })
             }
             className={`${inputClass} ${!requiresUploads ? "cursor-not-allowed bg-slate-100 text-slate-400" : ""}`}
           />
-          {state.customer.licenseUploadName ? (
+          {state.customer.driverLicenseUpload ? (
             <span className="mt-1 block text-xs text-slate-600">
-              Selected: {state.customer.licenseUploadName}
+              Selected: {state.customer.driverLicenseUpload}
+            </span>
+          ) : null}
+          {getFieldError("customer.driverLicenseUpload") ? (
+            <span className="mt-1 block text-xs text-red-600">
+              {getFieldError("customer.driverLicenseUpload")}
             </span>
           ) : null}
         </label>
@@ -200,10 +235,12 @@ export function CustomerDetailsStep() {
           <span className="flex items-center gap-2 pl-7">
             <input
               type="checkbox"
-              checked={state.customer.officeLicenseConfirmed}
+              checked={state.customer.licenseConfirmationCheckbox}
+              name="customer.licenseConfirmationCheckbox"
+              data-field="customer.licenseConfirmationCheckbox"
               disabled={requiresUploads}
               onChange={(event) =>
-                updateSection("customer", { officeLicenseConfirmed: event.target.checked })
+                updateSection("customer", { licenseConfirmationCheckbox: event.target.checked })
               }
             />
             <span className={requiresUploads ? "text-slate-400" : ""}>
@@ -229,16 +266,23 @@ export function CustomerDetailsStep() {
           </span>
           <input
             type="file"
+            name="customer.passportUpload"
+            data-field="customer.passportUpload"
             accept="image/*,.pdf"
             disabled={!requiresUploads}
             onChange={(event) =>
-              updateSection("customer", { idUploadName: event.target.files?.[0]?.name ?? "" })
+              updateSection("customer", { passportUpload: event.target.files?.[0]?.name ?? "" })
             }
             className={`${inputClass} ${!requiresUploads ? "cursor-not-allowed bg-slate-100 text-slate-400" : ""}`}
           />
-          {state.customer.idUploadName ? (
+          {state.customer.passportUpload ? (
             <span className="mt-1 block text-xs text-slate-600">
-              Selected: {state.customer.idUploadName}
+              Selected: {state.customer.passportUpload}
+            </span>
+          ) : null}
+          {getFieldError("customer.passportUpload") ? (
+            <span className="mt-1 block text-xs text-red-600">
+              {getFieldError("customer.passportUpload")}
             </span>
           ) : null}
         </label>
@@ -250,10 +294,12 @@ export function CustomerDetailsStep() {
           <span className="flex items-center gap-2 pl-7">
             <input
               type="checkbox"
-              checked={state.customer.officeIdConfirmed}
+              checked={state.customer.idConfirmationCheckbox}
+              name="customer.idConfirmationCheckbox"
+              data-field="customer.idConfirmationCheckbox"
               disabled={requiresUploads}
               onChange={(event) =>
-                updateSection("customer", { officeIdConfirmed: event.target.checked })
+                updateSection("customer", { idConfirmationCheckbox: event.target.checked })
               }
             />
             <span className={requiresUploads ? "text-slate-400" : ""}>

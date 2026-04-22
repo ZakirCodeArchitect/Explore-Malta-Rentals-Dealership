@@ -14,14 +14,14 @@ export function BookingSummaryStep() {
   const rentalDays = Math.max(
     0,
     differenceInCalendarDays(
-      parse(state.rentalDates.returnDate || "1970-01-01", "yyyy-MM-dd", new Date()),
-      parse(state.rentalDates.pickupDate || "1970-01-01", "yyyy-MM-dd", new Date()),
+      parse(state.rental.returnDate || "1970-01-01", "yyyy-MM-dd", new Date()),
+      parse(state.rental.pickupDate || "1970-01-01", "yyyy-MM-dd", new Date()),
     ),
   );
   const rentalSubtotal = getIndicativeMotorcycleScooterTripTotalEur(rentalDays);
   const offSiteQuote = pricingService.quoteOffSiteService({
-    pickupOffSite: state.pickupDropoff.pickupType === "delivery",
-    dropoffOffSite: state.pickupDropoff.dropoffType === "delivery",
+    pickupOffSite: state.delivery.pickupOption === "delivery",
+    dropoffOffSite: state.delivery.dropoffOption === "dropoff",
   });
   const deliveryTotal = offSiteQuote.totalEur;
   const cdwCost =
@@ -55,17 +55,17 @@ export function BookingSummaryStep() {
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>
               Vehicle selected:{" "}
-              {state.vehicle.selectedVehicleName || state.vehicle.selectedVehicleId || "-"}
+              {state.rental.vehicleName || state.rental.vehicleId || "-"}
             </li>
             <li>
-              Rental dates: {state.rentalDates.pickupDate || "-"} {state.rentalDates.pickupTime || ""} to{" "}
-              {state.rentalDates.returnDate || "-"} {state.rentalDates.returnTime || ""}
+              Rental dates: {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} to{" "}
+              {state.rental.returnDate || "-"} {state.rental.returnTime || ""}
             </li>
             <li>Rental duration: {rentalDays} day(s)</li>
-            <li>Pickup method: {state.pickupDropoff.pickupType}</li>
-            <li>Pickup address: {state.pickupDropoff.pickupAddress || "-"}</li>
-            <li>Drop-off method: {state.pickupDropoff.dropoffType}</li>
-            <li>Drop-off address: {state.pickupDropoff.dropoffAddress || "-"}</li>
+            <li>Pickup method: {state.delivery.pickupOption}</li>
+            <li>Pickup address: {state.delivery.pickupAddress || "-"}</li>
+            <li>Drop-off method: {state.delivery.dropoffOption}</li>
+            <li>Drop-off address: {state.delivery.dropoffAddress || "-"}</li>
             {addOnList.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -105,8 +105,8 @@ export function BookingSummaryStep() {
                   type="radio"
                   name="summaryDepositMethod"
                   value="online"
-                  checked={state.securityDeposit.method === "online"}
-                  onChange={() => updateSection("securityDeposit", { method: "online" })}
+                  checked={state.deposit.depositMethod === "online"}
+                  onChange={() => updateSection("deposit", { depositMethod: "online" })}
                 />
                 Pay online now
               </label>
@@ -115,13 +115,13 @@ export function BookingSummaryStep() {
                   type="radio"
                   name="summaryDepositMethod"
                   value="in_person"
-                  checked={state.securityDeposit.method === "in_person"}
-                  onChange={() => updateSection("securityDeposit", { method: "in_person" })}
+                  checked={state.deposit.depositMethod === "in_person"}
+                  onChange={() => updateSection("deposit", { depositMethod: "in_person" })}
                 />
                 Pay in person at pickup
               </label>
             </div>
-            {state.securityDeposit.method === "in_person" ? (
+            {state.deposit.depositMethod === "in_person" ? (
               <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
                 Your deposit must be paid in full upon collection of the vehicle before your rental begins.
               </p>
@@ -133,8 +133,8 @@ export function BookingSummaryStep() {
       <label className="mt-4 flex items-start gap-2 text-sm text-slate-700">
         <input
           type="checkbox"
-          checked={state.summary.reviewed}
-          onChange={(event) => updateSection("summary", { reviewed: event.target.checked })}
+          checked={state.consent.summaryReviewed}
+          onChange={(event) => updateSection("consent", { summaryReviewed: event.target.checked })}
           className="mt-0.5 h-4 w-4"
         />
         <span>I reviewed the summary above.</span>

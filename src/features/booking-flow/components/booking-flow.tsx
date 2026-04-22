@@ -14,7 +14,6 @@ function BookingFlowBody() {
   const [submitted, setSubmitted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
   const {
-    state,
     activeStepId,
     activeStepIndex,
     isFirstStep,
@@ -61,13 +60,16 @@ function BookingFlowBody() {
       <TermsConsentModal
         isOpen={termsModalOpen}
         onCancel={() => setTermsModalOpen(false)}
-        onAgree={() => {
-          updateSection("terms", {
-            accepted: true,
-            acceptedAtIso: new Date().toISOString(),
+        onAgree={async () => {
+          updateSection("consent", {
+            agreedToTerms: true,
+            agreedAt: new Date().toISOString(),
           });
           setTermsModalOpen(false);
-          setSubmitted(true);
+          const isValid = await goNext();
+          if (isValid) {
+            setSubmitted(true);
+          }
         }}
       />
 
@@ -88,15 +90,11 @@ function BookingFlowBody() {
             type="button"
             onClick={() => {
               if (isLastStep) {
-                if (!state.summary.reviewed) {
-                  goNext();
-                  return;
-                }
                 setTermsModalOpen(true);
                 return;
               }
 
-              goNext();
+              void goNext();
             }}
             className="min-h-11 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)]"
           >

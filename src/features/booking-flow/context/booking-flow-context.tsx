@@ -4,30 +4,48 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type PropsWithChildren,
 } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  type FieldErrors,
+  type FieldPath,
+  get,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 import { BOOKING_FLOW_STEPS, type BookingFlowStepId } from "@/features/booking-flow/lib/steps";
 import {
   type BookingFlowState,
 } from "@/features/booking-flow/lib/types";
 import { buildBookingInitialState } from "@/features/booking-flow/lib/init-state";
-import { canAccessStep, validateUserStep } from "@/features/booking-flow/lib/validation";
+import {
+  bookingFlowSchema,
+  canAccessStep,
+  getStepFirstError,
+  STEP_FIELD_PATHS,
+} from "@/features/booking-flow/lib/validation";
 
 type BookingFlowContextValue = {
   state: BookingFlowState;
   activeStepIndex: number;
   activeStepId: BookingFlowStepId;
   stepErrors: Partial<Record<BookingFlowStepId, string>>;
+  fieldErrors: FieldErrors<BookingFlowState>;
   isFirstStep: boolean;
   isLastStep: boolean;
   updateSection: <K extends keyof BookingFlowState>(
     section: K,
     value: Partial<BookingFlowState[K]>,
   ) => void;
+  getFieldError: (path: FieldPath<BookingFlowState>) => string | null;
+  isFieldInvalid: (path: FieldPath<BookingFlowState>) => boolean;
   goBack: () => void;
-  goNext: () => boolean;
+  goNext: () => Promise<boolean>;
   goToStep: (stepId: BookingFlowStepId) => void;
 };
 
@@ -38,25 +56,55 @@ type BookingFlowProviderProps = PropsWithChildren<{
 }>;
 
 export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlowProviderProps) {
-  const [state, setState] = useState<BookingFlowState>(() =>
-    buildBookingInitialState(initialVehicleSlug),
-  );
+  const form = useForm<BookingFlowState>({
+    resolver: zodResolver(bookingFlowSchema),
+    defaultValues: buildBookingInitialState(initialVehicleSlug),
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  const watchedState = useWatch({ control: form.control }) as BookingFlowState | undefined;
+  const state = watchedState ?? form.getValues();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [stepErrors, setStepErrors] = useState<Partial<Record<BookingFlowStepId, string>>>({});
+  const shouldScrollToErrorRef = useRef(false);
 
   const activeStepId = BOOKING_FLOW_STEPS[activeStepIndex]?.id ?? BOOKING_FLOW_STEPS[0].id;
   const isFirstStep = activeStepIndex === 0;
   const isLastStep = activeStepIndex === BOOKING_FLOW_STEPS.length - 1;
+  const fieldErrors = form.formState.errors;
+
+  useEffect(() => {
+    if (!shouldScrollToErrorRef.current) {
+      return;
+    }
+
+    const firstPath = STEP_FIELD_PATHS[activeStepId].find(
+      (fieldPath) => get(fieldErrors, fieldPath)?.message,
+    );
+    if (!firstPath) {
+      return;
+    }
+
+    const element = document.querySelector(
+      `[name="${firstPath}"], [data-field="${firstPath}"]`,
+    ) as HTMLElement | null;
+
+    if (!element) {
+      return;
+    }
+
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    shouldScrollToErrorRef.current = false;
+  }, [activeStepId, fieldErrors]);
 
   const updateSection = useCallback(
     <K extends keyof BookingFlowState>(section: K, value: Partial<BookingFlowState[K]>) => {
-      setState((prev) => ({
-        ...prev,
-        [section]: {
-          ...prev[section],
-          ...value,
-        },
-      }));
+      const currentSection = form.getValues(section);
+      form.setValue(section, { ...currentSection, ...value }, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
 
       setStepErrors((prev) => {
         if (!prev[activeStepId]) {
@@ -68,15 +116,20 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
         return next;
       });
     },
-    [activeStepId],
+    [activeStepId, form],
   );
 
-  const goNext = useCallback(() => {
-    const error = validateUserStep(activeStepId, state);
-    if (error) {
+  const goNext = useCallback(async () => {
+    const fields = STEP_FIELD_PATHS[activeStepId];
+    const isValid = await form.trigger(fields, { shouldFocus: true });
+    const error = getStepFirstError(activeStepId, state);
+
+    if (!isValid || error) {
+      const message = error ?? "Please review the highlighted fields.";
+      shouldScrollToErrorRef.current = true;
       setStepErrors((prev) => ({
         ...prev,
-        [activeStepId]: error,
+        [activeStepId]: message,
       }));
       return false;
     }
@@ -92,7 +145,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
 
     setActiveStepIndex((prev) => Math.min(prev + 1, BOOKING_FLOW_STEPS.length - 1));
     return true;
-  }, [activeStepId, state]);
+  }, [activeStepId, form, state]);
 
   const goBack = useCallback(() => {
     setActiveStepIndex((prev) => Math.max(prev - 1, 0));
@@ -114,15 +167,35 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
     [state],
   );
 
+  const getFieldError = useCallback(
+    (path: FieldPath<BookingFlowState>) => {
+      const maybeError = get(fieldErrors, path) as
+        | {
+            message?: unknown;
+          }
+        | undefined;
+      return typeof maybeError?.message === "string" ? maybeError.message : null;
+    },
+    [fieldErrors],
+  );
+
+  const isFieldInvalid = useCallback(
+    (path: FieldPath<BookingFlowState>) => Boolean(get(fieldErrors, path)),
+    [fieldErrors],
+  );
+
   const value = useMemo<BookingFlowContextValue>(
     () => ({
       state,
       activeStepIndex,
       activeStepId,
       stepErrors,
+      fieldErrors,
       isFirstStep,
       isLastStep,
       updateSection,
+      getFieldError,
+      isFieldInvalid,
       goBack,
       goNext,
       goToStep,
@@ -132,9 +205,12 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
       activeStepIndex,
       activeStepId,
       stepErrors,
+      fieldErrors,
       isFirstStep,
       isLastStep,
       updateSection,
+      getFieldError,
+      isFieldInvalid,
       goBack,
       goNext,
       goToStep,

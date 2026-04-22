@@ -7,16 +7,13 @@ import {
 function cloneInitialState(): BookingFlowState {
   return {
     ...INITIAL_BOOKING_FLOW_STATE,
-    vehicle: { ...INITIAL_BOOKING_FLOW_STATE.vehicle },
-    rentalDates: { ...INITIAL_BOOKING_FLOW_STATE.rentalDates },
-    pricing: { ...INITIAL_BOOKING_FLOW_STATE.pricing },
-    pickupDropoff: { ...INITIAL_BOOKING_FLOW_STATE.pickupDropoff },
+    rental: { ...INITIAL_BOOKING_FLOW_STATE.rental },
+    delivery: { ...INITIAL_BOOKING_FLOW_STATE.delivery },
     addons: { ...INITIAL_BOOKING_FLOW_STATE.addons },
     customer: { ...INITIAL_BOOKING_FLOW_STATE.customer },
     additionalDriver: { ...INITIAL_BOOKING_FLOW_STATE.additionalDriver },
-    securityDeposit: { ...INITIAL_BOOKING_FLOW_STATE.securityDeposit },
-    summary: { ...INITIAL_BOOKING_FLOW_STATE.summary },
-    terms: { ...INITIAL_BOOKING_FLOW_STATE.terms },
+    deposit: { ...INITIAL_BOOKING_FLOW_STATE.deposit },
+    consent: { ...INITIAL_BOOKING_FLOW_STATE.consent },
   };
 }
 
@@ -32,9 +29,9 @@ export function buildBookingInitialState(selectedVehicleSlug?: string): BookingF
     return next;
   }
 
-  next.vehicle.selectedVehicleId = vehicle.slug;
-  next.vehicle.selectedVehicleSlug = vehicle.slug;
-  next.vehicle.selectedVehicleName = vehicle.name;
-  next.vehicle.selectedVehicleType = vehicle.type;
+  next.rental.vehicleId = vehicle.slug;
+  next.rental.vehicleSlug = vehicle.slug;
+  next.rental.vehicleName = vehicle.name;
+  next.rental.vehicleType = vehicle.type;
   return next;
 }

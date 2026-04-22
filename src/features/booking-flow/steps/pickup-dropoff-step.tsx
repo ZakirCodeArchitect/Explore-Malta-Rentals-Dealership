@@ -5,11 +5,11 @@ import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-con
 import { pricingService } from "@/lib/pricing/service";
 
 export function PickupDropoffStep() {
-  const { state, updateSection } = useBookingFlow();
-  const pickupDeliverySelected = state.pickupDropoff.pickupType === "delivery";
-  const dropoffDeliverySelected = state.pickupDropoff.dropoffType === "delivery";
-  const pickupAddress = state.pickupDropoff.pickupAddress ?? "";
-  const dropoffAddress = state.pickupDropoff.dropoffAddress ?? "";
+  const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
+  const pickupDeliverySelected = state.delivery.pickupOption === "delivery";
+  const dropoffDeliverySelected = state.delivery.dropoffOption === "dropoff";
+  const pickupAddress = state.delivery.pickupAddress ?? "";
+  const dropoffAddress = state.delivery.dropoffAddress ?? "";
   const offSiteQuote = pricingService.quoteOffSiteService({
     pickupOffSite: pickupDeliverySelected,
     dropoffOffSite: dropoffDeliverySelected,
@@ -41,9 +41,10 @@ export function PickupDropoffStep() {
             <input
               type="radio"
               name="pickupType"
+              data-field="delivery.pickupOption"
               value="office"
-              checked={state.pickupDropoff.pickupType === "office"}
-              onChange={() => updateSection("pickupDropoff", { pickupType: "office" })}
+              checked={state.delivery.pickupOption === "office"}
+              onChange={() => updateSection("delivery", { pickupOption: "office" })}
             />
             Collect from office in Pieta
           </label>
@@ -51,9 +52,10 @@ export function PickupDropoffStep() {
             <input
               type="radio"
               name="pickupType"
+              data-field="delivery.pickupOption"
               value="delivery"
-              checked={state.pickupDropoff.pickupType === "delivery"}
-              onChange={() => updateSection("pickupDropoff", { pickupType: "delivery" })}
+              checked={state.delivery.pickupOption === "delivery"}
+              onChange={() => updateSection("delivery", { pickupOption: "delivery" })}
             />
             Request delivery
           </label>
@@ -63,14 +65,23 @@ export function PickupDropoffStep() {
               <label className="text-sm font-medium text-slate-700">
                 Pickup address (delivery)
                 <textarea
-                  className="mt-1 min-h-20 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+                  name="delivery.pickupAddress"
+                  data-field="delivery.pickupAddress"
+                  className={`mt-1 min-h-20 w-full rounded-md border px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 ${
+                    isFieldInvalid("delivery.pickupAddress")
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-slate-200 focus:border-[var(--brand-blue)] focus:ring-[var(--brand-blue)]/20"
+                  }`}
                   value={pickupAddress}
                   onChange={(event) =>
-                    updateSection("pickupDropoff", { pickupAddress: event.target.value })
+                    updateSection("delivery", { pickupAddress: event.target.value })
                   }
                   placeholder="Street, building, area, postcode"
                 />
               </label>
+              {getFieldError("delivery.pickupAddress") ? (
+                <p className="mt-2 text-xs text-red-600">{getFieldError("delivery.pickupAddress")}</p>
+              ) : null}
               <p className="mt-2 text-xs text-slate-500">
                 Text address field only (no map in current doc version).
               </p>
@@ -86,9 +97,10 @@ export function PickupDropoffStep() {
             <input
               type="radio"
               name="dropoffType"
+              data-field="delivery.dropoffOption"
               value="office"
-              checked={state.pickupDropoff.dropoffType === "office"}
-              onChange={() => updateSection("pickupDropoff", { dropoffType: "office" })}
+              checked={state.delivery.dropoffOption === "office"}
+              onChange={() => updateSection("delivery", { dropoffOption: "office" })}
             />
             Return to office in Pieta
           </label>
@@ -96,9 +108,10 @@ export function PickupDropoffStep() {
             <input
               type="radio"
               name="dropoffType"
-              value="delivery"
-              checked={state.pickupDropoff.dropoffType === "delivery"}
-              onChange={() => updateSection("pickupDropoff", { dropoffType: "delivery" })}
+              data-field="delivery.dropoffOption"
+              value="dropoff"
+              checked={state.delivery.dropoffOption === "dropoff"}
+              onChange={() => updateSection("delivery", { dropoffOption: "dropoff" })}
             />
             Request drop-off
           </label>
@@ -108,14 +121,23 @@ export function PickupDropoffStep() {
               <label className="text-sm font-medium text-slate-700">
                 Drop-off address
                 <textarea
-                  className="mt-1 min-h-20 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+                  name="delivery.dropoffAddress"
+                  data-field="delivery.dropoffAddress"
+                  className={`mt-1 min-h-20 w-full rounded-md border px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 ${
+                    isFieldInvalid("delivery.dropoffAddress")
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-slate-200 focus:border-[var(--brand-blue)] focus:ring-[var(--brand-blue)]/20"
+                  }`}
                   value={dropoffAddress}
                   onChange={(event) =>
-                    updateSection("pickupDropoff", { dropoffAddress: event.target.value })
+                    updateSection("delivery", { dropoffAddress: event.target.value })
                   }
                   placeholder="Street, building, area, postcode"
                 />
               </label>
+              {getFieldError("delivery.dropoffAddress") ? (
+                <p className="mt-2 text-xs text-red-600">{getFieldError("delivery.dropoffAddress")}</p>
+              ) : null}
               <p className="mt-2 text-xs text-slate-500">
                 Text address field only (no map in current doc version).
               </p>
