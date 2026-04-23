@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 import { findConflictingBlocks } from "./findConflictingBlocks";
 import { findConflictingBookings } from "./findConflictingBookings";
+import { findConflictingReservationHolds } from "./findConflictingReservationHolds";
 import {
   assertValidAvailabilityWindow,
   type AvailabilityDbClient,
@@ -14,6 +15,8 @@ export type CheckVehicleTypeAvailabilityInput = {
   vehicleType: VehicleType;
   requestedStart: Date;
   requestedEnd: Date;
+  excludeHoldReference?: string;
+  excludeSessionKey?: string;
 };
 
 export async function checkVehicleTypeAvailability(
@@ -42,11 +45,12 @@ export async function checkVehicleTypeAvailability(
       availableCount: 0,
       conflictingBookings: [],
       conflictingBlocks: [],
+      conflictingReservationHolds: [],
       reason: "No active vehicles of this type are available",
     };
   }
 
-  const [conflictingBookings, conflictingBlocks] = await Promise.all([
+  const [conflictingBookings, conflictingBlocks, conflictingReservationHolds] = await Promise.all([
     findConflictingBookings(
       {
         requestedStart: input.requestedStart,
@@ -66,6 +70,16 @@ export async function checkVehicleTypeAvailability(
       },
       db,
     ),
+    findConflictingReservationHolds(
+      {
+        requestedStart: input.requestedStart,
+        requestedEnd: input.requestedEnd,
+        vehicleIds: activeVehicleIds,
+        excludeHoldReference: input.excludeHoldReference,
+        excludeSessionKey: input.excludeSessionKey,
+      },
+      db,
+    ),
   ]);
 
   const hasTypeWideBlock = conflictingBlocks.some((block) => block.vehicleType === input.vehicleType);
@@ -77,6 +91,7 @@ export async function checkVehicleTypeAvailability(
       availableCount: 0,
       conflictingBookings,
       conflictingBlocks,
+      conflictingReservationHolds,
       reason: "No vehicles of this type are available for the chosen dates",
     };
   }
@@ -91,6 +106,9 @@ export async function checkVehicleTypeAvailability(
     if (block.vehicleId) {
       directlyBlockedVehicleIds.add(block.vehicleId);
     }
+  }
+  for (const hold of conflictingReservationHolds) {
+    directlyBlockedVehicleIds.add(hold.vehicleId);
   }
 
   const candidateAvailableVehicleIds = activeVehicleIds.filter((vehicleId) => !directlyBlockedVehicleIds.has(vehicleId));
@@ -107,6 +125,7 @@ export async function checkVehicleTypeAvailability(
     availableCount,
     conflictingBookings,
     conflictingBlocks,
+    conflictingReservationHolds,
     reason: isAvailable
       ? "Available"
       : "No vehicles of this type are available for the chosen dates",

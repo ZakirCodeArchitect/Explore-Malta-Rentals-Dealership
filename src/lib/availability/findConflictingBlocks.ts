@@ -47,6 +47,7 @@ export async function findConflictingBlocks(
 
   return db.availabilityBlock.findMany({
     where: {
+      // Overlap rule: requestedStart < existingEnd AND requestedEnd > existingStart.
       startDateTime: { lt: input.requestedEnd },
       endDateTime: { gt: input.requestedStart },
       OR: identityFilters,

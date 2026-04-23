@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 import { findConflictingBlocks } from "./findConflictingBlocks";
 import { findConflictingBookings } from "./findConflictingBookings";
+import { findConflictingReservationHolds } from "./findConflictingReservationHolds";
 import {
   assertValidAvailabilityWindow,
   type AvailabilityDbClient,
@@ -15,6 +16,8 @@ export type CheckVehicleAvailabilityInput = {
   requestedStart: Date;
   requestedEnd: Date;
   vehicleType?: VehicleType;
+  excludeHoldReference?: string;
+  excludeSessionKey?: string;
 };
 
 async function resolveVehicleType(
@@ -51,6 +54,7 @@ export async function checkVehicleAvailability(
       isAvailable: false,
       conflictingBookings: [],
       conflictingBlocks: [],
+      conflictingReservationHolds: [],
       reason: "Selected vehicle does not exist",
     };
   }
@@ -60,11 +64,12 @@ export async function checkVehicleAvailability(
       isAvailable: false,
       conflictingBookings: [],
       conflictingBlocks: [],
+      conflictingReservationHolds: [],
       reason: "Selected vehicle is not active",
     };
   }
 
-  const [conflictingBookings, conflictingBlocks] = await Promise.all([
+  const [conflictingBookings, conflictingBlocks, conflictingReservationHolds] = await Promise.all([
     findConflictingBookings(
       {
         requestedStart: input.requestedStart,
@@ -82,16 +87,37 @@ export async function checkVehicleAvailability(
       },
       db,
     ),
+    findConflictingReservationHolds(
+      {
+        requestedStart: input.requestedStart,
+        requestedEnd: input.requestedEnd,
+        vehicleId: input.vehicleId,
+        excludeHoldReference: input.excludeHoldReference,
+        excludeSessionKey: input.excludeSessionKey,
+      },
+      db,
+    ),
   ]);
 
-  const isAvailable = conflictingBookings.length === 0 && conflictingBlocks.length === 0;
+  const isAvailable =
+    conflictingBookings.length === 0 &&
+    conflictingBlocks.length === 0 &&
+    conflictingReservationHolds.length === 0;
+
+  const isReservedByActiveHold =
+    conflictingReservationHolds.length > 0 &&
+    conflictingBookings.length === 0 &&
+    conflictingBlocks.length === 0;
 
   return {
     isAvailable,
     conflictingBookings,
     conflictingBlocks,
+    conflictingReservationHolds,
     reason: isAvailable
       ? "Available"
-      : "Selected vehicle is not available for the chosen dates",
+      : isReservedByActiveHold
+        ? "Selected vehicle is temporarily reserved by another customer"
+        : "Selected vehicle is not available for the chosen dates",
   };
 }

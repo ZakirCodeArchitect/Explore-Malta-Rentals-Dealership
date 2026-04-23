@@ -97,6 +97,13 @@ enum ContactInquiryStatus {
   CLOSED
 }
 
+enum ReservationHoldStatus {
+  ACTIVE
+  EXPIRED
+  RELEASED
+  CONVERTED
+}
+
 enum AdminRole {
   ADMIN
   STAFF
@@ -133,6 +140,7 @@ model Vehicle {
   pricingRules       VehiclePricingRule[]
   bookings           Booking[]
   availabilityBlocks AvailabilityBlock[]
+  reservationHolds   ReservationHold[]
 
   @@index([isActive, displayOrder])
   @@index([vehicleType, isActive])
@@ -290,6 +298,7 @@ model Booking {
   statusHistory        BookingStatusHistory[]
   emailLogs            EmailLog[]
   documents            BookingDocument[]
+  reservationHolds     ReservationHold[]
 
   @@index([status, createdAt])
   @@index([pickupDateTime, returnDateTime])
@@ -350,6 +359,33 @@ model AvailabilityBlock {
   @@index([vehicleId, startDateTime, endDateTime])
   @@index([vehicleType, startDateTime, endDateTime])
   @@index([blockType, startDateTime])
+}
+
+model ReservationHold {
+  id              String                @id @default(cuid())
+  holdReference   String                @unique
+  vehicleId       String
+  vehicleType     VehicleType
+  sessionKey      String
+  customerEmail   String?
+  customerName    String?
+  pickupDateTime  DateTime
+  returnDateTime  DateTime
+  status          ReservationHoldStatus @default(ACTIVE)
+  reservedAt      DateTime              @default(now())
+  expiresAt       DateTime
+  lastHeartbeatAt DateTime?
+  bookingId       String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId, status, expiresAt])
+  @@index([sessionKey, status])
+  @@index([expiresAt])
+  @@index([pickupDateTime, returnDateTime])
 }
 
 model ContactInquiry {

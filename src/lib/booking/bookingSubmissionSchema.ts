@@ -47,6 +47,20 @@ const OPTIONAL_VEHICLE_ID = z.preprocess(
   z.string().min(1, "Vehicle ID is required").optional(),
 );
 
+const OPTIONAL_HOLD_REFERENCE = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    if (typeof value !== "string") {
+      return value;
+    }
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  },
+  z.string().min(1, "Hold reference must not be empty").max(80).optional(),
+);
+
 const STRICT_BOOLEAN = z.preprocess((value) => {
   if (typeof value === "boolean") {
     return value;
@@ -172,6 +186,7 @@ export const bookingSubmissionSchema = z
       })
       .strict(),
     vehicleId: OPTIONAL_VEHICLE_ID,
+    holdReference: OPTIONAL_HOLD_REFERENCE,
     delivery: z
       .object({
         pickupOption: z.enum(PICKUP_OPTIONS, { required_error: "Pickup option is required" }),

@@ -30,6 +30,7 @@ export function normalizeBookingPayload(payload: BookingSubmission): NormalizedB
   const billableDays = Math.max(1, Math.ceil(actualDurationHours / 24));
 
   return {
+    holdReference: payload.holdReference ?? null,
     vehicleId,
     vehicleType: payload.rental.vehicleType,
     pickupDateTime,

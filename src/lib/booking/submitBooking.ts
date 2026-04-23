@@ -48,6 +48,17 @@ type AvailabilityConflictContext = {
   requestedEnd: Date;
 };
 
+type HoldAvailabilityContext = {
+  excludeHoldReference?: string;
+  excludeSessionKey?: string;
+};
+
+type HoldForFinalization = {
+  id: string;
+  holdReference: string;
+  sessionKey: string;
+};
+
 export class SubmitBookingValidationError extends Error {
   readonly errors: ValidationError[];
 
@@ -252,6 +263,7 @@ async function assertBookingStillAvailable(
   payload: NormalizedBookingPayload,
   vehicle: ResolvedBookingVehicle,
   db: AvailabilityDbClient,
+  holdContext?: HoldAvailabilityContext,
 ): Promise<void> {
   if (vehicle.vehicleId) {
     const availability = await checkVehicleAvailability(
@@ -260,6 +272,8 @@ async function assertBookingStillAvailable(
         vehicleType: vehicle.vehicleType,
         requestedStart: payload.pickupDateTime,
         requestedEnd: payload.returnDateTime,
+        excludeHoldReference: holdContext?.excludeHoldReference,
+        excludeSessionKey: holdContext?.excludeSessionKey,
       },
       db,
     );
@@ -283,6 +297,8 @@ async function assertBookingStillAvailable(
       vehicleType: vehicle.vehicleType,
       requestedStart: payload.pickupDateTime,
       requestedEnd: payload.returnDateTime,
+      excludeHoldReference: holdContext?.excludeHoldReference,
+      excludeSessionKey: holdContext?.excludeSessionKey,
     },
     db,
   );
@@ -372,11 +388,109 @@ function mapBookingCreateData(
   };
 }
 
+async function validateHoldForBooking(
+  payload: NormalizedBookingPayload,
+  vehicle: ResolvedBookingVehicle,
+  tx: Prisma.TransactionClient,
+): Promise<HoldForFinalization> {
+  if (!payload.holdReference) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "holdReference",
+        message: "A hold reference is required for this booking flow",
+      },
+    ]);
+  }
+
+  const hold = await tx.reservationHold.findUnique({
+    where: { holdReference: payload.holdReference },
+    select: {
+      id: true,
+      holdReference: true,
+      sessionKey: true,
+      vehicleId: true,
+      vehicleType: true,
+      pickupDateTime: true,
+      returnDateTime: true,
+      status: true,
+      expiresAt: true,
+    },
+  });
+
+  if (!hold) {
+    throw new AvailabilityConflictError("Reservation hold is invalid or unavailable", {
+      vehicleId: vehicle.vehicleId,
+      vehicleType: vehicle.vehicleType,
+      requestedStart: payload.pickupDateTime,
+      requestedEnd: payload.returnDateTime,
+    });
+  }
+
+  if (hold.status === "ACTIVE" && hold.expiresAt <= new Date()) {
+    await tx.reservationHold.update({
+      where: { id: hold.id },
+      data: { status: "EXPIRED" },
+    });
+    throw new AvailabilityConflictError("Reservation hold has expired", {
+      vehicleId: vehicle.vehicleId,
+      vehicleType: vehicle.vehicleType,
+      requestedStart: payload.pickupDateTime,
+      requestedEnd: payload.returnDateTime,
+    });
+  }
+
+  if (hold.status !== "ACTIVE") {
+    throw new AvailabilityConflictError("Reservation hold is no longer active", {
+      vehicleId: vehicle.vehicleId,
+      vehicleType: vehicle.vehicleType,
+      requestedStart: payload.pickupDateTime,
+      requestedEnd: payload.returnDateTime,
+    });
+  }
+
+  if (!vehicle.vehicleId || hold.vehicleId !== vehicle.vehicleId) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "rental.vehicleId",
+        message: "Booking vehicle does not match the held vehicle",
+      },
+    ]);
+  }
+
+  if (hold.vehicleType !== vehicle.vehicleType) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "rental.vehicleType",
+        message: "Booking vehicle type does not match the held vehicle",
+      },
+    ]);
+  }
+
+  if (
+    hold.pickupDateTime.getTime() !== payload.pickupDateTime.getTime() ||
+    hold.returnDateTime.getTime() !== payload.returnDateTime.getTime()
+  ) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "rental.pickupDate",
+        message: "Booking date range must match the held reservation window",
+      },
+    ]);
+  }
+
+  return {
+    id: hold.id,
+    holdReference: hold.holdReference,
+    sessionKey: hold.sessionKey,
+  };
+}
+
 async function createBookingWithUniqueReference(
   payload: NormalizedBookingPayload,
   pricing: PricingComputation,
   vehicle: ResolvedBookingVehicle,
   termsVersionId: string | null,
+  requireHoldReference: boolean,
 ) {
   let lastError: unknown = null;
 
@@ -393,10 +507,39 @@ async function createBookingWithUniqueReference(
     try {
       return await prisma.$transaction(
         async (tx) => {
-          await assertBookingStillAvailable(payload, vehicle, tx as unknown as AvailabilityDbClient);
-          return tx.booking.create({
+          let holdForFinalization: HoldForFinalization | null = null;
+          if (requireHoldReference) {
+            holdForFinalization = await validateHoldForBooking(payload, vehicle, tx);
+          }
+
+          await assertBookingStillAvailable(
+            payload,
+            vehicle,
+            tx as unknown as AvailabilityDbClient,
+            holdForFinalization
+              ? {
+                  excludeHoldReference: holdForFinalization.holdReference,
+                  excludeSessionKey: holdForFinalization.sessionKey,
+                }
+              : undefined,
+          );
+
+          const booking = await tx.booking.create({
             data: bookingCreateData,
           });
+
+          if (holdForFinalization) {
+            await tx.reservationHold.update({
+              where: { id: holdForFinalization.id },
+              data: {
+                status: "CONVERTED",
+                bookingId: booking.id,
+                lastHeartbeatAt: new Date(),
+              },
+            });
+          }
+
+          return booking;
         },
         { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
       );
@@ -444,11 +587,14 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
   }
 
   const resolvedVehicle = await resolveBookingVehicle(validation.data);
-  await assertBookingStillAvailable(
-    validation.data,
-    resolvedVehicle,
-    prisma as unknown as AvailabilityDbClient,
-  );
+  const requireHoldReference = Boolean(validation.data.holdReference);
+  if (!requireHoldReference) {
+    await assertBookingStillAvailable(
+      validation.data,
+      resolvedVehicle,
+      prisma as unknown as AvailabilityDbClient,
+    );
+  }
   const pricing = computePricing(validation.data, resolvedVehicle);
   if (!pricing) {
     throw new SubmitBookingValidationError([
@@ -462,6 +608,7 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     pricing,
     resolvedVehicle,
     activeTermsVersionId,
+    requireHoldReference,
   );
 
   const emailResult = await sendBookingConfirmation(booking);

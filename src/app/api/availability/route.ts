@@ -78,9 +78,18 @@ export async function GET(request: Request) {
         vehicleType: vehicleTypeRaw ? (vehicleTypeRaw as VehicleType) : undefined,
       });
 
+      const availabilityStatus = result.isAvailable
+        ? "available"
+        : result.conflictingReservationHolds.length > 0 &&
+            result.conflictingBookings.length === 0 &&
+            result.conflictingBlocks.length === 0
+          ? "reserved_temporarily"
+          : "unavailable";
+
       return NextResponse.json({
         success: true as const,
         isAvailable: result.isAvailable,
+        availabilityStatus,
         message: result.reason ?? (result.isAvailable ? "Available" : "Selected vehicle is not available"),
       });
     }
@@ -91,9 +100,18 @@ export async function GET(request: Request) {
       requestedEnd: range.requestedEnd,
     });
 
+    const availabilityStatus = result.isAvailable
+      ? "available"
+      : result.conflictingReservationHolds.length > 0 &&
+          result.conflictingBookings.length === 0 &&
+          result.conflictingBlocks.length === 0
+        ? "reserved_temporarily"
+        : "unavailable";
+
     return NextResponse.json({
       success: true as const,
       isAvailable: result.isAvailable,
+      availabilityStatus,
       availableVehicleIds: result.availableVehicleIds,
       availableCount: result.availableCount,
       totalMatchingVehicles: result.totalMatchingVehicles,

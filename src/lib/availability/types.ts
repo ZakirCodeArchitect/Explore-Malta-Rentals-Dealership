@@ -2,6 +2,7 @@ import type {
   AvailabilityBlockType,
   BookingStatus,
   Prisma,
+  ReservationHoldStatus,
   VehicleType,
 } from "@/generated/prisma/client";
 
@@ -15,6 +16,9 @@ export type AvailabilityDbClient = {
   };
   availabilityBlock: {
     findMany: (args: Prisma.AvailabilityBlockFindManyArgs) => Promise<ConflictingAvailabilityBlock[]>;
+  };
+  reservationHold: {
+    findMany: (args: Prisma.ReservationHoldFindManyArgs) => Promise<ConflictingReservationHold[]>;
   };
   vehicle: {
     findUnique: (args: Prisma.VehicleFindUniqueArgs) => Promise<{
@@ -51,10 +55,23 @@ export type ConflictingAvailabilityBlock = {
   reason: string | null;
 };
 
+export type ConflictingReservationHold = {
+  id: string;
+  holdReference: string;
+  vehicleId: string;
+  vehicleType: VehicleType;
+  sessionKey: string;
+  status: ReservationHoldStatus;
+  pickupDateTime: Date;
+  returnDateTime: Date;
+  expiresAt: Date;
+};
+
 export type VehicleAvailabilityResult = {
   isAvailable: boolean;
   conflictingBookings: ConflictingBooking[];
   conflictingBlocks: ConflictingAvailabilityBlock[];
+  conflictingReservationHolds: ConflictingReservationHold[];
   reason?: string;
 };
 
@@ -65,6 +82,7 @@ export type VehicleTypeAvailabilityResult = {
   availableCount: number;
   conflictingBookings: ConflictingBooking[];
   conflictingBlocks: ConflictingAvailabilityBlock[];
+  conflictingReservationHolds: ConflictingReservationHold[];
   reason?: string;
 };
 
