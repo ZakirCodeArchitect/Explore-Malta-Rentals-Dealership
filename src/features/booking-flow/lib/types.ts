@@ -55,8 +55,8 @@ export type BookingFlowState = {
   };
   consent: {
     summaryReviewed: boolean;
-    agreedToTerms: boolean;
-    agreedAt: string;
+    termsAccepted: boolean;
+    termsAcceptedAt: string;
   };
 };
 
@@ -115,7 +115,7 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
   },
   consent: {
     summaryReviewed: false,
-    agreedToTerms: false,
-    agreedAt: "",
+    termsAccepted: false,
+    termsAcceptedAt: "",
   },
 };

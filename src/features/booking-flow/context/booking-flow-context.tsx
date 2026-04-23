@@ -29,6 +29,47 @@ import {
   getStepFirstError,
   STEP_FIELD_PATHS,
 } from "@/features/booking-flow/lib/validation";
+import { mapApiBookingErrorPathToFormPath } from "@/features/booking-flow/lib/map-api-booking-error-to-form";
+import type { BookingApiValidationError } from "@/features/booking-flow/lib/submit-booking-api";
+
+function createBookingSessionId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+const SERVER_VALIDATED_PATHS = [
+  "customer.driverLicenseUpload",
+  "customer.passportUpload",
+  "additionalDriver.passportIdUpload",
+  "delivery.pickupAddress",
+  "delivery.dropoffAddress",
+  "customer.licenseConfirmationCheckbox",
+  "customer.idConfirmationCheckbox",
+  "additionalDriver.officeIdConfirmed",
+  "customer.fullName",
+  "customer.phone",
+  "customer.email",
+  "customer.nationality",
+  "customer.dateOfBirth",
+  "customer.licenseCategory",
+  "additionalDriver.fullName",
+  "additionalDriver.phone",
+  "additionalDriver.email",
+  "additionalDriver.nationality",
+  "additionalDriver.dateOfBirth",
+  "additionalDriver.licenseCategory",
+  "rental.pickupDate",
+  "rental.returnDate",
+  "rental.pickupTime",
+  "rental.returnTime",
+  "addons.helmetSize1",
+  "addons.helmetSize2",
+  "addons.cdwPlan",
+  "deposit.depositMethod",
+  "consent.termsAccepted",
+] as const satisfies readonly FieldPath<BookingFlowState>[];
 
 type BookingFlowContextValue = {
   state: BookingFlowState;
@@ -38,6 +79,7 @@ type BookingFlowContextValue = {
   fieldErrors: FieldErrors<BookingFlowState>;
   isFirstStep: boolean;
   isLastStep: boolean;
+  bookingSessionId: string;
   updateSection: <K extends keyof BookingFlowState>(
     section: K,
     value: Partial<BookingFlowState[K]>,
@@ -47,6 +89,12 @@ type BookingFlowContextValue = {
   goBack: () => void;
   goNext: () => Promise<boolean>;
   goToStep: (stepId: BookingFlowStepId) => void;
+  getBookingValues: () => BookingFlowState;
+  applyConsentFromTermsModal: (acceptedAtIso: string) => void;
+  clearServerFieldErrors: () => void;
+  applyApiValidationErrors: (errors: BookingApiValidationError[]) => void;
+  resetBookingForm: () => void;
+  validateAllBookingFields: () => Promise<boolean>;
 };
 
 const BookingFlowContext = createContext<BookingFlowContextValue | null>(null);
@@ -56,6 +104,13 @@ type BookingFlowProviderProps = PropsWithChildren<{
 }>;
 
 export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlowProviderProps) {
+  const initialVehicleSlugRef = useRef(initialVehicleSlug);
+  useEffect(() => {
+    initialVehicleSlugRef.current = initialVehicleSlug;
+  }, [initialVehicleSlug]);
+
+  const [bookingSessionId, setBookingSessionId] = useState(createBookingSessionId);
+
   const form = useForm<BookingFlowState>({
     resolver: zodResolver(bookingFlowSchema),
     defaultValues: buildBookingInitialState(initialVehicleSlug),
@@ -184,6 +239,45 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
     [fieldErrors],
   );
 
+  const getBookingValues = useCallback(() => form.getValues(), [form]);
+
+  const applyConsentFromTermsModal = useCallback(
+    (acceptedAtIso: string) => {
+      const consent = form.getValues("consent");
+      form.setValue(
+        "consent",
+        { ...consent, termsAccepted: true, termsAcceptedAt: acceptedAtIso },
+        { shouldDirty: true, shouldValidate: true, shouldTouch: true },
+      );
+    },
+    [form],
+  );
+
+  const clearServerFieldErrors = useCallback(() => {
+    form.clearErrors([...SERVER_VALIDATED_PATHS]);
+  }, [form]);
+
+  const applyApiValidationErrors = useCallback(
+    (errors: BookingApiValidationError[]) => {
+      for (const err of errors) {
+        const path = mapApiBookingErrorPathToFormPath(err.path);
+        if (path) {
+          form.setError(path, { type: "server", message: err.message });
+        }
+      }
+    },
+    [form],
+  );
+
+  const resetBookingForm = useCallback(() => {
+    form.reset(buildBookingInitialState(initialVehicleSlugRef.current));
+    setBookingSessionId(createBookingSessionId());
+    setStepErrors({});
+    setActiveStepIndex(0);
+  }, [form]);
+
+  const validateAllBookingFields = useCallback(() => form.trigger(), [form]);
+
   const value = useMemo<BookingFlowContextValue>(
     () => ({
       state,
@@ -193,12 +287,19 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
       fieldErrors,
       isFirstStep,
       isLastStep,
+      bookingSessionId,
       updateSection,
       getFieldError,
       isFieldInvalid,
       goBack,
       goNext,
       goToStep,
+      getBookingValues,
+      applyConsentFromTermsModal,
+      clearServerFieldErrors,
+      applyApiValidationErrors,
+      resetBookingForm,
+      validateAllBookingFields,
     }),
     [
       state,
@@ -208,12 +309,19 @@ export function BookingFlowProvider({ children, initialVehicleSlug }: BookingFlo
       fieldErrors,
       isFirstStep,
       isLastStep,
+      bookingSessionId,
       updateSection,
       getFieldError,
       isFieldInvalid,
       goBack,
       goNext,
       goToStep,
+      getBookingValues,
+      applyConsentFromTermsModal,
+      clearServerFieldErrors,
+      applyApiValidationErrors,
+      resetBookingForm,
+      validateAllBookingFields,
     ],
   );
 

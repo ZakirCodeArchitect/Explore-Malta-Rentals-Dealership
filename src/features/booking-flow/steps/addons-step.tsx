@@ -3,6 +3,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import {
@@ -36,7 +37,7 @@ const fieldClass =
   "mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function AddonsStep() {
-  const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
+  const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
   const [cdwMenuOpen, setCdwMenuOpen] = useState(false);
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const [helmetSize1MenuOpen, setHelmetSize1MenuOpen] = useState(false);
@@ -103,6 +104,12 @@ export function AddonsStep() {
     state.additionalDriver.licenseCategory,
     updateSection,
   ]);
+
+  useEffect(() => {
+    if (state.delivery.pickupOption === "office" && state.additionalDriver.passportIdUpload) {
+      updateSection("additionalDriver", { passportIdUpload: "" });
+    }
+  }, [state.delivery.pickupOption, state.additionalDriver.passportIdUpload, updateSection]);
 
   return (
     <StepShell title="Add-ons" description="Section: Add-ons">
@@ -428,30 +435,31 @@ export function AddonsStep() {
                   Delivery pickup requires photo upload. Office pickup requires in-person ID confirmation.
                 </p>
                 {state.delivery.pickupOption === "delivery" ? (
-                  <label className="mt-2 block text-sm font-medium text-slate-700">
-                    Passport/ID photo upload
-                    <input
-                      type="file"
+                  <div className="mt-2">
+                    <DocumentUploadField
+                      label="Passport/ID photo upload"
+                      description="Required for an additional driver when delivery pickup is selected."
+                      category="additional_driver_passport"
+                      bookingSessionId={bookingSessionId}
+                      value={state.additionalDriver.passportIdUpload}
+                      onPathChange={(relativePath) =>
+                        updateSection("additionalDriver", { passportIdUpload: relativePath })
+                      }
                       name="additionalDriver.passportIdUpload"
                       data-field="additionalDriver.passportIdUpload"
-                      accept="image/*,.pdf"
-                      onChange={(event) =>
-                        updateSection("additionalDriver", {
-                          passportIdUpload: event.target.files?.[0]?.name ?? "",
-                        })
-                      }
-                      className={fieldClass}
                     />
-                    {state.additionalDriver.passportIdUpload ? (
-                      <span className="mt-1 block text-xs text-slate-600">
-                        Selected: {state.additionalDriver.passportIdUpload}
-                      </span>
+                    {getFieldError("additionalDriver.passportIdUpload") ? (
+                      <p className="mt-1 text-xs text-red-600">
+                        {getFieldError("additionalDriver.passportIdUpload")}
+                      </p>
                     ) : null}
-                  </label>
+                  </div>
                 ) : (
                   <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
                     <input
                       type="checkbox"
+                      name="additionalDriver.officeIdConfirmed"
+                      data-field="additionalDriver.officeIdConfirmed"
                       checked={state.additionalDriver.officeIdConfirmed}
                       onChange={(event) =>
                         updateSection("additionalDriver", { officeIdConfirmed: event.target.checked })

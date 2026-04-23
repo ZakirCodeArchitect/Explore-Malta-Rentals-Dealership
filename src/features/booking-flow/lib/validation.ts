@@ -79,8 +79,8 @@ const bookingBaseSchema: z.ZodType<BookingFlowState> = z.object({
   }),
   consent: z.object({
     summaryReviewed: z.boolean(),
-    agreedToTerms: z.boolean(),
-    agreedAt: z.string(),
+    termsAccepted: z.boolean(),
+    termsAcceptedAt: z.string(),
   }),
 });
 
@@ -125,7 +125,11 @@ export const bookingFlowSchema = bookingBaseSchema.superRefine((state, context) 
   }
 
   const selectedType = state.rental.vehicleType.trim().toLowerCase();
-  const requiresHelmet = selectedType.includes("motorbike") || selectedType.includes("atv");
+  const requiresHelmet =
+    selectedType.includes("motorbike") ||
+    selectedType.includes("atv") ||
+    selectedType.includes("scooter") ||
+    selectedType.includes("motorcycle");
   if (requiresHelmet && (!hasText(state.addons.helmetSize1) || !hasText(state.addons.helmetSize2))) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
@@ -190,6 +194,24 @@ export const bookingFlowSchema = bookingBaseSchema.superRefine((state, context) 
     }
   }
 
+  if (state.addons.additionalDriver && state.delivery.pickupOption === "delivery") {
+    if (!hasText(state.additionalDriver.passportIdUpload)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Passport/ID upload is required for the additional driver when delivery is selected",
+        path: ["additionalDriver", "passportIdUpload"],
+      });
+    }
+  }
+
+  if (state.addons.additionalDriver && state.delivery.pickupOption === "office" && !state.additionalDriver.officeIdConfirmed) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Please confirm the additional driver will present ID and licence at pickup",
+      path: ["additionalDriver", "officeIdConfirmed"],
+    });
+  }
+
   if (!hasText(state.customer.licenseCategory)) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
@@ -215,7 +237,7 @@ export const bookingFlowSchema = bookingBaseSchema.superRefine((state, context) 
     if (!hasText(state.customer.passportUpload)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "License upload required for delivery",
+        message: "Passport/ID upload required for delivery",
         path: ["customer", "passportUpload"],
       });
     }
@@ -235,13 +257,6 @@ export const bookingFlowSchema = bookingBaseSchema.superRefine((state, context) 
     });
   }
 
-  if (!state.consent.agreedToTerms) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "You must agree to terms before confirming",
-      path: ["consent", "agreedToTerms"],
-    });
-  }
 });
 
 export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowState>[]> = {
@@ -265,6 +280,8 @@ export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowSt
     "additionalDriver.nationality",
     "additionalDriver.dateOfBirth",
     "additionalDriver.licenseCategory",
+    "additionalDriver.passportIdUpload",
+    "additionalDriver.officeIdConfirmed",
   ],
   your_information: [
     "customer.fullName",
@@ -278,7 +295,7 @@ export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowSt
     "customer.licenseConfirmationCheckbox",
     "customer.idConfirmationCheckbox",
   ],
-  review_confirm: ["deposit.depositMethod", "consent.agreedToTerms"],
+  review_confirm: ["deposit.depositMethod"],
 };
 
 function issuePathToString(path: (string | number)[]) {

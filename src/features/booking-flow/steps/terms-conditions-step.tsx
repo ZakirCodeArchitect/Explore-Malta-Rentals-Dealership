@@ -38,8 +38,8 @@ export function TermsConditionsStep() {
       <label className="mt-4 flex items-start gap-2 text-sm text-slate-700">
         <input
           type="checkbox"
-          checked={state.consent.agreedToTerms}
-          onChange={(event) => updateSection("consent", { agreedToTerms: event.target.checked })}
+          checked={state.consent.termsAccepted}
+          onChange={(event) => updateSection("consent", { termsAccepted: event.target.checked })}
           className="mt-0.5 h-4 w-4"
         />
         <span>I agree to the terms and conditions.</span>
@@ -71,7 +71,10 @@ export function TermsConditionsStep() {
               <button
                 type="button"
                 onClick={() => {
-                  updateSection("consent", { agreedToTerms: true, agreedAt: new Date().toISOString() });
+                  updateSection("consent", {
+                    termsAccepted: true,
+                    termsAcceptedAt: new Date().toISOString(),
+                  });
                   setIsModalOpen(false);
                 }}
                 className="rounded-full bg-[var(--brand-orange)] px-4 py-2 text-sm font-semibold text-white"

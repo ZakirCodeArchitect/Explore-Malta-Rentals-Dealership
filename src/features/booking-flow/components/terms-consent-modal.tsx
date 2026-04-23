@@ -6,7 +6,8 @@ import Link from "next/link";
 type TermsConsentModalProps = {
   isOpen: boolean;
   onCancel: () => void;
-  onAgree: () => void;
+  onAgree: () => void | Promise<void>;
+  isSubmitting?: boolean;
 };
 
 const TERMS_SUMMARY_SECTIONS = [
@@ -163,7 +164,7 @@ const TERMS_SUMMARY_SECTIONS = [
   },
 ] as const;
 
-export function TermsConsentModal({ isOpen, onCancel, onAgree }: TermsConsentModalProps) {
+export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = false }: TermsConsentModalProps) {
   const [confirmChecked, setConfirmChecked] = useState(false);
 
   useEffect(() => {
@@ -248,6 +249,7 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree }: TermsConsentMod
             <input
               type="checkbox"
               checked={confirmChecked}
+              disabled={isSubmitting}
               onChange={(event) => setConfirmChecked(event.target.checked)}
               className="mt-0.5 h-4 w-4"
             />
@@ -261,7 +263,8 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree }: TermsConsentMod
                 setConfirmChecked(false);
                 onCancel();
               }}
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+              disabled={isSubmitting}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Cancel
             </button>
@@ -269,12 +272,12 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree }: TermsConsentMod
               type="button"
               onClick={() => {
                 setConfirmChecked(false);
-                onAgree();
+                void onAgree();
               }}
-              disabled={!confirmChecked}
+              disabled={!confirmChecked || isSubmitting}
               className="rounded-full bg-[var(--brand-orange)] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              I Agree
+              {isSubmitting ? "Submitting…" : "I Agree"}
             </button>
           </div>
         </footer>

@@ -3,6 +3,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import {
@@ -15,7 +16,7 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function CustomerDetailsStep() {
-  const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
+  const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const requiresUploads = state.delivery.pickupOption === "delivery";
   const allowedLicenseOptions = getAllowedLicenseCategories(state.rental.vehicleId);
@@ -36,6 +37,12 @@ export function CustomerDetailsStep() {
       updateSection("customer", { licenseCategory: "" });
     }
   }, [allowedLicenseOptions, state.customer.licenseCategory, updateSection]);
+
+  useEffect(() => {
+    if (!requiresUploads && (state.customer.driverLicenseUpload || state.customer.passportUpload)) {
+      updateSection("customer", { driverLicenseUpload: "", passportUpload: "" });
+    }
+  }, [requiresUploads, state.customer.driverLicenseUpload, state.customer.passportUpload, updateSection]);
 
   return (
     <StepShell
@@ -197,35 +204,29 @@ export function CustomerDetailsStep() {
           </span>
           .
         </p>
-        <label className="mt-2 block text-sm font-medium text-slate-700">
-          <span className="flex items-center gap-2">
+        <div className="mt-2">
+          <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
             <input type="radio" checked={requiresUploads} readOnly />
-            Delivery: License photo upload is required
+            Delivery: Licence photo upload is required
           </span>
-          <input
-            type="file"
-            name="customer.driverLicenseUpload"
-            data-field="customer.driverLicenseUpload"
-            accept="image/*,.pdf"
-            disabled={!requiresUploads}
-            onChange={(event) =>
-              updateSection("customer", {
-                driverLicenseUpload: event.target.files?.[0]?.name ?? "",
-              })
-            }
-            className={`${inputClass} ${!requiresUploads ? "cursor-not-allowed bg-slate-100 text-slate-400" : ""}`}
-          />
-          {state.customer.driverLicenseUpload ? (
-            <span className="mt-1 block text-xs text-slate-600">
-              Selected: {state.customer.driverLicenseUpload}
-            </span>
-          ) : null}
+          <div className={`mt-2 ${!requiresUploads ? "pointer-events-none opacity-50" : ""}`}>
+            <DocumentUploadField
+              label="Driver's licence"
+              category="customer_license"
+              bookingSessionId={bookingSessionId}
+              value={state.customer.driverLicenseUpload}
+              onPathChange={(relativePath) => updateSection("customer", { driverLicenseUpload: relativePath })}
+              disabled={!requiresUploads}
+              name="customer.driverLicenseUpload"
+              data-field="customer.driverLicenseUpload"
+            />
+          </div>
           {getFieldError("customer.driverLicenseUpload") ? (
             <span className="mt-1 block text-xs text-red-600">
               {getFieldError("customer.driverLicenseUpload")}
             </span>
           ) : null}
-        </label>
+        </div>
 
         <label className="mt-3 flex flex-col gap-1 text-sm text-slate-700">
           <span className="flex items-center gap-2">
@@ -259,33 +260,29 @@ export function CustomerDetailsStep() {
           </span>
           .
         </p>
-        <label className="mt-2 block text-sm font-medium text-slate-700">
-          <span className="flex items-center gap-2">
+        <div className="mt-2">
+          <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
             <input type="radio" checked={requiresUploads} readOnly />
             Delivery: Passport/ID photo upload is required
           </span>
-          <input
-            type="file"
-            name="customer.passportUpload"
-            data-field="customer.passportUpload"
-            accept="image/*,.pdf"
-            disabled={!requiresUploads}
-            onChange={(event) =>
-              updateSection("customer", { passportUpload: event.target.files?.[0]?.name ?? "" })
-            }
-            className={`${inputClass} ${!requiresUploads ? "cursor-not-allowed bg-slate-100 text-slate-400" : ""}`}
-          />
-          {state.customer.passportUpload ? (
-            <span className="mt-1 block text-xs text-slate-600">
-              Selected: {state.customer.passportUpload}
-            </span>
-          ) : null}
+          <div className={`mt-2 ${!requiresUploads ? "pointer-events-none opacity-50" : ""}`}>
+            <DocumentUploadField
+              label="Passport or national ID"
+              category="customer_passport"
+              bookingSessionId={bookingSessionId}
+              value={state.customer.passportUpload}
+              onPathChange={(relativePath) => updateSection("customer", { passportUpload: relativePath })}
+              disabled={!requiresUploads}
+              name="customer.passportUpload"
+              data-field="customer.passportUpload"
+            />
+          </div>
           {getFieldError("customer.passportUpload") ? (
             <span className="mt-1 block text-xs text-red-600">
               {getFieldError("customer.passportUpload")}
             </span>
           ) : null}
-        </label>
+        </div>
         <label className="mt-3 flex flex-col gap-1 text-sm text-slate-700">
           <span className="flex items-center gap-2">
             <input type="radio" checked={!requiresUploads} readOnly />

@@ -24,6 +24,10 @@ import { MAX_UPLOAD_BYTES } from "../src/lib/uploads/validators";
 
 const BASE_URL = (process.env.UPLOAD_TEST_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
+function asBlobPart(bytes: Uint8Array): BlobPart {
+  return bytes as unknown as BlobPart;
+}
+
 const KEEP_UPLOAD_FILES =
   process.env.UPLOAD_TEST_KEEP_FILES === "1" || process.env.UPLOAD_TEST_KEEP_FILES?.toLowerCase() === "true";
 
@@ -209,7 +213,7 @@ async function main() {
   {
     const form = new FormData();
     form.set("category", "customer_license");
-    form.set("file", new File([testPdf.data], testPdf.diskName, { type: testPdf.mimeType }));
+    form.set("file", new File([asBlobPart(testPdf.data)], testPdf.diskName, { type: testPdf.mimeType }));
     form.set("bookingTempRef", "script-test-uploads");
     const res = await postUpload(form);
     const body = (await res.json()) as UploadSuccessBody | UploadErrorBody;
@@ -227,7 +231,7 @@ async function main() {
   {
     const form = new FormData();
     form.set("category", "customer_passport");
-    form.set("file", new File([testImage.data], testImage.diskName, { type: testImage.mimeType }));
+    form.set("file", new File([asBlobPart(testImage.data)], testImage.diskName, { type: testImage.mimeType }));
     const res = await postUpload(form);
     const body = (await res.json()) as UploadSuccessBody | UploadErrorBody;
     assert(res.ok && body.success === true, `B) valid image: expected 200, got ${res.status} ${JSON.stringify(body)}`);
@@ -246,7 +250,7 @@ async function main() {
     form.set("category", "customer_license");
     form.set(
       "file",
-      new File([invalidMimeBytes], "fake.bin", { type: "application/octet-stream" }),
+      new File([asBlobPart(invalidMimeBytes)], "fake.bin", { type: "application/octet-stream" }),
     );
     const res = await postUpload(form);
     const body = (await res.json()) as UploadErrorBody;
@@ -258,7 +262,7 @@ async function main() {
     const huge = new Uint8Array(MAX_UPLOAD_BYTES + 1);
     const form = new FormData();
     form.set("category", "customer_license");
-    form.set("file", new File([huge], "big.pdf", { type: "application/pdf" }));
+    form.set("file", new File([asBlobPart(huge)], "big.pdf", { type: "application/pdf" }));
     const res = await postUpload(form);
     const body = (await res.json()) as UploadErrorBody;
     assert(
@@ -274,7 +278,7 @@ async function main() {
   // E) Missing / invalid category
   {
     const form = new FormData();
-    form.set("file", new File([testPdf.data], testPdf.diskName, { type: testPdf.mimeType }));
+    form.set("file", new File([asBlobPart(testPdf.data)], testPdf.diskName, { type: testPdf.mimeType }));
     const res = await postUpload(form);
     const body = (await res.json()) as UploadErrorBody;
     assert(res.status === 400 && body.success === false, `E1) missing category: ${res.status}`);
@@ -283,7 +287,7 @@ async function main() {
   {
     const form = new FormData();
     form.set("category", "not_a_real_category");
-    form.set("file", new File([testPdf.data], testPdf.diskName, { type: testPdf.mimeType }));
+    form.set("file", new File([asBlobPart(testPdf.data)], testPdf.diskName, { type: testPdf.mimeType }));
     const res = await postUpload(form);
     const body = (await res.json()) as UploadErrorBody;
     assert(res.status === 400 && body.success === false, `E2) invalid category: ${res.status}`);
