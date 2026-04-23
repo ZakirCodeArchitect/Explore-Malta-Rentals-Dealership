@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  AvailabilityConflictError,
   submitBooking,
   SubmitBookingValidationError,
   type BookingSubmissionInput,
@@ -36,6 +37,15 @@ export async function POST(request: Request) {
           errors: error.errors,
         },
         { status: 400 },
+      );
+    }
+    if (error instanceof AvailabilityConflictError) {
+      return NextResponse.json(
+        {
+          success: false as const,
+          message: error.message,
+        },
+        { status: 409 },
       );
     }
     console.error("[bookings] Failed to submit booking", error);

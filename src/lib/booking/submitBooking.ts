@@ -2,6 +2,11 @@ import { randomBytes } from "node:crypto";
 import { format } from "date-fns";
 
 import { Prisma, type VehicleType } from "@/generated/prisma/client";
+import {
+  checkVehicleAvailability,
+  checkVehicleTypeAvailability,
+  type AvailabilityDbClient,
+} from "@/lib/availability";
 import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
 import { prisma } from "@/lib/prisma";
 import {
@@ -36,6 +41,13 @@ type SubmitBookingResponse = {
   bookingReference: string;
 };
 
+type AvailabilityConflictContext = {
+  vehicleId: string | null;
+  vehicleType: VehicleType;
+  requestedStart: Date;
+  requestedEnd: Date;
+};
+
 export class SubmitBookingValidationError extends Error {
   readonly errors: ValidationError[];
 
@@ -43,6 +55,16 @@ export class SubmitBookingValidationError extends Error {
     super("Booking payload validation failed");
     this.name = "SubmitBookingValidationError";
     this.errors = errors;
+  }
+}
+
+export class AvailabilityConflictError extends Error {
+  readonly context: AvailabilityConflictContext;
+
+  constructor(message: string, context: AvailabilityConflictContext) {
+    super(message);
+    this.name = "AvailabilityConflictError";
+    this.context = context;
   }
 }
 
@@ -226,6 +248,58 @@ async function getActiveTermsVersionId(): Promise<string | null> {
   return activeTerms?.id ?? null;
 }
 
+async function assertBookingStillAvailable(
+  payload: NormalizedBookingPayload,
+  vehicle: ResolvedBookingVehicle,
+  db: AvailabilityDbClient,
+): Promise<void> {
+  if (vehicle.vehicleId) {
+    const availability = await checkVehicleAvailability(
+      {
+        vehicleId: vehicle.vehicleId,
+        vehicleType: vehicle.vehicleType,
+        requestedStart: payload.pickupDateTime,
+        requestedEnd: payload.returnDateTime,
+      },
+      db,
+    );
+
+    if (!availability.isAvailable) {
+      throw new AvailabilityConflictError(
+        "Selected vehicle is not available for the chosen dates",
+        {
+          vehicleId: vehicle.vehicleId,
+          vehicleType: vehicle.vehicleType,
+          requestedStart: payload.pickupDateTime,
+          requestedEnd: payload.returnDateTime,
+        },
+      );
+    }
+    return;
+  }
+
+  const availability = await checkVehicleTypeAvailability(
+    {
+      vehicleType: vehicle.vehicleType,
+      requestedStart: payload.pickupDateTime,
+      requestedEnd: payload.returnDateTime,
+    },
+    db,
+  );
+
+  if (!availability.isAvailable) {
+    throw new AvailabilityConflictError(
+      "No vehicles of this type are available for the chosen dates",
+      {
+        vehicleId: null,
+        vehicleType: vehicle.vehicleType,
+        requestedStart: payload.pickupDateTime,
+        requestedEnd: payload.returnDateTime,
+      },
+    );
+  }
+}
+
 function mapBookingCreateData(
   bookingReference: string,
   payload: NormalizedBookingPayload,
@@ -317,10 +391,19 @@ async function createBookingWithUniqueReference(
     );
 
     try {
-      return await prisma.booking.create({
-        data: bookingCreateData,
-      });
+      return await prisma.$transaction(
+        async (tx) => {
+          await assertBookingStillAvailable(payload, vehicle, tx as unknown as AvailabilityDbClient);
+          return tx.booking.create({
+            data: bookingCreateData,
+          });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
     } catch (error) {
+      if (error instanceof AvailabilityConflictError) {
+        throw error;
+      }
       if (!isBookingReferenceUniqueConstraintError(error)) {
         throw error;
       }
@@ -361,6 +444,11 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
   }
 
   const resolvedVehicle = await resolveBookingVehicle(validation.data);
+  await assertBookingStillAvailable(
+    validation.data,
+    resolvedVehicle,
+    prisma as unknown as AvailabilityDbClient,
+  );
   const pricing = computePricing(validation.data, resolvedVehicle);
   if (!pricing) {
     throw new SubmitBookingValidationError([
