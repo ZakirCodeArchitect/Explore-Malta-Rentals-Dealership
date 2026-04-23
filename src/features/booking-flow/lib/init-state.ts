@@ -3,6 +3,13 @@ import {
   type BookingFlowState,
 } from "@/features/booking-flow/lib/types";
 
+type InitialRentalState = {
+  pickupDate?: string;
+  pickupTime?: string;
+  returnDate?: string;
+  returnTime?: string;
+};
+
 function cloneInitialState(): BookingFlowState {
   return {
     ...INITIAL_BOOKING_FLOW_STATE,
@@ -16,13 +23,28 @@ function cloneInitialState(): BookingFlowState {
   };
 }
 
-export function buildBookingInitialState(selectedVehicleSlug?: string): BookingFlowState {
+export function buildBookingInitialState(
+  selectedVehicleSlug?: string,
+  initialRental?: InitialRentalState,
+): BookingFlowState {
   const next = cloneInitialState();
 
   if (!selectedVehicleSlug) {
+    if (initialRental) {
+      next.rental.pickupDate = initialRental.pickupDate ?? "";
+      next.rental.pickupTime = initialRental.pickupTime ?? "";
+      next.rental.returnDate = initialRental.returnDate ?? "";
+      next.rental.returnTime = initialRental.returnTime ?? "";
+    }
     return next;
   }
 
   next.rental.vehicleSlug = selectedVehicleSlug;
+  if (initialRental) {
+    next.rental.pickupDate = initialRental.pickupDate ?? "";
+    next.rental.pickupTime = initialRental.pickupTime ?? "";
+    next.rental.returnDate = initialRental.returnDate ?? "";
+    next.rental.returnTime = initialRental.returnTime ?? "";
+  }
   return next;
 }

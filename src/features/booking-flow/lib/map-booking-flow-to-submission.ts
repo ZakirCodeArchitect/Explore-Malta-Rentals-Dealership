@@ -74,7 +74,10 @@ function pathOrNull(value: string): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-export function mapBookingFlowStateToSubmission(state: BookingFlowState): BookingSubmissionInput {
+export function mapBookingFlowStateToSubmission(
+  state: BookingFlowState,
+  holdReference: string | null,
+): BookingSubmissionInput {
   const apiVehicle = mapVehicleTypeToApiVehicleType(state.rental.vehicleType, state.rental.vehicleSlug);
   const helmetRequired = isHelmetRequiredForApiVehicle(apiVehicle);
   const pickupOption = state.delivery.pickupOption === "office" ? "OFFICE" : "DELIVERY";
@@ -89,6 +92,7 @@ export function mapBookingFlowStateToSubmission(state: BookingFlowState): Bookin
   const additionalPassportPath = pathOrNull(state.additionalDriver.passportIdUpload);
 
   return {
+    holdReference: holdReference ?? undefined,
     rental: {
       vehicleId: state.rental.vehicleId ?? undefined,
       vehicleType: apiVehicle,

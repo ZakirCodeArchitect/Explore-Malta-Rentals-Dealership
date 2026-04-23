@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { Vehicle } from "@/features/vehicles/data/vehicles";
-import { fetchVehicleBySlug, fetchVehicles } from "@/features/vehicles/lib/vehicles-api";
+import { readReservationHoldSessionKeyFromStorage } from "@/features/booking-flow/lib/reservation-hold-storage";
+import {
+  fetchVehicleBySlug,
+  fetchVehicles,
+  type FetchVehiclesRentalWindow,
+} from "@/features/vehicles/lib/vehicles-api";
 
 type UseVehiclesResult = {
   vehicles: Vehicle[];
@@ -18,10 +23,12 @@ type UseVehicleResult = {
 
 type UseVehiclesOptions = {
   enabled?: boolean;
+  /** When all four strings are set, listing includes hold-aware `rentalWindowStatus`. */
+  rentalWindow?: FetchVehiclesRentalWindow | null;
 };
 
 export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult {
-  const { enabled = true } = options;
+  const { enabled = true, rentalWindow = null } = options;
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +43,23 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult
       setIsLoading(true);
       setError(null);
       try {
-        const data = await fetchVehicles(controller.signal);
+        const windowPayload =
+          rentalWindow &&
+          rentalWindow.pickupDate.trim() &&
+          rentalWindow.pickupTime.trim() &&
+          rentalWindow.returnDate.trim() &&
+          rentalWindow.returnTime.trim()
+            ? ({
+                pickupDate: rentalWindow.pickupDate.trim(),
+                pickupTime: rentalWindow.pickupTime.trim(),
+                returnDate: rentalWindow.returnDate.trim(),
+                returnTime: rentalWindow.returnTime.trim(),
+                sessionKey:
+                  rentalWindow.sessionKey?.trim() || readReservationHoldSessionKeyFromStorage(),
+              } satisfies FetchVehiclesRentalWindow)
+            : null;
+
+        const data = await fetchVehicles(controller.signal, windowPayload);
         if (!controller.signal.aborted) {
           setVehicles(data);
         }
@@ -55,7 +78,14 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult
     void loadVehicles();
 
     return () => controller.abort();
-  }, [enabled]);
+  }, [
+    enabled,
+    rentalWindow?.pickupDate,
+    rentalWindow?.pickupTime,
+    rentalWindow?.returnDate,
+    rentalWindow?.returnTime,
+    rentalWindow?.sessionKey,
+  ]);
 
   if (!enabled) {
     return { vehicles: [], isLoading: false, error: null };

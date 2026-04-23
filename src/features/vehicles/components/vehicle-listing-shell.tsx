@@ -46,6 +46,9 @@ import {
 const LG_MIN_PX = 1024;
 const DEFAULT_PICKUP_DATE = new Date(2026, 5, 12);
 const DEFAULT_RETURN_DATE = addDays(DEFAULT_PICKUP_DATE, TRIP_MIN_SPAN_DAYS);
+/** Listing filters do not collect times; defaults align availability with a sensible day window. */
+const DEFAULT_LISTING_PICKUP_TIME = "09:00";
+const DEFAULT_LISTING_DROPOFF_TIME = "09:00";
 
 function subscribeMinWidthLg(onChange: () => void) {
   const mq = window.matchMedia(`(min-width: ${LG_MIN_PX}px)`);
@@ -79,12 +82,6 @@ export function VehicleListingShell({
   heroIntro,
 }: VehicleListingShellProps) {
   const shouldFetchFromApi = !vehicles;
-  const {
-    vehicles: apiVehicles,
-    isLoading: isVehiclesLoading,
-    error: vehiclesError,
-  } = useVehicles({ enabled: shouldFetchFromApi });
-  const vehicleDataset = vehicles ?? apiVehicles;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -100,6 +97,8 @@ export function VehicleListingShell({
   const dropoffDateParam = searchParams.get("dropoffDate");
   const hotelDeliveryParam = searchParams.get("hotelDelivery");
   const ccParam = searchParams.get("cc");
+  const pickupTimeParam = searchParams.get("pickupTime");
+  const dropoffTimeParam = searchParams.get("dropoffTime");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
   const initialTransmission =
@@ -135,6 +134,41 @@ export function VehicleListingShell({
   const [selectedSeats, setSelectedSeats] =
     useState<VehicleSeatsFilter>(initialSeats);
 
+  const bookingPickupDate =
+    dateParam ?? pickupDateParam ?? formatPickupDateParam(pickupDate);
+  const bookingReturnDate =
+    returnDateParam ?? dropoffDateParam ?? formatPickupDateParam(returnDate);
+  const bookingPickupTime = pickupTimeParam;
+  const bookingReturnTime = dropoffTimeParam;
+
+  /** Hold-aware listing only after trip is committed to the URL (Search). */
+  const urlTripPickupDate = (dateParam ?? pickupDateParam)?.trim() || "";
+  const urlTripReturnDate = (returnDateParam ?? dropoffDateParam)?.trim() || "";
+  const urlTripPickupTime = pickupTimeParam?.trim() || "";
+  const urlTripReturnTime = dropoffTimeParam?.trim() || "";
+
+  const vehiclesFetchRentalWindow = useMemo(() => {
+    if (!urlTripPickupDate || !urlTripReturnDate) {
+      return null;
+    }
+    return {
+      pickupDate: urlTripPickupDate,
+      pickupTime: urlTripPickupTime || DEFAULT_LISTING_PICKUP_TIME,
+      returnDate: urlTripReturnDate,
+      returnTime: urlTripReturnTime || DEFAULT_LISTING_DROPOFF_TIME,
+    };
+  }, [urlTripPickupDate, urlTripReturnDate, urlTripPickupTime, urlTripReturnTime]);
+
+  const tripDatesCommitted = vehiclesFetchRentalWindow !== null;
+
+  const {
+    vehicles: apiVehicles,
+    isLoading: isVehiclesLoading,
+    error: vehiclesError,
+  } = useVehicles({ enabled: shouldFetchFromApi, rentalWindow: vehiclesFetchRentalWindow });
+
+  const vehicleDataset = vehicles ?? apiVehicles;
+
   const [appliedType, setAppliedType] =
     useState<VehicleType | "All">(initialType);
   const [appliedTransmission, setAppliedTransmission] =
@@ -153,6 +187,15 @@ export function VehicleListingShell({
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
+  const [tripDatesPrompt, setTripDatesPrompt] = useState(false);
+
+  useEffect(() => {
+    if (!tripDatesPrompt) {
+      return;
+    }
+    const timer = window.setTimeout(() => setTripDatesPrompt(false), 6000);
+    return () => window.clearTimeout(timer);
+  }, [tripDatesPrompt]);
 
   const replaceQuery = useCallback(
     (mutate: (params: URLSearchParams) => void) => {
@@ -288,6 +331,8 @@ export function VehicleListingShell({
       }
       p.set("date", formatPickupDateParam(pickupDate));
       p.set("returnDate", formatPickupDateParam(returnDate));
+      p.set("pickupTime", pickupTimeParam?.trim() || DEFAULT_LISTING_PICKUP_TIME);
+      p.set("dropoffTime", dropoffTimeParam?.trim() || DEFAULT_LISTING_DROPOFF_TIME);
       p.delete("pickupDate");
       p.delete("dropoffDate");
       p.delete("returnElsewhere");
@@ -304,7 +349,9 @@ export function VehicleListingShell({
     });
   }, [
     hotelDelivery,
+    dropoffTimeParam,
     pickupDate,
+    pickupTimeParam,
     returnDate,
     pickupLocation,
     replaceQuery,
@@ -339,6 +386,8 @@ export function VehicleListingShell({
       p.delete("returnDate");
       p.delete("pickupDate");
       p.delete("dropoffDate");
+      p.delete("pickupTime");
+      p.delete("dropoffTime");
       p.delete("hotelDelivery");
       p.delete("returnElsewhere");
       p.delete("cc");
@@ -394,6 +443,18 @@ export function VehicleListingShell({
     appliedType,
     appliedTransmission,
   ]);
+
+  const bookingHref = (() => {
+    if (!vehiclesFetchRentalWindow) {
+      return "/booking";
+    }
+    const bookingParams = new URLSearchParams();
+    bookingParams.set("date", vehiclesFetchRentalWindow.pickupDate);
+    bookingParams.set("returnDate", vehiclesFetchRentalWindow.returnDate);
+    bookingParams.set("pickupTime", vehiclesFetchRentalWindow.pickupTime);
+    bookingParams.set("dropoffTime", vehiclesFetchRentalWindow.returnTime);
+    return `/booking?${bookingParams.toString()}`;
+  })();
 
   const showListingSidebar = pathname === "/vehicles";
   const isLg = useIsLgViewport();
@@ -457,6 +518,17 @@ export function VehicleListingShell({
         vehicles
       </p>
 
+      {tripDatesPrompt ? (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950"
+        >
+          Set your trip dates in the search bar, then click{" "}
+          <span className="font-semibold">Search</span> to load availability. After that,{" "}
+          <span className="font-semibold">Book now</span> will reserve the vehicle for those dates.
+        </div>
+      ) : null}
+
       {isRefreshing ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -493,7 +565,17 @@ export function VehicleListingShell({
       ) : filteredVehicles.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredVehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.slug} vehicle={vehicle} />
+            <VehicleCard
+              key={vehicle.slug}
+              vehicle={vehicle}
+              bookingHref={bookingHref}
+              tripDatesCommitted={tripDatesCommitted}
+              onTripDatesRequired={() => setTripDatesPrompt(true)}
+              pickupDate={vehiclesFetchRentalWindow?.pickupDate ?? null}
+              returnDate={vehiclesFetchRentalWindow?.returnDate ?? null}
+              pickupTime={vehiclesFetchRentalWindow?.pickupTime ?? null}
+              returnTime={vehiclesFetchRentalWindow?.returnTime ?? null}
+            />
           ))}
         </div>
       ) : vehicleDataset.length === 0 ? (

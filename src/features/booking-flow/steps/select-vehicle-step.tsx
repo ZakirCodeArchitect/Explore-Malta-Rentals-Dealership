@@ -9,7 +9,7 @@ import { formatVehicleTypeLabel, type ApiVehicleType } from "@/features/vehicles
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 
 export function SelectVehicleStep() {
-  const { state, updateSection, getFieldError } = useBookingFlow();
+  const { state, reservationHold, updateSection, getFieldError } = useBookingFlow();
   const { vehicles, isLoading, error } = useVehicles();
   const vehicleError = getFieldError("rental.vehicleType");
 
@@ -26,6 +26,11 @@ export function SelectVehicleStep() {
   }, [state.rental.vehicleId, vehicles]);
 
   const selectedType = state.rental.vehicleType as ApiVehicleType | "";
+  const holdIsOnSelectedVehicle =
+    reservationHold.status === "ACTIVE" &&
+    reservationHold.holdReference !== null &&
+    reservationHold.vehicleId !== null &&
+    reservationHold.vehicleId === state.rental.vehicleId;
   const selectedTypeVehicles = useMemo(
     () =>
       selectedType
@@ -204,6 +209,11 @@ export function SelectVehicleStep() {
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-emerald-700">Selected vehicle</p>
               <p className="mt-1 text-sm font-semibold text-slate-900">{selectedVehicle.name}</p>
               <p className="text-xs text-slate-700">{formatVehicleTypeLabel(selectedVehicle.apiVehicleType)}</p>
+              {holdIsOnSelectedVehicle ? (
+                <p className="mt-2 text-xs font-semibold text-emerald-800">
+                  Reserved for you temporarily.
+                </p>
+              ) : null}
             </div>
           ) : (
             <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-4">
@@ -213,6 +223,9 @@ export function SelectVehicleStep() {
               {selectedType ? (
                 <p className="mt-1 text-sm text-amber-800">Selected category: {formatVehicleTypeLabel(selectedType)}</p>
               ) : null}
+              <p className="mt-2 text-xs text-amber-800">
+                A specific vehicle must be selected before it can be reserved.
+              </p>
             </div>
           )}
         </div>

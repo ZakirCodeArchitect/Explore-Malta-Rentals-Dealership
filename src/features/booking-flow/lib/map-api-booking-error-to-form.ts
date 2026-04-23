@@ -21,6 +21,7 @@ export function mapApiBookingErrorPathToFormPath(apiPath: string): FieldPath<Boo
     "addons.helmetSize1": "addons.helmetSize1",
     "addons.helmetSize2": "addons.helmetSize2",
     "addons.cdwOption": "addons.cdwPlan",
+    "rental.vehicleId": "rental.vehicleId",
   };
 
   if (map[normalized]) {

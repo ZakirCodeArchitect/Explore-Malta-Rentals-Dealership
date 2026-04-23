@@ -1,4 +1,18 @@
 export type LicenseCategory = "" | "B" | "AM" | "A" | "A1" | "A2";
+export type ReservationHoldStatus = "ACTIVE" | "EXPIRED" | "RELEASED" | "CONVERTED";
+
+export type ReservationHoldState = {
+  holdReference: string | null;
+  sessionKey: string | null;
+  expiresAt: string | null;
+  status: ReservationHoldStatus | null;
+  vehicleId: string | null;
+  vehicleType: string | null;
+  pickupDate: string | null;
+  pickupTime: string | null;
+  returnDate: string | null;
+  returnTime: string | null;
+};
 
 export type BookingFlowState = {
   rental: {
@@ -118,4 +132,17 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     termsAccepted: false,
     termsAcceptedAt: "",
   },
+};
+
+export const INITIAL_RESERVATION_HOLD_STATE: ReservationHoldState = {
+  holdReference: null,
+  sessionKey: null,
+  expiresAt: null,
+  status: null,
+  vehicleId: null,
+  vehicleType: null,
+  pickupDate: null,
+  pickupTime: null,
+  returnDate: null,
+  returnTime: null,
 };

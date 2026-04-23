@@ -6,6 +6,7 @@ import {
   type VehicleDetailApiItem,
   type VehicleListApiItem,
 } from "@/features/vehicles/data/vehicles";
+import { isVehicleRentalWindowStatus } from "@/lib/vehicles/types";
 
 type VehiclesApiResponse = {
   success: boolean;
@@ -34,7 +35,10 @@ function isVehicleListItem(value: unknown): value is VehicleListApiItem {
     (candidate.description === null || typeof candidate.description === "string") &&
     (candidate.mainImageUrl === null || typeof candidate.mainImageUrl === "string") &&
     typeof candidate.helmetIncludedCount === "number" &&
-    typeof candidate.supportsStorageBox === "boolean"
+    typeof candidate.supportsStorageBox === "boolean" &&
+    (candidate.rentalWindowStatus === undefined ||
+      (typeof candidate.rentalWindowStatus === "string" &&
+        isVehicleRentalWindowStatus(candidate.rentalWindowStatus)))
   );
 }
 
@@ -64,8 +68,30 @@ async function parseJsonBody<T>(response: Response): Promise<T | null> {
   }
 }
 
-export async function fetchVehicles(signal?: AbortSignal): Promise<Vehicle[]> {
-  const response = await fetch("/api/vehicles", {
+export type FetchVehiclesRentalWindow = Readonly<{
+  pickupDate: string;
+  pickupTime: string;
+  returnDate: string;
+  returnTime: string;
+  sessionKey?: string;
+}>;
+
+export async function fetchVehicles(
+  signal?: AbortSignal,
+  rentalWindow?: FetchVehiclesRentalWindow | null,
+): Promise<Vehicle[]> {
+  const search = new URLSearchParams();
+  if (rentalWindow) {
+    search.set("pickupDate", rentalWindow.pickupDate.trim());
+    search.set("pickupTime", rentalWindow.pickupTime.trim());
+    search.set("returnDate", rentalWindow.returnDate.trim());
+    search.set("returnTime", rentalWindow.returnTime.trim());
+    if (rentalWindow.sessionKey?.trim()) {
+      search.set("sessionKey", rentalWindow.sessionKey.trim());
+    }
+  }
+  const qs = search.toString();
+  const response = await fetch(qs ? `/api/vehicles?${qs}` : "/api/vehicles", {
     method: "GET",
     cache: "no-store",
     signal,

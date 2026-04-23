@@ -1,3 +1,5 @@
+import type { VehicleRentalWindowStatus } from "@/lib/vehicles/types";
+
 export type ApiVehicleType = "MOTORBIKE_50CC" | "MOTORBIKE_125CC" | "BICYCLE" | "ATV";
 export type VehicleType = "Scooter" | "Motorcycle" | "ATV" | "Bicycle";
 export type Transmission = "Automatic" | "Manual";
@@ -34,6 +36,7 @@ export type VehicleListApiItem = Readonly<{
   mainImageUrl: string | null;
   helmetIncludedCount: number;
   supportsStorageBox: boolean;
+  rentalWindowStatus?: VehicleRentalWindowStatus;
 }>;
 
 export type VehicleImageApiItem = Readonly<{
@@ -75,6 +78,8 @@ export type Vehicle = Readonly<{
   highlights: readonly string[];
   features: readonly string[];
   addOns: readonly VehicleAddOn[];
+  /** Present when listing was fetched with full pickup/return date+time (holds). */
+  rentalWindowStatus?: VehicleRentalWindowStatus;
 }>;
 
 const PLACEHOLDER_ADDONS: readonly VehicleAddOn[] = [
@@ -178,6 +183,7 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
     addOns: supportsStorageBox
       ? [{ id: "storage-box", name: "Storage box", priceOnce: 10 }, ...PLACEHOLDER_ADDONS]
       : PLACEHOLDER_ADDONS,
+    ...(item.rentalWindowStatus ? { rentalWindowStatus: item.rentalWindowStatus } : {}),
   };
 }
 

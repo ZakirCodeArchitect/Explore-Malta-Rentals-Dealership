@@ -318,10 +318,7 @@ export async function heartbeatReservationHold(holdReference: string) {
 
   const updated = await prisma.reservationHold.update({
     where: { id: hold.id },
-    data: {
-      lastHeartbeatAt: new Date(),
-      expiresAt: getExpiryFrom(),
-    },
+    data: { lastHeartbeatAt: new Date() },
     select: holdSelect,
   });
 
