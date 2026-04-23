@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 
 import { Prisma } from "@/generated/prisma/client";
 import { validateBookingPayload, type BookingSubmissionInput, type NormalizedBookingPayload } from "@/lib/booking";
+import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
 import { prisma } from "@/lib/prisma";
 import {
   calculateBookingPrice,
@@ -261,6 +262,38 @@ export async function POST(request: Request) {
 
   try {
     const booking = await createBookingWithUniqueReference(validation.data, pricing);
+
+    const emailResult = await sendBookingConfirmation(booking);
+    if (emailResult.success) {
+      try {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: {
+            confirmationEmailStatus: "SENT",
+            confirmationEmailSentAt: new Date(),
+          },
+        });
+      } catch (statusError) {
+        console.error("[bookings] Failed to persist confirmation email success status", statusError);
+      }
+    } else {
+      console.error("[bookings] Confirmation email was not sent", {
+        bookingId: booking.id,
+        bookingReference: booking.bookingReference,
+        reason: emailResult.reason,
+      });
+      try {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: {
+            confirmationEmailStatus: "FAILED",
+            confirmationEmailSentAt: null,
+          },
+        });
+      } catch (statusError) {
+        console.error("[bookings] Failed to persist confirmation email failure status", statusError);
+      }
+    }
 
     return NextResponse.json({
       success: true as const,
