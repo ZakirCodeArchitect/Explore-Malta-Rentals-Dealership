@@ -16,7 +16,7 @@ export function BookingSummaryStep() {
       calculateBookingPrice({
         rental: {
           vehicle: {
-            id: state.rental.vehicleId,
+            id: state.rental.vehicleId ?? undefined,
             slug: state.rental.vehicleSlug,
             name: state.rental.vehicleName,
             type: state.rental.vehicleType,
@@ -68,7 +68,7 @@ export function BookingSummaryStep() {
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>
               Vehicle selected:{" "}
-              {state.rental.vehicleName || state.rental.vehicleId || "-"}
+              {state.rental.vehicleName || state.rental.vehicleId || "Category only"}
             </li>
             <li>
               Rental dates: {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} to{" "}

@@ -12,7 +12,7 @@ export function PricingStep() {
   const pricing = calculateBookingPrice({
     rental: {
       vehicle: {
-        id: state.rental.vehicleId,
+        id: state.rental.vehicleId ?? undefined,
         slug: state.rental.vehicleSlug,
         name: state.rental.vehicleName,
         type: state.rental.vehicleType,

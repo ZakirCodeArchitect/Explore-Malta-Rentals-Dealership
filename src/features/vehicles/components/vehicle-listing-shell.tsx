@@ -18,6 +18,7 @@ import { LOGO_PATH } from "@/lib/site-brand-copy";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import type {
   Transmission,
   Vehicle,
@@ -65,7 +66,7 @@ function useIsLgViewport() {
 }
 
 type VehicleListingShellProps = Readonly<{
-  vehicles: readonly Vehicle[];
+  vehicles?: readonly Vehicle[];
   /** When set, title + filters sit in a bounded band with backdrop; grid sits on page background below. */
   heroIntro?: Readonly<{
     title: string;
@@ -77,6 +78,13 @@ export function VehicleListingShell({
   vehicles,
   heroIntro,
 }: VehicleListingShellProps) {
+  const shouldFetchFromApi = !vehicles;
+  const {
+    vehicles: apiVehicles,
+    isLoading: isVehiclesLoading,
+    error: vehiclesError,
+  } = useVehicles({ enabled: shouldFetchFromApi });
+  const vehicleDataset = vehicles ?? apiVehicles;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -339,18 +347,18 @@ export function VehicleListingShell({
 
   const vehicleListingColorOptions = useMemo(() => {
     const unique = new Set<VehicleColor>();
-    for (const v of vehicles) {
+    for (const v of vehicleDataset) {
       unique.add(v.color);
     }
     const sorted = [...unique].sort((a, b) => a.localeCompare(b));
     return ["All" as const, ...sorted];
-  }, [vehicles]);
+  }, [vehicleDataset]);
 
   const filteredVehicles = useMemo(() => {
     const typeFiltered =
       appliedType === "All"
-        ? vehicles
-        : vehicles.filter((vehicle) => vehicle.type === appliedType);
+        ? vehicleDataset
+        : vehicleDataset.filter((vehicle) => vehicle.type === appliedType);
     const transmissionFiltered =
       appliedTransmission === "All"
         ? typeFiltered
@@ -379,7 +387,7 @@ export function VehicleListingShell({
 
     return [...ccFiltered];
   }, [
-    vehicles,
+    vehicleDataset,
     appliedCc,
     appliedColor,
     appliedSeats,
@@ -463,11 +471,35 @@ export function VehicleListingShell({
             </div>
           ))}
         </div>
+      ) : shouldFetchFromApi && isVehiclesLoading ? (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={`loading-${index}`}
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4"
+            >
+              <div className="h-48 animate-pulse rounded-xl bg-slate-200/75" />
+              <div className="mt-4 h-5 w-2/3 animate-pulse rounded bg-slate-200/75" />
+              <div className="mt-2 h-4 w-full animate-pulse rounded bg-slate-200/65" />
+              <div className="mt-5 h-9 w-1/2 animate-pulse rounded-full bg-slate-200/75" />
+            </div>
+          ))}
+        </div>
+      ) : shouldFetchFromApi && vehiclesError ? (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/70 px-6 py-10 text-center">
+          <h3 className="text-lg font-semibold text-rose-900">Unable to load vehicles</h3>
+          <p className="mt-2 text-sm text-rose-800">{vehiclesError}</p>
+        </div>
       ) : filteredVehicles.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredVehicles.map((vehicle) => (
             <VehicleCard key={vehicle.slug} vehicle={vehicle} />
           ))}
+        </div>
+      ) : vehicleDataset.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
+          <h3 className="text-lg font-semibold text-slate-900">No vehicles available right now</h3>
+          <p className="mt-2 text-sm text-slate-600">Please check back shortly for newly listed rentals.</p>
         </div>
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
@@ -537,11 +569,11 @@ export function VehicleListingShell({
 
     if (listingSidebar) {
       return (
-        <div className="flex w-full flex-col lg:flex-row lg:items-start">
+        <div className="flex w-full flex-col lg:flex-row lg:items-stretch">
           <aside
             aria-label="Vehicle filters"
             className={[
-              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm lg:self-start",
+              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm",
               filtersCollapsed
                 ? "lg:w-12 lg:max-w-12 lg:min-w-12"
                 : "lg:w-[min(15.5rem,calc(100vw-1rem))] lg:max-w-[15.5rem]",
@@ -549,7 +581,7 @@ export function VehicleListingShell({
           >
             <div
               className={[
-                "px-4 py-6 sm:px-4 sm:py-6",
+                "px-4 py-6 sm:px-4 sm:py-6 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain",
                 filtersCollapsed
                   ? "lg:px-2 lg:pt-3 lg:pb-5"
                   : "lg:px-4 lg:pt-4 lg:pb-7",
@@ -577,11 +609,11 @@ export function VehicleListingShell({
   return (
     <div className="mt-8 space-y-6">
       {listingSidebar ? (
-        <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-0">
+        <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
           <aside
             aria-label="Vehicle filters"
             className={[
-              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm lg:self-start",
+              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm",
               filtersCollapsed
                 ? "lg:w-12 lg:max-w-12 lg:min-w-12"
                 : "lg:w-[min(15.5rem,calc(100vw-1rem))] lg:max-w-[15.5rem]",
@@ -589,7 +621,7 @@ export function VehicleListingShell({
           >
             <div
               className={[
-                "px-4 py-6 sm:px-4 sm:py-6",
+                "px-4 py-6 sm:px-4 sm:py-6 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain",
                 filtersCollapsed
                   ? "lg:px-2 lg:pt-3 lg:pb-5"
                   : "lg:px-4 lg:pt-4 lg:pb-7",

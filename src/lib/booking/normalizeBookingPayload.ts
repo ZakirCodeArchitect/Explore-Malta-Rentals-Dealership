@@ -18,6 +18,7 @@ function parseDateOnly(dateValue: string): Date {
 export function normalizeBookingPayload(payload: BookingSubmission): NormalizedBookingPayload {
   const pickupDateTime = combineDateAndTime(payload.rental.pickupDate, payload.rental.pickupTime);
   const returnDateTime = combineDateAndTime(payload.rental.returnDate, payload.rental.returnTime);
+  const vehicleId = payload.rental.vehicleId ?? payload.vehicleId ?? null;
 
   if (!pickupDateTime || !returnDateTime) {
     throw new Error("Cannot normalize invalid rental date/time");
@@ -29,6 +30,7 @@ export function normalizeBookingPayload(payload: BookingSubmission): NormalizedB
   const billableDays = Math.max(1, Math.ceil(actualDurationHours / 24));
 
   return {
+    vehicleId,
     vehicleType: payload.rental.vehicleType,
     pickupDateTime,
     returnDateTime,

@@ -20,12 +20,22 @@ if (process.env.NODE_ENV !== "production") {
 
 const adapter = new PrismaPg(pool);
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-  });
+const hasVehicleDelegate = (client: PrismaClient | undefined): client is PrismaClient => {
+  if (!client) {
+    return false;
+  }
+  return typeof (client as PrismaClient & { vehicle?: unknown }).vehicle !== "undefined";
+};
+
+const prismaClient =
+  hasVehicleDelegate(globalForPrisma.prisma)
+    ? globalForPrisma.prisma
+    : new PrismaClient({
+        adapter,
+        log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+      });
+
+export const prisma = prismaClient;
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

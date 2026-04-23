@@ -1,4 +1,3 @@
-import { getVehicleBySlug } from "@/features/vehicles/data/vehicles";
 import {
   INITIAL_BOOKING_FLOW_STATE,
   type BookingFlowState,
@@ -24,14 +23,6 @@ export function buildBookingInitialState(selectedVehicleSlug?: string): BookingF
     return next;
   }
 
-  const vehicle = getVehicleBySlug(selectedVehicleSlug);
-  if (!vehicle) {
-    return next;
-  }
-
-  next.rental.vehicleId = vehicle.slug;
-  next.rental.vehicleSlug = vehicle.slug;
-  next.rental.vehicleName = vehicle.name;
-  next.rental.vehicleType = vehicle.type;
+  next.rental.vehicleSlug = selectedVehicleSlug;
   return next;
 }

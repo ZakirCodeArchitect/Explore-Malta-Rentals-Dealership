@@ -22,10 +22,10 @@ const requiredText = (message: string) => z.string().trim().min(1, message);
 
 const bookingBaseSchema: z.ZodType<BookingFlowState> = z.object({
   rental: z.object({
-    vehicleId: requiredText("Vehicle is required"),
+    vehicleId: z.string().nullable(),
     vehicleSlug: z.string(),
     vehicleName: z.string(),
-    vehicleType: z.string(),
+    vehicleType: requiredText("Vehicle type is required"),
     pickupDate: requiredText("Pickup date is required"),
     pickupTime: requiredText("Pickup time is required"),
     returnDate: requiredText("Return date is required"),
@@ -218,7 +218,7 @@ export const bookingFlowSchema = bookingBaseSchema.superRefine((state, context) 
       message: "License category is required",
       path: ["customer", "licenseCategory"],
     });
-  } else if (!isLicenseAllowedForVehicle(state.customer.licenseCategory, state.rental.vehicleId)) {
+  } else if (!isLicenseAllowedForVehicle(state.customer.licenseCategory, state.rental.vehicleType, state.rental.vehicleId)) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Invalid license for selected vehicle",
@@ -261,7 +261,7 @@ export const bookingFlowSchema = bookingBaseSchema.superRefine((state, context) 
 
 export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowState>[]> = {
   rental_details: [
-    "rental.vehicleId",
+    "rental.vehicleType",
     "rental.pickupDate",
     "rental.pickupTime",
     "rental.returnDate",

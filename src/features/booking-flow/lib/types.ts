@@ -2,7 +2,7 @@ export type LicenseCategory = "" | "B" | "AM" | "A" | "A1" | "A2";
 
 export type BookingFlowState = {
   rental: {
-    vehicleId: string;
+    vehicleId: string | null;
     vehicleSlug: string;
     vehicleName: string;
     vehicleType: string;
@@ -62,7 +62,7 @@ export type BookingFlowState = {
 
 export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
   rental: {
-    vehicleId: "",
+    vehicleId: null,
     vehicleSlug: "",
     vehicleName: "",
     vehicleType: "",

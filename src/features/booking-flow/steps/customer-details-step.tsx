@@ -19,8 +19,11 @@ export function CustomerDetailsStep() {
   const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const requiresUploads = state.delivery.pickupOption === "delivery";
-  const allowedLicenseOptions = getAllowedLicenseCategories(state.rental.vehicleId);
-  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleId);
+  const allowedLicenseOptions = getAllowedLicenseCategories(
+    state.rental.vehicleType,
+    state.rental.vehicleId,
+  );
+  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType);
   const licenseCategoryOptions = [
     { value: "", label: "Select category" },
     ...allowedLicenseOptions.map((option) => ({ value: option, label: option })),

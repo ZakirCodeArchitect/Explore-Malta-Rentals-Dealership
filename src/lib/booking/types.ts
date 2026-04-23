@@ -22,6 +22,7 @@ export type BookingSubmission = z.infer<typeof bookingSubmissionSchema>;
 export type BookingSubmissionInput = z.input<typeof bookingSubmissionSchema>;
 
 export type NormalizedBookingPayload = {
+  vehicleId: string | null;
   vehicleType: VehicleType;
   pickupDateTime: Date;
   returnDateTime: Date;

@@ -1,12 +1,17 @@
 import type { BookingSubmissionInput, VehicleType as ApiVehicleType } from "@/lib/booking/types";
 import type { BookingFlowState } from "@/features/booking-flow/lib/types";
+import { isApiVehicleType } from "@/features/vehicles/data/vehicles";
 
-export function mapVehicleSlugToApiVehicleType(
+export function mapVehicleTypeToApiVehicleType(
+  stateVehicleType: string,
   vehicleSlug: string,
-  displayVehicleType: string,
 ): ApiVehicleType {
+  if (isApiVehicleType(stateVehicleType)) {
+    return stateVehicleType;
+  }
+
   const slug = vehicleSlug.toLowerCase();
-  const display = displayVehicleType.toLowerCase();
+  const display = stateVehicleType.toLowerCase();
   if (display === "bicycle" || slug.includes("bicycle")) {
     return "BICYCLE";
   }
@@ -70,7 +75,7 @@ function pathOrNull(value: string): string | null {
 }
 
 export function mapBookingFlowStateToSubmission(state: BookingFlowState): BookingSubmissionInput {
-  const apiVehicle = mapVehicleSlugToApiVehicleType(state.rental.vehicleSlug, state.rental.vehicleType);
+  const apiVehicle = mapVehicleTypeToApiVehicleType(state.rental.vehicleType, state.rental.vehicleSlug);
   const helmetRequired = isHelmetRequiredForApiVehicle(apiVehicle);
   const pickupOption = state.delivery.pickupOption === "office" ? "OFFICE" : "DELIVERY";
   const dropoffOption = state.delivery.dropoffOption === "office" ? "OFFICE" : "DROPOFF";
@@ -85,6 +90,7 @@ export function mapBookingFlowStateToSubmission(state: BookingFlowState): Bookin
 
   return {
     rental: {
+      vehicleId: state.rental.vehicleId ?? undefined,
       vehicleType: apiVehicle,
       pickupDate: state.rental.pickupDate.trim(),
       returnDate: state.rental.returnDate.trim(),

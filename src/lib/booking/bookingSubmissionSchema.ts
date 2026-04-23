@@ -33,6 +33,19 @@ const EMPTY_TO_NULL_TEXT = z.preprocess(
 );
 
 const REQUIRED_TEXT = (message: string) => z.string().trim().min(1, message);
+const OPTIONAL_VEHICLE_ID = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    if (typeof value !== "string") {
+      return value;
+    }
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  },
+  z.string().min(1, "Vehicle ID is required").optional(),
+);
 
 const STRICT_BOOLEAN = z.preprocess((value) => {
   if (typeof value === "boolean") {
@@ -150,6 +163,7 @@ export const bookingSubmissionSchema = z
   .object({
     rental: z
       .object({
+        vehicleId: OPTIONAL_VEHICLE_ID,
         vehicleType: z.enum(VEHICLE_TYPES, { required_error: "Vehicle type is required" }),
         pickupDate: DATE_ONLY_SCHEMA,
         returnDate: DATE_ONLY_SCHEMA,
@@ -157,6 +171,7 @@ export const bookingSubmissionSchema = z
         returnTime: TIME_ONLY_SCHEMA,
       })
       .strict(),
+    vehicleId: OPTIONAL_VEHICLE_ID,
     delivery: z
       .object({
         pickupOption: z.enum(PICKUP_OPTIONS, { required_error: "Pickup option is required" }),
@@ -241,6 +256,14 @@ export const bookingSubmissionSchema = z
   })
   .strict()
   .superRefine((payload, context) => {
+    if (payload.vehicleId && payload.rental.vehicleId && payload.vehicleId !== payload.rental.vehicleId) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["vehicleId"],
+        message: "Vehicle ID must match rental.vehicleId when both are provided",
+      });
+    }
+
     const pickupDateTime = combineDateAndTime(payload.rental.pickupDate, payload.rental.pickupTime);
     const returnDateTime = combineDateAndTime(payload.rental.returnDate, payload.rental.returnTime);
 
