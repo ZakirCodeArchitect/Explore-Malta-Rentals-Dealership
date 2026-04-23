@@ -5,18 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { formatVehicleTypeLabel, type ApiVehicleType } from "@/features/vehicles/data/vehicles";
+import { formatVehicleTypeLabel } from "@/features/vehicles/data/vehicles";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 
 export function SelectVehicleStep() {
   const { state, reservationHold, updateSection, getFieldError } = useBookingFlow();
   const { vehicles, isLoading, error } = useVehicles();
   const vehicleError = getFieldError("rental.vehicleType");
-
-  const availableTypes = useMemo(
-    () => Array.from(new Set(vehicles.map((vehicle) => vehicle.apiVehicleType))),
-    [vehicles],
-  );
 
   const selectedVehicle = useMemo(() => {
     if (!state.rental.vehicleId) {
@@ -25,27 +20,20 @@ export function SelectVehicleStep() {
     return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
   }, [state.rental.vehicleId, vehicles]);
 
-  const selectedType = state.rental.vehicleType as ApiVehicleType | "";
+  const selectedVehicleImageSrc = selectedVehicle
+    ? (selectedVehicle.mainImageUrl ?? selectedVehicle.images[0] ?? null)
+    : null;
+  const selectedVehicleBrandModel = selectedVehicle
+    ? [selectedVehicle.brand, selectedVehicle.model].filter(Boolean).join(" ")
+    : "";
+
   const holdIsOnSelectedVehicle =
     reservationHold.status === "ACTIVE" &&
     reservationHold.holdReference !== null &&
     reservationHold.vehicleId !== null &&
     reservationHold.vehicleId === state.rental.vehicleId;
-  const selectedTypeVehicles = useMemo(
-    () =>
-      selectedType
-        ? vehicles.filter((vehicle) => vehicle.apiVehicleType === selectedType)
-        : vehicles,
-    [selectedType, vehicles],
-  );
 
-  useEffect(() => {
-    if (!state.rental.vehicleType && availableTypes.length > 0) {
-      updateSection("rental", {
-        vehicleType: availableTypes[0],
-      });
-    }
-  }, [availableTypes, state.rental.vehicleType, updateSection]);
+  const incomingSlug = state.rental.vehicleSlug?.trim() ?? "";
 
   useEffect(() => {
     if (!state.rental.vehicleSlug || state.rental.vehicleId || vehicles.length === 0) {
@@ -63,42 +51,37 @@ export function SelectVehicleStep() {
     });
   }, [state.rental.vehicleSlug, state.rental.vehicleId, updateSection, vehicles]);
 
-  const selectSpecificVehicle = (vehicleId: string) => {
-    const vehicle = vehicles.find((item) => item.id === vehicleId);
-    if (!vehicle) {
-      return;
-    }
-    updateSection("rental", {
-      vehicleId: vehicle.id,
-      vehicleSlug: vehicle.slug,
-      vehicleName: vehicle.name,
-      vehicleType: vehicle.apiVehicleType,
-    });
-  };
+  const slugNotFound =
+    !isLoading &&
+    !error &&
+    vehicles.length > 0 &&
+    Boolean(incomingSlug) &&
+    !state.rental.vehicleId &&
+    !vehicles.some((v) => v.slug === state.rental.vehicleSlug);
 
-  const selectVehicleTypeOnly = (vehicleType: ApiVehicleType) => {
-    updateSection("rental", {
-      vehicleType,
-      vehicleId: null,
-      vehicleSlug: "",
-      vehicleName: "",
-    });
-  };
+  const staleVehicleId =
+    !isLoading &&
+    !error &&
+    vehicles.length > 0 &&
+    Boolean(state.rental.vehicleId) &&
+    !selectedVehicle;
+
+  const needsVehicleFromFleet =
+    !isLoading && !error && vehicles.length > 0 && !incomingSlug && !state.rental.vehicleId;
 
   return (
     <StepShell
-      title="Select Vehicle"
-      description="Choose a vehicle category, then optionally lock a specific vehicle from live inventory."
+      title="Your vehicle"
+      description="This is the model you chose from the fleet. To change it, go back and pick another vehicle."
     >
       {isLoading ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={`vehicle-loading-${index}`} className="rounded-lg border border-slate-200 bg-white p-4">
-              <div className="h-24 animate-pulse rounded-md bg-slate-200/70" />
-              <div className="mt-3 h-4 w-3/4 animate-pulse rounded bg-slate-200/70" />
-              <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-200/60" />
-            </div>
-          ))}
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="h-48 animate-pulse bg-slate-200/70 sm:h-56" />
+          <div className="space-y-2 p-4">
+            <div className="h-5 w-2/3 animate-pulse rounded bg-slate-200/70" />
+            <div className="h-3 w-full animate-pulse rounded bg-slate-200/60" />
+            <div className="h-3 w-11/12 animate-pulse rounded bg-slate-200/60" />
+          </div>
         </div>
       ) : error ? (
         <div className="rounded-lg border border-rose-200 bg-rose-50/80 p-4">
@@ -116,118 +99,78 @@ export function SelectVehicleStep() {
           <p className="text-sm font-semibold text-slate-900">No vehicles available right now</p>
           <p className="mt-1 text-sm text-slate-700">Please try again shortly or contact support for assistance.</p>
         </div>
+      ) : needsVehicleFromFleet ? (
+        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
+          <p className="text-sm font-semibold text-slate-900">No vehicle chosen yet</p>
+          <p className="mt-1 text-sm text-slate-700">
+            Start from the fleet page and use Book now on a vehicle to continue this booking with that model.
+          </p>
+          <Link
+            href="/vehicles"
+            className="mt-4 inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100"
+          >
+            Browse vehicles
+          </Link>
+        </div>
+      ) : slugNotFound || staleVehicleId ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-4">
+          <p className="text-sm font-semibold text-amber-900">
+            {slugNotFound ? "That vehicle is not available in the current list." : "We could not match your booking to a live vehicle."}
+          </p>
+          <p className="mt-1 text-sm text-amber-800">Choose another model from the fleet to continue.</p>
+          <Link
+            href="/vehicles"
+            className="mt-4 inline-flex rounded-full border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-950 hover:bg-amber-100"
+          >
+            Browse vehicles
+          </Link>
+        </div>
+      ) : selectedVehicle ? (
+        <article className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="relative h-48 bg-slate-100 sm:h-56">
+            {selectedVehicleImageSrc ? (
+              <Image
+                src={selectedVehicleImageSrc}
+                alt={selectedVehicle.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 42rem"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-sm font-medium text-slate-500">
+                Image coming soon
+              </div>
+            )}
+          </div>
+          <div className="space-y-2 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Your selection</p>
+            <h3 className="text-lg font-semibold text-slate-900">{selectedVehicle.name}</h3>
+            {selectedVehicleBrandModel ? (
+              <p className="text-sm text-slate-600">{selectedVehicleBrandModel}</p>
+            ) : null}
+            <p className="text-sm text-slate-600">
+              {selectedVehicle.shortDescription ?? "No short description available yet."}
+            </p>
+            <p className="text-xs text-slate-700">
+              {formatVehicleTypeLabel(selectedVehicle.apiVehicleType)}
+              {" · "}
+              {selectedVehicle.helmetIncludedCount} helmet{selectedVehicle.helmetIncludedCount === 1 ? "" : "s"}{" "}
+              included
+              {" · "}
+              {selectedVehicle.supportsStorageBox ? "Storage box supported" : "No storage box"}
+            </p>
+            {holdIsOnSelectedVehicle ? (
+              <p className="pt-1 text-xs font-semibold text-emerald-800">Reserved for you temporarily.</p>
+            ) : null}
+          </div>
+        </article>
       ) : (
-        <div className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-600">Vehicle category</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {availableTypes.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => selectVehicleTypeOnly(type)}
-                  className={`rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors ${
-                    selectedType === type
-                      ? "border-[var(--brand-orange)] bg-[var(--brand-orange)]/15 text-slate-900"
-                      : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"
-                  }`}
-                >
-                  {formatVehicleTypeLabel(type)}
-                </button>
-              ))}
-            </div>
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="h-48 animate-pulse bg-slate-200/70 sm:h-56" />
+          <div className="space-y-2 p-4">
+            <div className="h-5 w-2/3 animate-pulse rounded bg-slate-200/70" />
+            <div className="h-3 w-full animate-pulse rounded bg-slate-200/60" />
           </div>
-
-          <div className="rounded-lg border border-slate-200 bg-white p-3">
-            <button
-              type="button"
-              onClick={() => {
-                if (!selectedType) return;
-                selectVehicleTypeOnly(selectedType);
-              }}
-              className={`w-full rounded-md border px-3 py-2 text-left text-sm transition-colors ${
-                state.rental.vehicleId === null
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-900"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              Book by category only (assign best available vehicle)
-            </button>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2">
-            {selectedTypeVehicles.map((vehicle) => {
-              const isSelected = state.rental.vehicleId === vehicle.id;
-              const imageSrc = vehicle.mainImageUrl ?? vehicle.images[0] ?? null;
-              const brandModel = [vehicle.brand, vehicle.model].filter(Boolean).join(" ");
-
-              return (
-                <button
-                  key={vehicle.id}
-                  type="button"
-                  onClick={() => selectSpecificVehicle(vehicle.id)}
-                  className={`overflow-hidden rounded-lg border text-left transition-colors ${
-                    isSelected
-                      ? "border-emerald-300 bg-emerald-50/60"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
-                >
-                  <div className="relative h-36 overflow-hidden bg-slate-100">
-                    {imageSrc ? (
-                      <Image
-                        src={imageSrc}
-                        alt={vehicle.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-xs font-medium text-slate-500">
-                        Image coming soon
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-1 p-3">
-                    <p className="text-sm font-semibold text-slate-900">{vehicle.name}</p>
-                    {brandModel ? <p className="text-xs text-slate-600">{brandModel}</p> : null}
-                    <p className="text-xs text-slate-600">
-                      {vehicle.shortDescription ?? "No short description available yet."}
-                    </p>
-                    <div className="pt-1 text-xs text-slate-700">
-                      {vehicle.helmetIncludedCount} helmet{vehicle.helmetIncludedCount === 1 ? "" : "s"} included
-                      {" · "}
-                      {vehicle.supportsStorageBox ? "Storage box supported" : "No storage box"}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {selectedVehicle ? (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-emerald-700">Selected vehicle</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">{selectedVehicle.name}</p>
-              <p className="text-xs text-slate-700">{formatVehicleTypeLabel(selectedVehicle.apiVehicleType)}</p>
-              {holdIsOnSelectedVehicle ? (
-                <p className="mt-2 text-xs font-semibold text-emerald-800">
-                  Reserved for you temporarily.
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-4">
-              <p className="text-sm font-semibold text-amber-900">
-                No exact vehicle selected. Booking will use your chosen category.
-              </p>
-              {selectedType ? (
-                <p className="mt-1 text-sm text-amber-800">Selected category: {formatVehicleTypeLabel(selectedType)}</p>
-              ) : null}
-              <p className="mt-2 text-xs text-amber-800">
-                A specific vehicle must be selected before it can be reserved.
-              </p>
-            </div>
-          )}
         </div>
       )}
 
