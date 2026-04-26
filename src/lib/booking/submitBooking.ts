@@ -22,6 +22,8 @@ import type { BookingSubmissionInput, NormalizedBookingPayload, ValidationError 
 
 const BOOKING_REFERENCE_PREFIX = "EMR";
 const BOOKING_REFERENCE_RETRY_LIMIT = 5;
+/** Heartbeat updates the same hold row outside this tx; Serializable + Turso/SQLite often returns P2034. */
+const TRANSACTION_WRITE_CONFLICT_RETRY_LIMIT = 10;
 
 type PricingComputation = {
   breakdown: BookingPriceBreakdown;
@@ -201,6 +203,15 @@ function isBookingReferenceUniqueConstraintError(error: unknown): boolean {
   }
 
   return false;
+}
+
+function isTransactionWriteConflictError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034";
+}
+
+function transactionConflictBackoffMs(attemptIndex: number): number {
+  const jitter = 20 + Math.floor(Math.random() * 60);
+  return jitter + attemptIndex * 40;
 }
 
 async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise<ResolvedBookingVehicle> {
@@ -494,7 +505,7 @@ async function createBookingWithUniqueReference(
 ) {
   let lastError: unknown = null;
 
-  for (let attempt = 0; attempt < BOOKING_REFERENCE_RETRY_LIMIT; attempt += 1) {
+  referenceAttempt: for (let attempt = 0; attempt < BOOKING_REFERENCE_RETRY_LIMIT; attempt += 1) {
     const bookingReference = generateBookingReference();
     const bookingCreateData = mapBookingCreateData(
       bookingReference,
@@ -504,53 +515,69 @@ async function createBookingWithUniqueReference(
       termsVersionId,
     );
 
-    try {
-      return await prisma.$transaction(
-        async (tx) => {
-          let holdForFinalization: HoldForFinalization | null = null;
-          if (requireHoldReference) {
-            holdForFinalization = await validateHoldForBooking(payload, vehicle, tx);
-          }
+    for (
+      let conflictAttempt = 0;
+      conflictAttempt < TRANSACTION_WRITE_CONFLICT_RETRY_LIMIT;
+      conflictAttempt += 1
+    ) {
+      try {
+        return await prisma.$transaction(
+          async (tx) => {
+            let holdForFinalization: HoldForFinalization | null = null;
+            if (requireHoldReference) {
+              holdForFinalization = await validateHoldForBooking(payload, vehicle, tx);
+            }
 
-          await assertBookingStillAvailable(
-            payload,
-            vehicle,
-            tx as unknown as AvailabilityDbClient,
-            holdForFinalization
-              ? {
-                  excludeHoldReference: holdForFinalization.holdReference,
-                  excludeSessionKey: holdForFinalization.sessionKey,
-                }
-              : undefined,
-          );
+            await assertBookingStillAvailable(
+              payload,
+              vehicle,
+              tx as unknown as AvailabilityDbClient,
+              holdForFinalization
+                ? {
+                    excludeHoldReference: holdForFinalization.holdReference,
+                    excludeSessionKey: holdForFinalization.sessionKey,
+                  }
+                : undefined,
+            );
 
-          const booking = await tx.booking.create({
-            data: bookingCreateData,
-          });
-
-          if (holdForFinalization) {
-            await tx.reservationHold.update({
-              where: { id: holdForFinalization.id },
-              data: {
-                status: "CONVERTED",
-                bookingId: booking.id,
-                lastHeartbeatAt: new Date(),
-              },
+            const booking = await tx.booking.create({
+              data: bookingCreateData,
             });
-          }
 
-          return booking;
-        },
-        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-      );
-    } catch (error) {
-      if (error instanceof AvailabilityConflictError) {
-        throw error;
+            if (holdForFinalization) {
+              await tx.reservationHold.update({
+                where: { id: holdForFinalization.id },
+                data: {
+                  status: "CONVERTED",
+                  bookingId: booking.id,
+                  lastHeartbeatAt: new Date(),
+                },
+              });
+            }
+
+            return booking;
+          },
+          { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+        );
+      } catch (error) {
+        if (error instanceof AvailabilityConflictError) {
+          throw error;
+        }
+        if (isTransactionWriteConflictError(error)) {
+          if (conflictAttempt + 1 >= TRANSACTION_WRITE_CONFLICT_RETRY_LIMIT) {
+            throw error;
+          }
+          await new Promise((resolve) => {
+            setTimeout(resolve, transactionConflictBackoffMs(conflictAttempt));
+          });
+          continue;
+        }
+        if (!isBookingReferenceUniqueConstraintError(error)) {
+          throw error;
+        }
+        lastError = error;
+        continue referenceAttempt;
       }
-      if (!isBookingReferenceUniqueConstraintError(error)) {
-        throw error;
-      }
-      lastError = error;
     }
   }
 

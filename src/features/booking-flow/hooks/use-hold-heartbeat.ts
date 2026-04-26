@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { ReservationHoldStatus } from "@/features/booking-flow/lib/types";
 import { heartbeatReservationHold } from "@/features/booking-flow/lib/reservation-hold-api";
 
@@ -23,6 +23,17 @@ export function useHoldHeartbeat({
   onHeartbeatExpired,
   onHeartbeatTransientError,
 }: UseHoldHeartbeatInput) {
+  const callbacksRef = useRef({
+    onHeartbeatSuccess,
+    onHeartbeatExpired,
+    onHeartbeatTransientError,
+  });
+  callbacksRef.current = {
+    onHeartbeatSuccess,
+    onHeartbeatExpired,
+    onHeartbeatTransientError,
+  };
+
   useEffect(() => {
     if (!enabled || !holdReference || status !== "ACTIVE") {
       return;
@@ -39,8 +50,10 @@ export function useHoldHeartbeat({
       if (cancelled) {
         return;
       }
+      const { onHeartbeatSuccess: onOk, onHeartbeatExpired: onExpired, onHeartbeatTransientError: onTransient } =
+        callbacksRef.current;
       if (result.ok) {
-        onHeartbeatSuccess(result.data.expiresAt, result.data.status);
+        onOk(result.data.expiresAt, result.data.status);
         return;
       }
       const terminalState =
@@ -50,10 +63,10 @@ export function useHoldHeartbeat({
         result.holdStatus === "RELEASED" ||
         result.holdStatus === "CONVERTED";
       if (terminalState) {
-        onHeartbeatExpired("Your reservation has expired. Please reserve the vehicle again.");
+        onExpired("Your reservation has expired. Please reserve the vehicle again.");
         return;
       }
-      onHeartbeatTransientError(result.message);
+      onTransient(result.message);
     };
 
     const schedule = () => {
@@ -82,12 +95,5 @@ export function useHoldHeartbeat({
       }
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [
-    enabled,
-    holdReference,
-    onHeartbeatExpired,
-    onHeartbeatSuccess,
-    onHeartbeatTransientError,
-    status,
-  ]);
+  }, [enabled, holdReference, status]);
 }
