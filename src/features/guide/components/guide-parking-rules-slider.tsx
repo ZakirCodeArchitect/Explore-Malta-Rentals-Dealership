@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useTranslations } from "next-intl";
+import { startTransition, useCallback, useEffect, useId, useMemo, useState } from "react";
 
 const GUIDE_IMAGES_BASE = "/GuidePageImages";
 
@@ -16,66 +17,28 @@ const IMG_BLUE_DISABLED = `${GUIDE_IMAGES_BASE}/${encodeURIComponent("disabled.j
 
 export type ActiveLineColorId = "white" | "yellow" | "blue" | "green";
 
-const LINE_COLOR_SUBRULES = [
-  {
-    id: "white" as const,
-    title: "White",
-    tag: "White lines — correct parking",
-    description:
-      "White lines mark the correct parking spots. Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
-    images: [
-      {
-        src: IMG_WHITE_PARKING,
-        alt: "White parking bay — park between cars in marked white spaces where rules allow",
-      },
-      {
-        src: IMG_MC_PARKING,
-        alt: "Motorcycle (MC) parking bay — use dedicated MC spaces",
-      },
-    ],
-  },
-  {
-    id: "yellow" as const,
-    title: "Yellow",
-    tag: "Yellow — do not park",
-    description:
-      "Do not park on yellow markings. Yellow is for garages and reserved parking / no parking.",
-    images: [
-      {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("double-yellow-lines.jpg")}`,
-        alt: "Double yellow lines at the road edge — do not park",
-      },
-      {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("reserved.jpg")}`,
-        alt: "Reserved parking bay with yellow markings — do not park",
-      },
-      {
-        src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("Yellow_lines_1.jpg")}`,
-        alt: "Yellow line road marking — do not park here",
-      },
-    ],
-  },
-  {
-    id: "blue" as const,
-    title: "Blue",
-    tag: "Blue — do not park",
-    description: "Do not park on blue markings. Blue is reserved for disabled permit holders.",
-    images: [
-      {
-        src: IMG_BLUE_DISABLED,
-        alt: "Blue-marked disabled parking bay — reserved for permit holders",
-      },
-    ],
-  },
-  {
-    id: "green" as const,
-    title: "Green",
-    tag: "Green — do not park",
-    description:
-      "Do not park on green markings. Green is for residents in the local area.",
-    images: [{ src: IMG_GREEN_LINE, alt: "Green line road marking — residents in the local area — do not park" }],
-  },
-] as const;
+type LineColorSubrule = Readonly<{
+  id: ActiveLineColorId;
+  title: string;
+  tag: string;
+  description: string;
+  images: readonly { src: string; alt: string }[];
+}>;
+
+type MajorRuleLineColors = Readonly<{
+  id: "line-colors";
+  title: string;
+  description: string;
+}>;
+
+type MajorRuleValidSpaces = Readonly<{
+  id: "valid-spaces";
+  title: string;
+  description: string;
+  images: readonly { src: string; alt: string }[];
+}>;
+
+type MajorRule = MajorRuleLineColors | MajorRuleValidSpaces;
 
 const LINE_COLOR_TAG_STYLES: Record<ActiveLineColorId, string> = {
   white: "border-slate-200/90 bg-slate-50 text-slate-900",
@@ -91,27 +54,6 @@ const LINE_COLOR_FOCUS_RING: Record<ActiveLineColorId, string> = {
   green: "focus-visible:ring-emerald-500/55",
 };
 
-const MAJOR_RULES = [
-  {
-    id: "line-colors",
-    title: "Parking line colours",
-    description:
-      "White lines mark the correct parking spot. Never park on yellow, blue, or green parking line colours. Yellow: garages and reserved parking / no parking. Blue: reserved for disabled permit holders. Green: residents in the local area. Always park within MC parking spaces or between any two cars in a white parking space.",
-  },
-  {
-    id: "valid-spaces",
-    title: "Where to park legally",
-    description:
-      "Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
-    images: [
-      {
-        src: IMG_MC_PARKING,
-        alt: "Motorcycle (MC) parking — always use marked MC bays or white spaces between cars where permitted",
-      },
-    ],
-  },
-] as const;
-
 function ChevronRight({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden className={className} fill="none" stroke="currentColor" strokeWidth={2}>
@@ -119,8 +61,6 @@ function ChevronRight({ className }: { className?: string }) {
     </svg>
   );
 }
-
-const LINE_COLOR_COUNT = LINE_COLOR_SUBRULES.length;
 
 export type GuideParkingRulesSliderProps = Readonly<{
   onActiveLineColorChange?: (id: ActiveLineColorId | null) => void;
@@ -133,9 +73,75 @@ function imageGridClass(imageCount: number) {
 }
 
 export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkingRulesSliderProps = {}) {
+  const t = useTranslations("Guide");
+
+  const lineColorSubrules = useMemo(
+    (): LineColorSubrule[] => [
+      {
+        id: "white",
+        title: t("parkingLineWhiteTitle"),
+        tag: t("parkingLineWhiteTag"),
+        description: t("parkingLineWhiteDescription"),
+        images: [
+          { src: IMG_WHITE_PARKING, alt: t("parkingLineWhiteImg1Alt") },
+          { src: IMG_MC_PARKING, alt: t("parkingLineWhiteImg2Alt") },
+        ],
+      },
+      {
+        id: "yellow",
+        title: t("parkingLineYellowTitle"),
+        tag: t("parkingLineYellowTag"),
+        description: t("parkingLineYellowDescription"),
+        images: [
+          {
+            src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("double-yellow-lines.jpg")}`,
+            alt: t("parkingLineYellowImg1Alt"),
+          },
+          {
+            src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("reserved.jpg")}`,
+            alt: t("parkingLineYellowImg2Alt"),
+          },
+          {
+            src: `${GUIDE_IMAGES_BASE}/${encodeURIComponent("Yellow_lines_1.jpg")}`,
+            alt: t("parkingLineYellowImg3Alt"),
+          },
+        ],
+      },
+      {
+        id: "blue",
+        title: t("parkingLineBlueTitle"),
+        tag: t("parkingLineBlueTag"),
+        description: t("parkingLineBlueDescription"),
+        images: [{ src: IMG_BLUE_DISABLED, alt: t("parkingLineBlueImg1Alt") }],
+      },
+      {
+        id: "green",
+        title: t("parkingLineGreenTitle"),
+        tag: t("parkingLineGreenTag"),
+        description: t("parkingLineGreenDescription"),
+        images: [{ src: IMG_GREEN_LINE, alt: t("parkingLineGreenImg1Alt") }],
+      },
+    ],
+    [t],
+  );
+
+  const majorRules = useMemo(
+    (): MajorRule[] => [
+      { id: "line-colors", title: t("parkingMajor1Title"), description: t("parkingMajor1Description") },
+      {
+        id: "valid-spaces",
+        title: t("parkingMajor2Title"),
+        description: t("parkingMajor2Description"),
+        images: [{ src: IMG_MC_PARKING, alt: t("parkingMajor2ImgAlt") }],
+      },
+    ],
+    [t],
+  );
+
   const [majorIndex, setMajorIndex] = useState(0);
   const [lineColorIndex, setLineColorIndex] = useState(0);
-  const majorCount = MAJOR_RULES.length;
+  const majorCount = majorRules.length;
+  const lineColorCount = lineColorSubrules.length;
   const majorLabelId = useId();
   const lineColorRegionId = useId();
 
@@ -144,14 +150,16 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
   }, [majorCount]);
 
   useEffect(() => {
-    setLineColorIndex(0);
+    startTransition(() => {
+      setLineColorIndex(0);
+    });
   }, [majorIndex]);
 
   useEffect(() => {
-    onActiveLineColorChange?.(majorIndex === 0 ? LINE_COLOR_SUBRULES[lineColorIndex]!.id : null);
-  }, [majorIndex, lineColorIndex, onActiveLineColorChange]);
+    onActiveLineColorChange?.(majorIndex === 0 ? lineColorSubrules[lineColorIndex]!.id : null);
+  }, [majorIndex, lineColorIndex, onActiveLineColorChange, lineColorSubrules]);
 
-  const activeLineColorRule = LINE_COLOR_SUBRULES[lineColorIndex]!;
+  const activeLineColorRule = lineColorSubrules[lineColorIndex]!;
   const lineColorSingleImage = activeLineColorRule.images.length === 1;
 
   return (
@@ -163,9 +171,9 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
         aria-labelledby={majorLabelId}
       >
         <p id={majorLabelId} className="sr-only">
-          Parking rules: slide {majorIndex + 1} of {majorCount}
+          {t("parkingSrMajorSlide", { current: majorIndex + 1, total: majorCount })}
         </p>
-        {MAJOR_RULES.map((rule, slideIdx) => (
+        {majorRules.map((rule, slideIdx) => (
           <article
             key={rule.id}
             aria-hidden={majorIndex !== slideIdx}
@@ -180,7 +188,7 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
               >
                 <div className="flex flex-col gap-4">
                   <p id={lineColorRegionId} className="sr-only">
-                    Line colour examples: slide {lineColorIndex + 1} of {LINE_COLOR_COUNT}
+                    {t("parkingSrLineColourSlide", { current: lineColorIndex + 1, total: lineColorCount })}
                   </p>
                   <article className="rounded-xl p-6">
                     <h3 className="text-base font-bold tracking-tight text-slate-950 sm:text-lg">{rule.title}</h3>
@@ -188,14 +196,18 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
                       {rule.description}
                     </p>
                     <div className="mt-3 space-y-3">
-                      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Choose line colour">
-                        {LINE_COLOR_SUBRULES.map((sub, i) => (
+                      <div
+                        className="flex flex-wrap gap-2"
+                        role="tablist"
+                        aria-label={t("parkingAriaTablistLineColour")}
+                      >
+                        {lineColorSubrules.map((sub, i) => (
                           <button
                             key={sub.id}
                             type="button"
                             role="tab"
                             aria-selected={i === lineColorIndex}
-                            aria-label={`Show ${sub.tag}`}
+                            aria-label={t("parkingAriaShowLine", { line: sub.tag })}
                             onClick={() => setLineColorIndex(i)}
                             className={
                               i === lineColorIndex
@@ -231,7 +243,7 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
                           : "relative mx-auto w-full max-w-[min(34rem,92vw)] overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200/60 sm:max-w-xl lg:max-w-2xl"
                       }
                     >
-                      {LINE_COLOR_SUBRULES.map((sub, i) => (
+                      {lineColorSubrules.map((sub, i) => (
                         <div
                           key={sub.id}
                           aria-hidden={lineColorIndex !== i}
@@ -268,7 +280,7 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
                   <button
                     type="button"
                     onClick={goNextMajor}
-                    aria-label="Next major parking rule"
+                    aria-label={t("parkingAriaNextMajor")}
                     className="inline-flex h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border-2 border-[var(--brand-orange)] bg-white/50 text-[var(--brand-orange)] backdrop-blur-sm transition-colors hover:bg-[var(--brand-orange)]/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-0"
                   >
                     <ChevronRight className="h-5 w-5" />
@@ -304,7 +316,7 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
                   <button
                     type="button"
                     onClick={goNextMajor}
-                    aria-label="Next major parking rule"
+                    aria-label={t("parkingAriaNextMajor")}
                     className="inline-flex h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border-2 border-[var(--brand-orange)] bg-white/50 text-[var(--brand-orange)] backdrop-blur-sm transition-colors hover:bg-[var(--brand-orange)]/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-0"
                   >
                     <ChevronRight className="h-5 w-5" />
@@ -319,15 +331,15 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
       <div
         className="mt-4 flex flex-wrap items-center justify-center gap-2"
         role="tablist"
-        aria-label="Choose major parking rule"
+        aria-label={t("parkingAriaMajorTablist")}
       >
-        {MAJOR_RULES.map((rule, i) => (
+        {majorRules.map((rule, i) => (
           <button
             key={rule.id}
             type="button"
             role="tab"
             aria-selected={i === majorIndex}
-            aria-label={`Show: ${rule.title}`}
+            aria-label={t("parkingAriaShowMajor", { title: rule.title })}
             onClick={() => setMajorIndex(i)}
             className={
               i === majorIndex

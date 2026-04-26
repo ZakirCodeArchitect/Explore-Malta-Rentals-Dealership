@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { SiteShell } from "@/components/site-shell";
 import { heroContent } from "@/features/home/data/hero-content";
 import { BookingSearchForm } from "@/features/booking/components/booking-search-form";
@@ -22,7 +23,9 @@ function PinIcon() {
   );
 }
 
-export function VideoHero() {
+export async function VideoHero() {
+  const tBrand = await getTranslations("Brand");
+  const tNav = await getTranslations("Nav");
   const backgroundImage =
     "backgroundImage" in heroContent.media &&
     typeof heroContent.media.backgroundImage === "string"
@@ -82,13 +85,13 @@ export function VideoHero() {
               <div className="max-w-3xl">
                 <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.85)]">
                   <PinIcon />
-                  <span>{heroContent.location}</span>
+                  <span>{tBrand("locationKicker")}</span>
                 </div>
 
                 <div className="mt-6 sm:mt-7">
                   <Image
                     src={LOGO_PATH}
-                    alt="Explore Malta Rentals"
+                    alt={tNav("logoAlt")}
                     width={480}
                     height={96}
                     priority
@@ -102,10 +105,10 @@ export function VideoHero() {
                     id="home-hero-title"
                     className="max-w-4xl text-[clamp(2.125rem,7vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.045em] text-white [text-shadow:0_2px_32px_rgba(0,0,0,0.75)] sm:text-6xl sm:leading-[0.95] lg:text-[5.25rem] lg:leading-[0.96] xl:text-[5.75rem]"
                   >
-                    {heroContent.title}
+                    {tBrand("heroTitle")}
                   </h1>
                   <p className="mt-5 max-w-xl text-base leading-7 text-white/88 [text-shadow:0_1px_18px_rgba(0,0,0,0.75)] sm:mt-6 sm:text-lg sm:leading-8">
-                    {heroContent.description}
+                    {tBrand("heroDescription")}
                   </p>
                 </div>
               </div>

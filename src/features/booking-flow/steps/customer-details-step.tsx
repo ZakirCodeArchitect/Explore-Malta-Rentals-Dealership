@@ -3,6 +3,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
@@ -16,6 +17,7 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function CustomerDetailsStep() {
+  const t = useTranslations("BookingWizard.customer");
   const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const requiresUploads = state.delivery.pickupOption === "delivery";
@@ -25,7 +27,7 @@ export function CustomerDetailsStep() {
   );
   const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType);
   const licenseCategoryOptions = [
-    { value: "", label: "Select category" },
+    { value: "", label: t("selectCategory") },
     ...allowedLicenseOptions.map((option) => ({ value: option, label: option })),
   ] as const;
   const selectedLicenseCategoryOption =
@@ -48,16 +50,11 @@ export function CustomerDetailsStep() {
   }, [requiresUploads, state.customer.driverLicenseUpload, state.customer.passportUpload, updateSection]);
 
   return (
-    <StepShell
-      title="Customer Information"
-      description="Step 3 customer fields (all required except special notes)."
-    >
+    <StepShell title={t("shellTitle")} description={t("shellDescription")}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">
-          Customer fields (all required except notes)
-        </p>
+        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">{t("lead")}</p>
         <label className="text-sm font-medium text-slate-700">
-          Full name
+          {t("fullName")}
           <input
             type="text"
             name="customer.fullName"
@@ -65,7 +62,7 @@ export function CustomerDetailsStep() {
             value={state.customer.fullName}
             onChange={(event) => updateSection("customer", { fullName: event.target.value })}
             className={`${inputClass} ${isFieldInvalid("customer.fullName") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
-            placeholder="e.g. Alex Borg"
+            placeholder={t("fullNamePh")}
           />
           {getFieldError("customer.fullName") ? (
             <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.fullName")}</span>
@@ -73,7 +70,7 @@ export function CustomerDetailsStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          Phone
+          {t("phone")}
           <input
             type="tel"
             name="customer.phone"
@@ -81,7 +78,7 @@ export function CustomerDetailsStep() {
             value={state.customer.phone}
             onChange={(event) => updateSection("customer", { phone: event.target.value })}
             className={`${inputClass} ${isFieldInvalid("customer.phone") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
-            placeholder="e.g. +356 9912 3456"
+            placeholder={t("phonePh")}
           />
           {getFieldError("customer.phone") ? (
             <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.phone")}</span>
@@ -89,7 +86,7 @@ export function CustomerDetailsStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          Email
+          {t("email")}
           <input
             type="email"
             name="customer.email"
@@ -97,7 +94,7 @@ export function CustomerDetailsStep() {
             value={state.customer.email}
             onChange={(event) => updateSection("customer", { email: event.target.value })}
             className={`${inputClass} ${isFieldInvalid("customer.email") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
-            placeholder="e.g. alex@email.com"
+            placeholder={t("emailPh")}
           />
           {getFieldError("customer.email") ? (
             <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.email")}</span>
@@ -105,7 +102,7 @@ export function CustomerDetailsStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          Nationality
+          {t("nationality")}
           <input
             type="text"
             name="customer.nationality"
@@ -113,7 +110,7 @@ export function CustomerDetailsStep() {
             value={state.customer.nationality}
             onChange={(event) => updateSection("customer", { nationality: event.target.value })}
             className={`${inputClass} ${isFieldInvalid("customer.nationality") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
-            placeholder="e.g. Maltese"
+            placeholder={t("nationalityPh")}
           />
           {getFieldError("customer.nationality") ? (
             <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.nationality")}</span>
@@ -121,7 +118,7 @@ export function CustomerDetailsStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          Date of birth
+          {t("dateOfBirth")}
           <input
             type="date"
             name="customer.dateOfBirth"
@@ -136,7 +133,7 @@ export function CustomerDetailsStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          License category
+          {t("licenseCategory")}
           <Popover.Root open={licenseMenuOpen} onOpenChange={setLicenseMenuOpen}>
             <Popover.Trigger asChild>
               <button
@@ -199,22 +196,22 @@ export function CustomerDetailsStep() {
       </div>
 
       <div className="mt-4 rounded-2xl border border-slate-200 p-4">
-        <p className="text-sm font-semibold text-slate-900">Driver&apos;s License (Conditional)</p>
+        <p className="text-sm font-semibold text-slate-900">{t("licenseHeading")}</p>
         <p className="mt-1 text-xs text-slate-600">
-          Based on your Step 2 pickup selection:{" "}
+          {t("pickupContext")}{" "}
           <span className="font-semibold">
-            {requiresUploads ? "Request delivery" : "Collect from office"}
+            {requiresUploads ? t("requestDelivery") : t("collectFromOffice")}
           </span>
           .
         </p>
         <div className="mt-2">
           <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
             <input type="radio" checked={requiresUploads} readOnly />
-            Delivery: Licence photo upload is required
+            {t("deliveryLicenseUpload")}
           </span>
           <div className={`mt-2 ${!requiresUploads ? "pointer-events-none opacity-50" : ""}`}>
             <DocumentUploadField
-              label="Driver's licence"
+              label={t("driversLicenceLabel")}
               category="customer_license"
               bookingSessionId={bookingSessionId}
               value={state.customer.driverLicenseUpload}
@@ -234,7 +231,7 @@ export function CustomerDetailsStep() {
         <label className="mt-3 flex flex-col gap-1 text-sm text-slate-700">
           <span className="flex items-center gap-2">
             <input type="radio" checked={!requiresUploads} readOnly />
-            <span>Office pickup: In-person license presentation confirmation is required</span>
+            <span>{t("officeLicenseConfirm")}</span>
           </span>
           <span className="flex items-center gap-2 pl-7">
             <input
@@ -248,29 +245,29 @@ export function CustomerDetailsStep() {
               }
             />
             <span className={requiresUploads ? "text-slate-400" : ""}>
-              I confirm I will present my license at pickup.
+              {t("confirmPresentLicense")}
             </span>
           </span>
         </label>
       </div>
 
       <div className="mt-4 rounded-2xl border border-slate-200 p-4">
-        <p className="text-sm font-semibold text-slate-900">Passport / ID (Conditional)</p>
+        <p className="text-sm font-semibold text-slate-900">{t("passportHeading")}</p>
         <p className="mt-1 text-xs text-slate-600">
-          Based on your Step 2 pickup selection:{" "}
+          {t("pickupContext")}{" "}
           <span className="font-semibold">
-            {requiresUploads ? "Request delivery" : "Collect from office"}
+            {requiresUploads ? t("requestDelivery") : t("collectFromOffice")}
           </span>
           .
         </p>
         <div className="mt-2">
           <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
             <input type="radio" checked={requiresUploads} readOnly />
-            Delivery: Passport/ID photo upload is required
+            {t("deliveryPassportUpload")}
           </span>
           <div className={`mt-2 ${!requiresUploads ? "pointer-events-none opacity-50" : ""}`}>
             <DocumentUploadField
-              label="Passport or national ID"
+              label={t("passportNationalIdLabel")}
               category="customer_passport"
               bookingSessionId={bookingSessionId}
               value={state.customer.passportUpload}
@@ -289,7 +286,7 @@ export function CustomerDetailsStep() {
         <label className="mt-3 flex flex-col gap-1 text-sm text-slate-700">
           <span className="flex items-center gap-2">
             <input type="radio" checked={!requiresUploads} readOnly />
-            <span>Office pickup: In-person Passport/ID presentation confirmation is required</span>
+            <span>{t("officePassportConfirm")}</span>
           </span>
           <span className="flex items-center gap-2 pl-7">
             <input
@@ -303,7 +300,7 @@ export function CustomerDetailsStep() {
               }
             />
             <span className={requiresUploads ? "text-slate-400" : ""}>
-              I confirm I will present my Passport/ID at pickup.
+              {t("confirmPresentId")}
             </span>
           </span>
         </label>
@@ -311,12 +308,12 @@ export function CustomerDetailsStep() {
 
       <div className="mt-4">
         <label className="text-sm font-medium text-slate-700">
-          Special notes
+          {t("specialNotes")}
           <textarea
             value={state.customer.specialNotes}
             onChange={(event) => updateSection("customer", { specialNotes: event.target.value })}
             rows={4}
-            placeholder="Any extra request or pickup information..."
+            placeholder={t("specialNotesPlaceholder")}
             className={`${inputClass} min-h-24`}
           />
         </label>

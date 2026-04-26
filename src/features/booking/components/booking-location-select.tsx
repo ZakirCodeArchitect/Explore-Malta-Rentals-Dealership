@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import AsyncSelect from "react-select/async";
 import type { GroupBase, StylesConfig } from "react-select";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
@@ -165,7 +165,9 @@ export function BookingLocationSelect({
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    startTransition(() => {
+      setIsMounted(true);
+    });
   }, []);
 
   const value: BookingOption | null = useMemo(() => {

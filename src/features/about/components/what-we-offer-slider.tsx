@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useId, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 /** Paths under `/public` (spaces encoded for Next/Image). */
 const IMG_LEX_GREY = `/product-images/${encodeURIComponent("lex moto grey.png")}`;
@@ -9,40 +10,13 @@ const IMG_ATV_QUAD = `/TourPage-images/${encodeURIComponent("TOURS PAGE PHOTO QU
 const IMG_BICYCLES = "/about-page-image/bicycles.png";
 const IMG_MALTA_MAP = `/${encodeURIComponent("guide map.png")}`;
 
-const SLIDES = [
-  {
-    id: "motorcycles",
-    title: "Motorcycles & scooters",
-    description:
-      "Our fleet includes nimble scooters and motorbikes — well-prepared for Malta’s roads and day trips.",
-    imageSrc: IMG_LEX_GREY,
-    imageAlt: "Lex Moto scooter — available from Explore Malta Rentals",
-  },
-  {
-    id: "atvs",
-    title: "ATVs",
-    description:
-      "Quad bike hire when you want trails and open stretches beyond the main roads — ask what’s available.",
-    imageSrc: IMG_ATV_QUAD,
-    imageAlt: "ATV / quad bike hire in Malta",
-  },
-  {
-    id: "bicycles",
-    title: "Bicycles",
-    description:
-      "Bicycle rental for a relaxed pace along promenades, lanes, and coastal routes.",
-    imageSrc: IMG_BICYCLES,
-    imageAlt: "Bicycle rental for exploring Malta",
-  },
-  {
-    id: "tours",
-    title: "Guided tours",
-    description:
-      "Custom guided tours on request — discover top sights and hidden gems with local insight.",
-    imageSrc: IMG_MALTA_MAP,
-    imageAlt: "Map of Malta — guided tours and routes",
-  },
-] as const;
+type Slide = Readonly<{
+  id: "motorcycles" | "atvs" | "bicycles" | "tours";
+  title: string;
+  description: string;
+  imageSrc: string;
+  imageAlt: string;
+}>;
 
 function ChevronRight({ className }: { className?: string }) {
   return (
@@ -53,15 +27,50 @@ function ChevronRight({ className }: { className?: string }) {
 }
 
 export function WhatWeOfferSlider() {
+  const t = useTranslations("About");
   const [index, setIndex] = useState(0);
-  const count = SLIDES.length;
   const labelId = useId();
+
+  const slides = useMemo(
+    (): Slide[] => [
+      {
+        id: "motorcycles",
+        title: t("offerMotorcyclesTitle"),
+        description: t("offerMotorcyclesDesc"),
+        imageSrc: IMG_LEX_GREY,
+        imageAlt: t("offerMotorcyclesAlt"),
+      },
+      {
+        id: "atvs",
+        title: t("offerAtvsTitle"),
+        description: t("offerAtvsDesc"),
+        imageSrc: IMG_ATV_QUAD,
+        imageAlt: t("offerAtvsAlt"),
+      },
+      {
+        id: "bicycles",
+        title: t("offerBicyclesTitle"),
+        description: t("offerBicyclesDesc"),
+        imageSrc: IMG_BICYCLES,
+        imageAlt: t("offerBicyclesAlt"),
+      },
+      {
+        id: "tours",
+        title: t("offerToursTitle"),
+        description: t("offerToursDesc"),
+        imageSrc: IMG_MALTA_MAP,
+        imageAlt: t("offerToursAlt"),
+      },
+    ],
+    [t],
+  );
+
+  const count = slides.length;
 
   const goNext = useCallback(() => {
     setIndex((i) => (i + 1) % count);
   }, [count]);
 
-  /** Track is `count × viewport` wide; each slide is `1/count` of the track (= one full viewport). `min-w-full` breaks this because % is vs the flex row, not the clip box. */
   const trackWidthPercent = count * 100;
   const slideWidthOnTrackPercent = 100 / count;
   const translatePercent = (index * 100) / count;
@@ -75,7 +84,7 @@ export function WhatWeOfferSlider() {
         aria-labelledby={labelId}
       >
         <p id={labelId} className="sr-only">
-          What we offer: slide {index + 1} of {count}
+          {t("carouselSrOnly", { current: index + 1, total: count })}
         </p>
         <div
           className="flex motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out"
@@ -84,10 +93,10 @@ export function WhatWeOfferSlider() {
             transform: `translate3d(-${translatePercent}%, 0, 0)`,
           }}
         >
-          {SLIDES.map((slide) => (
+          {slides.map((slide) => (
             <article
               key={slide.id}
-              aria-hidden={SLIDES[index].id !== slide.id}
+              aria-hidden={slides[index]!.id !== slide.id}
               className="box-border shrink-0 py-8 sm:py-10"
               style={{ width: `${slideWidthOnTrackPercent}%` }}
             >
@@ -114,7 +123,7 @@ export function WhatWeOfferSlider() {
                     <button
                       type="button"
                       onClick={goNext}
-                      aria-label="Next offer"
+                      aria-label={t("carouselNext")}
                       className="inline-flex h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border-2 border-[var(--brand-orange)] text-[var(--brand-orange)] transition-colors hover:bg-[var(--brand-orange)]/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2"
                     >
                       <ChevronRight className="h-5 w-5" />
@@ -123,15 +132,15 @@ export function WhatWeOfferSlider() {
                   <div
                     className="mt-3 flex flex-wrap items-center justify-center gap-2"
                     role="tablist"
-                    aria-label="Choose offer"
+                    aria-label={t("carouselTablist")}
                   >
-                    {SLIDES.map((s, i) => (
+                    {slides.map((s, i) => (
                       <button
                         key={s.id}
                         type="button"
                         role="tab"
                         aria-selected={i === index}
-                        aria-label={`Show ${s.title}`}
+                        aria-label={t("carouselShow", { title: s.title })}
                         onClick={() => setIndex(i)}
                         className={
                           i === index

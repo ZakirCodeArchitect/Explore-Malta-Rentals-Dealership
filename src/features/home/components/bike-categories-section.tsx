@@ -2,8 +2,11 @@ import { Container } from "@/components/ui/container";
 import { bikeCategories } from "@/features/home/data/home-sections";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { BikeCategoryCard } from "@/features/home/components/bike-category-card";
+import { getTranslations } from "next-intl/server";
 
-export function BikeCategoriesSection() {
+export async function BikeCategoriesSection() {
+  const t = await getTranslations("Home");
+
   return (
     <section
       id="fleet-preview"
@@ -19,13 +22,8 @@ export function BikeCategoriesSection() {
         <Container className="relative z-10 py-6 sm:py-8">
           <SectionHeader
             titleId="bike-categories-title"
-            title="Choose your ride"
-            description={
-              <>
-                Pick the right engine size for your Malta plan - then we'll help you
-                book confidently.
-              </>
-            }
+            title={t("sectionBikePickerTitle")}
+            description={t("sectionBikePickerDescription")}
             tone="light"
           />
 
@@ -39,4 +37,3 @@ export function BikeCategoriesSection() {
     </section>
   );
 }
-

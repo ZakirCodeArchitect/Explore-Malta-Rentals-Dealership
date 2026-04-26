@@ -10,6 +10,8 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
+import { useTranslations } from "next-intl";
+import type { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type FieldErrors,
@@ -26,10 +28,11 @@ import {
 } from "@/features/booking-flow/lib/types";
 import { buildBookingInitialState } from "@/features/booking-flow/lib/init-state";
 import {
-  bookingFlowSchema,
+  createBookingFlowSchema,
   canAccessStep,
   getStepFirstError,
   STEP_FIELD_PATHS,
+  type BookingValidationMessages,
 } from "@/features/booking-flow/lib/validation";
 import { mapApiBookingErrorPathToFormPath } from "@/features/booking-flow/lib/map-api-booking-error-to-form";
 import type { BookingApiValidationError } from "@/features/booking-flow/lib/submit-booking-api";
@@ -109,6 +112,7 @@ function loadStoredReservationHold(): ReservationHoldState {
 }
 
 type BookingFlowContextValue = {
+  bookingFlowSchema: z.ZodType<BookingFlowState>;
   state: BookingFlowState;
   reservationHold: ReservationHoldState;
   reservationHoldError: string | null;
@@ -159,6 +163,52 @@ type BookingFlowProviderProps = PropsWithChildren<{
 }>;
 
 export function BookingFlowProvider({ children, initialVehicleSlug, initialRental }: BookingFlowProviderProps) {
+  const tVal = useTranslations("BookingValidation");
+  const tFlow = useTranslations("BookingFlow");
+  const validationMessages = useMemo<BookingValidationMessages>(
+    () => ({
+      vehicleTypeRequired: tVal("vehicleTypeRequired"),
+      pickupOptionRequired: tVal("pickupOptionRequired"),
+      dropoffOptionRequired: tVal("dropoffOptionRequired"),
+      fullNameRequired: tVal("fullNameRequired"),
+      phoneRequired: tVal("phoneRequired"),
+      emailRequired: tVal("emailRequired"),
+      emailInvalid: tVal("emailInvalid"),
+      nationalityRequired: tVal("nationalityRequired"),
+      dobRequired: tVal("dobRequired"),
+      pickupDateRequired: tVal("pickupDateRequired"),
+      pickupTimeRequired: tVal("pickupTimeRequired"),
+      returnDateRequired: tVal("returnDateRequired"),
+      returnTimeRequired: tVal("returnTimeRequired"),
+      minRental: tVal("minRental"),
+      maxRental: tVal("maxRental"),
+      pickupAddressDelivery: tVal("pickupAddressDelivery"),
+      dropoffAddressRequired: tVal("dropoffAddressRequired"),
+      helmetSizesRequired: tVal("helmetSizesRequired"),
+      additionalDriverName: tVal("additionalDriverName"),
+      additionalDriverPhone: tVal("additionalDriverPhone"),
+      additionalDriverEmail: tVal("additionalDriverEmail"),
+      additionalDriverNationality: tVal("additionalDriverNationality"),
+      additionalDriverDob: tVal("additionalDriverDob"),
+      additionalDriverLicense: tVal("additionalDriverLicense"),
+      additionalPassportDelivery: tVal("additionalPassportDelivery"),
+      additionalOfficeConfirm: tVal("additionalOfficeConfirm"),
+      licenseCategoryRequired: tVal("licenseCategoryRequired"),
+      licenseInvalidForVehicle: tVal("licenseInvalidForVehicle"),
+      licenseUploadDelivery: tVal("licenseUploadDelivery"),
+      passportUploadDelivery: tVal("passportUploadDelivery"),
+      confirmDocumentsPickup: tVal("confirmDocumentsPickup"),
+      depositMethodRequired: tVal("depositMethodRequired"),
+      reviewFields: tVal("reviewFields"),
+    }),
+    [tVal],
+  );
+
+  const bookingFlowSchema = useMemo(
+    () => createBookingFlowSchema(validationMessages),
+    [validationMessages],
+  );
+
   const initialVehicleSlugRef = useRef(initialVehicleSlug);
   const initialRentalRef = useRef(initialRental);
   useEffect(() => {
@@ -179,6 +229,10 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
     mode: "onChange",
     reValidateMode: "onChange",
   });
+
+  useEffect(() => {
+    form.clearErrors();
+  }, [bookingFlowSchema, form]);
   const watchedState = useWatch({ control: form.control }) as BookingFlowState | undefined;
   const state = watchedState ?? form.getValues();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
@@ -271,10 +325,10 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
   const validateCurrentStep = useCallback(async () => {
     const fields = STEP_FIELD_PATHS[activeStepId];
     const isValid = await form.trigger(fields, { shouldFocus: true });
-    const error = getStepFirstError(activeStepId, state);
+    const error = getStepFirstError(bookingFlowSchema, activeStepId, state);
 
     if (!isValid || error) {
-      const message = error ?? "Please review the highlighted fields.";
+      const message = error ?? tFlow("reviewFields");
       shouldScrollToErrorRef.current = true;
       setStepErrors((prev) => ({
         ...prev,
@@ -293,7 +347,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
     });
 
     return true;
-  }, [activeStepId, form, state]);
+  }, [activeStepId, bookingFlowSchema, form, state, tFlow]);
 
   const goNext = useCallback(async () => {
     const valid = await validateCurrentStep();
@@ -311,7 +365,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
 
   const goToStep = useCallback(
     (stepId: BookingFlowStepId) => {
-      if (!canAccessStep(stepId, state)) {
+      if (!canAccessStep(bookingFlowSchema, stepId, state)) {
         return;
       }
 
@@ -322,7 +376,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
 
       setActiveStepIndex(nextIndex);
     },
-    [state],
+    [bookingFlowSchema, state],
   );
 
   const getFieldError = useCallback(
@@ -406,8 +460,8 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       status: "EXPIRED",
       expiresAt: prev.expiresAt,
     }));
-    setReservationHoldError(message ?? "Your reservation has expired. Please reserve the vehicle again.");
-  }, []);
+    setReservationHoldError(message ?? tFlow("holdExpiredDefault"));
+  }, [tFlow]);
 
   const refreshReservationHoldFromServer = useCallback(async () => {
     if (!reservationHold.holdReference) {
@@ -428,11 +482,11 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       vehicleType: result.data.vehicleType,
     });
     if (result.data.status !== "ACTIVE") {
-      setReservationHoldError("Your reservation has expired. Please reserve the vehicle again.");
+      setReservationHoldError(tFlow("holdExpiredDefault"));
     } else {
       setReservationHoldError(null);
     }
-  }, [markReservationHoldExpired, mergeReservationHold, reservationHold.holdReference]);
+  }, [markReservationHoldExpired, mergeReservationHold, reservationHold.holdReference, tFlow]);
 
   useEffect(() => {
     if (!reservationHold.holdReference) {
@@ -457,6 +511,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
 
   const value = useMemo<BookingFlowContextValue>(
     () => ({
+      bookingFlowSchema,
       state,
       reservationHold,
       reservationHoldError,
@@ -491,6 +546,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       validateAllBookingFields,
     }),
     [
+      bookingFlowSchema,
       state,
       reservationHold,
       reservationHoldError,

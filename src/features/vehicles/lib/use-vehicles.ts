@@ -78,14 +78,7 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult
     void loadVehicles();
 
     return () => controller.abort();
-  }, [
-    enabled,
-    rentalWindow?.pickupDate,
-    rentalWindow?.pickupTime,
-    rentalWindow?.returnDate,
-    rentalWindow?.returnTime,
-    rentalWindow?.sessionKey,
-  ]);
+  }, [enabled, rentalWindow]);
 
   if (!enabled) {
     return { vehicles: [], isLoading: false, error: null };

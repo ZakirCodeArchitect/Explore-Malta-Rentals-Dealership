@@ -10,7 +10,9 @@ import {
 import Image from "next/image";
 import { addDays } from "date-fns";
 import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
@@ -81,6 +83,7 @@ export function VehicleListingShell({
   vehicles,
   heroIntro,
 }: VehicleListingShellProps) {
+  const tListing = useTranslations("VehicleListing");
   const shouldFetchFromApi = !vehicles;
   const router = useRouter();
   const pathname = usePathname();
@@ -133,13 +136,6 @@ export function VehicleListingShell({
   );
   const [selectedSeats, setSelectedSeats] =
     useState<VehicleSeatsFilter>(initialSeats);
-
-  const bookingPickupDate =
-    dateParam ?? pickupDateParam ?? formatPickupDateParam(pickupDate);
-  const bookingReturnDate =
-    returnDateParam ?? dropoffDateParam ?? formatPickupDateParam(returnDate);
-  const bookingPickupTime = pickupTimeParam;
-  const bookingReturnTime = dropoffTimeParam;
 
   /** Hold-aware listing only after trip is committed to the URL (Search). */
   const urlTripPickupDate = (dateParam ?? pickupDateParam)?.trim() || "";
@@ -511,11 +507,7 @@ export function VehicleListingShell({
   const results = (
     <div id="vehicle-listing-results" className="space-y-6 scroll-mt-28">
       <p className="text-sm text-slate-600">
-        Showing{" "}
-        <span className="font-semibold text-slate-900">
-          {filteredVehicles.length}
-        </span>{" "}
-        vehicles
+        {tListing("showing", { count: filteredVehicles.length })}
       </p>
 
       {tripDatesPrompt ? (
@@ -523,9 +515,7 @@ export function VehicleListingShell({
           role="status"
           className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950"
         >
-          Set your trip dates in the search bar, then click{" "}
-          <span className="font-semibold">Search</span> to load availability. After that,{" "}
-          <span className="font-semibold">Book now</span> will reserve the vehicle for those dates.
+          {tListing("tripDatesHint")}
         </div>
       ) : null}
 
@@ -559,7 +549,7 @@ export function VehicleListingShell({
         </div>
       ) : shouldFetchFromApi && vehiclesError ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50/70 px-6 py-10 text-center">
-          <h3 className="text-lg font-semibold text-rose-900">Unable to load vehicles</h3>
+          <h3 className="text-lg font-semibold text-rose-900">{tListing("loadErrorTitle")}</h3>
           <p className="mt-2 text-sm text-rose-800">{vehiclesError}</p>
         </div>
       ) : filteredVehicles.length > 0 ? (
@@ -580,17 +570,13 @@ export function VehicleListingShell({
         </div>
       ) : vehicleDataset.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
-          <h3 className="text-lg font-semibold text-slate-900">No vehicles available right now</h3>
-          <p className="mt-2 text-sm text-slate-600">Please check back shortly for newly listed rentals.</p>
+          <h3 className="text-lg font-semibold text-slate-900">{tListing("emptyTitle")}</h3>
+          <p className="mt-2 text-sm text-slate-600">{tListing("emptyBody")}</p>
         </div>
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
-          <h3 className="text-lg font-semibold text-slate-900">
-            No exact match found
-          </h3>
-          <p className="mt-2 text-sm text-slate-600">
-            Try another type, transmission, seats, or color.
-          </p>
+          <h3 className="text-lg font-semibold text-slate-900">{tListing("noMatchTitle")}</h3>
+          <p className="mt-2 text-sm text-slate-600">{tListing("noMatchBody")}</p>
         </div>
       )}
     </div>
@@ -636,11 +622,8 @@ export function VehicleListingShell({
       <Container className="pb-16 pt-8">
         {results}
         <div className="mt-10 w-full border-t border-slate-200/80 pt-10">
-          <section aria-label="Indicative daily rates">
-            <p className="max-w-2xl text-base leading-relaxed text-slate-600">
-              Ballpark per-calendar-day amounts for motorcycles and scooters before
-              extras, use these as a guide while you search.
-            </p>
+          <section aria-label={tListing("ariaRates")}>
+            <p className="max-w-2xl text-base leading-relaxed text-slate-600">{tListing("ratesBlurb")}</p>
             <div className="mt-8 w-full">
               <IndicativeDailyRatesCard />
             </div>
@@ -653,7 +636,7 @@ export function VehicleListingShell({
       return (
         <div className="flex w-full flex-col lg:flex-row lg:items-stretch">
           <aside
-            aria-label="Vehicle filters"
+            aria-label={tListing("ariaFilters")}
             className={[
               "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm",
               filtersCollapsed
@@ -693,7 +676,7 @@ export function VehicleListingShell({
       {listingSidebar ? (
         <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
           <aside
-            aria-label="Vehicle filters"
+            aria-label={tListing("ariaFilters")}
             className={[
               "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm",
               filtersCollapsed

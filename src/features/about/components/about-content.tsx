@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
@@ -7,11 +6,10 @@ import { SiteShell } from "@/components/site-shell";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { WhatWeOfferSlider } from "@/features/about/components/what-we-offer-slider";
-import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
-/** Scenic Malta backdrop for the Explore Malta callout (`public/malta.png`). */
 const EXPLORE_MALTA_BACKDROP = "/malta.png";
-/** About page hero + narrative photo (`public/about-us-image.png`). */
 const ABOUT_US_IMAGE = "/about-us-image.png";
 
 const FLEET_NECO_ONE_SRC = `/BikeImages/${encodeURIComponent("neco one.png")}`;
@@ -21,15 +19,17 @@ export type AboutSiteContact = Readonly<{
   companyName: string;
 }>;
 
-/** Hand-drawn style wavy underline under “About us” (narrative section). */
-function AboutUsHeadingWithWave({ titleId }: Readonly<{ titleId: string }>) {
+function AboutUsHeadingWithWave({
+  titleId,
+  label,
+}: Readonly<{ titleId: string; label: string }>) {
   return (
     <h2
       id={titleId}
       className="mx-auto inline-block text-2xl font-bold leading-none tracking-[-0.02em] sm:text-[1.65rem]"
     >
       <span className="relative inline-flex flex-col items-center">
-        <span className="px-0.5 text-slate-950">About us</span>
+        <span className="px-0.5 text-slate-950">{label}</span>
         <svg
           viewBox="0 0 200 16"
           aria-hidden
@@ -50,7 +50,6 @@ function AboutUsHeadingWithWave({ titleId }: Readonly<{ titleId: string }>) {
   );
 }
 
-/** Engine class label — sits in the card body so the photo stays uncluttered. */
 function FleetDisplacementBadge({
   displacement,
   variant,
@@ -130,19 +129,22 @@ function FleetModelCard({
   );
 }
 
-function AboutHeroTitle({ titleId }: Readonly<{ titleId: string }>) {
+function AboutHeroTitle({ titleId, title }: Readonly<{ titleId: string; title: string }>) {
   return (
     <h1
       id={titleId}
       className="max-w-[22ch] text-4xl font-bold leading-[1.08] tracking-[-0.04em] text-white drop-shadow-[0_2px_28px_rgba(0,0,0,0.45)] sm:text-5xl sm:leading-[1.06] lg:max-w-[24ch] lg:text-[3.25rem] lg:leading-[1.05] xl:text-6xl xl:leading-[1.04]"
     >
-      Find, Book and Rent easily with Explore Malta Rentals
+      {title}
     </h1>
   );
 }
 
-export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }>) {
+export async function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }>) {
   const { companyName } = contact;
+  const t = await getTranslations("About");
+  const tCommon = await getTranslations("Common");
+  const tBrand = await getTranslations("Brand");
 
   return (
     <>
@@ -169,7 +171,7 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
         <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-end pb-12 pt-8 sm:pb-16 sm:pt-10 lg:pb-20 lg:pt-12">
           <SiteShell>
             <div className="w-full max-w-4xl text-left">
-              <AboutHeroTitle titleId="about-story-hero-title" />
+              <AboutHeroTitle titleId="about-story-hero-title" title={t("heroTitle")} />
             </div>
           </SiteShell>
         </div>
@@ -183,12 +185,12 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
         <Container>
           <div className="mx-auto w-full max-w-prose">
             <header className="text-center">
-              <AboutUsHeadingWithWave titleId="company-story-narrative-title" />
+              <AboutUsHeadingWithWave titleId="company-story-narrative-title" label={t("headingWave")} />
             </header>
             <div className="mt-8 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-50 shadow-sm ring-1 ring-slate-950/[0.04]">
               <Image
                 src={ABOUT_US_IMAGE}
-                alt="Explore Malta Rentals — about us"
+                alt={t("imageAlt")}
                 width={1200}
                 height={800}
                 unoptimized
@@ -197,32 +199,13 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
               />
             </div>
             <div className="mt-8 space-y-5 text-left text-sm leading-relaxed text-slate-600 sm:mt-9 sm:leading-7">
-              <p>
-                {companyName}, your go-to choice to experience Malta your way. From affordable self-drive
-                motorbike rental, quadbike hire and bicycles, to a guided tour around Malta.
-              </p>
-              <p>
-                We are passionate about helping locals and visitors experience the beauty of Malta in the
-                most free, flexible, and affordable way possible.
-              </p>
-              <p>
-                We specialize in Self-Drive Rentals, giving you the freedom to explore Malta at your own
-                pace.
-              </p>
-              <p>
-                Whether you&apos;re cruising along the coast, discovering beaches, or navigating historic
-                sites, our reliable fleet ensures a smooth and enjoyable journey.
-              </p>
-              <p>
-                We pride ourselves on offering some of the cheapest rental prices in Malta without
-                compromising on quality or safety. Our vehicles are well-maintained, easy to ride, and
-                perfect for both beginners and experienced riders.
-              </p>
-              <p>
-                Looking for something more guided? We also provide custom tours on request, allowing you to
-                discover Malta&apos;s top attractions and hidden gems with expert local insight.
-              </p>
-              <p className="font-semibold text-slate-800">Your journey starts now.</p>
+              <p>{t("narrativeP1", { companyName })}</p>
+              <p>{t("narrativeP2")}</p>
+              <p>{t("narrativeP3")}</p>
+              <p>{t("narrativeP4")}</p>
+              <p>{t("narrativeP5")}</p>
+              <p>{t("narrativeP6")}</p>
+              <p className="font-semibold text-slate-800">{t("journeyStarts")}</p>
             </div>
           </div>
         </Container>
@@ -246,19 +229,19 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
             />
             <div className="relative max-w-xl">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
-                {SITE_LOCATION_KICKER}
+                {tBrand("locationKicker")}
               </p>
               <h2
                 id="about-offer-title"
                 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl lg:text-[2rem] lg:leading-tight"
               >
-                {SITE_PRIMARY_TAGLINE.headline}
+                {tBrand("primaryHeadline")}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
-                {SITE_PRIMARY_TAGLINE.body}
+                {tBrand("primaryBody")}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-white/65 sm:text-base">
-                {SITE_PRIMARY_TAGLINE.supporting}
+                {tBrand("primarySupporting")}
               </p>
             </div>
           </div>
@@ -275,7 +258,7 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
           <div className="relative isolate min-h-[min(17rem,52svh)] overflow-hidden rounded-lg border border-slate-200/60 shadow-md ring-1 ring-black/[0.04] sm:min-h-[min(19rem,48svh)] lg:min-h-[min(20rem,44svh)]">
             <Image
               src={EXPLORE_MALTA_BACKDROP}
-              alt="Malta — coastal and landscape views"
+              alt={t("maltaImageAlt")}
               fill
               className="object-cover object-[center_35%]"
               sizes="(min-width: 1280px) 76rem, 100vw"
@@ -287,34 +270,32 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
             />
             <div className="relative flex min-h-[inherit] flex-col justify-center px-6 py-9 sm:px-9 sm:py-10 lg:max-w-xl lg:py-11 lg:pl-10 lg:pr-8">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white/70">
-                Your island
+                {t("exploreKicker")}
               </p>
               <h2
                 id="about-explore-title"
                 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-white sm:text-[1.65rem] sm:leading-snug"
               >
-                Explore Malta
+                {t("exploreTitle")}
               </h2>
               <p className="mt-3 max-w-prose text-sm leading-6 text-white/88 sm:text-[0.9375rem] sm:leading-7">
-                Whether you want the thrill of Malta’s scenic coastal roads, adventure on trails with an
-                ATV, or a calm cycle through historic streets and seaside promenades — the island opens
-                up when you choose your own rhythm.
+                {t("exploreBody")}
               </p>
               <p className="mt-5 max-w-prose text-sm font-semibold leading-snug text-[var(--brand-orange)] sm:text-[0.9375rem]">
-                Start your journey with us and explore Malta like never before.
+                {t("exploreCta")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/booking"
                   className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--brand-orange)] px-5 py-2.5 text-sm font-medium tracking-tight text-slate-950 transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 >
-                  Book now
+                  {tCommon("bookNow")}
                 </Link>
                 <Link
                   href="/#contact"
                   className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/20 bg-white px-5 py-2.5 text-sm font-medium tracking-tight text-slate-900 transition-colors hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 >
-                  Check availability
+                  {t("checkAvailability")}
                 </Link>
               </div>
             </div>
@@ -330,40 +311,36 @@ export function AboutContent({ contact }: Readonly<{ contact: AboutSiteContact }
         <Container>
           <SectionHeader
             titleId="about-fleet-title"
-            title="Fleet & licensing"
+            title={t("fleetSectionTitle")}
             tone="light"
-            description="Popular models and what you need to ride legally in Malta — ask us if you are unsure which option fits your license."
+            description={t("fleetSectionDescription")}
           />
           <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-10">
             <FleetModelCard
               imageSrc={FLEET_NECO_ONE_SRC}
-              imageAlt="NECO ONE 12 — 50cc scooter for town and coastal riding in Malta"
+              imageAlt={t("fleet50Alt")}
               displacement="50cc"
               variant="orange"
-              categoryLabel="Scooter"
+              categoryLabel={t("categoryScooter")}
               title="NECO ONE 12"
               imagePanelClassName="bg-[linear-gradient(160deg,#eef2f6_0%,#e8f2f9_42%,#f8fafc_100%)]"
             >
               <p className="mt-2 text-xs leading-5 text-slate-600 sm:text-[0.8125rem] sm:leading-[1.45]">
-                Light and easy for town and coast. Typically suitable with a{" "}
-                <strong className="font-semibold text-slate-800">standard car (Category B) license</strong>{" "}
-                — confirm your eligibility with us when booking.
+                {t("fleet50Body")}
               </p>
             </FleetModelCard>
 
             <FleetModelCard
               imageSrc={FLEET_LEX_AURA_SRC}
-              imageAlt="Lex Moto Aura — 125cc motorcycle for longer rides in Malta"
+              imageAlt={t("fleet125Alt")}
               displacement="125cc"
               variant="blue"
-              categoryLabel="Motorcycle"
+              categoryLabel={t("categoryMotorcycle")}
               title="LEX MOTO AURA"
               imagePanelClassName="bg-[linear-gradient(160deg,#eef2f6_0%,#e8f0f8_40%,#fafbfc_100%)]"
             >
               <p className="mt-2 text-xs leading-5 text-slate-600 sm:text-[0.8125rem] sm:leading-[1.45]">
-                More performance for longer rides and open roads. Requires a{" "}
-                <strong className="font-semibold text-slate-800">motorcycle license</strong> appropriate
-                for the class of vehicle.
+                {t("fleet125Body")}
               </p>
             </FleetModelCard>
           </div>

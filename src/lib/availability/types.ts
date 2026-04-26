@@ -4,7 +4,7 @@ import type {
   Prisma,
   ReservationHoldStatus,
   VehicleType,
-} from "@/generated/prisma/client";
+} from "@/generated/prisma/index";
 
 export const BLOCKING_BOOKING_STATUSES = ["PENDING", "CONFIRMED"] as const;
 

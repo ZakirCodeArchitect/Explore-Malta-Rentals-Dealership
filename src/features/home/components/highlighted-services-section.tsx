@@ -11,6 +11,7 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { ServiceBenefitCard } from "@/features/home/components/services/service-benefit-card";
 import { servicesHighlights } from "@/features/home/data/home-sections";
+import { getTranslations } from "next-intl/server";
 
 const SERVICE_ICONS = {
   "easy-pickup": PackageCheck,
@@ -20,8 +21,21 @@ const SERVICE_ICONS = {
   "hotel-delivery": Hotel,
 } satisfies Record<(typeof servicesHighlights)[number]["id"], LucideIcon>;
 
-export function HighlightedServicesSection() {
+const SERVICE_MESSAGE_KEY: Record<(typeof servicesHighlights)[number]["id"], string> = {
+  "easy-pickup": "easyPickup",
+  helmets: "helmets",
+  flexible: "flexible",
+  support: "support",
+  "hotel-delivery": "hotel",
+};
+
+export async function HighlightedServicesSection() {
+  const t = await getTranslations("Home");
+  const tDynamic = t as unknown as (key: string) => string;
   const [featured, ...rest] = servicesHighlights;
+  const featuredKey = SERVICE_MESSAGE_KEY[featured.id];
+  const featuredTitle = tDynamic(`services.${featuredKey}.title`);
+  const featuredDescription = tDynamic(`services.${featuredKey}.description`);
 
   return (
     <section
@@ -40,16 +54,11 @@ export function HighlightedServicesSection() {
 
       <Container className="relative">
         <SectionHeader
-          kicker="Malta Rentals"
-          title="Services & benefits"
+          kicker={t("highlightedServicesKicker")}
+          title={t("sectionServicesTitle")}
           titleId="services-title"
           tone="light"
-          description={
-            <>
-              Premium support from pickup to drop-off —{" "}
-              <span className="text-slate-800">so you focus on the ride, not the paperwork.</span>
-            </>
-          }
+          description={t("highlightedServicesDescription")}
           align="center"
         />
 
@@ -57,9 +66,10 @@ export function HighlightedServicesSection() {
           <div className="lg:col-span-5">
             <ServiceBenefitCard
               variant="featured"
-              title={featured.title}
-              description={featured.description}
+              title={featuredTitle}
+              description={featuredDescription}
               icon={SERVICE_ICONS[featured.id]}
+              featuredFootnote={t("highlightedFeaturedFootnote")}
             />
           </div>
 
@@ -67,23 +77,26 @@ export function HighlightedServicesSection() {
             className="grid list-none gap-4 p-0 sm:grid-cols-2 lg:col-span-7 lg:grid-rows-2 lg:gap-5"
             role="list"
           >
-            {rest.map((item) => (
-              <li key={item.id} className="min-h-0">
-                <ServiceBenefitCard
-                  variant="compact"
-                  title={item.title}
-                  description={item.description}
-                  icon={SERVICE_ICONS[item.id]}
-                />
-              </li>
-            ))}
+            {rest.map((item) => {
+              const key = SERVICE_MESSAGE_KEY[item.id];
+              return (
+                <li key={item.id} className="min-h-0">
+                  <ServiceBenefitCard
+                    variant="compact"
+                    title={tDynamic(`services.${key}.title`)}
+                    description={tDynamic(`services.${key}.description`)}
+                    icon={SERVICE_ICONS[item.id]}
+                  />
+                </li>
+              );
+            })}
           </ul>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:mt-14 sm:flex-row sm:gap-4">
-          <ButtonLink href="/#fleet-preview">Explore rentals</ButtonLink>
+          <ButtonLink href="/#fleet-preview">{t("highlightedExploreRentals")}</ButtonLink>
           <p className="max-w-md text-center text-sm text-slate-500 sm:text-left">
-            See bikes, ATVs, and bicycles — then lock in your dates in minutes.
+            {t("highlightedExploreHint")}
           </p>
         </div>
       </Container>

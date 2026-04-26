@@ -1,4 +1,4 @@
-import type { Prisma, VehicleType } from "@/generated/prisma/client";
+import type { Prisma, VehicleType } from "@/generated/prisma/index";
 
 import { prisma } from "@/lib/prisma";
 

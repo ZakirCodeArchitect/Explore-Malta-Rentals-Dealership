@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import type { Vehicle } from "@/features/vehicles/data/vehicles";
 import { createReservationHoldWithRetry } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";

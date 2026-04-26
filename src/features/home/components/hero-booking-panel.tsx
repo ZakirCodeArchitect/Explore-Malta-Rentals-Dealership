@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { addDays } from "date-fns";
 import AsyncSelect from "react-select/async";
 import { Car, MapPin } from "lucide-react";
@@ -58,31 +59,30 @@ function Toggle({
   );
 }
 
-function HeroFilterDropdownIndicator(
-  props: DropdownIndicatorProps<BookingOption, false>,
-) {
-  return (
-    <selectComponents.DropdownIndicator {...props}>
-      <span className="shrink-0 text-xs font-semibold text-slate-500">
-        Change
-      </span>
-    </selectComponents.DropdownIndicator>
-  );
+function makeHeroFilterDropdownIndicator(changeLabel: string) {
+  return function HeroFilterDropdownIndicator(
+    props: DropdownIndicatorProps<BookingOption, false>,
+  ) {
+    return (
+      <selectComponents.DropdownIndicator {...props}>
+        <span className="shrink-0 text-xs font-semibold text-slate-500">
+          {changeLabel}
+        </span>
+      </selectComponents.DropdownIndicator>
+    );
+  };
 }
 
-const heroSelectComponents = {
-  DropdownIndicator: HeroFilterDropdownIndicator,
-};
-
 export function HeroBookingPanel() {
+  const t = useTranslations("HomeHeroPanel");
+  const tCommon = useTranslations("Common");
+  const tVehicle = useTranslations("VehicleFilters");
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [pickupLocation, setPickupLocation] = useState<BookingOption | null>(
     null,
   );
-  const [vehicleType, setVehicleType] = useState<BookingOption>(
-    vehicleTypeOptions[0]!,
-  );
+  const [vehicleTypeValue, setVehicleTypeValue] = useState(() => vehicleTypeOptions[0]!.value);
   const [pickupDate, setPickupDate] = useState<Date>(DEFAULT_HERO_PICKUP_DATE);
   const [returnDate, setReturnDate] = useState<Date>(() =>
     addDays(DEFAULT_HERO_PICKUP_DATE, TRIP_MIN_SPAN_DAYS),
@@ -91,7 +91,9 @@ export function HeroBookingPanel() {
   const [hotelDelivery, setHotelDelivery] = useState(true);
 
   useEffect(() => {
-    setIsMounted(true);
+    startTransition(() => {
+      setIsMounted(true);
+    });
   }, []);
 
   const fieldClassName =
@@ -100,6 +102,33 @@ export function HeroBookingPanel() {
   const maltaDefaultLocationOptions = useMemo(
     () => [...locationOptions],
     [],
+  );
+
+  const heroSelectComponents = useMemo(
+    () => ({
+      DropdownIndicator: makeHeroFilterDropdownIndicator(tCommon("change")),
+    }),
+    [tCommon],
+  );
+
+  const vehicleTypeOptionsLocalized = useMemo(
+    () =>
+      vehicleTypeOptions.map((opt) => {
+        if (opt.value === "All") return { ...opt, label: tVehicle("allVehicles") };
+        if (opt.value === "Scooter") return { ...opt, label: tVehicle("scooters") };
+        if (opt.value === "Motorcycle") return { ...opt, label: tVehicle("motorcycles") };
+        if (opt.value === "ATV") return { ...opt, label: tVehicle("atvs") };
+        if (opt.value === "Bicycle") return { ...opt, label: tVehicle("bicycles") };
+        return opt;
+      }),
+    [tVehicle],
+  );
+
+  const vehicleType = useMemo(
+    () =>
+      vehicleTypeOptionsLocalized.find((o) => o.value === vehicleTypeValue) ??
+      vehicleTypeOptionsLocalized[0]!,
+    [vehicleTypeOptionsLocalized, vehicleTypeValue],
   );
 
   const handleTripDatesChange = useCallback((start: Date, end: Date) => {
@@ -151,7 +180,7 @@ export function HeroBookingPanel() {
       <div className="grid gap-3 sm:gap-3.5 lg:grid-cols-4">
         <div className={`${fieldClassName} lg:col-span-2`}>
           <span className="text-xs font-semibold text-slate-500">
-            Pick-up location
+            {t("pickupLocation")}
           </span>
           <div className={vehicleFilterControlShellClass}>
             <MapPin
@@ -173,22 +202,22 @@ export function HeroBookingPanel() {
                 typeof window !== "undefined" ? document.body : null
               }
               menuPosition="fixed"
-              placeholder="enter your location"
+              placeholder={t("locationPlaceholder")}
               noOptionsMessage={({ inputValue }) => {
                 const q = inputValue.trim();
                 if (!q) return null;
-                return `No locations match "${q}"`;
+                return t("noLocationsMatch", { query: q });
               }}
-              loadingMessage={() => "Searching locations..."}
+              loadingMessage={() => t("searchingLocations")}
               cacheOptions
-              aria-label="Pick-up location"
+              aria-label={t("pickupAria")}
             />
           </div>
         </div>
 
         <div className={`${fieldClassName} lg:col-span-1`}>
           <span className="text-xs font-semibold text-slate-500">
-            Vehicle type
+            {t("vehicleType")}
           </span>
           <div className={vehicleFilterControlShellClass}>
             <Car
@@ -200,8 +229,8 @@ export function HeroBookingPanel() {
               instanceId="vehicle-type"
               className="min-w-0 flex-1"
               value={vehicleType}
-              onChange={(option) => option && setVehicleType(option)}
-              options={[...vehicleTypeOptions]}
+              onChange={(option) => option && setVehicleTypeValue(option.value)}
+              options={[...vehicleTypeOptionsLocalized]}
               isSearchable={false}
               styles={vehicleFilterReactSelectStyles}
               components={heroSelectComponents}
@@ -209,7 +238,7 @@ export function HeroBookingPanel() {
                 typeof window !== "undefined" ? document.body : null
               }
               menuPosition="fixed"
-              aria-label="Vehicle type"
+              aria-label={t("vehicleAria")}
             />
           </div>
         </div>
@@ -227,12 +256,12 @@ export function HeroBookingPanel() {
       <div className="mt-5 flex flex-col gap-4 border-t border-slate-200/80 pt-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-10">
           <Toggle
-            label="Return elsewhere"
+            label={t("returnElsewhere")}
             active={returnElsewhere}
             onToggle={() => setReturnElsewhere((previous) => !previous)}
           />
           <Toggle
-            label="Need hotel delivery"
+            label={t("hotelDelivery")}
             active={hotelDelivery}
             onToggle={() => setHotelDelivery((previous) => !previous)}
           />
@@ -243,7 +272,7 @@ export function HeroBookingPanel() {
           onClick={handleSearch}
           className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 self-end rounded-lg bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:self-auto sm:px-7 sm:text-base"
         >
-          Search
+          {tVehicle("search")}
           <span
             aria-hidden="true"
             className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"

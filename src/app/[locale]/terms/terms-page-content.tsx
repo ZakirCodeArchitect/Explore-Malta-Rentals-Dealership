@@ -15,7 +15,6 @@ import {
   HeartPulse,
   IdCard,
   LifeBuoy,
-  MapPinned,
   Receipt,
   Scale,
   Shield,

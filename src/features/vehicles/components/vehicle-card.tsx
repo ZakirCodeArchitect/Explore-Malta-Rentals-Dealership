@@ -1,5 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { formatVehicleTypeLabel, type Vehicle } from "@/features/vehicles/data/vehicles";
 import {
   BookNowButton,
@@ -27,6 +28,7 @@ export function VehicleCard({
   pickupTime,
   returnTime,
 }: VehicleCardProps) {
+  const t = useTranslations("VehicleCard");
   const mainImage = vehicle.mainImageUrl ?? vehicle.images[0] ?? null;
   const brandModel = [vehicle.brand, vehicle.model].filter(Boolean).join(" ");
   const status = vehicle.rentalWindowStatus;
@@ -46,7 +48,7 @@ export function VehicleCard({
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">
-            Vehicle image coming soon
+            {t("imageSoon")}
           </div>
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
@@ -55,17 +57,17 @@ export function VehicleCard({
         </span>
         {status === "reserved_other" ? (
           <span className="absolute right-3 top-3 rounded-full bg-amber-500/95 px-3 py-1 text-xs font-semibold text-slate-950 shadow-sm">
-            Reserved
+            {t("reserved")}
           </span>
         ) : null}
         {status === "reserved_you" ? (
           <span className="absolute right-3 top-3 rounded-full bg-emerald-600/95 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-            Your hold
+            {t("yourHold")}
           </span>
         ) : null}
         {status === "unavailable" ? (
           <span className="absolute right-3 top-3 rounded-full bg-slate-800/92 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-            Unavailable
+            {t("unavailable")}
           </span>
         ) : null}
       </div>
@@ -76,29 +78,22 @@ export function VehicleCard({
           <p className="mt-1 text-sm text-slate-600">{vehicle.shortDescription ?? vehicle.tagline}</p>
           {brandModel ? <p className="mt-1 text-xs text-slate-500">{brandModel}</p> : null}
           {status === "reserved_you" ? (
-            <p className="mt-2 text-xs font-medium text-emerald-800">
-              You have an active reservation for this vehicle for the selected dates. Continue to complete
-              your booking.
-            </p>
+            <p className="mt-2 text-xs font-medium text-emerald-800">{t("holdNotice")}</p>
           ) : null}
           {status === "reserved_other" ? (
-            <p className="mt-2 text-xs font-medium text-amber-900">
-              Temporarily on hold for these dates — another customer may be completing checkout.
-            </p>
+            <p className="mt-2 text-xs font-medium text-amber-900">{t("reservedOtherNotice")}</p>
           ) : null}
           {status === "unavailable" ? (
-            <p className="mt-2 text-xs font-medium text-slate-700">
-              Not available for the selected pickup and return window.
-            </p>
+            <p className="mt-2 text-xs font-medium text-slate-700">{t("unavailableWindow")}</p>
           ) : null}
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
           <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-slate-800">
-            {vehicle.helmetIncludedCount} helmet{vehicle.helmetIncludedCount === 1 ? "" : "s"}
+            {t("helmetsInline", { count: vehicle.helmetIncludedCount })}
           </span>
           <p className="text-xs text-slate-600">
-            {vehicle.supportsStorageBox ? "Storage box supported" : "No storage box"}
+            {vehicle.supportsStorageBox ? t("storageYes") : t("storageNo")}
           </p>
         </div>
 
@@ -108,21 +103,21 @@ export function VehicleCard({
               href={`/vehicles/${vehicle.slug}`}
               className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
             >
-              View details
+              {t("viewDetails")}
             </Link>
             {status === "reserved_you" ? (
               <Link
                 href={completeBookingHref}
                 className="inline-flex items-center rounded-md bg-[var(--brand-orange)] px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
               >
-                Complete booking
+                {t("completeBooking")}
               </Link>
             ) : status === "reserved_other" || status === "unavailable" ? (
               <span
                 aria-disabled
                 className="inline-flex cursor-not-allowed items-center rounded-md border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500"
               >
-                {status === "reserved_other" ? "On hold" : "Unavailable"}
+                {status === "reserved_other" ? t("onHold") : t("unavailableShort")}
               </span>
             ) : (
               <BookNowButton

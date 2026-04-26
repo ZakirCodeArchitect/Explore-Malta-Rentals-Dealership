@@ -1,27 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
+import { Suspense, startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   SITE_SHELL_OUTER,
   SITE_SHELL_CONTAINER,
   SITE_SHELL_INNER_PAD,
 } from "@/components/site-shell";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/booking", label: "Booking" },
-  { href: "/vehicles", label: "Vehicles" },
-  { href: "/about", label: "About us" },
-  { href: "/guide", label: "Guide" },
-  { href: "/tours", label: "Tours" },
-  { href: "/contact", label: "Contact us" },
-  { href: "/#services", label: "Services" },
-] as const;
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -46,12 +36,24 @@ const navLinkInactiveClass = `${navLinkBaseClass} text-slate-800 hover:opacity-7
 const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]`;
 
 export function SiteNavbar() {
+  const t = useTranslations("Nav");
   const pathname = usePathname();
   const [hash, setHash] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
   const mobileMenuId = useId();
+
+  const navLinks = [
+    { href: "/" as const, labelKey: "home" as const },
+    { href: "/booking" as const, labelKey: "booking" as const },
+    { href: "/vehicles" as const, labelKey: "vehicles" as const },
+    { href: "/about" as const, labelKey: "about" as const },
+    { href: "/guide" as const, labelKey: "guide" as const },
+    { href: "/tours" as const, labelKey: "tours" as const },
+    { href: "/contact" as const, labelKey: "contact" as const },
+    { href: "/#services" as const, labelKey: "services" as const },
+  ] as const;
 
   const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
 
@@ -63,7 +65,9 @@ export function SiteNavbar() {
   }, [pathname]);
 
   useEffect(() => {
-    closeMobileNav();
+    startTransition(() => {
+      closeMobileNav();
+    });
   }, [pathname, hash, closeMobileNav]);
 
   useEffect(() => {
@@ -94,7 +98,7 @@ export function SiteNavbar() {
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0px,env(safe-area-inset-top))]">
       <nav
-        aria-label="Primary"
+        aria-label={t("primary")}
         className="site-navbar pointer-events-auto w-full max-w-full border-b border-slate-200/90 bg-slate-100 text-[var(--foreground)] shadow-[0_1px_0_rgba(15,23,42,0.04)]"
       >
         <div className="h-0.5 w-full shrink-0 bg-red-600" aria-hidden />
@@ -113,7 +117,7 @@ export function SiteNavbar() {
               >
                 <Image
                   src={LOGO_SRC}
-                  alt="Explore Malta Rentals"
+                  alt={t("logoAlt")}
                   width={320}
                   height={56}
                   className="h-10 w-auto max-w-full rounded-md object-contain object-left sm:h-11"
@@ -128,7 +132,7 @@ export function SiteNavbar() {
                   "lg:gap-8",
                 )}
               >
-                {navLinks.map(({ href, label }) => {
+                {navLinks.map(({ href, labelKey }) => {
                   const active = navLinkIsActive(href, pathname, hash);
                   return (
                     <li key={href}>
@@ -137,7 +141,7 @@ export function SiteNavbar() {
                         className={active ? navLinkActiveClass : navLinkInactiveClass}
                         aria-current={active ? "page" : undefined}
                       >
-                        {label}
+                        {t(labelKey)}
                       </Link>
                     </li>
                   );
@@ -145,6 +149,12 @@ export function SiteNavbar() {
               </ul>
 
               <div className="flex shrink-0 items-center justify-self-end gap-2">
+                <div className="hidden md:block">
+                  <Suspense fallback={<div className="h-8 w-[5.5rem] rounded-full border border-slate-200/80 bg-white/60" aria-hidden />}>
+                    <LanguageSwitcher />
+                  </Suspense>
+                </div>
+
                 <div ref={mobileNavRef} className="relative z-[60] md:hidden">
                   <button
                     type="button"
@@ -158,20 +168,25 @@ export function SiteNavbar() {
                     aria-controls={mobileMenuId}
                     onClick={() => setMobileNavOpen((open) => !open)}
                   >
-                    {mobileNavOpen ? "Close" : "Menu"}
+                    {mobileNavOpen ? t("close") : t("menu")}
                   </button>
                   <div
                     ref={mobilePanelRef}
                     id={mobileMenuId}
                     role="region"
-                    aria-label="Site pages"
+                    aria-label={t("primary")}
                     className={joinClasses(
                       "absolute right-0 top-[calc(100%+0.5rem)] w-[min(18rem,calc(100vw-1.5rem))] origin-top-right rounded-xl border border-slate-200 bg-white py-2 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.22)]",
                       mobileNavOpen ? undefined : "hidden",
                     )}
                   >
+                    <div className="border-b border-slate-100 px-4 py-3">
+                      <Suspense fallback={<div className="h-8 w-full rounded-full border border-slate-200/80 bg-slate-50" aria-hidden />}>
+                        <LanguageSwitcher />
+                      </Suspense>
+                    </div>
                     <ul className="m-0 list-none p-0">
-                      {navLinks.map(({ href, label }) => {
+                      {navLinks.map(({ href, labelKey }) => {
                         const active = navLinkIsActive(href, pathname, hash);
                         return (
                           <li key={href}>
@@ -186,7 +201,7 @@ export function SiteNavbar() {
                               aria-current={active ? "page" : undefined}
                               onClick={closeMobileNav}
                             >
-                              {label}
+                              {t(labelKey)}
                             </Link>
                           </li>
                         );
@@ -204,7 +219,7 @@ export function SiteNavbar() {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
                   )}
                 >
-                  Book Now
+                  {t("bookNow")}
                 </Link>
               </div>
             </div>

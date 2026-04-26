@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { format } from "date-fns";
 import { z } from "zod";
 
-import { Prisma, VehicleType, type ReservationHoldStatus } from "@/generated/prisma/client";
+import { Prisma, VehicleType, type ReservationHoldStatus } from "@/generated/prisma/index";
 import { checkVehicleAvailability } from "@/lib/availability";
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 import { prisma } from "@/lib/prisma";
