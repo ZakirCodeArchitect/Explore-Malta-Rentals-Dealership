@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useId, useState } from "react";
+import { startTransition, useCallback, useEffect, useId, useState } from "react";
 
 const GUIDE_IMAGES_BASE = "/GuidePageImages";
 
@@ -144,7 +144,9 @@ export function GuideParkingRulesSlider({ onActiveLineColorChange }: GuideParkin
   }, [majorCount]);
 
   useEffect(() => {
-    setLineColorIndex(0);
+    startTransition(() => {
+      setLineColorIndex(0);
+    });
   }, [majorIndex]);
 
   useEffect(() => {

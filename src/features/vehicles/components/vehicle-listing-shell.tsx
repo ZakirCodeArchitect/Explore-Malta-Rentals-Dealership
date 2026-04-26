@@ -10,7 +10,8 @@ import {
 import Image from "next/image";
 import { addDays } from "date-fns";
 import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";

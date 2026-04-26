@@ -136,7 +136,7 @@ export function formatPickupDateParam(date: Date): string {
 /** Keeps trip end within booking min/max span vs pickup (calendar days). */
 export function clampTripEndDate(pickup: Date, end: Date): Date {
   const start = startOfDay(pickup);
-  let e = startOfDay(end);
+  const e = startOfDay(end);
   const span = differenceInCalendarDays(e, start);
   if (span < TRIP_MIN_SPAN_DAYS) return addDays(start, TRIP_MIN_SPAN_DAYS);
   if (span > TRIP_MAX_SPAN_DAYS) return addDays(start, TRIP_MAX_SPAN_DAYS);

@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { addDays } from "date-fns";
 import AsyncSelect from "react-select/async";
 import { Car, MapPin } from "lucide-react";
@@ -91,7 +91,9 @@ export function HeroBookingPanel() {
   const [hotelDelivery, setHotelDelivery] = useState(true);
 
   useEffect(() => {
-    setIsMounted(true);
+    startTransition(() => {
+      setIsMounted(true);
+    });
   }, []);
 
   const fieldClassName =

@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { BookingFlowProvider, useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import { BookingStepper } from "@/features/booking-flow/components/booking-stepper";
 import { ReservationBanner } from "@/features/booking-flow/components/reservation-banner";
@@ -11,7 +12,6 @@ import { BookingSuccess } from "@/features/booking-flow/components/booking-succe
 import { useHoldHeartbeat } from "@/features/booking-flow/hooks/use-hold-heartbeat";
 import { useHoldCountdown } from "@/features/booking-flow/hooks/use-hold-countdown";
 import { BOOKING_FLOW_STEPS } from "@/features/booking-flow/lib/steps";
-import { bookingFlowSchema } from "@/features/booking-flow/lib/validation";
 import { mapBookingFlowStateToSubmission } from "@/features/booking-flow/lib/map-booking-flow-to-submission";
 import {
   mapApiBookingErrorPathToFormPath,
@@ -31,12 +31,14 @@ type SuccessState = {
 
 function BookingFlowBody() {
   const router = useRouter();
+  const t = useTranslations("BookingFlow");
   const [success, setSuccess] = useState<SuccessState | null>(null);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [heartbeatWarning, setHeartbeatWarning] = useState<string | null>(null);
   const {
+    bookingFlowSchema,
     state,
     reservationHold,
     reservationHoldError,
@@ -104,8 +106,8 @@ function BookingFlowBody() {
     if (!holdIsExpired || reservationHold.status !== "ACTIVE") {
       return;
     }
-    markReservationHoldExpired("Your reservation has expired. Please reserve the vehicle again.");
-  }, [holdIsExpired, markReservationHoldExpired, reservationHold.status]);
+    markReservationHoldExpired(t("holdExpiredDefault"));
+  }, [holdIsExpired, markReservationHoldExpired, reservationHold.status, t]);
 
   const activeStep =
     activeStepId === "rental_details" ? (
@@ -128,7 +130,7 @@ function BookingFlowBody() {
         }
         const holdResult = await createOrRefreshReservationHold();
         if (!holdResult.ok) {
-          setSubmitError(holdResult.message ?? "Unable to reserve this vehicle right now.");
+          setSubmitError(holdResult.message ?? t("unableReserve"));
           return;
         }
       }
@@ -143,8 +145,8 @@ function BookingFlowBody() {
       const parsed = bookingFlowSchema.safeParse(getBookingValues());
       setSubmitError(
         parsed.success
-          ? "Please review the highlighted fields."
-          : parsed.error.issues[0]?.message ?? "Please review the highlighted fields.",
+          ? t("reviewFields")
+          : parsed.error.issues[0]?.message ?? t("reviewFields"),
       );
       return;
     }
@@ -152,11 +154,13 @@ function BookingFlowBody() {
     setTermsModalOpen(true);
   }, [
     activeStepId,
+    bookingFlowSchema,
     clearServerFieldErrors,
     createOrRefreshReservationHold,
     getBookingValues,
     goNext,
     isLastStep,
+    t,
     validateCurrentStep,
     validateAllBookingFields,
   ]);
@@ -164,7 +168,7 @@ function BookingFlowBody() {
   const handleTermsAgree = useCallback(async () => {
     if (!reservationHold.holdReference || !holdIsActive || !holdMatchesCurrentRental) {
       setTermsModalOpen(false);
-      setSubmitError("Your reservation has expired. Please reserve the vehicle again.");
+      setSubmitError(t("holdExpiredDefault"));
       markReservationHoldExpired();
       return;
     }
@@ -174,7 +178,7 @@ function BookingFlowBody() {
 
     const stateAfterConsent = getBookingValues();
     if (!stateAfterConsent.consent.termsAccepted) {
-      setSubmitError("Please accept the terms and conditions to continue.");
+      setSubmitError(t("acceptTerms"));
       return;
     }
 
@@ -211,18 +215,18 @@ function BookingFlowBody() {
       const parts = [
         result.message,
         unmapped.length ? summarizeApiBookingErrors(unmapped) : "",
-        mapped.length ? "Some issues are highlighted next to the relevant fields." : "",
+        mapped.length ? t("issuesHighlighted") : "",
       ].filter(Boolean);
       setSubmitError(parts.join(" "));
       const holdConflict = result.errors.some((err) => err.path === "holdReference");
       if (holdConflict || result.status === 409) {
-        markReservationHoldExpired("Your reservation has expired. Please reserve the vehicle again.");
+        markReservationHoldExpired(t("holdExpiredDefault"));
       }
       return;
     }
 
     if (result.status === 409) {
-      markReservationHoldExpired("Your reservation has expired. Please reserve the vehicle again.");
+      markReservationHoldExpired(t("holdExpiredDefault"));
     }
     setSubmitError(result.message);
   }, [
@@ -236,6 +240,7 @@ function BookingFlowBody() {
     markReservationHoldExpired,
     reservationHold.holdReference,
     resetBookingForm,
+    t,
     updateSection,
   ]);
 
@@ -264,7 +269,7 @@ function BookingFlowBody() {
       ) : null}
 
       {holdIsExpired || reservationHoldError ? (
-        <HoldExpiredNotice message={reservationHoldError ?? "Your reservation has expired. Please reserve the vehicle again."} />
+        <HoldExpiredNotice message={reservationHoldError ?? t("holdExpiredDefault")} />
       ) : null}
 
       {heartbeatWarning ? (
@@ -299,7 +304,7 @@ function BookingFlowBody() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-slate-600">
-          Step {activeStepIndex + 1} of {BOOKING_FLOW_STEPS.length}
+          {t("stepOf", { current: activeStepIndex + 1, total: BOOKING_FLOW_STEPS.length })}
         </p>
         <div className="flex items-center gap-2">
           <button
@@ -310,7 +315,7 @@ function BookingFlowBody() {
             disabled={submitting || isReleasingHold}
             className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isReleasingHold ? "Cancelling..." : "Cancel booking"}
+            {isReleasingHold ? t("cancelling") : t("cancelBooking")}
           </button>
           <button
             type="button"
@@ -318,7 +323,7 @@ function BookingFlowBody() {
             disabled={isFirstStep || submitting || isCreatingHold}
             className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Back
+            {t("back")}
           </button>
           <button
             type="button"
@@ -333,12 +338,12 @@ function BookingFlowBody() {
             className="min-h-11 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isCreatingHold
-              ? "Reserving..."
+              ? t("reserving")
               : isLastStep
-                ? (submitting ? "Submitting..." : "Confirm booking")
+                ? (submitting ? t("submitting") : t("confirmBooking"))
                 : activeStepId === "rental_details"
-                  ? "Book now"
-                  : "Next"}
+                  ? t("bookNow")
+                  : t("next")}
           </button>
         </div>
       </div>

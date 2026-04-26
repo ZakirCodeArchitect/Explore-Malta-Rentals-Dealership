@@ -22,7 +22,7 @@ export function BikeCategoriesSection() {
             title="Choose your ride"
             description={
               <>
-                Pick the right engine size for your Malta plan - then we'll help you
+                Pick the right engine size for your Malta plan - then we&apos;ll help you
                 book confidently.
               </>
             }

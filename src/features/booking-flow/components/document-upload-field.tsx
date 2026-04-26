@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
 import { uploadBookingDocument } from "@/features/booking-flow/lib/upload-booking-document";
 import type { UploadCategory } from "@/lib/uploads/types";
 
@@ -42,7 +42,9 @@ export function DocumentUploadField({
 
   useEffect(() => {
     if (!value.trim()) {
-      resetLocalStatus();
+      startTransition(() => {
+        resetLocalStatus();
+      });
     }
   }, [value, resetLocalStatus]);
 

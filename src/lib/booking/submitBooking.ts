@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { format } from "date-fns";
 
-import { Prisma, type VehicleType } from "@/generated/prisma/client";
+import { Prisma, type VehicleType } from "@/generated/prisma/index";
 import {
   checkVehicleAvailability,
   checkVehicleTypeAvailability,

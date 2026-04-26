@@ -1,10 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
-import { SiteNavbar } from "@/components/site-navbar";
-import { Footer } from "@/features/home/components/footer";
-import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
-import { SITE_META } from "@/lib/site-brand-copy";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -21,8 +17,6 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: SITE_META.title,
-  description: SITE_META.description,
   icons: {
     icon: {
       url: FAVICON_PATH,
@@ -86,10 +80,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: STRIP_FDPROCESSEDID_SCRIPT }}
         />
-        <SiteNavbar />
         {children}
-        <Footer />
-        <WhatsAppFloatingButton />
       </body>
     </html>
   );

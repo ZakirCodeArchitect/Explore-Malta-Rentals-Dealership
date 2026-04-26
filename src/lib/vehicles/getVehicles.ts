@@ -1,4 +1,4 @@
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/index";
 import { prisma } from "@/lib/prisma";
 
 import type { GetVehiclesFilters, GetVehiclesResult, VehicleListItemDto } from "./types";

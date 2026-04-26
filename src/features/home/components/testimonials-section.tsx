@@ -110,7 +110,7 @@ export function TestimonialsSection() {
               id="testimonials-title"
               className="mt-4 text-4xl font-bold tracking-[-0.045em] text-slate-950 sm:text-5xl"
             >
-              Don't take our word for it,
+              Don&apos;t take our word for it,
               <br />
               see what our clients say
             </h2>
