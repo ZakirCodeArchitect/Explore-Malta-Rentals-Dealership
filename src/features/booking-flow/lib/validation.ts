@@ -2,6 +2,7 @@ import { differenceInHours, parse } from "date-fns";
 import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
 import { BOOKING_FLOW_STEPS, type BookingFlowStepId } from "@/features/booking-flow/lib/steps";
+import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-rental";
 import { isLicenseAllowedForVehicle } from "@/features/booking-flow/lib/license-categories";
 import type { BookingFlowState } from "@/features/booking-flow/lib/types";
 
@@ -161,12 +162,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       });
     }
 
-    const selectedType = state.rental.vehicleType.trim().toLowerCase();
-    const requiresHelmet =
-      selectedType.includes("motorbike") ||
-      selectedType.includes("atv") ||
-      selectedType.includes("scooter") ||
-      selectedType.includes("motorcycle");
+    const requiresHelmet = vehicleTypeNeedsHelmetFlow(state.rental.vehicleType);
     if (requiresHelmet && (!hasText(state.addons.helmetSize1) || !hasText(state.addons.helmetSize2))) {
       context.addIssue({
         code: z.ZodIssueCode.custom,

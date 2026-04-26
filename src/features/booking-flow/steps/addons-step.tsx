@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-rental";
 import {
   getAllowedLicenseCategories,
   getLicenseCategoryHint,
@@ -60,12 +61,7 @@ export function AddonsStep() {
   const [helmetSize1MenuOpen, setHelmetSize1MenuOpen] = useState(false);
   const [helmetSize2MenuOpen, setHelmetSize2MenuOpen] = useState(false);
   const helmetEnabled = state.addons.helmet;
-  const selectedVehicleType = state.rental.vehicleType.toLowerCase();
-  const supportsHelmet =
-    selectedVehicleType === "motorbike" ||
-    selectedVehicleType === "scooter" ||
-    selectedVehicleType === "atv" ||
-    selectedVehicleType === "motorcycle";
+  const supportsHelmet = vehicleTypeNeedsHelmetFlow(state.rental.vehicleType);
   const selectedCdwOption =
     cdwOptions.find((option) => option.value === state.addons.cdwPlan) ??
     cdwOptions[0];
