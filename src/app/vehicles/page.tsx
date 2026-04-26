@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
 import { VehicleListingShell } from "@/features/vehicles/components/vehicle-listing-shell";
-import { vehicles } from "@/features/vehicles/data/vehicles";
 
 export const metadata: Metadata = {
   title: "Vehicle Rentals | Malta Rentals",
@@ -37,7 +36,7 @@ export default function VehiclesPage() {
           </Container>
         }
       >
-        <VehicleListingShell vehicles={vehicles} heroIntro={HERO_INTRO} />
+        <VehicleListingShell heroIntro={HERO_INTRO} />
       </Suspense>
     </main>
   );

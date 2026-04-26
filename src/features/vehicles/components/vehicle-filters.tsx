@@ -217,8 +217,9 @@ export function VehicleFilters({
 
   return (
     <section
+      id="vehicle-trip-search"
       aria-label="Vehicle search"
-      className="sticky top-18 z-20 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
+      className="sticky top-18 z-20 scroll-mt-28 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
     >
       <div className={mainGridClass}>
         <div className="min-w-0">

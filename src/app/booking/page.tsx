@@ -3,18 +3,32 @@ import Link from "next/link";
 
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
-import { BookingSearchForm } from "@/features/booking/components/booking-search-form";
-
-/** Booking hero backdrop (`public/malta-1.jpg`). */
-const BOOKING_HERO_BACKDROP = "/malta-1.jpg";
+import { BookingFlow } from "@/features/booking-flow/components/booking-flow";
 
 export const metadata: Metadata = {
   title: "Booking | Malta Rentals",
   description:
-    "Find, book and rent easily with Explore Malta Rentals — Pietà pickup, optional off-site service, deposit options, then browse available scooters.",
+    "Multi-step booking flow for Explore Malta Rentals with vehicle selection, trip details, add-ons and terms acceptance.",
 };
 
-export default function BookingPage() {
+type BookingPageProps = Readonly<{
+  searchParams: Promise<{
+    vehicle?: string;
+    date?: string;
+    returnDate?: string;
+    pickupDate?: string;
+    dropoffDate?: string;
+    pickupTime?: string;
+    dropoffTime?: string;
+    returnTime?: string;
+  }>;
+}>;
+
+export default async function BookingPage({ searchParams }: BookingPageProps) {
+  const { vehicle, date, returnDate, pickupDate, dropoffDate, pickupTime, dropoffTime, returnTime } = await searchParams;
+  const resolvedPickupDate = date ?? pickupDate;
+  const resolvedReturnDate = returnDate ?? dropoffDate;
+
   return (
     <main className="flex flex-1 flex-col">
       <section
@@ -23,13 +37,7 @@ export default function BookingPage() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: [
-              "linear-gradient(115deg, rgba(255,255,255,0.42) 0%, rgba(248,250,252,0.2) 42%, rgba(236,245,252,0.12) 100%)",
-              `url("${BOOKING_HERO_BACKDROP}")`,
-            ].join(", "),
-          }}
+          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-sky-100 via-blue-50 to-slate-100"
         />
         <div
           aria-hidden
@@ -47,16 +55,24 @@ export default function BookingPage() {
                 id="booking-heading"
                 className="text-4xl font-bold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl"
               >
-                Find, Book and Rent easily with Explore Malta Rentals
+                Multi-step booking for Explore Malta Rentals
               </h1>
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600 sm:mx-0 sm:text-lg">
-                Shop pickup in Pietà, optional off-site pickup or drop-off (€20 each, payable at checkout), then browse
-                available scooters.
+                Complete all booking stages from vehicle selection to terms acceptance.
+                Pricing and backend submission are introduced in the next phases.
               </p>
             </header>
 
             <div className="mt-10">
-              <BookingSearchForm />
+              <BookingFlow
+                initialVehicleSlug={vehicle}
+                initialRental={{
+                  pickupDate: resolvedPickupDate,
+                  returnDate: resolvedReturnDate,
+                  pickupTime,
+                  returnTime: returnTime ?? dropoffTime,
+                }}
+              />
             </div>
           </div>
         </Container>

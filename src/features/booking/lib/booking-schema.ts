@@ -7,9 +7,7 @@ export const TRIP_MIN_SPAN_DAYS = 1;
 export const TRIP_MAX_SPAN_DAYS = 30;
 
 export const BOOKING_SHOP_LABEL = "Pietà — Explore Malta Rentals (shop)" as const;
-/** Extra charge per off-site pickup or drop-off request (payable at checkout). */
-export const OFF_SITE_SERVICE_FEE_EUR = 20;
-export const SECURITY_DEPOSIT_EUR = 350;
+export const SECURITY_DEPOSIT_EUR = 250;
 
 function isBookingTime(value: string) {
   return (BOOKING_TIME_SLOTS as readonly string[]).includes(value);

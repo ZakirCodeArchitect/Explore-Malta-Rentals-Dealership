@@ -18,6 +18,7 @@ import { LOGO_PATH } from "@/lib/site-brand-copy";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import type {
   Transmission,
   Vehicle,
@@ -45,6 +46,9 @@ import {
 const LG_MIN_PX = 1024;
 const DEFAULT_PICKUP_DATE = new Date(2026, 5, 12);
 const DEFAULT_RETURN_DATE = addDays(DEFAULT_PICKUP_DATE, TRIP_MIN_SPAN_DAYS);
+/** Listing filters do not collect times; defaults align availability with a sensible day window. */
+const DEFAULT_LISTING_PICKUP_TIME = "09:00";
+const DEFAULT_LISTING_DROPOFF_TIME = "09:00";
 
 function subscribeMinWidthLg(onChange: () => void) {
   const mq = window.matchMedia(`(min-width: ${LG_MIN_PX}px)`);
@@ -65,7 +69,7 @@ function useIsLgViewport() {
 }
 
 type VehicleListingShellProps = Readonly<{
-  vehicles: readonly Vehicle[];
+  vehicles?: readonly Vehicle[];
   /** When set, title + filters sit in a bounded band with backdrop; grid sits on page background below. */
   heroIntro?: Readonly<{
     title: string;
@@ -77,6 +81,7 @@ export function VehicleListingShell({
   vehicles,
   heroIntro,
 }: VehicleListingShellProps) {
+  const shouldFetchFromApi = !vehicles;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -92,6 +97,8 @@ export function VehicleListingShell({
   const dropoffDateParam = searchParams.get("dropoffDate");
   const hotelDeliveryParam = searchParams.get("hotelDelivery");
   const ccParam = searchParams.get("cc");
+  const pickupTimeParam = searchParams.get("pickupTime");
+  const dropoffTimeParam = searchParams.get("dropoffTime");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
   const initialTransmission =
@@ -127,6 +134,41 @@ export function VehicleListingShell({
   const [selectedSeats, setSelectedSeats] =
     useState<VehicleSeatsFilter>(initialSeats);
 
+  const bookingPickupDate =
+    dateParam ?? pickupDateParam ?? formatPickupDateParam(pickupDate);
+  const bookingReturnDate =
+    returnDateParam ?? dropoffDateParam ?? formatPickupDateParam(returnDate);
+  const bookingPickupTime = pickupTimeParam;
+  const bookingReturnTime = dropoffTimeParam;
+
+  /** Hold-aware listing only after trip is committed to the URL (Search). */
+  const urlTripPickupDate = (dateParam ?? pickupDateParam)?.trim() || "";
+  const urlTripReturnDate = (returnDateParam ?? dropoffDateParam)?.trim() || "";
+  const urlTripPickupTime = pickupTimeParam?.trim() || "";
+  const urlTripReturnTime = dropoffTimeParam?.trim() || "";
+
+  const vehiclesFetchRentalWindow = useMemo(() => {
+    if (!urlTripPickupDate || !urlTripReturnDate) {
+      return null;
+    }
+    return {
+      pickupDate: urlTripPickupDate,
+      pickupTime: urlTripPickupTime || DEFAULT_LISTING_PICKUP_TIME,
+      returnDate: urlTripReturnDate,
+      returnTime: urlTripReturnTime || DEFAULT_LISTING_DROPOFF_TIME,
+    };
+  }, [urlTripPickupDate, urlTripReturnDate, urlTripPickupTime, urlTripReturnTime]);
+
+  const tripDatesCommitted = vehiclesFetchRentalWindow !== null;
+
+  const {
+    vehicles: apiVehicles,
+    isLoading: isVehiclesLoading,
+    error: vehiclesError,
+  } = useVehicles({ enabled: shouldFetchFromApi, rentalWindow: vehiclesFetchRentalWindow });
+
+  const vehicleDataset = vehicles ?? apiVehicles;
+
   const [appliedType, setAppliedType] =
     useState<VehicleType | "All">(initialType);
   const [appliedTransmission, setAppliedTransmission] =
@@ -145,6 +187,15 @@ export function VehicleListingShell({
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
+  const [tripDatesPrompt, setTripDatesPrompt] = useState(false);
+
+  useEffect(() => {
+    if (!tripDatesPrompt) {
+      return;
+    }
+    const timer = window.setTimeout(() => setTripDatesPrompt(false), 6000);
+    return () => window.clearTimeout(timer);
+  }, [tripDatesPrompt]);
 
   const replaceQuery = useCallback(
     (mutate: (params: URLSearchParams) => void) => {
@@ -280,6 +331,8 @@ export function VehicleListingShell({
       }
       p.set("date", formatPickupDateParam(pickupDate));
       p.set("returnDate", formatPickupDateParam(returnDate));
+      p.set("pickupTime", pickupTimeParam?.trim() || DEFAULT_LISTING_PICKUP_TIME);
+      p.set("dropoffTime", dropoffTimeParam?.trim() || DEFAULT_LISTING_DROPOFF_TIME);
       p.delete("pickupDate");
       p.delete("dropoffDate");
       p.delete("returnElsewhere");
@@ -296,7 +349,9 @@ export function VehicleListingShell({
     });
   }, [
     hotelDelivery,
+    dropoffTimeParam,
     pickupDate,
+    pickupTimeParam,
     returnDate,
     pickupLocation,
     replaceQuery,
@@ -331,6 +386,8 @@ export function VehicleListingShell({
       p.delete("returnDate");
       p.delete("pickupDate");
       p.delete("dropoffDate");
+      p.delete("pickupTime");
+      p.delete("dropoffTime");
       p.delete("hotelDelivery");
       p.delete("returnElsewhere");
       p.delete("cc");
@@ -339,18 +396,18 @@ export function VehicleListingShell({
 
   const vehicleListingColorOptions = useMemo(() => {
     const unique = new Set<VehicleColor>();
-    for (const v of vehicles) {
+    for (const v of vehicleDataset) {
       unique.add(v.color);
     }
     const sorted = [...unique].sort((a, b) => a.localeCompare(b));
     return ["All" as const, ...sorted];
-  }, [vehicles]);
+  }, [vehicleDataset]);
 
   const filteredVehicles = useMemo(() => {
     const typeFiltered =
       appliedType === "All"
-        ? vehicles
-        : vehicles.filter((vehicle) => vehicle.type === appliedType);
+        ? vehicleDataset
+        : vehicleDataset.filter((vehicle) => vehicle.type === appliedType);
     const transmissionFiltered =
       appliedTransmission === "All"
         ? typeFiltered
@@ -379,13 +436,25 @@ export function VehicleListingShell({
 
     return [...ccFiltered];
   }, [
-    vehicles,
+    vehicleDataset,
     appliedCc,
     appliedColor,
     appliedSeats,
     appliedType,
     appliedTransmission,
   ]);
+
+  const bookingHref = (() => {
+    if (!vehiclesFetchRentalWindow) {
+      return "/booking";
+    }
+    const bookingParams = new URLSearchParams();
+    bookingParams.set("date", vehiclesFetchRentalWindow.pickupDate);
+    bookingParams.set("returnDate", vehiclesFetchRentalWindow.returnDate);
+    bookingParams.set("pickupTime", vehiclesFetchRentalWindow.pickupTime);
+    bookingParams.set("dropoffTime", vehiclesFetchRentalWindow.returnTime);
+    return `/booking?${bookingParams.toString()}`;
+  })();
 
   const showListingSidebar = pathname === "/vehicles";
   const isLg = useIsLgViewport();
@@ -449,6 +518,17 @@ export function VehicleListingShell({
         vehicles
       </p>
 
+      {tripDatesPrompt ? (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950"
+        >
+          Set your trip dates in the search bar, then click{" "}
+          <span className="font-semibold">Search</span> to load availability. After that,{" "}
+          <span className="font-semibold">Book now</span> will reserve the vehicle for those dates.
+        </div>
+      ) : null}
+
       {isRefreshing ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -463,11 +543,45 @@ export function VehicleListingShell({
             </div>
           ))}
         </div>
+      ) : shouldFetchFromApi && isVehiclesLoading ? (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={`loading-${index}`}
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4"
+            >
+              <div className="h-48 animate-pulse rounded-xl bg-slate-200/75" />
+              <div className="mt-4 h-5 w-2/3 animate-pulse rounded bg-slate-200/75" />
+              <div className="mt-2 h-4 w-full animate-pulse rounded bg-slate-200/65" />
+              <div className="mt-5 h-9 w-1/2 animate-pulse rounded-full bg-slate-200/75" />
+            </div>
+          ))}
+        </div>
+      ) : shouldFetchFromApi && vehiclesError ? (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/70 px-6 py-10 text-center">
+          <h3 className="text-lg font-semibold text-rose-900">Unable to load vehicles</h3>
+          <p className="mt-2 text-sm text-rose-800">{vehiclesError}</p>
+        </div>
       ) : filteredVehicles.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredVehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.slug} vehicle={vehicle} />
+            <VehicleCard
+              key={vehicle.slug}
+              vehicle={vehicle}
+              bookingHref={bookingHref}
+              tripDatesCommitted={tripDatesCommitted}
+              onTripDatesRequired={() => setTripDatesPrompt(true)}
+              pickupDate={vehiclesFetchRentalWindow?.pickupDate ?? null}
+              returnDate={vehiclesFetchRentalWindow?.returnDate ?? null}
+              pickupTime={vehiclesFetchRentalWindow?.pickupTime ?? null}
+              returnTime={vehiclesFetchRentalWindow?.returnTime ?? null}
+            />
           ))}
+        </div>
+      ) : vehicleDataset.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
+          <h3 className="text-lg font-semibold text-slate-900">No vehicles available right now</h3>
+          <p className="mt-2 text-sm text-slate-600">Please check back shortly for newly listed rentals.</p>
         </div>
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
@@ -537,11 +651,11 @@ export function VehicleListingShell({
 
     if (listingSidebar) {
       return (
-        <div className="flex w-full flex-col lg:flex-row lg:items-start">
+        <div className="flex w-full flex-col lg:flex-row lg:items-stretch">
           <aside
             aria-label="Vehicle filters"
             className={[
-              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm lg:self-start",
+              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm",
               filtersCollapsed
                 ? "lg:w-12 lg:max-w-12 lg:min-w-12"
                 : "lg:w-[min(15.5rem,calc(100vw-1rem))] lg:max-w-[15.5rem]",
@@ -549,7 +663,7 @@ export function VehicleListingShell({
           >
             <div
               className={[
-                "px-4 py-6 sm:px-4 sm:py-6",
+                "px-4 py-6 sm:px-4 sm:py-6 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain",
                 filtersCollapsed
                   ? "lg:px-2 lg:pt-3 lg:pb-5"
                   : "lg:px-4 lg:pt-4 lg:pb-7",
@@ -577,11 +691,11 @@ export function VehicleListingShell({
   return (
     <div className="mt-8 space-y-6">
       {listingSidebar ? (
-        <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-0">
+        <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
           <aside
             aria-label="Vehicle filters"
             className={[
-              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm lg:self-start",
+              "vehicle-filters-rail order-2 hidden w-full shrink-0 flex-col border-t border-slate-200/80 bg-gradient-to-b from-white to-[#f7fbfe] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex lg:order-1 lg:border-t-0 lg:border-r lg:border-slate-200/50 lg:shadow-[inset_-1px_0_0_rgba(15,23,42,0.04)] lg:backdrop-blur-sm",
               filtersCollapsed
                 ? "lg:w-12 lg:max-w-12 lg:min-w-12"
                 : "lg:w-[min(15.5rem,calc(100vw-1rem))] lg:max-w-[15.5rem]",
@@ -589,7 +703,7 @@ export function VehicleListingShell({
           >
             <div
               className={[
-                "px-4 py-6 sm:px-4 sm:py-6",
+                "px-4 py-6 sm:px-4 sm:py-6 lg:sticky lg:top-[var(--site-header-offset)] lg:z-[1] lg:max-h-[calc(100dvh-var(--site-header-offset))] lg:overflow-y-auto lg:overscroll-contain",
                 filtersCollapsed
                   ? "lg:px-2 lg:pt-3 lg:pb-5"
                   : "lg:px-4 lg:pt-4 lg:pb-7",

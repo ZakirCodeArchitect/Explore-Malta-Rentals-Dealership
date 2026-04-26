@@ -1,3 +1,6 @@
+import type { VehicleRentalWindowStatus } from "@/lib/vehicles/types";
+
+export type ApiVehicleType = "MOTORBIKE_50CC" | "MOTORBIKE_125CC" | "BICYCLE" | "ATV";
 export type VehicleType = "Scooter" | "Motorcycle" | "ATV" | "Bicycle";
 export type Transmission = "Automatic" | "Manual";
 
@@ -21,14 +24,48 @@ export type VehicleAddOn = Readonly<{
   priceOnce?: number;
 }>;
 
+export type VehicleListApiItem = Readonly<{
+  id: string;
+  name: string;
+  slug: string;
+  vehicleType: ApiVehicleType;
+  brand: string | null;
+  model: string | null;
+  shortDescription: string | null;
+  description: string | null;
+  mainImageUrl: string | null;
+  helmetIncludedCount: number;
+  supportsStorageBox: boolean;
+  rentalWindowStatus?: VehicleRentalWindowStatus;
+}>;
+
+export type VehicleImageApiItem = Readonly<{
+  imageUrl: string;
+  altText: string | null;
+  sortOrder: number;
+  isPrimary: boolean;
+}>;
+
+export type VehicleDetailApiItem = VehicleListApiItem & {
+  images: VehicleImageApiItem[];
+};
+
 export type Vehicle = Readonly<{
+  id: string;
   slug: string;
   name: string;
   type: VehicleType;
+  apiVehicleType: ApiVehicleType;
+  brand: string | null;
+  model: string | null;
+  shortDescription: string | null;
   tagline: string;
   description: string;
+  mainImageUrl: string | null;
+  images: readonly string[];
+  helmetIncludedCount: number;
+  supportsStorageBox: boolean;
   pricePerDay: number;
-  /** Security deposit held for this model (EUR). Omit if not fixed per vehicle. */
   securityDepositEUR?: number;
   seats: number;
   transmission: Transmission;
@@ -38,154 +75,135 @@ export type Vehicle = Readonly<{
   rating: number;
   reviewCount: number;
   location: string;
-  images: readonly string[];
   highlights: readonly string[];
   features: readonly string[];
   addOns: readonly VehicleAddOn[];
+  /** Present when listing was fetched with full pickup/return date+time (holds). */
+  rentalWindowStatus?: VehicleRentalWindowStatus;
 }>;
 
-const OPTIONAL_ADDONS: readonly VehicleAddOn[] = [
-  { id: "storage-box", name: "Storage box", priceOnce: 10 },
+const PLACEHOLDER_ADDONS: readonly VehicleAddOn[] = [
   { id: "low-road-insurance", name: "Lowest Road Insurance", pricePerDay: 3 },
   { id: "full-coverage-insurance", name: "Full Coverage Insurance", pricePerDay: 8 },
 ];
 
-const LEX_125_FEATURES = [
-  "Automatic CVT (twist-and-go)",
-  "Fuel injection",
-  "Hydraulic disc brakes front & rear",
-  "8L fuel tank (typical Aura 125)",
-  "Under-seat storage",
-  "LED lighting & digital dash (model-dependent trim)",
-] as const;
+function readableApiVehicleType(type: ApiVehicleType): string {
+  switch (type) {
+    case "MOTORBIKE_50CC":
+      return "Motorbike 50cc";
+    case "MOTORBIKE_125CC":
+      return "Motorbike 125cc";
+    case "BICYCLE":
+      return "Bicycle";
+    case "ATV":
+      return "ATV";
+    default:
+      return "Vehicle";
+  }
+}
 
-const LEX_125_DESC_GREY =
-  "The Aura 125 is a full-sized commuter scooter: fuel-injected 125cc single, CVT automatic, and hydraulic discs front and rear. This unit is the grey finish. Typical manufacturer figures include an 8L tank, ~134kg dry weight, and under-seat storage; ideal for two-up coastal runs when ridden within licence rules.";
+function mapApiTypeToListingType(type: ApiVehicleType): VehicleType {
+  if (type === "ATV") return "ATV";
+  if (type === "BICYCLE") return "Bicycle";
+  return "Scooter";
+}
 
-const LEX_125_DESC_RED =
-  "Mechanically the same Lexmoto Aura 125 as the grey bike: 125cc air-cooled single with CVT automatic and disc brakes both ends. The difference here is the red colourway. Suited to riders stepping up from smaller scooters who want stable motorway-capable performance where legally allowed.";
+function engineByApiType(type: ApiVehicleType): string {
+  if (type === "MOTORBIKE_50CC") return "50cc";
+  if (type === "MOTORBIKE_125CC") return "125cc";
+  if (type === "ATV") return "ATV";
+  return "Bicycle";
+}
 
-function lex125Grey(n: number): Vehicle {
+function supportsStorageFeatureLabel(supportsStorageBox: boolean): string {
+  return supportsStorageBox ? "Storage box available" : "Storage box unavailable";
+}
+
+function toVehicleImageList(
+  mainImageUrl: string | null,
+  images: readonly VehicleImageApiItem[] | undefined,
+): string[] {
+  const imageUrls = (images ?? []).map((image) => image.imageUrl).filter(Boolean);
+  if (mainImageUrl && !imageUrls.includes(mainImageUrl)) {
+    return [mainImageUrl, ...imageUrls];
+  }
+  return mainImageUrl ? [mainImageUrl] : imageUrls;
+}
+
+function buildTagline(item: VehicleListApiItem): string {
+  if (item.shortDescription?.trim()) return item.shortDescription;
+  const parts = [item.brand, item.model].filter(Boolean);
+  if (parts.length > 0) return `${parts.join(" ")} · ${readableApiVehicleType(item.vehicleType)}`;
+  return readableApiVehicleType(item.vehicleType);
+}
+
+function buildDescription(item: VehicleListApiItem): string {
+  if (item.description?.trim()) return item.description;
+  if (item.shortDescription?.trim()) return item.shortDescription;
+  return `${item.name} is available for booking in Malta.`;
+}
+
+export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
+  const inferredType = mapApiTypeToListingType(item.vehicleType);
+  const supportsStorageBox = item.supportsStorageBox === true;
+
   return {
-    slug: `lex-moto-aura-125cc-grey-${n}`,
-    name: `LEX MOTO AURA 125cc (Grey) #${n}`,
-    type: "Scooter",
-    tagline: "Lexmoto Aura 125 in matte grey — full-size automatic with twin discs.",
-    description: LEX_125_DESC_GREY,
-    pricePerDay: 10,
-    securityDepositEUR: 350,
-    seats: 2,
-    transmission: "Automatic",
-    fuel: "Petrol",
+    id: item.id,
+    slug: item.slug,
+    name: item.name,
+    type: inferredType,
+    apiVehicleType: item.vehicleType,
+    brand: item.brand,
+    model: item.model,
+    shortDescription: item.shortDescription,
+    tagline: buildTagline(item),
+    description: buildDescription(item),
+    mainImageUrl: item.mainImageUrl,
+    images: item.mainImageUrl ? [item.mainImageUrl] : [],
+    helmetIncludedCount: item.helmetIncludedCount,
+    supportsStorageBox,
+    pricePerDay: 0,
+    seats: inferredType === "Bicycle" ? 1 : 2,
+    transmission: inferredType === "Bicycle" ? "Manual" : "Automatic",
+    fuel: inferredType === "Bicycle" ? "Human powered" : "Petrol",
     color: "Gray",
-    engine: "125cc (air-cooled single, fuel injected)",
-    rating: 4.8,
-    reviewCount: 18,
-    location: "Pietà, Malta",
-    images: ["/product-images/lex moto grey.png"],
-    highlights: ["From EUR 10/day", "Deposit EUR 350", "Helmets & phone holders included"],
-    features: [...LEX_125_FEATURES],
-    addOns: [...OPTIONAL_ADDONS],
-  };
-}
-
-function lex125Red(n: number): Vehicle {
-  return {
-    slug: `lex-moto-aura-125cc-red-${n}`,
-    name: `LEX MOTO AURA 125cc (Red) #${n}`,
-    type: "Scooter",
-    tagline: "Same Aura 125 platform in red — 125cc automatic with confident braking.",
-    description: LEX_125_DESC_RED,
-    pricePerDay: 10,
-    securityDepositEUR: 350,
-    seats: 2,
-    transmission: "Automatic",
-    fuel: "Petrol",
-    color: "Red",
-    engine: "125cc (air-cooled single, fuel injected)",
-    rating: 4.7,
-    reviewCount: 12,
-    location: "Pietà, Malta",
-    images: ["/product-images/lex moto red.png"],
-    highlights: ["From EUR 10/day", "Deposit EUR 350", "Helmets & phone holders included"],
-    features: [...LEX_125_FEATURES],
-    addOns: [...OPTIONAL_ADDONS],
-  };
-}
-
-const NECO_50_FEATURES = [
-  "Automatic CVT",
-  "50cc air-cooled 4-stroke",
-  "12″ wheels — easy in traffic",
-  "CBS linked brakes on many One 12 builds",
-  "EFI (typical current stock)",
-  "Practical under-seat space for essentials",
-] as const;
-
-function necoOneBlack(n: number): Vehicle {
-  return {
-    slug: `neco-one-50cc-black-${n}`,
-    name: `NECO ONE (50cc) #${n}`,
-    type: "Scooter",
-    tagline: "NECO One 12″ — lightweight 50cc commuter for Valletta loops.",
-    description:
-      "The standard NECO ONE is a modern urban scooter in the NECO One 12″ line: 50cc automatic, low weight, and simple ergonomics for filtering traffic. Figures published for this family often include ~5–5.5L fuel tanks, 12″ wheels, and EFI — exact trim may vary; ask at pickup if you need a specific feature.",
-    pricePerDay: 10,
-    securityDepositEUR: 350,
-    seats: 2,
-    transmission: "Automatic",
-    fuel: "Petrol",
-    color: "Black",
-    engine: "50cc (air-cooled single, typical One 12″ class)",
-    rating: 4.8,
-    reviewCount: 11,
-    location: "Pietà, Malta",
-    images: ["/product-images/neco one.png"],
-    highlights: ["From EUR 10/day", "Nimble 50cc automatic", "Helmets & phone holders included"],
-    features: [...NECO_50_FEATURES],
-    addOns: [...OPTIONAL_ADDONS],
-  };
-}
-
-function necoRetroBlackYellow(n: number): Vehicle {
-  return {
-    slug: `neco-one-retro-50cc-${n}`,
-    name: `NECO ONE RETRO (50cc) #${n}`,
-    type: "Scooter",
-    tagline: "Retro-styled NECO — black & yellow finish, compact automatic.",
-    description:
-      "The NECO ONE RETRO pairs vintage-inspired bodywork with a light, easy automatic package. Black and yellow colourway. In line with NECO’s One 12″–class urban scooters sold in Malta: 50cc four-stroke, CVT, and a small wheelbase suited to tight town streets. Check your licence category for 50cc use.",
-    pricePerDay: 10,
-    securityDepositEUR: 350,
-    seats: 2,
-    transmission: "Automatic",
-    fuel: "Petrol",
-    color: "Black",
-    engine: "50cc (air-cooled single, typical One 12″ class)",
-    rating: 4.7,
-    reviewCount: 9,
-    location: "Pietà, Malta",
-    images: ["/product-images/neco one retro.png"],
-    highlights: ["From EUR 10/day", "Light 50cc urban scooter", "Helmets & phone holders included"],
-    features: [
-      "Automatic CVT",
-      "50cc air-cooled 4-stroke (One 12″ class)",
-      "Compact 12″ wheel format",
-      "Retro bodywork — black & yellow styling",
-      "Linked / combined braking (CBS) typical on range",
-      "Electronic fuel injection (typical current stock)",
+    engine: engineByApiType(item.vehicleType),
+    rating: 0,
+    reviewCount: 0,
+    location: "Pieta, Malta",
+    highlights: [
+      item.helmetIncludedCount > 0 ? `${item.helmetIncludedCount} helmet(s) included` : "Helmet availability on request",
+      supportsStorageFeatureLabel(supportsStorageBox),
     ],
-    addOns: [...OPTIONAL_ADDONS],
+    features: [
+      item.brand || item.model ? `Model: ${[item.brand, item.model].filter(Boolean).join(" ")}` : readableApiVehicleType(item.vehicleType),
+      `${item.helmetIncludedCount} helmet(s) included`,
+      supportsStorageFeatureLabel(supportsStorageBox),
+    ],
+    addOns: supportsStorageBox
+      ? [{ id: "storage-box", name: "Storage box", priceOnce: 10 }, ...PLACEHOLDER_ADDONS]
+      : PLACEHOLDER_ADDONS,
+    ...(item.rentalWindowStatus ? { rentalWindowStatus: item.rentalWindowStatus } : {}),
   };
 }
 
-export const vehicles: readonly Vehicle[] = [
-  ...[1, 2, 3, 4, 5].map((n) => lex125Grey(n)),
-  ...[1, 2, 3, 4, 5].map((n) => lex125Red(n)),
-  ...[1, 2, 3].map((n) => necoOneBlack(n)),
-  ...[1, 2].map((n) => necoRetroBlackYellow(n)),
-];
+export function mapVehicleDetailItemToVehicle(item: VehicleDetailApiItem): Vehicle {
+  const mapped = mapVehicleListItemToVehicle(item);
+  return {
+    ...mapped,
+    images: toVehicleImageList(item.mainImageUrl, item.images),
+  };
+}
 
-export function getVehicleBySlug(slug: string) {
-  return vehicles.find((vehicle) => vehicle.slug === slug);
+export function formatVehicleTypeLabel(type: ApiVehicleType): string {
+  return readableApiVehicleType(type);
+}
+
+export function isApiVehicleType(value: string): value is ApiVehicleType {
+  return (
+    value === "MOTORBIKE_50CC" ||
+    value === "MOTORBIKE_125CC" ||
+    value === "BICYCLE" ||
+    value === "ATV"
+  );
 }

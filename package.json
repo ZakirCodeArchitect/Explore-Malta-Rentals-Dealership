@@ -7,7 +7,15 @@
     "dev:turbo": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:booking-pricing": "tsx scripts/test-booking-pricing.ts",
+    "verify:uploads": "tsx scripts/verify-upload-phase.ts",
+    "test:upload-api": "tsx scripts/test-upload-api.ts",
+    "seed:vehicles": "node scripts/seed-vehicles.mjs",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "node scripts/retry-prisma-migrate-deploy.mjs",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -15,11 +23,15 @@
     "@hookform/resolvers": "^3.10.0",
     "@mui/material": "^7.3.9",
     "@mui/x-date-pickers": "^8.27.2",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.7.0",
     "@radix-ui/react-popover": "^1.1.15",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.20",
     "lucide-react": "^1.7.0",
     "next": "16.2.1",
+    "nodemailer": "^8.0.5",
+    "pg": "^8.20.0",
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
@@ -32,11 +44,16 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.0",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "prisma": "^7.7.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,421 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  FAILED
+}
+
+enum VehicleType {
+  MOTORBIKE_50CC
+  MOTORBIKE_125CC
+  BICYCLE
+  ATV
+}
+
+enum PickupOption {
+  OFFICE
+  DELIVERY
+}
+
+enum DropoffOption {
+  OFFICE
+  DROPOFF
+}
+
+enum DepositMethod {
+  ONLINE
+  IN_PERSON
+}
+
+enum LicenseCategory {
+  AM
+  A1
+  A2
+  A
+  B
+}
+
+enum CdwOption {
+  NO_CDW
+  REDUCE_350_50CC
+  REDUCE_500_125CC
+  FULL_COVERAGE_50CC_125CC
+  REDUCE_800_ATV
+}
+
+enum HelmetSize {
+  S
+  M
+  L
+}
+
+enum ConfirmationEmailStatus {
+  NOT_SENT
+  QUEUED
+  SENT
+  FAILED
+}
+
+enum PricingRuleType {
+  DAY_1
+  DAY_2
+  DAY_3_TO_20
+  DAY_21_PLUS
+  SUNDAY_OVERRIDE
+}
+
+enum EmailType {
+  BOOKING_CONFIRMATION
+  BOOKING_UPDATE
+  GENERAL_CONTACT_REPLY
+}
+
+enum AvailabilityBlockType {
+  BOOKING_HOLD
+  MAINTENANCE
+  MANUAL_BLOCK
+}
+
+enum ContactInquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ReservationHoldStatus {
+  ACTIVE
+  EXPIRED
+  RELEASED
+  CONVERTED
+}
+
+enum AdminRole {
+  ADMIN
+  STAFF
+}
+
+enum DocumentOwnerType {
+  CUSTOMER
+  ADDITIONAL_DRIVER
+}
+
+enum DocumentType {
+  LICENSE
+  PASSPORT_ID
+}
+
+model Vehicle {
+  id                  String      @id @default(cuid())
+  name                String
+  slug                String      @unique
+  vehicleType         VehicleType
+  brand               String?
+  model               String?
+  shortDescription    String?
+  description         String?
+  mainImageUrl        String?
+  isActive            Boolean     @default(true)
+  displayOrder        Int         @default(0)
+  helmetIncludedCount Int         @default(2)
+  supportsStorageBox  Boolean     @default(false)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  images             VehicleImage[]
+  pricingRules       VehiclePricingRule[]
+  bookings           Booking[]
+  availabilityBlocks AvailabilityBlock[]
+  reservationHolds   ReservationHold[]
+
+  @@index([isActive, displayOrder])
+  @@index([vehicleType, isActive])
+}
+
+model VehicleImage {
+  id        String   @id @default(cuid())
+  vehicleId String
+  imageUrl  String
+  altText   String?
+  sortOrder Int      @default(0)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId, sortOrder])
+  @@index([vehicleId, isPrimary])
+}
+
+model VehiclePricingRule {
+  id          String          @id @default(cuid())
+  vehicleId   String?
+  vehicleType VehicleType?
+  ruleType    PricingRuleType
+  dailyRate   Decimal         @db.Decimal(10, 2)
+  minDays     Int?
+  maxDays     Int?
+  dayOfWeek   Int?
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleType, ruleType, isActive])
+  @@index([vehicleId, ruleType, isActive])
+  @@index([startDate, endDate])
+}
+
+model TermsVersion {
+  id              String    @id @default(cuid())
+  version         String    @unique
+  title           String
+  summaryText     String?
+  fullDocumentUrl String?
+  isActive        Boolean   @default(false)
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  bookings Booking[]
+
+  @@index([isActive])
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String?
+  role         AdminRole @default(STAFF)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  statusChanges BookingStatusHistory[]
+
+  @@index([role, isActive])
+}
+
+model Booking {
+  id               String        @id @default(cuid())
+  bookingReference String        @unique
+  status           BookingStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  vehicleId           String?
+  vehicleNameSnapshot String?
+  vehicleTypeSnapshot VehicleType?
+  termsVersionId      String?
+
+  vehicleType         VehicleType
+  pickupDateTime      DateTime
+  returnDateTime      DateTime
+  actualDurationHours Decimal     @db.Decimal(8, 2)
+  billableDays        Int
+
+  pickupOption     PickupOption
+  pickupAddress    String?
+  pickupLatitude   Decimal?      @db.Decimal(9, 6)
+  pickupLongitude  Decimal?      @db.Decimal(9, 6)
+  dropoffOption    DropoffOption
+  dropoffAddress   String?
+  dropoffLatitude  Decimal?      @db.Decimal(9, 6)
+  dropoffLongitude Decimal?      @db.Decimal(9, 6)
+
+  customerFullName        String
+  customerPhone           String
+  customerEmail           String
+  customerNationality     String
+  customerDateOfBirth     DateTime
+  customerLicenseCategory LicenseCategory
+  customerSpecialNotes    String?
+
+  customerLicenseUploadPath          String?
+  customerPassportUploadPath         String?
+  customerWillPresentLicenseAtPickup Boolean @default(false)
+  customerWillPresentIdAtPickup      Boolean @default(false)
+
+  additionalDriverEnabled                    Boolean          @default(false)
+  additionalDriverFullName                   String?
+  additionalDriverPhone                      String?
+  additionalDriverEmail                      String?
+  additionalDriverNationality                String?
+  additionalDriverDateOfBirth                DateTime?
+  additionalDriverLicenseCategory            LicenseCategory?
+  additionalDriverLicenseUploadPath          String?
+  additionalDriverPassportUploadPath         String?
+  additionalDriverWillPresentLicenseAtPickup Boolean          @default(false)
+  additionalDriverWillPresentIdAtPickup      Boolean          @default(false)
+
+  cdwOption                 CdwOption   @default(NO_CDW)
+  cdwDailyRate              Decimal     @default(0) @db.Decimal(10, 2)
+  cdwTotal                  Decimal     @default(0) @db.Decimal(10, 2)
+  additionalDriverDailyRate Decimal     @default(0) @db.Decimal(10, 2)
+  additionalDriverTotal     Decimal     @default(0) @db.Decimal(10, 2)
+  helmetSize1               HelmetSize?
+  helmetSize2               HelmetSize?
+  storageBoxSelected        Boolean     @default(false)
+  storageBoxCost            Decimal     @default(0) @db.Decimal(10, 2)
+  rentalCost                Decimal     @default(0) @db.Decimal(10, 2)
+  deliveryFee               Decimal     @default(0) @db.Decimal(10, 2)
+  dropoffFee                Decimal     @default(0) @db.Decimal(10, 2)
+  deliveryTotal             Decimal     @default(0) @db.Decimal(10, 2)
+  subtotal                  Decimal     @default(0) @db.Decimal(10, 2)
+
+  depositAmount  Decimal       @default(0) @db.Decimal(10, 2)
+  depositMethod  DepositMethod
+  totalDueOnline Decimal       @default(0) @db.Decimal(10, 2)
+  totalDueLater  Decimal       @default(0) @db.Decimal(10, 2)
+
+  termsAccepted           Boolean                 @default(false)
+  termsAcceptedAt         DateTime?
+  termsVersion            String?
+  consentSource           String?
+  confirmationEmailSentAt DateTime?
+  confirmationEmailStatus ConfirmationEmailStatus @default(NOT_SENT)
+
+  vehicle              Vehicle?               @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  acceptedTermsVersion TermsVersion?          @relation(fields: [termsVersionId], references: [id], onDelete: SetNull)
+  statusHistory        BookingStatusHistory[]
+  emailLogs            EmailLog[]
+  documents            BookingDocument[]
+  reservationHolds     ReservationHold[]
+
+  @@index([status, createdAt])
+  @@index([pickupDateTime, returnDateTime])
+  @@index([vehicleType, pickupDateTime])
+  @@index([customerEmail, customerPhone])
+  @@index([vehicleId])
+  @@index([termsVersionId])
+}
+
+model BookingStatusHistory {
+  id               String         @id @default(cuid())
+  bookingId        String
+  oldStatus        BookingStatus?
+  newStatus        BookingStatus
+  note             String?
+  changedByAdminId String?
+  createdAt        DateTime       @default(now())
+
+  booking   Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  changedBy AdminUser? @relation(fields: [changedByAdminId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId, createdAt])
+  @@index([changedByAdminId])
+}
+
+model EmailLog {
+  id                String                  @id @default(cuid())
+  bookingId         String?
+  emailType         EmailType
+  recipientEmail    String
+  subject           String
+  status            ConfirmationEmailStatus
+  providerMessageId String?
+  errorMessage      String?
+  sentAt            DateTime?
+  failedAt          DateTime?
+  createdAt         DateTime                @default(now())
+
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId, createdAt])
+  @@index([recipientEmail, createdAt])
+  @@index([status, createdAt])
+}
+
+model AvailabilityBlock {
+  id            String                @id @default(cuid())
+  vehicleId     String?
+  vehicleType   VehicleType?
+  blockType     AvailabilityBlockType
+  startDateTime DateTime
+  endDateTime   DateTime
+  reason        String?
+  createdAt     DateTime              @default(now())
+
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId, startDateTime, endDateTime])
+  @@index([vehicleType, startDateTime, endDateTime])
+  @@index([blockType, startDateTime])
+}
+
+model ReservationHold {
+  id              String                @id @default(cuid())
+  holdReference   String                @unique
+  vehicleId       String
+  vehicleType     VehicleType
+  sessionKey      String
+  customerEmail   String?
+  customerName    String?
+  pickupDateTime  DateTime
+  returnDateTime  DateTime
+  status          ReservationHoldStatus @default(ACTIVE)
+  reservedAt      DateTime              @default(now())
+  expiresAt       DateTime
+  lastHeartbeatAt DateTime?
+  bookingId       String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId, status, expiresAt])
+  @@index([sessionKey, status])
+  @@index([expiresAt])
+  @@index([pickupDateTime, returnDateTime])
+}
+
+model ContactInquiry {
+  id        String               @id @default(cuid())
+  fullName  String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    ContactInquiryStatus @default(NEW)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
+}
+
+model BookingDocument {
+  id                String            @id @default(cuid())
+  bookingId         String
+  documentOwnerType DocumentOwnerType
+  documentType      DocumentType
+  filePath          String
+  publicUrl         String?
+  mimeType          String?
+  fileSize          Int?
+  uploadedAt        DateTime          @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId, documentOwnerType, documentType])
+  @@index([uploadedAt])
+}
