@@ -645,7 +645,11 @@
     "cardSubtitle": "Motorcycles / scooters",
     "perDaySuffix": "/ day",
     "beforeExtras": "Per calendar day, before extras",
-    "footnote": "Final price depends on vehicle, season, and availability — message us for a quote."
+    "footnote": "Final price depends on vehicle, season, and availability — message us for a quote.",
+    "rowOneDay": "1 day",
+    "rowTwoDays": "2 days",
+    "rowThreeTo21": "3 days – 3 weeks",
+    "rowThreeWeeksPlus": "3 weeks or more"
   },
   "BookingSearch": {
     "quickFilterTitle": "Quick filter by engine size",

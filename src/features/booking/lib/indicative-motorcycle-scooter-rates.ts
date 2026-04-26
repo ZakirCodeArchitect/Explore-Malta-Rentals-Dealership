@@ -2,12 +2,14 @@
  * Ballpark per-calendar-day tiers for motorcycles / scooters (before extras).
  * Used by booking UI and the indicative rates card — keep in sync.
  */
+export type IndicativeRatesRowKey = "rowOneDay" | "rowTwoDays" | "rowThreeTo21" | "rowThreeWeeksPlus";
+
 export type IndicativeMotorcycleScooterTier = Readonly<{
   minCalendarDays: number;
   maxCalendarDays: number;
   dailyRateEur: number;
-  /** Row label on the indicative rates card */
-  cardLabel: string;
+  /** Key under `IndicativeRates` for the table row label (next-intl) */
+  rowLabelKey: IndicativeRatesRowKey;
 }>;
 
 export const INDICATIVE_MOTORCYCLE_SCOOTER_TIERS = [
@@ -15,25 +17,25 @@ export const INDICATIVE_MOTORCYCLE_SCOOTER_TIERS = [
     minCalendarDays: 1,
     maxCalendarDays: 1,
     dailyRateEur: 25,
-    cardLabel: "1 day",
+    rowLabelKey: "rowOneDay",
   },
   {
     minCalendarDays: 2,
     maxCalendarDays: 2,
     dailyRateEur: 18,
-    cardLabel: "2 days",
+    rowLabelKey: "rowTwoDays",
   },
   {
     minCalendarDays: 3,
     maxCalendarDays: 21,
     dailyRateEur: 15,
-    cardLabel: "3 days – 3 weeks",
+    rowLabelKey: "rowThreeTo21",
   },
   {
     minCalendarDays: 22,
     maxCalendarDays: Number.POSITIVE_INFINITY,
     dailyRateEur: 10,
-    cardLabel: "3 weeks or more",
+    rowLabelKey: "rowThreeWeeksPlus",
   },
 ] as const satisfies readonly IndicativeMotorcycleScooterTier[];
 
