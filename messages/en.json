@@ -16,7 +16,12 @@
     "privacyTitle": "Privacy policy | Explore Malta Rentals",
     "termsTitle": "Terms of service | Explore Malta Rentals",
     "toursTitle": "Tours | Explore Malta Rentals",
-    "guideTitle": "Rider guide | Explore Malta Rentals"
+    "guideTitle": "Rider guide | Explore Malta Rentals",
+    "privacyDescription": "How Explore Malta Rentals handles personal data on this site and in booking flows.",
+    "termsDescription": "Rental terms including insurance, deposits, driver requirements, cancellation, and liability.",
+    "toursDescription": "Custom and guided Malta tours — motorbike, quad, and bicycle. Flexible itineraries and tour requests.",
+    "guideDescription": "Malta rider guide with map, practical tips, and parking rules for scooters and motorcycles.",
+    "contactDescription": "Call, message, or visit Explore Malta Rentals — contact details and map."
   },
   "Nav": {
     "primary": "Primary",
@@ -49,7 +54,14 @@
     "mobile": "Mobile",
     "email": "Email",
     "address": "Address",
-    "location": "Location"
+    "location": "Location",
+    "yes": "Yes",
+    "no": "No",
+    "day": "day",
+    "days": "days",
+    "change": "Change",
+    "search": "Search",
+    "pickupLabel": "Pickup"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -89,11 +101,26 @@
     "testimonialsTitle": "What riders say",
     "testimonialsDescription": "Real feedback from visitors who explored Malta with us — quick handovers, clear guidance, and memorable rides.",
     "services": {
-      "easyPickup": { "title": "Easy pickup", "description": "A fast, organised handover — you're on the road sooner, not stuck at the desk." },
-      "helmets": { "title": "Helmets and phone holders included", "description": "Safety-first kit bundled with your rental — no last-minute surprises." },
-      "flexible": { "title": "Flexible rental periods", "description": "Pick the days that fit your Malta plan — short stays or longer adventures." },
-      "support": { "title": "Tourist-friendly support", "description": "Clear answers, local tips, and quick help when you need it." },
-      "hotel": { "title": "Hotel delivery / return", "description": "Where it applies, we can help with convenient drop-off and collection." }
+      "easyPickup": {
+        "title": "Easy pickup",
+        "description": "A fast, organised handover — you're on the road sooner, not stuck at the desk."
+      },
+      "helmets": {
+        "title": "Helmets and phone holders included",
+        "description": "Safety-first kit bundled with your rental — no last-minute surprises."
+      },
+      "flexible": {
+        "title": "Flexible rental periods",
+        "description": "Pick the days that fit your Malta plan — short stays or longer adventures."
+      },
+      "support": {
+        "title": "Tourist-friendly support",
+        "description": "Clear answers, local tips, and quick help when you need it."
+      },
+      "hotel": {
+        "title": "Hotel delivery / return",
+        "description": "Where it applies, we can help with convenient drop-off and collection."
+      }
     },
     "bikeCategories": {
       "50cc": {
@@ -110,31 +137,97 @@
       }
     },
     "testimonials": {
-      "t1": { "name": "Marta", "location": "Tourist", "date": "Jun 01, 2024", "quote": "Pickup was smooth, the bike felt like new, and we had the best day exploring around Malta." },
-      "t2": { "name": "Daniel", "location": "Weekend rider", "date": "Nov 09, 2024", "quote": "Clear instructions, friendly support, and great recommendations for where to go. Highly recommend!" },
-      "t3": { "name": "Sofia", "location": "Family trip", "date": "Oct 17, 2024", "quote": "Perfect for our Malta plan. Comfortable ride, quick communication, and a super easy process." }
-    }
+      "t1": {
+        "name": "Marta",
+        "location": "Tourist",
+        "date": "Jun 01, 2024",
+        "quote": "Pickup was smooth, the bike felt like new, and we had the best day exploring around Malta."
+      },
+      "t2": {
+        "name": "Daniel",
+        "location": "Weekend rider",
+        "date": "Nov 09, 2024",
+        "quote": "Clear instructions, friendly support, and great recommendations for where to go. Highly recommend!"
+      },
+      "t3": {
+        "name": "Sofia",
+        "location": "Family trip",
+        "date": "Oct 17, 2024",
+        "quote": "Perfect for our Malta plan. Comfortable ride, quick communication, and a super easy process."
+      }
+    },
+    "sectionBikePickerTitle": "Choose your ride",
+    "sectionBikePickerDescription": "Pick the right engine size for your Malta plan — then we'll help you book confidently.",
+    "highlightedServicesKicker": "Malta Rentals",
+    "highlightedServicesDescription": "Premium support from pickup to drop-off — so you focus on the ride, not the paperwork.",
+    "highlightedExploreRentals": "Explore rentals",
+    "highlightedExploreHint": "See bikes, ATVs, and bicycles — then lock in your dates in minutes.",
+    "highlightedFeaturedFootnote": "Included with every rental",
+    "aboutBadgeTourist": "Tourist-friendly",
+    "aboutBadgeSafety": "Safety-first",
+    "aboutPricingLabel": "Pricing",
+    "aboutFleetImageAlt": "Motorcycle and rental fleet — Explore Malta Rentals",
+    "testimonialsKicker": "Thousands trust our rentals",
+    "testimonialsHeadline1": "Don't take our word for it,",
+    "testimonialsHeadline2": "see what our clients say",
+    "testimonialsTrustLine": "Trustpilot",
+    "testimonialsExcellent": "Excellent",
+    "testimonialsMarqueeAria": "Customer testimonials, scrolling",
+    "ratingStarsAria": "{rating} out of 5"
   },
   "Faq": {
     "title": "Frequently Asked Questions (FAQs)",
     "subtitleLead": "Can't find what you're looking for? Reach out on ",
     "subtitleTail": " or use the contact section below.",
     "items": {
-      "trial": { "question": "How do I book a bike or scooter?", "answer": "Use the booking form at the top of this page to choose pick-up location, vehicle type, and pick-up date. You can also message us on WhatsApp and we will walk you through availability and the best option for your trip." },
-      "plan": { "question": "What licence do I need for 50cc vs 125cc?", "answer": "Requirements depend on your licence and local rules. Tell us what licence you hold when you book and we will confirm which categories you can ride. We prioritise safety and compliance on every rental." },
-      "cancel": { "question": "What is your cancellation policy?", "answer": "Policies can vary by season and vehicle. Contact us with your booking details and we will explain the options. We aim to be fair and clear so you can plan your Malta trip with confidence." },
-      "invoice": { "question": "Are helmets and safety gear included?", "answer": "Yes — helmets are included with rentals, along with a phone holder accessory for navigation. If you need a specific helmet size or have other safety questions, tell us when you book so we can have everything ready at handover." },
-      "billing": { "question": "How does pricing and billing work?", "answer": "Rates are based on your rental period and vehicle category. You will see what applies before you confirm. For exact quotes or longer hires, WhatsApp us with your dates." },
-      "email": { "question": "Can I return the bike somewhere other than Pietà?", "answer": "It depends on the vehicle and dates. Message us on WhatsApp with your plans and we will confirm whether return elsewhere or hotel delivery is possible." },
-      "support": { "question": "How does support work for tourists?", "answer": "We are set up for visitors: clear handover instructions, practical tips for riding in Malta, and quick help on WhatsApp if something comes up during your rental." },
-      "tutorials": { "question": "Do you offer guided tours?", "answer": "Yes. We offer rentals plus guided tours so you can explore Malta with support if you prefer not to go alone. Ask when you book and we will share what is running during your stay." },
-      "projects": { "question": "Can I extend my rental once I am in Malta?", "answer": "Often yes, subject to availability. Message us before your return time and we will do our best to extend your booking." },
-      "team": { "question": "Do I need to leave a deposit?", "answer": "Deposit and ID requirements are explained at booking confirmation. If you are unsure, send us a WhatsApp message and we will outline exactly what is needed for your chosen vehicle." }
+      "trial": {
+        "question": "How do I book a bike or scooter?",
+        "answer": "Use the booking form at the top of this page to choose pick-up location, vehicle type, and pick-up date. You can also message us on WhatsApp and we will walk you through availability and the best option for your trip."
+      },
+      "plan": {
+        "question": "What licence do I need for 50cc vs 125cc?",
+        "answer": "Requirements depend on your licence and local rules. Tell us what licence you hold when you book and we will confirm which categories you can ride. We prioritise safety and compliance on every rental."
+      },
+      "cancel": {
+        "question": "What is your cancellation policy?",
+        "answer": "Policies can vary by season and vehicle. Contact us with your booking details and we will explain the options. We aim to be fair and clear so you can plan your Malta trip with confidence."
+      },
+      "invoice": {
+        "question": "Are helmets and safety gear included?",
+        "answer": "Yes — helmets are included with rentals, along with a phone holder accessory for navigation. If you need a specific helmet size or have other safety questions, tell us when you book so we can have everything ready at handover."
+      },
+      "billing": {
+        "question": "How does pricing and billing work?",
+        "answer": "Rates are based on your rental period and vehicle category. You will see what applies before you confirm. For exact quotes or longer hires, WhatsApp us with your dates."
+      },
+      "email": {
+        "question": "Can I return the bike somewhere other than Pietà?",
+        "answer": "It depends on the vehicle and dates. Message us on WhatsApp with your plans and we will confirm whether return elsewhere or hotel delivery is possible."
+      },
+      "support": {
+        "question": "How does support work for tourists?",
+        "answer": "We are set up for visitors: clear handover instructions, practical tips for riding in Malta, and quick help on WhatsApp if something comes up during your rental."
+      },
+      "tutorials": {
+        "question": "Do you offer guided tours?",
+        "answer": "Yes. We offer rentals plus guided tours so you can explore Malta with support if you prefer not to go alone. Ask when you book and we will share what is running during your stay."
+      },
+      "projects": {
+        "question": "Can I extend my rental once I am in Malta?",
+        "answer": "Often yes, subject to availability. Message us before your return time and we will do our best to extend your booking."
+      },
+      "team": {
+        "question": "Do I need to leave a deposit?",
+        "answer": "Deposit and ID requirements are explained at booking confirmation. If you are unsure, send us a WhatsApp message and we will outline exactly what is needed for your chosen vehicle."
+      }
     }
   },
   "Contact": {
     "title": "Contact us",
-    "description": "Call, message, or visit — we're here to help you choose the right ride. Your mobile number and map location are below."
+    "description": "Call, message, or visit — we're here to help you choose the right ride. Your mobile number and map location are below.",
+    "whatsappTitle": "Send a WhatsApp message",
+    "whatsappBody": "We'll help you pick the right ride and answer availability questions.",
+    "envWhatsappHint": "Set NEXT_PUBLIC_WHATSAPP_NUMBER to enable the WhatsApp button."
   },
   "Footer": {
     "exploreHome": "Home",
@@ -166,7 +259,21 @@
     "newsletterSuccess": "Thanks — you're subscribed.",
     "followUs": "Follow us",
     "copyright": "© {year} {brand}. All rights reserved.",
-    "madeInMalta": "Made in Malta · Built for riders and explorers"
+    "madeInMalta": "Made in Malta · Built for riders and explorers",
+    "columnExplore": "Explore",
+    "columnCompany": "Company",
+    "columnSupport": "Support",
+    "columnLegal": "Legal",
+    "sectionContact": "Contact",
+    "visitCall": "Visit and call",
+    "newsletterLeadIn": "Offers, new fleet additions, and Malta riding tips in your inbox.",
+    "socialConfigHint": "Social links appear here when you add Facebook, Instagram, or other URLs in your environment config.",
+    "envContactHint": "Add contact details via environment variables.",
+    "envAddressHint": "Add your address in environment config.",
+    "whatsappLink": "WhatsApp",
+    "newsletterSrOnly": "Email for newsletter",
+    "newsletterFinePrint": "No spam. Unsubscribe anytime.",
+    "newsletterSuccessLong": "Thanks — you are on the list. We will only send rental offers, tours, and Malta tips."
   },
   "About": {
     "headingWave": "About us",
@@ -194,7 +301,23 @@
     "categoryScooter": "Scooter",
     "categoryMotorcycle": "Motorcycle",
     "fleet50Alt": "NECO ONE 12 — 50cc scooter for town and coastal riding in Malta",
-    "fleet125Alt": "Lex Moto Aura — 125cc motorcycle for longer rides in Malta"
+    "fleet125Alt": "Lex Moto Aura — 125cc motorcycle for longer rides in Malta",
+    "carouselSrOnly": "What we offer: slide {current} of {total}",
+    "carouselNext": "Next offer",
+    "carouselTablist": "Choose offer",
+    "carouselShow": "Show {title}",
+    "offerMotorcyclesTitle": "Motorcycles & scooters",
+    "offerMotorcyclesDesc": "Our fleet includes nimble scooters and motorbikes — well-prepared for Malta's roads and day trips.",
+    "offerMotorcyclesAlt": "Lex Moto scooter — available from Explore Malta Rentals",
+    "offerAtvsTitle": "ATVs",
+    "offerAtvsDesc": "Quad bike hire when you want trails and open stretches beyond the main roads — ask what's available.",
+    "offerAtvsAlt": "ATV / quad bike hire in Malta",
+    "offerBicyclesTitle": "Bicycles",
+    "offerBicyclesDesc": "Bicycle rental for a relaxed pace along promenades, lanes, and coastal routes.",
+    "offerBicyclesAlt": "Bicycle rental for exploring Malta",
+    "offerToursTitle": "Guided tours",
+    "offerToursDesc": "Custom guided tours on request — discover top sights and hidden gems with local insight.",
+    "offerToursAlt": "Map of Malta — guided tours and routes"
   },
   "BookingPage": {
     "heading": "Multi-step booking for Explore Malta Rentals",
@@ -267,10 +390,18 @@
     "acceptTerms": "Please accept the terms and conditions to continue.",
     "issuesHighlighted": "Some issues are highlighted next to the relevant fields.",
     "steps": {
-      "rental_details": { "title": "Rental Details" },
-      "options_delivery": { "title": "Options & Delivery" },
-      "your_information": { "title": "Your Information" },
-      "review_confirm": { "title": "Review & Confirm" }
+      "rental_details": {
+        "title": "Rental Details"
+      },
+      "options_delivery": {
+        "title": "Options & Delivery"
+      },
+      "your_information": {
+        "title": "Your Information"
+      },
+      "review_confirm": {
+        "title": "Review & Confirm"
+      }
     }
   },
   "BookingValidation": {
@@ -309,8 +440,93 @@
     "reviewFields": "Please review the highlighted fields."
   },
   "PrivacyPage": {
+    "legalKicker": "Legal",
     "title": "Privacy policy",
-    "intro": "This page explains how Explore Malta Rentals handles personal data when you use our website and booking services."
+    "intro": "This page explains how Explore Malta Rentals handles personal data when you use our website and booking services.",
+    "body": "This page is a placeholder. Add how you collect, store, and process personal data (including newsletter sign-ups) to meet GDPR and your hosting region's requirements.",
+    "backToHome": "Back to home"
+  },
+  "Tours": {
+    "heroLine1": "Malta Tours",
+    "heroLine2": "Explore Your Way",
+    "heroLead": "At {companyName}, we offer Custom Malta Tours designed to give you a unique and unforgettable experience of the island. Whether you prefer to explore independently or with a local expert, our tours are flexible and tailored to your needs.",
+    "quadImageCaption": "Coastal routes, historic towns, and hidden bays — your itinerary, your pace.",
+    "quadPhotoAlt": "Quad bike tour in Malta",
+    "bikesPhotoAlt": "Motorbike and bicycle tours in Malta",
+    "customTitle": "Custom Tours in Malta",
+    "customP1": "Our Private Tours in Malta are fully customizable. You choose where to go, how long to stay, and what to see. From historic landmarks and scenic views to hidden beaches and local hotspots, we help you create the perfect itinerary.",
+    "customHighlight": "Ideal for couples, friends, and small groups looking for a Personalized Malta Experience.",
+    "guidedTitle": "Guided Tours with Local Experts",
+    "guidedBody": "Want a deeper experience? Join one of our Guided Tours in Malta and discover the island with a knowledgeable local guide. Learn about Malta's history, culture, and hidden gems while enjoying a smooth and stress-free ride.",
+    "optionsTitle": "Tour options",
+    "optionsDescription": "Pick a style that fits your group — we tailor routes and duration around you.",
+    "option1": "Motorbike tours in Malta",
+    "option2": "Quad bike tours Malta",
+    "option3": "Bicycle tours in Malta",
+    "option4": "Scenic coastal tours",
+    "option5": "City and historical tours",
+    "option6": "Hidden gems and off-the-beaten-path routes",
+    "whyTitle": "Why choose our Malta tours?",
+    "whyDescription": "Straightforward pricing, local insight, and plans built around your dates.",
+    "why1": "Fully customizable tour experiences",
+    "why2": "Affordable tour prices in Malta",
+    "why3": "Self-drive or guided options available",
+    "why4": "Local knowledge and insider routes",
+    "why5": "Flexible booking on request",
+    "ctaTitle": "Book your Malta tour",
+    "ctaBody": "All tours are available on request, allowing us to tailor every detail to your preferences. Contact {companyName} today to plan your perfect Malta Motorbike Tour, Quad Bike Adventure, or Bicycle tour.",
+    "ctaTagline": "Discover Malta your way, with freedom, flexibility, and unforgettable views.",
+    "ctaRequestTour": "Request a tour",
+    "ctaVehicleRental": "Vehicle rental",
+    "contactTitle": "Get in touch",
+    "contactDescription": "Tell us what you have in mind — we will reply with a tailored suggestion and next steps.",
+    "contactWhatsAppHint": "Prefer instant chat? Use WhatsApp for quick questions about routes, group size, and availability."
+  },
+  "Guide": {
+    "findUsLine1": "Find us in",
+    "findUsLine2": "Malta",
+    "mapIntro": "Use the live map to locate us quickly before your ride.",
+    "mapIframeTitle": "Map location — Explore Malta Rentals, Pietà",
+    "currentLocation": "Current location",
+    "openMaps": "Open in Google Maps",
+    "mapSectionTitle": "Explore Malta Your way",
+    "mapSectionDescription": "Tourist guide map with attraction points to help plan your route.",
+    "mapImageAlt": "Tourist guide map of Malta with attractions",
+    "parkingTitleBefore": "Guide for ",
+    "parkingTitleHighlight": "Parking Rules",
+    "parkingTitleAfter": " for Scooters in Malta",
+    "parkingSectionIntro": "White lines mark the correct parking spot. Never park on yellow, blue, or green line colours: yellow for garages and reserved parking / no parking; blue for disabled bays; green for residents in the local area. Always park within MC spaces or between any two cars in a white parking space.",
+    "parkingMajor1Title": "Parking line colours",
+    "parkingMajor1Description": "White lines mark the correct parking spot. Never park on yellow, blue, or green parking line colours. Yellow: garages and reserved parking / no parking. Blue: reserved for disabled permit holders. Green: residents in the local area. Always park within MC parking spaces or between any two cars in a white parking space.",
+    "parkingMajor2Title": "Where to park legally",
+    "parkingMajor2Description": "Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
+    "parkingMajor2ImgAlt": "Motorcycle (MC) parking — always use marked MC bays or white spaces between cars where permitted",
+    "parkingLineWhiteTitle": "White",
+    "parkingLineWhiteTag": "White lines — correct parking",
+    "parkingLineWhiteDescription": "White lines mark the correct parking spots. Always park within the MC (motorcycle) parking spaces, or between any two cars in a white parking space.",
+    "parkingLineWhiteImg1Alt": "White parking bay — park between cars in marked white spaces where rules allow",
+    "parkingLineWhiteImg2Alt": "Motorcycle (MC) parking bay — use dedicated MC spaces",
+    "parkingLineYellowTitle": "Yellow",
+    "parkingLineYellowTag": "Yellow — do not park",
+    "parkingLineYellowDescription": "Do not park on yellow markings. Yellow is for garages and reserved parking / no parking.",
+    "parkingLineYellowImg1Alt": "Double yellow lines at the road edge — do not park",
+    "parkingLineYellowImg2Alt": "Reserved parking bay with yellow markings — do not park",
+    "parkingLineYellowImg3Alt": "Yellow line road marking — do not park here",
+    "parkingLineBlueTitle": "Blue",
+    "parkingLineBlueTag": "Blue — do not park",
+    "parkingLineBlueDescription": "Do not park on blue markings. Blue is reserved for disabled permit holders.",
+    "parkingLineBlueImg1Alt": "Blue-marked disabled parking bay — reserved for permit holders",
+    "parkingLineGreenTitle": "Green",
+    "parkingLineGreenTag": "Green — do not park",
+    "parkingLineGreenDescription": "Do not park on green markings. Green is for residents in the local area.",
+    "parkingLineGreenImg1Alt": "Green line road marking — residents in the local area — do not park",
+    "parkingSrMajorSlide": "Parking rules: slide {current} of {total}",
+    "parkingSrLineColourSlide": "Line colour examples: slide {current} of {total}",
+    "parkingAriaTablistLineColour": "Choose line colour",
+    "parkingAriaShowLine": "Show {line}",
+    "parkingAriaNextMajor": "Next major parking rule",
+    "parkingAriaMajorTablist": "Choose major parking rule",
+    "parkingAriaShowMajor": "Show: {title}"
   },
   "ToursPage": {
     "title": "Tours"
@@ -380,5 +596,295 @@
   "WhatsApp": {
     "floatingLabel": "Chat on WhatsApp",
     "faqLabel": "WhatsApp"
+  },
+  "VehicleListing": {
+    "showing": "Showing {count} vehicles",
+    "tripDatesHint": "Set your trip dates in the search bar, then click Search to load availability. After that, Book now will reserve the vehicle for those dates.",
+    "loadErrorTitle": "Unable to load vehicles",
+    "emptyTitle": "No vehicles available right now",
+    "emptyBody": "Please check back shortly for newly listed rentals.",
+    "noMatchTitle": "No exact match found",
+    "noMatchBody": "Try another type, transmission, seats, or color.",
+    "ratesBlurb": "Ballpark per-calendar-day amounts for motorcycles and scooters before extras, use these as a guide while you search.",
+    "ariaFilters": "Vehicle filters",
+    "ariaRates": "Indicative daily rates"
+  },
+  "VehicleFilters": {
+    "ariaVehicleSearch": "Vehicle search",
+    "ariaBookingOptions": "Booking options",
+    "type": "Type",
+    "transmission": "Transmission",
+    "seats": "Seats",
+    "color": "Color",
+    "typeAria": "Vehicle type",
+    "transmissionAria": "Transmission",
+    "seatsAria": "Seats",
+    "colorAria": "Color",
+    "allVehicles": "All vehicles",
+    "scooters": "Scooters",
+    "motorcycles": "Motorcycles",
+    "atvs": "ATVs",
+    "bicycles": "Bicycles",
+    "all": "All",
+    "automatic": "Automatic",
+    "manual": "Manual",
+    "any": "Any",
+    "seat1": "1 seat",
+    "seat2": "2 seats",
+    "seat3": "3 seats",
+    "anyColor": "Any color",
+    "durationLine": "{count, plural, one {# day} other {# days}}",
+    "pickupPrefix": "Pickup",
+    "indicativeLine": "Indicative motorcycles/scooters total ~€{tripEur} (€{dailyEur}/day × {count} {dayLabel}) · Final price depends on vehicle and add-ons.",
+    "hotelDelivery": "Need hotel delivery",
+    "clearFilters": "Clear filters",
+    "search": "Search"
+  },
+  "IndicativeRates": {
+    "cardTitle": "Indicative daily rates",
+    "cardSubtitle": "Motorcycles / scooters",
+    "perDaySuffix": "/ day",
+    "beforeExtras": "Per calendar day, before extras",
+    "footnote": "Final price depends on vehicle, season, and availability — message us for a quote."
+  },
+  "BookingSearch": {
+    "quickFilterTitle": "Quick filter by engine size",
+    "chip125": "125cc rent",
+    "chip50": "50cc rent",
+    "chipServices": "Services & benefits",
+    "pickupLocationTitle": "Pickup location",
+    "shopPickupLine": "Pietà — shop pickup at Explore Malta Rentals",
+    "pickupHoursNote": "Pickup and drop-off times are between {openTime} and {closeTime}.",
+    "alternatePickupTitle": "Request pickup at a different address",
+    "alternatePickupHelp": "Subject to availability. Additional €{fee} — payable when you check out.",
+    "differentDropoffTitle": "Drop off at a different address",
+    "differentDropoffHelp": "Additional €{fee} — payable when you check out.",
+    "exactPickupLabel": "Exact pickup address",
+    "exactDropoffLabel": "Exact drop-off address",
+    "addressPlaceholder": "Street, building, postcode, area…",
+    "mapPreviewHint": "Map preview appears after you enter an address.",
+    "offSiteTotalLine": "Off-site service total: €{total} ({legs} × €{perLeg}{discount}) — collected at checkout.",
+    "bundleDiscount": " - €{amount} bundle discount",
+    "depositLegend": "Security deposit (EUR {amount})",
+    "depositIntro": "Choose whether you'd like to pay the deposit online when you book, or at the first meeting when you collect the bike.",
+    "payAtMeeting": "Pay at first meeting",
+    "payOnline": "Pay online when booking",
+    "tripDatesLabel": "Trip dates",
+    "dateSummaryPick": "Select dates",
+    "pickupTime": "Pickup time",
+    "dropoffTime": "Drop-off time",
+    "tripLengthNote": "Trips from {min} to {max} days.",
+    "summaryLine": "{days, plural, one {# day} other {# days}} · Shop pickup Pietà{offPickup}{offDropoff}{offSite}",
+    "offPickup": " · Off-site pickup requested",
+    "offDropoff": " · Different drop-off",
+    "offSiteExtra": " · +€{amount} off-site",
+    "indicativeSummary": "Indicative motorcycles/scooters total ~€{tripEur} (€{dailyEur}/day × {days} {dayLabel}) · Final price depends on vehicle and add-ons.",
+    "submitSearching": "Searching…",
+    "submitIdle": "Search available vehicles"
+  },
+  "BookingForm": {
+    "invalidPickupDate": "Invalid pickup date",
+    "invalidDropoffDate": "Invalid drop-off date",
+    "selectPickupTime": "Select pickup time",
+    "pickupTimeWindow": "Pickup time must be between 09:30 and 19:00",
+    "selectDropoffTime": "Select drop-off time",
+    "dropoffTimeWindow": "Drop-off time must be between 09:30 and 19:00",
+    "alternateAddressDetail": "Enter the full address where you want pickup (we'll confirm on WhatsApp).",
+    "dropoffAddressDetail": "Enter the full drop-off address (we'll confirm on WhatsApp).",
+    "tripMinDays": "Trip must be at least {min} day",
+    "tripMaxDays": "Trip cannot exceed {max} days",
+    "dropoffAfterPickup": "Drop-off must be after pickup"
+  },
+  "HomeHeroPanel": {
+    "pickupLocation": "Pick-up location",
+    "vehicleType": "Vehicle type",
+    "pickupAria": "Pick-up location",
+    "vehicleAria": "Vehicle type",
+    "locationPlaceholder": "enter your location",
+    "noLocationsMatch": "No locations match \"{query}\"",
+    "searchingLocations": "Searching locations…",
+    "returnElsewhere": "Return elsewhere",
+    "hotelDelivery": "Need hotel delivery"
+  },
+  "BookingWizard": {
+    "terms": {
+      "shellTitle": "Terms & Conditions",
+      "shellDescription": "Review key terms in modal and provide required consent before final confirmation.",
+      "bullet1": "Driver must present valid license and ID at handover.",
+      "bullet2": "Vehicle should be returned in agreed condition and time.",
+      "bullet3": "Late returns may incur additional charges.",
+      "readFull": "Read full contract:",
+      "termsPage": "Terms page",
+      "openModal": "View Terms & Conditions",
+      "agreeCheckbox": "I agree to the terms and conditions.",
+      "modalTitle": "Terms & Conditions",
+      "modalBullet1": "Vehicle must be returned at agreed date/time.",
+      "modalBullet2": "Traffic fines are renter responsibility.",
+      "modalBullet3": "Deposit is refundable based on return inspection.",
+      "fullAgreement": "Full agreement:",
+      "viewComplete": "View complete contract",
+      "close": "Close",
+      "iAgree": "I Agree"
+    },
+    "rentalDates": {
+      "shellTitle": "Rental Dates",
+      "shellDescription": "Set pickup/return date and time with an auto-calculated duration preview.",
+      "sectionDates": "Section: Rental Dates",
+      "pickupDate": "Pickup date",
+      "returnDate": "Return date",
+      "sectionTime": "Section: Rental Time",
+      "pickupTime": "Pickup time",
+      "returnTime": "Return time",
+      "sectionDuration": "Section: Rental Duration (Display)",
+      "autoDuration": "Auto-calculated duration:",
+      "durationLine": "{days} day(s) ({hours}h)",
+      "durationInvalid": "Return date/time must be after pickup",
+      "durationWaiting": "Waiting for valid dates",
+      "notesTitle": "Notes:",
+      "noteMin": "Minimum rental is 24 hours.",
+      "noteDayCharge": "If less than 24 hours, a full day is charged.",
+      "noteMax": "Maximum rental is 4 weeks.",
+      "noteRenew": "Renewable option is available."
+    },
+    "securityDeposit": {
+      "shellTitle": "Security Deposit",
+      "shellDescription": "Deposit details are separated in state and will be finalized with logic in Phase 5.",
+      "intro": "Refundable security deposit of EUR {amount} required.",
+      "heldNote": "Held for 7-10 days after return.",
+      "payOnline": "Pay online",
+      "payInPerson": "Pay in person"
+    },
+    "bookingSummary": {
+      "shellTitle": "Review & Confirm",
+      "shellDescription": "Final review of booking details, financial summary, and deposit method before confirmation.",
+      "section1": "Section 1 - Booking Summary",
+      "vehicleSelected": "Vehicle selected:",
+      "categoryOnly": "Category only",
+      "rentalDates": "Rental dates:",
+      "to": "to",
+      "billableDuration": "Billable duration:",
+      "dayCount": "{count} day(s)",
+      "actualHours": " (actual {hours}h)",
+      "pickupMethod": "Pickup method:",
+      "pickupAddress": "Pickup address:",
+      "dropoffMethod": "Drop-off method:",
+      "dropoffAddress": "Drop-off address:",
+      "cdwLine": "CDW selected: {label}",
+      "addDriverLine": "Additional driver: {value}",
+      "helmet1": "Helmet size 1:",
+      "helmet2": "Helmet size 2:",
+      "storageBox": "Storage box:",
+      "section2": "Section 2 - Pricing Summary",
+      "rentalCost": "Rental Cost:",
+      "deliveryLine": "Delivery / Drop-off: {total} (pickup {pickup} + drop-off {dropoff}{discount})",
+      "bundleDiscount": " - {amount} bundle discount",
+      "cdwCost": "CDW:",
+      "addDriverCost": "Additional Driver:",
+      "storageCost": "Storage Box:",
+      "subtotal": "Subtotal:",
+      "pricingPending": "Pricing preview will appear once vehicle and rental dates/times are valid.",
+      "section3": "Section 3 - Deposit & Totals",
+      "securityDeposit": "Security deposit:",
+      "depositMethod": "Deposit method",
+      "payOnlineNow": "Pay online now",
+      "payInPersonPickup": "Pay in person at pickup",
+      "totalDueOnline": "Total Due Online:",
+      "dueLater": "Due at Pickup / Later:",
+      "depositAtPickupNote": "Deposit will be paid at pickup and is not included in the online total.",
+      "depositOnlineNote": "Deposit is included in the online payable amount.",
+      "reviewCheckbox": "I reviewed the summary above."
+    },
+    "pickupDropoff": {
+      "shellTitle": "Pickup & Drop-off",
+      "shellDescription": "Step 2 delivery configuration. Address fields are text-only in this phase.",
+      "pickupLegend": "Pickup",
+      "officePickup": "Collect from office in Pieta",
+      "requestDelivery": "Request delivery",
+      "pickupAddressLabel": "Pickup address (delivery)",
+      "addressPlaceholder": "Street, building, area, postcode",
+      "textOnlyNote": "Text address field only (no map in current doc version).",
+      "dropoffLegend": "Drop-off",
+      "officeReturn": "Return to office in Pieta",
+      "requestDropoff": "Request drop-off",
+      "dropoffAddressLabel": "Drop-off address",
+      "deliveryOnly": "Delivery only: {amount}",
+      "dropoffOnly": "Drop-off only: {amount}",
+      "bothLabel": "Both: {amount}",
+      "youGetOff": " (You get {amount} off)",
+      "currentTotal": "Current chosen setup total: {total} ({pickup} pickup + {dropoff} drop-off{discount})",
+      "bundleDiscountShort": " - {amount} bundle discount"
+    },
+    "customer": {
+      "shellTitle": "Customer Information",
+      "shellDescription": "Step 3 customer fields (all required except special notes).",
+      "lead": "Customer fields (all required except notes)",
+      "fullName": "Full name",
+      "fullNamePh": "e.g. Alex Borg",
+      "phone": "Phone",
+      "phonePh": "e.g. +356 9912 3456",
+      "email": "Email",
+      "emailPh": "e.g. alex@email.com",
+      "nationality": "Nationality",
+      "nationalityPh": "e.g. Maltese",
+      "licenseHeading": "Driver's License (Conditional)",
+      "officeLicenseConfirm": "Office pickup: In-person license presentation confirmation is required",
+      "passportHeading": "Passport / ID (Conditional)",
+      "officePassportConfirm": "Office pickup: In-person Passport/ID presentation confirmation is required",
+      "selectCategory": "Select category",
+      "dateOfBirth": "Date of birth",
+      "licenseCategory": "License category",
+      "pickupContext": "Based on your Step 2 pickup selection:",
+      "requestDelivery": "Request delivery",
+      "collectFromOffice": "Collect from office",
+      "deliveryLicenseUpload": "Delivery: Licence photo upload is required",
+      "driversLicenceLabel": "Driver's licence",
+      "confirmPresentLicense": "I confirm I will present my license at pickup.",
+      "deliveryPassportUpload": "Delivery: Passport/ID photo upload is required",
+      "passportNationalIdLabel": "Passport or national ID",
+      "confirmPresentId": "I confirm I will present my Passport/ID at pickup.",
+      "specialNotes": "Special notes",
+      "specialNotesPlaceholder": "Any extra request or pickup information..."
+    },
+    "addons": {
+      "shellTitle": "Add-ons",
+      "shellDescription": "Section: Add-ons",
+      "selectSize": "Select size",
+      "selectCategory": "Select category",
+      "cdwNone": "No CDW - full liability",
+      "cdw50": "EUR 3/day - reduce to EUR 350 (50cc)",
+      "cdw125": "EUR 3/day - reduce to EUR 500 (125cc)",
+      "cdwFull": "EUR 8/day - full coverage",
+      "cdwAtv": "EUR 15/day - reduce to EUR 800 (ATV)",
+      "cdwTitle": "Collision Damage Waiver (CDW)",
+      "cdwDefaultIntro": "By default you are liable for damages in such manner:",
+      "cdwExclusionsTitle": "CDW does not cover:",
+      "cdwEx1": "Liability EUR 500 (50cc)",
+      "cdwEx2": "Liability EUR 800 (125cc)",
+      "cdwEx3": "Exclusion note: negligence",
+      "cdwEx4": "Exclusion note: alcohol/drug use",
+      "cdwEx5": "Exclusion note: off-road misuse",
+      "cdwEx6": "Exclusion note: lost keys",
+      "cdwEx7": "Exclusion note: tire damage",
+      "extraEquipment": "Additional Equipment",
+      "passportUploadLabel": "Passport/ID photo upload",
+      "passportUploadDesc": "Required for an additional driver when delivery pickup is selected.",
+      "helmetLabel": "Helmet",
+      "helmetIncludedNote": "2 helmets are included with every rental. No additional helmets can be provided.",
+      "helmetSize1": "Helmet size 1",
+      "helmetSize2": "Helmet size 2",
+      "helmetAutoIncluded": "Helmets are automatically included for motorbike and ATV rentals.",
+      "helmetOnlyMotorbikeAtv": "Helmet option is relevant only for motorbike and ATV rentals.",
+      "additionalDriver": "Additional driver (EUR 5/day)",
+      "cdwCanReduce": "Can be reduced with CDW",
+      "addDriverIdHeading": "Additional driver ID verification (based on pickup method)",
+      "addDriverIdBody": "Delivery pickup requires photo upload. Office pickup requires in-person ID confirmation.",
+      "addDriverOfficeConfirm": "I confirm the additional driver will show ID in person at pickup.",
+      "storageBoxLabel": "Storage box (EUR 10 one-time)"
+    }
+  },
+  "TripDate": {
+    "label": "Trip dates",
+    "change": "Change",
+    "ariaSummary": "Trip dates: {summary}. Change dates."
   }
 }

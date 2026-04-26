@@ -1,9 +1,10 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/container";
 import { WhatsAppIcon } from "@/features/home/components/whatsapp-action-link";
-import { faqIntro, faqItems } from "@/features/home/data/faq-content";
+import { faqItems } from "@/features/home/data/faq-content";
 
 function FaqIcon() {
   return (
@@ -29,6 +30,9 @@ function FaqIcon() {
 }
 
 export function FaqSection() {
+  const t = useTranslations("Faq");
+  const tDynamic = t as unknown as (key: string) => string;
+  const tWhatsApp = useTranslations("WhatsApp");
   const baseId = useId();
   const firstId = faqItems[0]?.id ?? "0";
   const [openId, setOpenId] = useState<string | null>(firstId);
@@ -40,7 +44,6 @@ export function FaqSection() {
       className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-16 sm:py-20"
     >
       <div className="relative">
-        {/* Dotted grid fades into solid white */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-56 sm:h-64"
@@ -62,15 +65,15 @@ export function FaqSection() {
               id={`${baseId}-faq-heading`}
               className="mt-6 text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl"
             >
-              {faqIntro.title}
+              {t("title")}
             </h2>
             <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
-              {faqIntro.subtitleLead}
+              {t("subtitleLead")}
               <span className="inline-flex items-center gap-1.5 align-middle font-medium text-slate-800">
                 <WhatsAppIcon className="h-[1.1em] w-[1.1em] shrink-0 text-[#25D366]" />
-                WhatsApp
+                {tWhatsApp("faqLabel")}
               </span>
-              {faqIntro.subtitleTail}
+              {t("subtitleTail")}
             </p>
           </div>
 
@@ -81,6 +84,8 @@ export function FaqSection() {
                 const panelId = `${baseId}-panel-${item.id}`;
                 const buttonId = `${baseId}-trigger-${item.id}`;
                 const isLast = index === faqItems.length - 1;
+                const question = tDynamic(`items.${item.id}.question`);
+                const answer = tDynamic(`items.${item.id}.answer`);
 
                 return (
                   <li
@@ -106,7 +111,7 @@ export function FaqSection() {
                           }
                         >
                           <span className="text-base font-semibold text-slate-950 sm:text-[1.05rem]">
-                            {item.question}
+                            {question}
                           </span>
                           <span
                             aria-hidden="true"
@@ -121,7 +126,7 @@ export function FaqSection() {
                           aria-labelledby={buttonId}
                           className="mt-4 text-left text-sm leading-7 text-slate-600 sm:text-base"
                         >
-                          {item.answer}
+                          {answer}
                         </div>
                       </div>
                     ) : (
@@ -134,7 +139,7 @@ export function FaqSection() {
                         onClick={() => setOpenId(item.id)}
                       >
                         <span className="text-base font-semibold text-slate-950 transition-colors duration-200 group-hover:text-slate-900 sm:text-[1.05rem]">
-                          {item.question}
+                          {question}
                         </span>
                         <span
                           aria-hidden="true"

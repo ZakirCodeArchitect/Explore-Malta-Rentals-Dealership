@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 import { Car, Gauge, Palette, Users } from "lucide-react";
 import Select, {
@@ -49,27 +50,6 @@ type VehicleFiltersProps = Readonly<{
   onSearch: () => void;
 }>;
 
-const TYPE_FILTER_OPTIONS: readonly BookingOption[] = [
-  { value: "All", label: "All vehicles" },
-  { value: "Scooter", label: "Scooters" },
-  { value: "Motorcycle", label: "Motorcycles" },
-  { value: "ATV", label: "ATVs" },
-  { value: "Bicycle", label: "Bicycles" },
-];
-
-const TRANSMISSION_FILTER_OPTIONS: readonly BookingOption[] = [
-  { value: "All", label: "All" },
-  { value: "Automatic", label: "Automatic" },
-  { value: "Manual", label: "Manual" },
-];
-
-const SEATS_FILTER_OPTIONS: readonly BookingOption[] = [
-  { value: "All", label: "Any" },
-  { value: "1", label: "1 seat" },
-  { value: "2", label: "2 seats" },
-  { value: "3", label: "3 seats" },
-];
-
 function optionByValue(
   options: readonly BookingOption[],
   value: string,
@@ -77,21 +57,20 @@ function optionByValue(
   return options.find((o) => o.value === value) ?? options[0]!;
 }
 
-function FilterDropdownIndicator(
-  props: DropdownIndicatorProps<BookingOption, false>,
-) {
-  return (
-    <selectComponents.DropdownIndicator {...props}>
-      <span className="shrink-0 text-xs font-semibold text-slate-500">
-        Change
-      </span>
-    </selectComponents.DropdownIndicator>
-  );
+function makeFilterDropdownIndicator(changeLabel: string) {
+  return function FilterDropdownIndicator(
+    props: DropdownIndicatorProps<BookingOption, false>,
+  ) {
+    return (
+      <selectComponents.DropdownIndicator {...props}>
+        <span className="shrink-0 text-xs font-semibold text-slate-500">
+          {changeLabel}
+        </span>
+      </selectComponents.DropdownIndicator>
+    );
+  };
 }
 
-const filterSelectComponents = {
-  DropdownIndicator: FilterDropdownIndicator,
-};
 
 const filterCellClass =
   "flex min-w-0 w-full flex-col text-xs font-semibold text-slate-500";
@@ -169,6 +148,46 @@ export function VehicleFilters({
   onClearFilters,
   onSearch,
 }: VehicleFiltersProps) {
+  const t = useTranslations("VehicleFilters");
+  const tCommon = useTranslations("Common");
+
+  const filterSelectComponents = useMemo(
+    () => ({
+      DropdownIndicator: makeFilterDropdownIndicator(tCommon("change")),
+    }),
+    [tCommon],
+  );
+
+  const typeFilterOptions = useMemo(
+    (): readonly BookingOption[] => [
+      { value: "All", label: t("allVehicles") },
+      { value: "Scooter", label: t("scooters") },
+      { value: "Motorcycle", label: t("motorcycles") },
+      { value: "ATV", label: t("atvs") },
+      { value: "Bicycle", label: t("bicycles") },
+    ],
+    [t],
+  );
+
+  const transmissionFilterOptions = useMemo(
+    (): readonly BookingOption[] => [
+      { value: "All", label: t("all") },
+      { value: "Automatic", label: t("automatic") },
+      { value: "Manual", label: t("manual") },
+    ],
+    [t],
+  );
+
+  const seatsFilterOptions = useMemo(
+    (): readonly BookingOption[] => [
+      { value: "All", label: t("any") },
+      { value: "1", label: t("seat1") },
+      { value: "2", label: t("seat2") },
+      { value: "3", label: t("seat3") },
+    ],
+    [t],
+  );
+
   const hasColorFilter =
     colorFilterOptions != null &&
     colorFilterOptions.length > 0 &&
@@ -179,10 +198,10 @@ export function VehicleFilters({
     if (!colorFilterOptions?.length) return [];
     return colorFilterOptions.map((c) =>
       c === "All"
-        ? { value: "All", label: "Any color" }
+        ? { value: "All", label: t("anyColor") }
         : { value: c, label: c },
     );
-  }, [colorFilterOptions]);
+  }, [colorFilterOptions, t]);
 
   const mainGridClass = (() => {
     const n =
@@ -215,10 +234,16 @@ export function VehicleFilters({
   const indicativeTripTotalEur =
     getIndicativeMotorcycleScooterTripTotalEur(durationDays);
 
+  const dayWord = durationDays === 1 ? tCommon("day") : tCommon("days");
+  const durationSummary = t("durationLine", { count: durationDays });
+  const pickupSuffix = pickupLocation?.label
+    ? ` · ${t("pickupPrefix")}: ${pickupLocation.label}`
+    : "";
+
   return (
     <section
       id="vehicle-trip-search"
-      aria-label="Vehicle search"
+      aria-label={t("ariaVehicleSearch")}
       className="sticky top-18 z-20 scroll-mt-28 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
     >
       <div className={mainGridClass}>
@@ -236,7 +261,7 @@ export function VehicleFilters({
           />
         </div>
           <label className={filterCellClass} htmlFor="vehicles-filter-type">
-            Type
+            {t("type")}
             <div className={filterShellClass}>
               <Car
                 className="h-4 w-4 shrink-0 text-slate-600"
@@ -245,12 +270,12 @@ export function VehicleFilters({
               <Select<BookingOption, false>
                 inputId="vehicles-filter-type"
                 instanceId="vehicles-filter-type"
-                aria-label="Vehicle type"
-                value={optionByValue(TYPE_FILTER_OPTIONS, selectedType)}
+                aria-label={t("typeAria")}
+                value={optionByValue(typeFilterOptions, selectedType)}
                 onChange={(opt) =>
                   opt && onTypeChange(opt.value as VehicleType | "All")
                 }
-                options={[...TYPE_FILTER_OPTIONS]}
+                options={[...typeFilterOptions]}
                 isSearchable={false}
                 styles={vehicleFilterReactSelectStyles}
                 components={filterSelectComponents}
@@ -268,7 +293,7 @@ export function VehicleFilters({
             className={filterCellClass}
             htmlFor="vehicles-filter-transmission"
           >
-            Transmission
+            {t("transmission")}
             <div className={filterShellClass}>
               <Gauge
                 className="h-4 w-4 shrink-0 text-slate-600"
@@ -277,16 +302,16 @@ export function VehicleFilters({
               <Select<BookingOption, false>
                 inputId="vehicles-filter-transmission"
                 instanceId="vehicles-filter-transmission"
-                aria-label="Transmission"
+                aria-label={t("transmissionAria")}
                 value={optionByValue(
-                  TRANSMISSION_FILTER_OPTIONS,
+                  transmissionFilterOptions,
                   selectedTransmission,
                 )}
                 onChange={(opt) =>
                   opt &&
                   onTransmissionChange(opt.value as Transmission | "All")
                 }
-                options={[...TRANSMISSION_FILTER_OPTIONS]}
+                options={[...transmissionFilterOptions]}
                 isSearchable={false}
                 styles={vehicleFilterReactSelectStyles}
                 components={filterSelectComponents}
@@ -302,7 +327,7 @@ export function VehicleFilters({
 
           {!hideSeatsFilter ? (
             <label className={filterCellClass} htmlFor="vehicles-filter-seats">
-              Seats
+              {t("seats")}
               <div className={filterShellClass}>
                 <Users
                   className="h-4 w-4 shrink-0 text-slate-600"
@@ -311,9 +336,9 @@ export function VehicleFilters({
                 <Select<BookingOption, false>
                   inputId="vehicles-filter-seats"
                   instanceId="vehicles-filter-seats"
-                  aria-label="Seats"
+                  aria-label={t("seatsAria")}
                   value={optionByValue(
-                    SEATS_FILTER_OPTIONS,
+                    seatsFilterOptions,
                     selectedSeats === "All" ? "All" : String(selectedSeats),
                   )}
                   onChange={(opt) => {
@@ -322,7 +347,7 @@ export function VehicleFilters({
                     if (v === "All") onSeatsChange("All");
                     else onSeatsChange(Number(v) as 1 | 2 | 3);
                   }}
-                  options={[...SEATS_FILTER_OPTIONS]}
+                  options={[...seatsFilterOptions]}
                   isSearchable={false}
                   styles={vehicleFilterReactSelectStyles}
                   components={filterSelectComponents}
@@ -339,7 +364,7 @@ export function VehicleFilters({
 
           {hasColorFilter ? (
             <label className={filterCellClass} htmlFor="vehicles-filter-color">
-              Color
+              {t("color")}
               <div className={filterShellClass}>
                 <Palette
                   className="h-4 w-4 shrink-0 text-slate-600"
@@ -348,7 +373,7 @@ export function VehicleFilters({
                 <Select<BookingOption, false>
                   inputId="vehicles-filter-color"
                   instanceId="vehicles-filter-color"
-                  aria-label="Color"
+                  aria-label={t("colorAria")}
                   value={optionByValue(
                     colorSelectOptions,
                     selectedColor === "All" ? "All" : selectedColor,
@@ -376,20 +401,22 @@ export function VehicleFilters({
         <div className="mt-4 border-t border-slate-200/80 pt-4">
           <div className="mb-3 min-w-0">
             <p className="text-sm font-semibold text-slate-900">
-              {durationDays} day{durationDays === 1 ? "" : "s"}
-              {pickupLocation?.label ? ` · Pickup: ${pickupLocation.label}` : ""}
+              {durationSummary}
+              {pickupSuffix}
             </p>
             <p className="mt-0.5 text-xs text-slate-600 sm:text-sm">
-              Indicative motorcycles/scooters total ~€{indicativeTripTotalEur}{" "}
-              (€{indicativeDailyEur}/day × {durationDays}{" "}
-              {durationDays === 1 ? "day" : "days"}) · Final price depends on
-              vehicle and add-ons.
+              {t("indicativeLine", {
+                tripEur: indicativeTripTotalEur,
+                dailyEur: indicativeDailyEur,
+                count: durationDays,
+                dayLabel: dayWord,
+              })}
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div role="group" aria-label="Booking options" className="min-w-0">
+            <div role="group" aria-label={t("ariaBookingOptions")} className="min-w-0">
               <VehicleFilterToggle
-                label="Need hotel delivery"
+                label={t("hotelDelivery")}
                 switchId="vehicles-filter-hotel-delivery"
                 checked={hotelDelivery}
                 onCheckedChange={onHotelDeliveryChange}
@@ -402,7 +429,7 @@ export function VehicleFilters({
                   onClick={onClearFilters}
                   className="mr-1 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 sm:mr-2"
                 >
-                  Clear filters
+                  {t("clearFilters")}
                 </button>
               ) : null}
               <button
@@ -410,7 +437,7 @@ export function VehicleFilters({
                 onClick={onSearch}
                 className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
               >
-                Search
+                {t("search")}
                 <span
                   aria-hidden="true"
                   className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"

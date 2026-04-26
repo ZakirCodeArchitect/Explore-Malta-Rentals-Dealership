@@ -1,12 +1,14 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
 export function FooterNewsletterForm() {
+  const t = useTranslations("Footer");
   const id = useId();
   const [submitted, setSubmitted] = useState(false);
 
@@ -20,7 +22,7 @@ export function FooterNewsletterForm() {
       noValidate
     >
       <label htmlFor={id} className="sr-only">
-        Email for newsletter
+        {t("newsletterSrOnly")}
       </label>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
         <input
@@ -29,7 +31,7 @@ export function FooterNewsletterForm() {
           type="email"
           autoComplete="email"
           inputMode="email"
-          placeholder="you@example.com"
+          placeholder={t("newsletterPlaceholder")}
           required
           className={joinClasses(
             "min-h-11 w-full flex-1 rounded-xl border border-white/15 bg-white/[0.06] px-3.5 py-2 text-sm text-white placeholder:text-white/35",
@@ -45,18 +47,18 @@ export function FooterNewsletterForm() {
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1628]",
           )}
         >
-          Subscribe
+          {t("newsletterSubmit")}
         </button>
       </div>
       <p className="sr-only" aria-live="polite" aria-atomic="true">
-        {submitted ? "Thanks — you are on the list." : ""}
+        {submitted ? t("newsletterSuccess") : ""}
       </p>
       {submitted ? (
         <p className="mt-2 text-xs text-[var(--brand-orange)]" role="status">
-          Thanks — you are on the list. We will only send rental offers, tours, and Malta tips.
+          {t("newsletterSuccessLong")}
         </p>
       ) : (
-        <p className="mt-2 text-xs text-white/45">No spam. Unsubscribe anytime.</p>
+        <p className="mt-2 text-xs text-white/45">{t("newsletterFinePrint")}</p>
       )}
     </form>
   );

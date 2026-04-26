@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 
@@ -17,6 +17,8 @@ export type FinalConversionCtaProps = Readonly<{
   imageAlt?: string;
   /** Override default full-bleed cover (e.g. logo with `object-contain`) */
   imageClassName?: string;
+  /** When set, replaces the default English site-brand footer line */
+  footerLine?: string;
 }>;
 
 function joinClasses(...classes: Array<string | undefined>) {
@@ -37,6 +39,7 @@ export function FinalConversionCta({
   imageSrc,
   imageAlt = "",
   imageClassName,
+  footerLine,
 }: FinalConversionCtaProps) {
   const decorativeImage = !imageAlt;
 
@@ -145,7 +148,7 @@ export function FinalConversionCta({
               secondaryCta ? "final-cta-delay-6" : "final-cta-delay-4",
             )}
           >
-            {SITE_LOCATION_KICKER} · {SITE_PRIMARY_TAGLINE.supporting}
+            {footerLine ?? `${SITE_LOCATION_KICKER} · ${SITE_PRIMARY_TAGLINE.supporting}`}
           </p>
         </div>
       </div>

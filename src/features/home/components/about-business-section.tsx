@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { aboutBusiness } from "@/features/home/data/home-sections";
+import { getTranslations } from "next-intl/server";
 
 const BIKE_IMAGES_BASE = "/BikeImages";
 
@@ -43,7 +44,8 @@ function BadgeSafetyIcon() {
   );
 }
 
-export function AboutBusinessSection() {
+export async function AboutBusinessSection() {
+  const t = await getTranslations("Home");
   const bgSrc = `${BIKE_IMAGES_BASE}/${encodeURIComponent(aboutBusiness.backgroundImage)}`;
 
   return (
@@ -61,52 +63,42 @@ export function AboutBusinessSection() {
           <div className="min-w-0">
             <SectionHeader
               titleId="about-business-title"
-              title={aboutBusiness.title}
+              title={t("aboutBusinessTitle")}
               tone="light"
               description={
-                <span className="block">{aboutBusiness.tagline}</span>
+                <span className="block">{t("aboutBusinessTagline")}</span>
               }
               align="left"
             />
 
             <div className="mt-8">
-              {aboutBusiness.paragraphs.map((p, idx) => (
-                <p
-                  key={idx}
-                  className={
-                    idx === 0
-                      ? "text-base leading-8 text-slate-800"
-                      : "mt-4 text-base leading-8 text-slate-700"
-                  }
-                >
-                  {p}
-                </p>
-              ))}
+              <p className="text-base leading-8 text-slate-800">{t("aboutParagraph1")}</p>
+              <p className="mt-4 text-base leading-8 text-slate-700">{t("aboutParagraph2")}</p>
 
               <div
                 className="mt-7 rounded-2xl border border-slate-200/90 bg-gradient-to-br from-white via-white to-[color-mix(in_srgb,var(--brand-orange)_6%,white)] p-4 shadow-[0_12px_40px_-28px_rgba(15,23,42,0.2)] sm:p-5"
                 role="note"
-                aria-label="Starting prices"
+                aria-label={t("aboutPricingLabel")}
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--brand-orange)]">
-                  Pricing
+                  {t("aboutPricingLabel")}
                 </p>
                 <p className="mt-2 text-lg font-bold tracking-[-0.02em] text-slate-950 sm:text-xl">
-                  {aboutBusiness.pricingFromLabel}
+                  {t("aboutPricingFrom")}
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
-                  {aboutBusiness.pricingFromSupporting}
+                  {t("aboutPricingSupporting")}
                 </p>
               </div>
 
               <div className="mt-7 flex flex-wrap gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm">
                   <BadgeTouristIcon />
-                  Tourist-friendly
+                  {t("aboutBadgeTourist")}
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm">
                   <BadgeSafetyIcon />
-                  Safety-first
+                  {t("aboutBadgeSafety")}
                 </span>
               </div>
             </div>
@@ -115,7 +107,7 @@ export function AboutBusinessSection() {
           <div className="relative mx-auto h-[min(22rem,58vh)] w-full min-h-[18rem] overflow-hidden sm:h-[min(26rem,56vh)] sm:min-h-[20rem] lg:h-[min(30rem,32rem)]">
             <Image
               src={bgSrc}
-              alt="Motorcycle and rental fleet - Explore Malta Rentals"
+              alt={t("aboutFleetImageAlt")}
               fill
               className="origin-center object-contain object-center scale-[1.16]"
               sizes="(min-width: 1024px) 42vw, 100vw"

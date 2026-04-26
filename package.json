@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "validate:i18n": "tsx scripts/validate-i18n.ts",
     "test:booking-pricing": "tsx scripts/test-booking-pricing.ts",
     "verify:uploads": "tsx scripts/verify-upload-phase.ts",
     "test:upload-api": "tsx scripts/test-upload-api.ts",

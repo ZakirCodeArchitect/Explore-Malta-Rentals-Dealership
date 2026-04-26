@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Container } from "@/components/ui/container";
@@ -27,6 +28,7 @@ const NEUTRAL_CORNER_SHADE =
   "radial-gradient(ellipse 125% 118% at 0% 100%, rgba(226, 232, 240, 0.32) 0%, rgba(241, 245, 249, 0.08) 50%, rgba(248, 250, 252, 0) 76%)";
 
 export function GuideParkingRulesSection() {
+  const t = useTranslations("Guide");
   const [activeLineTint, setActiveLineTint] = useState<ActiveLineColorId | null>("white");
 
   const shade =
@@ -48,11 +50,13 @@ export function GuideParkingRulesSection() {
           titleId="guide-parking-rules-title"
           title={
             <>
-              Guide for <BrandBlueUnderlinedText>Parking Rules</BrandBlueUnderlinedText> for Scooters in Malta
+              {t("parkingTitleBefore")}
+              <BrandBlueUnderlinedText>{t("parkingTitleHighlight")}</BrandBlueUnderlinedText>
+              {t("parkingTitleAfter")}
             </>
           }
           tone="light"
-          description="White lines mark the correct parking spot. Never park on yellow, blue, or green line colours: yellow for garages and reserved parking / no parking; blue for disabled bays; green for residents in the local area. Always park within MC spaces or between any two cars in a white parking space."
+          description={t("parkingSectionIntro")}
         />
 
         <GuideParkingRulesSlider onActiveLineColorChange={setActiveLineTint} />

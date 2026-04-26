@@ -237,8 +237,6 @@ async function main() {
     const vehicleH = await createVehicle("h", type);
 
     // A
-    const aStart = makeDate(2026, 8, 10, 10);
-    const aEnd = makeDate(2026, 8, 12, 10);
     const scenarioA = await apiAvailability({
       vehicleId: vehicleA.id,
       pickupDate: "2026-08-10",

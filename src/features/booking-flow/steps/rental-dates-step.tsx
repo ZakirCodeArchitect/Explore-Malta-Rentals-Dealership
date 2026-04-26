@@ -1,6 +1,7 @@
 "use client";
 
 import { addDays, differenceInHours, format, parse } from "date-fns";
+import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 
@@ -8,6 +9,7 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function RentalDatesStep() {
+  const t = useTranslations("BookingWizard.rentalDates");
   const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
   const { pickupDate, pickupTime, returnDate, returnTime } = state.rental;
   const today = new Date();
@@ -33,14 +35,11 @@ export function RentalDatesStep() {
   const hasDateTimeRange = Boolean(pickup && dropoff);
 
   return (
-    <StepShell
-      title="Rental Dates"
-      description="Set pickup/return date and time with an auto-calculated duration preview."
-    >
+    <StepShell title={t("shellTitle")} description={t("shellDescription")}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">Section: Rental Dates</p>
+        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">{t("sectionDates")}</p>
         <label className="text-sm font-medium text-slate-700">
-          Pickup date
+          {t("pickupDate")}
           <input
             type="date"
             value={pickupDate}
@@ -56,7 +55,7 @@ export function RentalDatesStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          Return date
+          {t("returnDate")}
           <input
             type="date"
             value={returnDate}
@@ -72,9 +71,9 @@ export function RentalDatesStep() {
           ) : null}
         </label>
 
-        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">Section: Rental Time</p>
+        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">{t("sectionTime")}</p>
         <label className="text-sm font-medium text-slate-700">
-          Pickup time
+          {t("pickupTime")}
           <input
             type="time"
             value={pickupTime}
@@ -89,7 +88,7 @@ export function RentalDatesStep() {
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          Return time
+          {t("returnTime")}
           <input
             type="time"
             value={returnTime}
@@ -103,27 +102,25 @@ export function RentalDatesStep() {
           ) : null}
         </label>
 
-        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">
-          Section: Rental Duration (Display)
-        </p>
+        <p className="sm:col-span-2 text-sm font-semibold text-slate-900">{t("sectionDuration")}</p>
       </div>
       <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-700">
-        Auto-calculated duration:{" "}
+        {t("autoDuration")}{" "}
         <span className="font-semibold text-slate-900">
           {rentalHours > 0
-            ? `${rentalDays} day(s) (${rentalHours}h)`
+            ? t("durationLine", { days: rentalDays, hours: rentalHours })
             : hasDateTimeRange
-              ? "Return date/time must be after pickup"
-              : "Waiting for valid dates"}
+              ? t("durationInvalid")
+              : t("durationWaiting")}
         </span>
       </div>
       <div className="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-3">
-        <p className="text-sm font-semibold text-slate-900">Notes: </p>
+        <p className="text-sm font-semibold text-slate-900">{t("notesTitle")}</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
-          <li>Minimum rental is 24 hours.</li>
-          <li>If less than 24 hours, a full day is charged.</li>
-          <li>Maximum rental is 4 weeks.</li>
-          <li>Renewable option is available.</li>
+          <li>{t("noteMin")}</li>
+          <li>{t("noteDayCharge")}</li>
+          <li>{t("noteMax")}</li>
+          <li>{t("noteRenew")}</li>
         </ul>
       </div>
     </StepShell>

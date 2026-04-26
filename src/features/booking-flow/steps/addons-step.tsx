@@ -2,7 +2,8 @@
 
 import * as Popover from "@radix-ui/react-popover";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
@@ -12,31 +13,47 @@ import {
   type LicenseCategory,
 } from "@/features/booking-flow/lib/license-categories";
 
-const HELMET_SIZE_OPTIONS = [
-  { value: "", label: "Select size" },
-  { value: "S", label: "S" },
-  { value: "M", label: "M" },
-  { value: "L", label: "L" },
-] as const;
-const LICENSE_CATEGORY_OPTIONS = [
-  { value: "", label: "Select category" },
-  { value: "B", label: "B" },
-  { value: "AM", label: "AM" },
-  { value: "A", label: "A" },
-  { value: "A1", label: "A1" },
-  { value: "A2", label: "A2" },
-] as const;
-const CDW_OPTIONS = [
-  { value: "none", label: "No CDW - full liability" },
-  { value: "scooter_50", label: "EUR 3/day - reduce to EUR 350 (50cc)" },
-  { value: "scooter_125", label: "EUR 3/day - reduce to EUR 500 (125cc)" },
-  { value: "scooter_full", label: "EUR 8/day - full coverage" },
-  { value: "atv_full", label: "EUR 15/day - reduce to EUR 800 (ATV)" },
-] as const;
 const fieldClass =
   "mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 export function AddonsStep() {
+  const t = useTranslations("BookingWizard.addons");
+  const tCust = useTranslations("BookingWizard.customer");
+  const tSteps = useTranslations("BookingSteps.addons");
+  const helmetSizeOptions = useMemo(
+    () =>
+      [
+        { value: "", label: t("selectSize") },
+        { value: "S", label: "S" },
+        { value: "M", label: "M" },
+        { value: "L", label: "L" },
+      ] as const,
+    [t],
+  );
+  const licenseCategoryOptions = useMemo(
+    () =>
+      [
+        { value: "", label: t("selectCategory") },
+        { value: "B", label: "B" },
+        { value: "AM", label: "AM" },
+        { value: "A", label: "A" },
+        { value: "A1", label: "A1" },
+        { value: "A2", label: "A2" },
+      ] as const,
+    [t],
+  );
+  const cdwOptions = useMemo(
+    () =>
+      [
+        { value: "none", label: t("cdwNone") },
+        { value: "scooter_50", label: t("cdw50") },
+        { value: "scooter_125", label: t("cdw125") },
+        { value: "scooter_full", label: t("cdwFull") },
+        { value: "atv_full", label: t("cdwAtv") },
+      ] as const,
+    [t],
+  );
+
   const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
   const [cdwMenuOpen, setCdwMenuOpen] = useState(false);
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
@@ -50,27 +67,27 @@ export function AddonsStep() {
     selectedVehicleType === "atv" ||
     selectedVehicleType === "motorcycle";
   const selectedCdwOption =
-    CDW_OPTIONS.find((option) => option.value === state.addons.cdwPlan) ??
-    CDW_OPTIONS[0];
+    cdwOptions.find((option) => option.value === state.addons.cdwPlan) ??
+    cdwOptions[0];
   const selectedLicenseCategoryOption =
-    LICENSE_CATEGORY_OPTIONS.find(
+    licenseCategoryOptions.find(
       (option) => option.value === state.additionalDriver.licenseCategory,
-    ) ?? LICENSE_CATEGORY_OPTIONS[0];
+    ) ?? licenseCategoryOptions[0];
   const allowedLicenseOptions = getAllowedLicenseCategories(
     state.rental.vehicleType,
     state.rental.vehicleId,
   );
-  const allowedLicenseCategoryOptions = LICENSE_CATEGORY_OPTIONS.filter(
+  const allowedLicenseCategoryOptions = licenseCategoryOptions.filter(
     (option) =>
       option.value === "" || allowedLicenseOptions.includes(option.value as LicenseCategory),
   );
   const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType);
   const selectedHelmetSize1Option =
-    HELMET_SIZE_OPTIONS.find((option) => option.value === state.addons.helmetSize1) ??
-    HELMET_SIZE_OPTIONS[0];
+    helmetSizeOptions.find((option) => option.value === state.addons.helmetSize1) ??
+    helmetSizeOptions[0];
   const selectedHelmetSize2Option =
-    HELMET_SIZE_OPTIONS.find((option) => option.value === state.addons.helmetSize2) ??
-    HELMET_SIZE_OPTIONS[0];
+    helmetSizeOptions.find((option) => option.value === state.addons.helmetSize2) ??
+    helmetSizeOptions[0];
 
   useEffect(() => {
     if (supportsHelmet) {
@@ -115,21 +132,21 @@ export function AddonsStep() {
   }, [state.delivery.pickupOption, state.additionalDriver.passportIdUpload, updateSection]);
 
   return (
-    <StepShell title="Add-ons" description="Section: Add-ons">
+    <StepShell title={tSteps("title")} description={tSteps("description")}>
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="rounded-lg border border-slate-200 p-3">
           <div className="flex items-center gap-2 text-sm text-slate-700">
             <input type="checkbox" checked={supportsHelmet} readOnly disabled />
-            Helmet
+            {t("helmetLabel")}
           </div>
           <p className="mt-2 text-xs text-slate-600">
-            2 helmets are included with every rental. No additional helmets can be provided.
+            {t("helmetIncludedNote")}
           </p>
 
           {supportsHelmet && helmetEnabled ? (
             <div className="mt-3 space-y-3">
               <label className="text-sm font-medium text-slate-700">
-                Helmet size 1
+                {t("helmetSize1")}
                 <Popover.Root open={helmetSize1MenuOpen} onOpenChange={setHelmetSize1MenuOpen}>
                   <Popover.Trigger asChild>
                     <button
@@ -159,7 +176,7 @@ export function AddonsStep() {
                       className="z-[100] w-[var(--radix-popover-trigger-width)] rounded-md border border-slate-200 bg-white p-1 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)]"
                     >
                       <div role="listbox" className="max-h-64 overflow-y-auto">
-                        {HELMET_SIZE_OPTIONS.map((option) => {
+                        {helmetSizeOptions.map((option) => {
                           const selected = option.value === state.addons.helmetSize1;
                           return (
                             <button
@@ -190,7 +207,7 @@ export function AddonsStep() {
                 <p className="text-xs text-red-600">{getFieldError("addons.helmetSize1")}</p>
               ) : null}
               <label className="text-sm font-medium text-slate-700">
-                Helmet size 2
+                {t("helmetSize2")}
                 <Popover.Root open={helmetSize2MenuOpen} onOpenChange={setHelmetSize2MenuOpen}>
                   <Popover.Trigger asChild>
                     <button
@@ -220,7 +237,7 @@ export function AddonsStep() {
                       className="z-[100] w-[var(--radix-popover-trigger-width)] rounded-md border border-slate-200 bg-white p-1 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)]"
                     >
                       <div role="listbox" className="max-h-64 overflow-y-auto">
-                        {HELMET_SIZE_OPTIONS.map((option) => {
+                        {helmetSizeOptions.map((option) => {
                           const selected = option.value === state.addons.helmetSize2;
                           return (
                             <button
@@ -253,11 +270,11 @@ export function AddonsStep() {
             </div>
           ) : supportsHelmet ? (
             <p className="mt-2 text-xs text-slate-600">
-              Helmets are automatically included for motorbike and ATV rentals.
+              {t("helmetAutoIncluded")}
             </p>
           ) : (
             <p className="mt-2 text-xs text-slate-600">
-              Helmet option is relevant only for motorbike and ATV rentals.
+              {t("helmetOnlyMotorbikeAtv")}
             </p>
           )}
         </div>
@@ -271,14 +288,14 @@ export function AddonsStep() {
                 updateSection("addons", { additionalDriver: event.target.checked })
               }
             />
-            Additional driver (EUR 5/day)
+            {t("additionalDriver")}
           </label>
 
           {state.addons.additionalDriver ? (
             <div className="mt-3 space-y-3">
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="text-sm font-medium text-slate-700">
-                  Full name
+                  {tCust("fullName")}
                   <input
                     type="text"
                     name="additionalDriver.fullName"
@@ -296,7 +313,7 @@ export function AddonsStep() {
                   ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                  Phone number
+                  {tCust("phone")}
                   <input
                     type="tel"
                     name="additionalDriver.phone"
@@ -314,7 +331,7 @@ export function AddonsStep() {
                   ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                  Email
+                  {tCust("email")}
                   <input
                     type="email"
                     name="additionalDriver.email"
@@ -332,7 +349,7 @@ export function AddonsStep() {
                   ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                  Nationality
+                  {tCust("nationality")}
                   <input
                     type="text"
                     name="additionalDriver.nationality"
@@ -350,7 +367,7 @@ export function AddonsStep() {
                   ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                  Date of birth
+                  {tCust("dateOfBirth")}
                   <input
                     type="date"
                     name="additionalDriver.dateOfBirth"
@@ -368,7 +385,7 @@ export function AddonsStep() {
                   ) : null}
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                  License category
+                  {tCust("licenseCategory")}
                   <Popover.Root open={licenseMenuOpen} onOpenChange={setLicenseMenuOpen}>
                     <Popover.Trigger asChild>
                       <button
@@ -431,17 +448,13 @@ export function AddonsStep() {
               </div>
 
               <div className="rounded-md border border-slate-200 bg-slate-50/60 p-3">
-                <p className="text-xs font-semibold text-slate-700">
-                  Additional driver ID verification (based on pickup method)
-                </p>
-                <p className="mt-1 text-xs text-slate-600">
-                  Delivery pickup requires photo upload. Office pickup requires in-person ID confirmation.
-                </p>
+                <p className="text-xs font-semibold text-slate-700">{t("addDriverIdHeading")}</p>
+                <p className="mt-1 text-xs text-slate-600">{t("addDriverIdBody")}</p>
                 {state.delivery.pickupOption === "delivery" ? (
                   <div className="mt-2">
                     <DocumentUploadField
-                      label="Passport/ID photo upload"
-                      description="Required for an additional driver when delivery pickup is selected."
+                      label={t("passportUploadLabel")}
+                      description={t("passportUploadDesc")}
                       category="additional_driver_passport"
                       bookingSessionId={bookingSessionId}
                       value={state.additionalDriver.passportIdUpload}
@@ -468,7 +481,7 @@ export function AddonsStep() {
                         updateSection("additionalDriver", { officeIdConfirmed: event.target.checked })
                       }
                     />
-                    I confirm the additional driver will show ID in person at pickup.
+                    {t("addDriverOfficeConfirm")}
                   </label>
                 )}
               </div>
@@ -478,12 +491,12 @@ export function AddonsStep() {
       </div>
 
       <div className="mt-4 rounded-lg border border-slate-200 p-4">
-        <p className="text-sm font-semibold text-slate-900">Collision Damage Waiver (CDW)</p>
-        <p className="mt-2 text-xs font-semibold text-slate-700">By default you are liable for damages in such manner:</p>
+        <p className="text-sm font-semibold text-slate-900">{t("cdwTitle")}</p>
+        <p className="mt-2 text-xs font-semibold text-slate-700">{t("cdwDefaultIntro")}</p>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-slate-600">
-          <li>Liability EUR 500 (50cc)</li>
-          <li>Liability EUR 800 (125cc)</li>
-          <li>Can be reduced with CDW</li>
+          <li>{t("cdwEx1")}</li>
+          <li>{t("cdwEx2")}</li>
+          <li>{t("cdwCanReduce")}</li>
         </ul>
         <Popover.Root open={cdwMenuOpen} onOpenChange={setCdwMenuOpen}>
           <Popover.Trigger asChild>
@@ -509,7 +522,7 @@ export function AddonsStep() {
               className="z-[100] w-[var(--radix-popover-trigger-width)] rounded-md border border-slate-200 bg-white p-1 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)]"
             >
               <div role="listbox" className="max-h-64 overflow-y-auto">
-                {CDW_OPTIONS.map((option) => {
+                {cdwOptions.map((option) => {
                   const selected = option.value === state.addons.cdwPlan;
                   return (
                     <button
@@ -538,25 +551,25 @@ export function AddonsStep() {
             </Popover.Content>
           </Popover.Portal>
         </Popover.Root>
-        <p className="mt-3 text-xs font-semibold text-slate-700">CDW does not cover:</p>
+        <p className="mt-3 text-xs font-semibold text-slate-700">{t("cdwExclusionsTitle")}</p>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-slate-600">
-          <li>Exclusion note: negligence</li>
-          <li>Exclusion note: alcohol/drug use</li>
-          <li>Exclusion note: off-road misuse</li>
-          <li>Exclusion note: lost keys</li>
-          <li>Exclusion note: tire damage</li>
+          <li>{t("cdwEx3")}</li>
+          <li>{t("cdwEx4")}</li>
+          <li>{t("cdwEx5")}</li>
+          <li>{t("cdwEx6")}</li>
+          <li>{t("cdwEx7")}</li>
         </ul>
       </div>
 
       <div className="mt-4 rounded-lg border border-slate-200 p-4">
-        <p className="text-sm font-semibold text-slate-900">Additional Equipment</p>
+        <p className="text-sm font-semibold text-slate-900">{t("extraEquipment")}</p>
         <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
             checked={state.addons.storageBox}
             onChange={(event) => updateSection("addons", { storageBox: event.target.checked })}
           />
-          Storage box (EUR 10 one-time)
+          {t("storageBoxLabel")}
         </label>
       </div>
     </StepShell>

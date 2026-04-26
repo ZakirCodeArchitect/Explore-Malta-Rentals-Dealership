@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
-
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getEnvValue } from "@/components/footer/footer-utils";
 import { TourContent } from "@/features/tours/components/tour-content";
 
-export const metadata: Metadata = {
-  title: "Tours",
-  description:
-    "Custom and guided Malta tours — motorbike, quad, and bicycle. Flexible itineraries, local experts, and tour requests via Explore Malta Rentals.",
-};
+type ToursPageProps = Readonly<{
+  params: Promise<{ locale: string }>;
+}>;
 
-export default function ToursPage() {
+export async function generateMetadata({ params }: ToursPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return {
+    title: t("toursTitle"),
+    description: t("toursDescription"),
+    openGraph: {
+      title: t("toursTitle"),
+      description: t("toursDescription"),
+      locale,
+      type: "website",
+    },
+  };
+}
+
+export default async function ToursPage({ params }: ToursPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const companyName =
     getEnvValue("CompanyName", "NEXT_PUBLIC_SITE_NAME", "businessName") ?? "Explore Malta Rentals";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ButtonLink } from "@/components/ui/button-link";
 import {
   parseBikeImageEntry,
@@ -10,7 +11,19 @@ import { BikeCategoryImageCarousel } from "@/features/home/components/bike-categ
 
 type CardTone = "default" | "white";
 
-export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
+type BikeCategoryCardProps = Readonly<{
+  cat: BikeCategory;
+}>;
+
+export function BikeCategoryCard({ cat }: BikeCategoryCardProps) {
+  const t = useTranslations("Home.bikeCategories");
+  const tDynamic = t as unknown as (key: string) => string;
+  const tHome = useTranslations("Home");
+  const title = tDynamic(`${cat.id}.title`);
+  const description = tDynamic(`${cat.id}.description`);
+  const bullet1 = tDynamic(`${cat.id}.bullet1`);
+  const bullet2 = tDynamic(`${cat.id}.bullet2`);
+
   const [tone, setTone] = useState<CardTone>(() => {
     const first = cat.images[0];
     if (first == null) return "default";
@@ -37,78 +50,37 @@ export function BikeCategoryCard({ cat }: { cat: BikeCategory }) {
       <div className="relative flex min-w-0 flex-col-reverse gap-5 md:flex-row md:items-start md:gap-5 lg:gap-6">
         <div className="relative z-10 min-w-0 flex-1 basis-0">
           <h3 className="text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">
-            {cat.title}
+            {title}
           </h3>
 
           <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:mt-4 sm:text-base">
-            {cat.description}
+            {description}
           </p>
 
           <ul className="mt-4 space-y-2">
-            {cat.bullets.map((b) => (
+            {[bullet1, bullet2].map((b) => (
               <li key={b} className="flex items-start gap-2 text-sm text-slate-700">
                 <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-slate-200">
-                  <svg
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                    className="h-3.5 w-3.5 text-[var(--brand-orange)]"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.704 5.29a1 1 0 0 1 .006 1.415l-8.2 8.4a1 1 0 0 1-1.42-.006l-3.4-3.5a1 1 0 1 1 1.426-1.4l2.69 2.76 7.49-7.67a1 1 0 0 1 1.412-.002Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-orange)]" aria-hidden />
                 </span>
-                <span className="min-w-0 leading-snug">{b}</span>
+                <span>{b}</span>
               </li>
             ))}
           </ul>
 
-          <div className="mt-6 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <ButtonLink
-              href="/booking"
-              className="w-full justify-center gap-2 sm:w-auto sm:min-w-[10.5rem] focus-visible:ring-offset-white"
-            >
-              <BookCtaIcon />
-              Book {cat.id}
-            </ButtonLink>
-            <ButtonLink
-              href="#services"
-              variant="secondary"
-              className="w-full justify-center border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[10.5rem] focus-visible:ring-offset-white"
-            >
-              See benefits
+          <div className="mt-5">
+            <ButtonLink href="/vehicles" variant="primary" className="inline-flex min-h-10 px-4 py-2 text-sm">
+              {tHome("heroViewFleet")}
             </ButtonLink>
           </div>
         </div>
 
         <BikeCategoryImageCarousel
           images={cat.images}
-          title={cat.title}
+          title={title}
           onCardToneChange={setTone}
         />
       </div>
     </div>
-  );
-}
-
-function BookCtaIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-[1.05em] w-[1.05em] shrink-0"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
-    </svg>
   );
 }

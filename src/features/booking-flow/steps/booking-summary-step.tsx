@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import {
@@ -10,6 +11,8 @@ import {
 } from "@/lib/pricing/calculate-booking-price";
 
 export function BookingSummaryStep() {
+  const t = useTranslations("BookingWizard.bookingSummary");
+  const tCommon = useTranslations("Common");
   const { state, updateSection } = useBookingFlow();
   const pricing = useMemo(
     () =>
@@ -49,39 +52,48 @@ export function BookingSummaryStep() {
     [state],
   );
 
+  const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
   const addOnList = [
-    pricing ? `CDW selected: ${getCdwLabel(pricing.cdwOptionApplied)}` : "CDW selected: -",
-    `Additional driver: ${state.addons.additionalDriver ? "yes" : "no"}`,
-    `Helmet size 1: ${state.addons.helmetSize1 || "-"}`,
-    `Helmet size 2: ${state.addons.helmetSize2 || "-"}`,
-    `Storage box: ${state.addons.storageBox ? "yes" : "no"}`,
+    t("cdwLine", { label: cdwLabel }),
+    t("addDriverLine", {
+      value: state.addons.additionalDriver ? tCommon("yes") : tCommon("no"),
+    }),
+    `${t("helmet1")} ${state.addons.helmetSize1 || "-"}`,
+    `${t("helmet2")} ${state.addons.helmetSize2 || "-"}`,
+    `${t("storageBox")} ${state.addons.storageBox ? tCommon("yes") : tCommon("no")}`,
   ];
 
   return (
-    <StepShell
-      title="Review & Confirm"
-      description="Final review of booking details, financial summary, and deposit method before confirmation."
-    >
+    <StepShell title={t("shellTitle")} description={t("shellDescription")}>
       <div className="space-y-4">
         <div className="rounded-2xl border border-slate-200 p-4 text-sm text-slate-700">
-          <p className="text-sm font-semibold text-slate-900">Section 1 - Booking Summary</p>
+          <p className="text-sm font-semibold text-slate-900">{t("section1")}</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>
-              Vehicle selected:{" "}
-              {state.rental.vehicleName || state.rental.vehicleId || "Category only"}
+              {t("vehicleSelected")}{" "}
+              {state.rental.vehicleName || state.rental.vehicleId || t("categoryOnly")}
             </li>
             <li>
-              Rental dates: {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} to{" "}
+              {t("rentalDates")} {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} {t("to")}{" "}
               {state.rental.returnDate || "-"} {state.rental.returnTime || ""}
             </li>
             <li>
-              Billable duration: {pricing ? `${pricing.rentalDays} day(s)` : "-"}
-              {pricing ? ` (actual ${pricing.actualDurationHours.toFixed(1)}h)` : ""}
+              {t("billableDuration")}{" "}
+              {pricing ? t("dayCount", { count: pricing.rentalDays }) : "-"}
+              {pricing ? t("actualHours", { hours: pricing.actualDurationHours.toFixed(1) }) : ""}
             </li>
-            <li>Pickup method: {state.delivery.pickupOption}</li>
-            <li>Pickup address: {state.delivery.pickupAddress || "-"}</li>
-            <li>Drop-off method: {state.delivery.dropoffOption}</li>
-            <li>Drop-off address: {state.delivery.dropoffAddress || "-"}</li>
+            <li>
+              {t("pickupMethod")} {state.delivery.pickupOption}
+            </li>
+            <li>
+              {t("pickupAddress")} {state.delivery.pickupAddress || "-"}
+            </li>
+            <li>
+              {t("dropoffMethod")} {state.delivery.dropoffOption}
+            </li>
+            <li>
+              {t("dropoffAddress")} {state.delivery.dropoffAddress || "-"}
+            </li>
             {addOnList.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -89,42 +101,51 @@ export function BookingSummaryStep() {
         </div>
 
         <div className="rounded-2xl border border-slate-200 p-4 text-sm text-slate-700">
-          <p className="text-sm font-semibold text-slate-900">Section 2 - Pricing Summary</p>
+          <p className="text-sm font-semibold text-slate-900">{t("section2")}</p>
           {pricing ? (
             <>
               <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>Rental Cost: {formatEur(pricing.rentalCost)}</li>
                 <li>
-                  Delivery / Drop-off: {formatEur(pricing.deliveryTotal)} (pickup{" "}
-                  {formatEur(pricing.deliveryFee)} + drop-off {formatEur(pricing.dropoffFee)}
-                  {pricing.deliveryDiscount > 0
-                    ? ` - ${formatEur(pricing.deliveryDiscount)} bundle discount`
-                    : ""}
-                  )
+                  {t("rentalCost")} {formatEur(pricing.rentalCost)}
                 </li>
-                <li>CDW: {formatEur(pricing.cdwCost)}</li>
-                <li>Additional Driver: {formatEur(pricing.additionalDriverCost)}</li>
-                <li>Storage Box: {formatEur(pricing.storageBoxCost)}</li>
+                <li>
+                  {t("deliveryLine", {
+                    total: formatEur(pricing.deliveryTotal),
+                    pickup: formatEur(pricing.deliveryFee),
+                    dropoff: formatEur(pricing.dropoffFee),
+                    discount:
+                      pricing.deliveryDiscount > 0
+                        ? t("bundleDiscount", { amount: formatEur(pricing.deliveryDiscount) })
+                        : "",
+                  })}
+                </li>
+                <li>
+                  {t("cdwCost")} {formatEur(pricing.cdwCost)}
+                </li>
+                <li>
+                  {t("addDriverCost")} {formatEur(pricing.additionalDriverCost)}
+                </li>
+                <li>
+                  {t("storageCost")} {formatEur(pricing.storageBoxCost)}
+                </li>
               </ul>
               <p className="mt-3 font-semibold text-slate-900">
-                Subtotal: {formatEur(pricing.subtotal)}
+                {t("subtotal")} {formatEur(pricing.subtotal)}
               </p>
             </>
           ) : (
-            <p className="mt-2 text-xs text-slate-500">
-              Pricing preview will appear once vehicle and rental dates/times are valid.
-            </p>
+            <p className="mt-2 text-xs text-slate-500">{t("pricingPending")}</p>
           )}
         </div>
 
         <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 text-sm text-slate-700">
-          <p className="text-sm font-semibold text-slate-900">Section 3 - Deposit & Totals</p>
+          <p className="text-sm font-semibold text-slate-900">{t("section3")}</p>
           <p className="mt-2 font-semibold">
-            Security deposit: {formatEur(pricing?.depositAmount ?? 250)}
+            {t("securityDeposit")} {formatEur(pricing?.depositAmount ?? 250)}
           </p>
 
           <div className="mt-3">
-            <p className="font-semibold text-slate-900">Deposit method</p>
+            <p className="font-semibold text-slate-900">{t("depositMethod")}</p>
             <div className="mt-2 flex flex-col gap-2 sm:flex-row">
               <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
                 <input
@@ -134,7 +155,7 @@ export function BookingSummaryStep() {
                   checked={state.deposit.depositMethod === "online"}
                   onChange={() => updateSection("deposit", { depositMethod: "online" })}
                 />
-                Pay online now
+                {t("payOnlineNow")}
               </label>
               <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
                 <input
@@ -144,27 +165,27 @@ export function BookingSummaryStep() {
                   checked={state.deposit.depositMethod === "in_person"}
                   onChange={() => updateSection("deposit", { depositMethod: "in_person" })}
                 />
-                Pay in person at pickup
+                {t("payInPersonPickup")}
               </label>
             </div>
             {pricing ? (
               <div className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-3">
                 <p className="font-semibold text-slate-900">
-                  Total Due Online: {formatEur(pricing.totalDueOnline)}
+                  {t("totalDueOnline")} {formatEur(pricing.totalDueOnline)}
                 </p>
                 <p className="mt-1 text-sm text-slate-700">
-                  Due at Pickup / Later: {formatEur(pricing.totalDueLater)}
+                  {t("dueLater")} {formatEur(pricing.totalDueLater)}
                 </p>
               </div>
             ) : null}
             {state.deposit.depositMethod === "in_person" ? (
               <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-                Deposit will be paid at pickup and is not included in the online total.
+                {t("depositAtPickupNote")}
               </p>
             ) : null}
             {state.deposit.depositMethod === "online" ? (
               <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-                Deposit is included in the online payable amount.
+                {t("depositOnlineNote")}
               </p>
             ) : null}
           </div>
@@ -178,7 +199,7 @@ export function BookingSummaryStep() {
           onChange={(event) => updateSection("consent", { summaryReviewed: event.target.checked })}
           className="mt-0.5 h-4 w-4"
         />
-        <span>I reviewed the summary above.</span>
+        <span>{t("reviewCheckbox")}</span>
       </label>
     </StepShell>
   );

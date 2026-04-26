@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import { calculateDeliveryFees, formatEur } from "@/lib/pricing/calculate-booking-price";
 
 export function PickupDropoffStep() {
+  const t = useTranslations("BookingWizard.pickupDropoff");
   const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
   const pickupDeliverySelected = state.delivery.pickupOption === "delivery";
   const dropoffDeliverySelected = state.delivery.dropoffOption === "dropoff";
@@ -19,14 +21,11 @@ export function PickupDropoffStep() {
   const bothQuote = calculateDeliveryFees("delivery", "dropoff");
 
   return (
-    <StepShell
-      title="Pickup & Drop-off"
-      description="Step 2 delivery configuration. Address fields are text-only in this phase."
-    >
+    <StepShell title={t("shellTitle")} description={t("shellDescription")}>
       <div className="grid gap-4 sm:grid-cols-2">
         <fieldset className="rounded-lg border border-slate-200 p-4">
           <legend className="px-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-            Pickup
+            {t("pickupLegend")}
           </legend>
           <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
             <input
@@ -37,7 +36,7 @@ export function PickupDropoffStep() {
               checked={state.delivery.pickupOption === "office"}
               onChange={() => updateSection("delivery", { pickupOption: "office" })}
             />
-            Collect from office in Pieta
+            {t("officePickup")}
           </label>
           <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
             <input
@@ -48,13 +47,13 @@ export function PickupDropoffStep() {
               checked={state.delivery.pickupOption === "delivery"}
               onChange={() => updateSection("delivery", { pickupOption: "delivery" })}
             />
-            Request delivery
+            {t("requestDelivery")}
           </label>
 
           {pickupDeliverySelected ? (
             <div className="mt-3 rounded-md border border-slate-200 bg-slate-50/60 p-3">
               <label className="text-sm font-medium text-slate-700">
-                Pickup address (delivery)
+                {t("pickupAddressLabel")}
                 <textarea
                   name="delivery.pickupAddress"
                   data-field="delivery.pickupAddress"
@@ -67,22 +66,20 @@ export function PickupDropoffStep() {
                   onChange={(event) =>
                     updateSection("delivery", { pickupAddress: event.target.value })
                   }
-                  placeholder="Street, building, area, postcode"
+                  placeholder={t("addressPlaceholder")}
                 />
               </label>
               {getFieldError("delivery.pickupAddress") ? (
                 <p className="mt-2 text-xs text-red-600">{getFieldError("delivery.pickupAddress")}</p>
               ) : null}
-              <p className="mt-2 text-xs text-slate-500">
-                Text address field only (no map in current doc version).
-              </p>
+              <p className="mt-2 text-xs text-slate-500">{t("textOnlyNote")}</p>
             </div>
           ) : null}
         </fieldset>
 
         <fieldset className="rounded-lg border border-slate-200 p-4">
           <legend className="px-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-            Drop-off
+            {t("dropoffLegend")}
           </legend>
           <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
             <input
@@ -93,7 +90,7 @@ export function PickupDropoffStep() {
               checked={state.delivery.dropoffOption === "office"}
               onChange={() => updateSection("delivery", { dropoffOption: "office" })}
             />
-            Return to office in Pieta
+            {t("officeReturn")}
           </label>
           <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
             <input
@@ -104,13 +101,13 @@ export function PickupDropoffStep() {
               checked={state.delivery.dropoffOption === "dropoff"}
               onChange={() => updateSection("delivery", { dropoffOption: "dropoff" })}
             />
-            Request drop-off
+            {t("requestDropoff")}
           </label>
 
           {dropoffDeliverySelected ? (
             <div className="mt-3 rounded-md border border-slate-200 bg-slate-50/60 p-3">
               <label className="text-sm font-medium text-slate-700">
-                Drop-off address
+                {t("dropoffAddressLabel")}
                 <textarea
                   name="delivery.dropoffAddress"
                   data-field="delivery.dropoffAddress"
@@ -123,33 +120,36 @@ export function PickupDropoffStep() {
                   onChange={(event) =>
                     updateSection("delivery", { dropoffAddress: event.target.value })
                   }
-                  placeholder="Street, building, area, postcode"
+                  placeholder={t("addressPlaceholder")}
                 />
               </label>
               {getFieldError("delivery.dropoffAddress") ? (
                 <p className="mt-2 text-xs text-red-600">{getFieldError("delivery.dropoffAddress")}</p>
               ) : null}
-              <p className="mt-2 text-xs text-slate-500">
-                Text address field only (no map in current doc version).
-              </p>
+              <p className="mt-2 text-xs text-slate-500">{t("textOnlyNote")}</p>
             </div>
           ) : null}
         </fieldset>
       </div>
 
       <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        <p>Delivery only: {formatEur(deliveryOnlyQuote.deliveryTotal)}</p>
-        <p>Drop-off only: {formatEur(dropoffOnlyQuote.deliveryTotal)}</p>
+        <p>{t("deliveryOnly", { amount: formatEur(deliveryOnlyQuote.deliveryTotal) })}</p>
+        <p>{t("dropoffOnly", { amount: formatEur(dropoffOnlyQuote.deliveryTotal) })}</p>
         <p className="font-semibold">
-          Both: {formatEur(bothQuote.deliveryTotal)}
-          {bothQuote.discount > 0 ? ` (You get ${formatEur(bothQuote.discount)} off)` : ""}
+          {t("bothLabel", { amount: formatEur(bothQuote.deliveryTotal) })}
+          {bothQuote.discount > 0 ? t("youGetOff", { amount: formatEur(bothQuote.discount) }) : ""}
         </p>
         {offSiteQuote.deliveryFee + offSiteQuote.dropoffFee > 0 ? (
           <p className="text-xs">
-            Current chosen setup total: {formatEur(offSiteQuote.deliveryTotal)} (
-            {formatEur(offSiteQuote.deliveryFee)} pickup + {formatEur(offSiteQuote.dropoffFee)} drop-off
-            {offSiteQuote.discount > 0 ? ` - ${formatEur(offSiteQuote.discount)} bundle discount` : ""}
-            )
+            {t("currentTotal", {
+              total: formatEur(offSiteQuote.deliveryTotal),
+              pickup: formatEur(offSiteQuote.deliveryFee),
+              dropoff: formatEur(offSiteQuote.dropoffFee),
+              discount:
+                offSiteQuote.discount > 0
+                  ? t("bundleDiscountShort", { amount: formatEur(offSiteQuote.discount) })
+                  : "",
+            })}
           </p>
         ) : null}
       </div>

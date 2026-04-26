@@ -5,6 +5,8 @@ type ServiceBenefitCardProps = Readonly<{
   description: string;
   icon: LucideIcon;
   variant: "featured" | "compact";
+  /** Shown below the description on the featured (large) card only */
+  featuredFootnote?: string;
 }>;
 
 function joinClasses(...classes: Array<string | undefined>) {
@@ -41,6 +43,7 @@ export function ServiceBenefitCard({
   description,
   icon: Icon,
   variant,
+  featuredFootnote,
 }: ServiceBenefitCardProps) {
   if (variant === "featured") {
     return (
@@ -65,9 +68,11 @@ export function ServiceBenefitCard({
           <p className="mt-3 flex-1 text-base leading-relaxed text-slate-600 sm:text-[1.05rem]">
             {description}
           </p>
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
-            Included with every rental
-          </p>
+          {featuredFootnote ? (
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
+              {featuredFootnote}
+            </p>
+          ) : null}
         </div>
       </article>
     );

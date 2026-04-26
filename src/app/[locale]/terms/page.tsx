@@ -1,12 +1,28 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { TermsPageContent } from "./terms-page-content";
 
-export const metadata: Metadata = {
-  title: "Terms & Conditions | Explore Malta Rentals",
-  description:
-    "Read the full rental terms and conditions for Explore Malta Rentals, including insurance, deposits, driver requirements, cancellation policy, and liability rules.",
-};
+type TermsPageProps = Readonly<{
+  params: Promise<{ locale: string }>;
+}>;
 
-export default function TermsPage() {
+export async function generateMetadata({ params }: TermsPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return {
+    title: t("termsTitle"),
+    description: t("termsDescription"),
+    openGraph: {
+      title: t("termsTitle"),
+      description: t("termsDescription"),
+      locale,
+      type: "website",
+    },
+  };
+}
+
+export default async function TermsPage({ params }: TermsPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return <TermsPageContent />;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +17,7 @@ import {
 import { CalendarDays, Gauge, Loader2, MapPin, Sparkles } from "lucide-react";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
-  bookingFormSchema,
+  createBookingFormSchema,
   SECURITY_DEPOSIT_EUR,
   TRIP_MAX_SPAN_DAYS,
   TRIP_MIN_SPAN_DAYS,
@@ -55,6 +56,9 @@ function defaultDates() {
 
 export function BookingSearchForm() {
   const router = useRouter();
+  const tSearch = useTranslations("BookingSearch");
+  const tForm = useTranslations("BookingForm");
+  const tCommon = useTranslations("Common");
   const [calOpen, setCalOpen] = useState(false);
   const [calendarMonths, setCalendarMonths] = useState(1);
   const minFrom = useMemo(() => startOfDay(new Date()), []);
@@ -63,8 +67,31 @@ export function BookingSearchForm() {
   const defaultPickupTime = nextBookingSlotWithinHours(90);
   const defaultDropoffTime = "19:00";
 
+  const bookingFormSchema = useMemo(
+    () =>
+      createBookingFormSchema({
+        invalidPickupDate: tForm("invalidPickupDate"),
+        invalidDropoffDate: tForm("invalidDropoffDate"),
+        selectPickupTime: tForm("selectPickupTime"),
+        pickupTimeWindow: tForm("pickupTimeWindow"),
+        selectDropoffTime: tForm("selectDropoffTime"),
+        dropoffTimeWindow: tForm("dropoffTimeWindow"),
+        alternateAddressDetail: tForm("alternateAddressDetail"),
+        dropoffAddressDetail: tForm("dropoffAddressDetail"),
+        tripMinDays: tForm("tripMinDays", { min: TRIP_MIN_SPAN_DAYS }),
+        tripMaxDays: tForm("tripMaxDays", { max: TRIP_MAX_SPAN_DAYS }),
+        dropoffAfterPickup: tForm("dropoffAfterPickup"),
+      }),
+    [tForm],
+  );
+
+  const formResolver = useMemo(
+    () => zodResolver(bookingFormSchema),
+    [bookingFormSchema],
+  );
+
   const form = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingFormSchema),
+    resolver: formResolver,
     defaultValues: {
       alternatePickupRequested: false,
       alternatePickupAddress: "",
@@ -95,12 +122,14 @@ export function BookingSearchForm() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
+  /* eslint-disable react-hooks/incompatible-library -- react-hook-form watch() */
   const pickupDate = watch("pickupDate");
   const dropoffDate = watch("dropoffDate");
   const alternatePickupRequested = watch("alternatePickupRequested");
   const alternatePickupAddress = watch("alternatePickupAddress");
   const differentDropoff = watch("differentDropoff");
   const dropoffAddress = watch("dropoffAddress");
+  /* eslint-enable react-hooks/incompatible-library */
 
   const range: DateRange = {
     from: parse(pickupDate, "yyyy-MM-dd", new Date()),
@@ -137,25 +166,31 @@ export function BookingSearchForm() {
   const dateSummary =
     pickupDate && dropoffDate
       ? `${format(parse(pickupDate, "yyyy-MM-dd", new Date()), "d MMM")} → ${format(parse(dropoffDate, "yyyy-MM-dd", new Date()), "d MMM yyyy")}`
-      : "Select dates";
+      : tSearch("dateSummaryPick");
+
+  const offSiteDiscountPart = offSiteQuote.hasBundleDiscount
+    ? tSearch("bundleDiscount", { amount: offSiteQuote.discountEur })
+    : "";
+
+  const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <div className="flex flex-wrap gap-2">
         <p className="w-full text-xs font-semibold tracking-normal text-[var(--brand-orange-strong)]">
-          Quick filter by engine size
+          {tSearch("quickFilterTitle")}
         </p>
         <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
           <Gauge className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
-          <span className="tabular-nums tracking-tight">125cc rent</span>
+          <span className="tabular-nums tracking-tight">{tSearch("chip125")}</span>
         </Link>
         <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
           <Gauge className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
-          <span className="tabular-nums tracking-tight">50cc rent</span>
+          <span className="tabular-nums tracking-tight">{tSearch("chip50")}</span>
         </Link>
         <Link href="/#services" className={quickFilterChipClass}>
           <Sparkles className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
-          <span className="tracking-tight">Services &amp; benefits</span>
+          <span className="tracking-tight">{tSearch("chipServices")}</span>
         </Link>
       </div>
 
@@ -163,15 +198,14 @@ export function BookingSearchForm() {
         <div className="flex flex-col gap-5">
           <div className="rounded-2xl border border-slate-100 bg-[var(--surface-soft)]/60 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-              Pickup location
+              {tSearch("pickupLocationTitle")}
             </p>
             <p className="mt-1 flex items-start gap-2 text-sm font-semibold text-slate-900">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-              Pietà — shop pickup at Explore Malta Rentals
+              {tSearch("shopPickupLine")}
             </p>
             <p className="mt-2 text-xs leading-relaxed text-slate-600">
-              Pickup and drop-off times are between <span className="font-semibold text-slate-800">09:30</span> and{" "}
-              <span className="font-semibold text-slate-800">19:00</span>.
+              {tSearch("pickupHoursNote", { openTime: "09:30", closeTime: "19:00" })}
             </p>
           </div>
 
@@ -183,11 +217,9 @@ export function BookingSearchForm() {
                 {...register("alternatePickupRequested")}
               />
               <span>
-                <span className="text-sm font-semibold text-slate-900">Request pickup at a different address</span>
+                <span className="text-sm font-semibold text-slate-900">{tSearch("alternatePickupTitle")}</span>
                 <span className="mt-1 block text-xs leading-relaxed text-slate-600">
-                  Subject to availability. Additional{" "}
-                  <span className="font-semibold text-slate-800">€{singleLegOffSiteQuote.perLegFeeEur}</span> —
-                  payable when you check out.
+                  {tSearch("alternatePickupHelp", { fee: singleLegOffSiteQuote.perLegFeeEur })}
                 </span>
               </span>
             </label>
@@ -204,11 +236,9 @@ export function BookingSearchForm() {
                     onChange={(e) => field.onChange(e.target.checked)}
                   />
                   <span>
-                    <span className="text-sm font-semibold text-slate-900">Drop off at a different address</span>
+                    <span className="text-sm font-semibold text-slate-900">{tSearch("differentDropoffTitle")}</span>
                     <span className="mt-1 block text-xs leading-relaxed text-slate-600">
-                      Additional{" "}
-                      <span className="font-semibold text-slate-800">€{singleLegOffSiteQuote.perLegFeeEur}</span> —
-                      payable when you check out.
+                      {tSearch("differentDropoffHelp", { fee: singleLegOffSiteQuote.perLegFeeEur })}
                     </span>
                   </span>
                 </label>
@@ -219,11 +249,11 @@ export function BookingSearchForm() {
           {alternatePickupRequested ? (
             <div>
               <label htmlFor="alternate-pickup-address" className="text-xs font-semibold text-slate-500">
-                Exact pickup address
+                {tSearch("exactPickupLabel")}
               </label>
               <textarea
                 id="alternate-pickup-address"
-                placeholder="Street, building, postcode, area…"
+                placeholder={tSearch("addressPlaceholder")}
                 className={textareaClass}
                 {...register("alternatePickupAddress")}
               />
@@ -235,7 +265,7 @@ export function BookingSearchForm() {
                   <GoogleMapEmbed query={alternatePickupAddress} className="aspect-[16/9] min-h-[180px] w-full" />
                 </div>
               ) : (
-                <p className="mt-2 text-xs text-slate-500">Map preview appears after you enter an address.</p>
+                <p className="mt-2 text-xs text-slate-500">{tSearch("mapPreviewHint")}</p>
               )}
             </div>
           ) : null}
@@ -243,11 +273,11 @@ export function BookingSearchForm() {
           {differentDropoff ? (
             <div>
               <label htmlFor="dropoff-address" className="text-xs font-semibold text-slate-500">
-                Exact drop-off address
+                {tSearch("exactDropoffLabel")}
               </label>
               <textarea
                 id="dropoff-address"
-                placeholder="Street, building, postcode, area…"
+                placeholder={tSearch("addressPlaceholder")}
                 className={textareaClass}
                 {...register("dropoffAddress")}
               />
@@ -259,43 +289,42 @@ export function BookingSearchForm() {
                   <GoogleMapEmbed query={dropoffAddress} className="aspect-[16/9] min-h-[180px] w-full" />
                 </div>
               ) : (
-                <p className="mt-2 text-xs text-slate-500">Map preview appears after you enter an address.</p>
+                <p className="mt-2 text-xs text-slate-500">{tSearch("mapPreviewHint")}</p>
               )}
             </div>
           ) : null}
 
           {offSiteQuote.selectedLegs > 0 ? (
             <p className="rounded-xl border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-xs text-amber-950">
-              Off-site service total: <span className="font-semibold">€{offSiteQuote.totalEur}</span> (
-              {offSiteQuote.selectedLegs} × €{offSiteQuote.perLegFeeEur}
-              {offSiteQuote.hasBundleDiscount ? ` - €${offSiteQuote.discountEur} bundle discount` : ""}) —
-              collected at checkout.
+              {tSearch("offSiteTotalLine", {
+                total: offSiteQuote.totalEur,
+                legs: offSiteQuote.selectedLegs,
+                perLeg: offSiteQuote.perLegFeeEur,
+                discount: offSiteDiscountPart,
+              })}
             </p>
           ) : null}
 
           <fieldset>
             <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-              Security deposit (EUR {SECURITY_DEPOSIT_EUR})
+              {tSearch("depositLegend", { amount: SECURITY_DEPOSIT_EUR })}
             </legend>
-            <p className="mt-1 text-xs text-slate-600">
-              Choose whether you&apos;d like to pay the deposit online when you book, or at the first meeting when you
-              collect the bike.
-            </p>
+            <p className="mt-1 text-xs text-slate-600">{tSearch("depositIntro")}</p>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
                 <input type="radio" value="pay_at_meeting" className="text-[var(--brand-orange)]" {...register("depositPreference")} />
-                Pay at first meeting
+                {tSearch("payAtMeeting")}
               </label>
               <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
                 <input type="radio" value="pay_online" className="text-[var(--brand-orange)]" {...register("depositPreference")} />
-                Pay online when booking
+                {tSearch("payOnline")}
               </label>
             </div>
           </fieldset>
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">
-              <label className="mb-1.5 block text-xs font-semibold text-slate-500">Trip dates</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-500">{tSearch("tripDatesLabel")}</label>
               <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
                 <Popover.Trigger asChild>
                   <button type="button" className={`${inputShell} justify-between`}>
@@ -303,7 +332,7 @@ export function BookingSearchForm() {
                       <CalendarDays className="h-4 w-4 shrink-0 text-slate-600" aria-hidden />
                       <span className="truncate">{dateSummary}</span>
                     </span>
-                    <span className="shrink-0 text-xs font-semibold text-slate-500">Change</span>
+                    <span className="shrink-0 text-xs font-semibold text-slate-500">{tCommon("change")}</span>
                   </button>
                 </Popover.Trigger>
                 <Popover.Portal>
@@ -340,7 +369,7 @@ export function BookingSearchForm() {
                 </Popover.Portal>
               </Popover.Root>
               <p className="mt-1.5 text-xs text-slate-500">
-                Trips from {TRIP_MIN_SPAN_DAYS} to {TRIP_MAX_SPAN_DAYS} days.
+                {tSearch("tripLengthNote", { min: TRIP_MIN_SPAN_DAYS, max: TRIP_MAX_SPAN_DAYS })}
               </p>
               {errors.pickupDate ? (
                 <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupDate.message}</p>
@@ -356,7 +385,7 @@ export function BookingSearchForm() {
                   id="booking-pickup-time-label"
                   className="mb-1.5 block text-xs font-semibold text-slate-500"
                 >
-                  Pickup time
+                  {tSearch("pickupTime")}
                 </label>
                 <Controller
                   name="pickupTime"
@@ -379,7 +408,7 @@ export function BookingSearchForm() {
                   id="booking-dropoff-time-label"
                   className="mb-1.5 block text-xs font-semibold text-slate-500"
                 >
-                  Drop-off time
+                  {tSearch("dropoffTime")}
                 </label>
                 <Controller
                   name="dropoffTime"
@@ -405,14 +434,23 @@ export function BookingSearchForm() {
       <div className="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-[var(--surface-soft)]/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div>
           <p className="text-sm font-semibold text-slate-900">
-            {durationDays} day{durationDays === 1 ? "" : "s"} · Shop pickup Pietà
-            {alternatePickupRequested ? " · Off-site pickup requested" : ""}
-            {differentDropoff ? " · Different drop-off" : ""}
-            {offSiteQuote.selectedLegs > 0 ? ` · +€${offSiteQuote.totalEur} off-site` : ""}
+            {tSearch("summaryLine", {
+              days: durationDays,
+              offPickup: alternatePickupRequested ? tSearch("offPickup") : "",
+              offDropoff: differentDropoff ? tSearch("offDropoff") : "",
+              offSite:
+                offSiteQuote.selectedLegs > 0
+                  ? tSearch("offSiteExtra", { amount: offSiteQuote.totalEur })
+                  : "",
+            })}
           </p>
           <p className="mt-0.5 text-xs text-slate-600">
-            Indicative motorcycles/scooters total ~€{indicativeTripTotalEur} (€{indicativeDailyEur}/day × {durationDays}{" "}
-            {durationDays === 1 ? "day" : "days"}) · Final price depends on vehicle and add-ons.
+            {tSearch("indicativeSummary", {
+              tripEur: indicativeTripTotalEur,
+              dailyEur: indicativeDailyEur,
+              days: durationDays,
+              dayLabel: summaryDayLabel,
+            })}
           </p>
         </div>
         <button
@@ -423,10 +461,10 @@ export function BookingSearchForm() {
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Searching…
+              {tSearch("submitSearching")}
             </>
           ) : (
-            "Search available vehicles"
+            tSearch("submitIdle")
           )}
         </button>
       </div>

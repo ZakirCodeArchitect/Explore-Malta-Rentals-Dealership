@@ -5,10 +5,10 @@ import { Container } from "@/components/ui/container";
 import { BrandBlueUnderlinedText } from "@/features/guide/components/brand-blue-underlined-text";
 import { GuideParkingRulesSection } from "@/features/guide/components/guide-parking-rules-section";
 import { SectionHeader } from "@/features/home/components/section-header";
-import { SITE_GOOGLE_MAPS_URL, SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
+import { SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
+import { getTranslations } from "next-intl/server";
 
 const TOURIST_GUIDE_MAP_SRC = "/guide%20map.png";
-/** Hero backdrop (`public/guide pge photo.webp`). */
 const GUIDE_PAGE_HERO_BACKDROP = `/${encodeURIComponent("guide pge photo.webp")}`;
 
 function isHttpUrl(value: string) {
@@ -20,18 +20,18 @@ function isHttpUrl(value: string) {
   }
 }
 
-export function GuideContent({
+export async function GuideContent({
   location,
   address,
 }: Readonly<{
   location: string;
   address: string;
 }>) {
+  const t = await getTranslations("Guide");
+  const tBrand = await getTranslations("Brand");
   const mapsPageUrl = isHttpUrl(location) ? location.trim() : undefined;
   const locationTitle = mapsPageUrl ? address : location;
-  // Always use SITE_GOOGLE_MAPS_URL for the "Open in Google Maps" link.
   const openMapsHref = SITE_GOOGLE_MAPS_URL;
-  // Embed using exact business name + coordinates so the iframe pins the right place.
   const mapEmbedSrc =
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_URL?.trim() ||
     `https://maps.google.com/maps?q=Explore+Malta+Rentals,+Pieta,+Malta&ll=35.8930132,14.4967482&z=16&hl=en&output=embed`;
@@ -62,18 +62,16 @@ export function GuideContent({
                     id="guide-location-title"
                     className="text-4xl font-bold tracking-[-0.04em] text-slate-950 sm:text-5xl"
                   >
-                    <span>Find us in </span>
-                    <BrandBlueUnderlinedText>Malta</BrandBlueUnderlinedText>
+                    <span>{t("findUsLine1")} </span>
+                    <BrandBlueUnderlinedText>{t("findUsLine2")}</BrandBlueUnderlinedText>
                   </h2>
-                  <p className="mt-3 text-base leading-7 text-slate-600">
-                    Use the live map to locate us quickly before your ride.
-                  </p>
+                  <p className="mt-3 text-base leading-7 text-slate-600">{t("mapIntro")}</p>
                 </div>
               </div>
               <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-[var(--surface-card)] shadow-sm ring-1 ring-slate-950/[0.04]">
                 <div className="grid gap-0 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
                   <iframe
-                    title={`Map location — Explore Malta Rentals, Pietà`}
+                    title={t("mapIframeTitle")}
                     src={mapEmbedSrc}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
@@ -85,7 +83,7 @@ export function GuideContent({
                         className="size-3.5 shrink-0 stroke-[2.25]"
                         aria-hidden
                       />
-                      Current location
+                      {t("currentLocation")}
                     </p>
                     <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-slate-950">
                       {locationTitle}
@@ -99,7 +97,7 @@ export function GuideContent({
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex w-fit text-sm font-semibold text-slate-900 underline decoration-[var(--brand-orange)]/50 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
                     >
-                      Open in Google Maps
+                      {t("openMaps")}
                     </a>
                   </div>
                 </div>
@@ -127,19 +125,19 @@ export function GuideContent({
             />
             <div className="relative max-w-xl">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
-                {SITE_LOCATION_KICKER}
+                {tBrand("locationKicker")}
               </p>
               <h2
                 id="guide-pieta-brand-title"
                 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl lg:text-[2rem] lg:leading-tight"
               >
-                {SITE_PRIMARY_TAGLINE.headline}
+                {tBrand("primaryHeadline")}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
-                {SITE_PRIMARY_TAGLINE.body}
+                {tBrand("primaryBody")}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-white/65 sm:text-base">
-                {SITE_PRIMARY_TAGLINE.supporting}
+                {tBrand("primarySupporting")}
               </p>
             </div>
           </div>
@@ -154,14 +152,14 @@ export function GuideContent({
         <Container>
           <SectionHeader
             titleId="guide-map-title"
-            title="Explore Malta Your way"
+            title={t("mapSectionTitle")}
             tone="light"
-            description="Tourist guide map with attraction points to help plan your route."
+            description={t("mapSectionDescription")}
           />
           <div className="mt-8 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-50 p-2 shadow-sm ring-1 ring-slate-950/[0.04] sm:p-3">
             <Image
               src={TOURIST_GUIDE_MAP_SRC}
-              alt="Tourist guide map of Malta with attractions"
+              alt={t("mapImageAlt")}
               width={2200}
               height={1500}
               className="h-auto w-full rounded-lg object-cover object-center"

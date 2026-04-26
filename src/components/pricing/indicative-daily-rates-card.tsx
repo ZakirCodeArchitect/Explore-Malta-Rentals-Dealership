@@ -1,4 +1,7 @@
+"use client";
+
 import { Euro } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { INDICATIVE_MOTORCYCLE_SCOOTER_TIERS } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 
 function joinClasses(...classes: Array<string | undefined>) {
@@ -12,6 +15,7 @@ export type IndicativeDailyRatesCardProps = Readonly<{
 export function IndicativeDailyRatesCard({
   className,
 }: IndicativeDailyRatesCardProps) {
+  const t = useTranslations("IndicativeRates");
   return (
     <div
       className={joinClasses(
@@ -23,14 +27,14 @@ export function IndicativeDailyRatesCard({
         <div>
           <h3 className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
             <Euro className="size-3.5 shrink-0 text-slate-500" aria-hidden />
-            Indicative daily rates
+            {t("cardTitle")}
           </h3>
           <p className="mt-0.5 text-base font-semibold tracking-tight text-slate-800">
-            Motorcycles / scooters
+            {t("cardSubtitle")}
           </p>
         </div>
         <p className="text-xs text-slate-500 sm:text-right">
-          Per calendar day, before extras
+          {t("beforeExtras")}
         </p>
       </div>
       <dl className="grid gap-px bg-slate-200/80 sm:grid-cols-2">
@@ -44,14 +48,13 @@ export function IndicativeDailyRatesCard({
               <span className="font-semibold text-slate-900">
                 €{tier.dailyRateEur}
               </span>{" "}
-              <span className="text-xs font-normal text-slate-500">/ day</span>
+              <span className="text-xs font-normal text-slate-500">{t("perDaySuffix")}</span>
             </dd>
           </div>
         ))}
       </dl>
       <p className="border-t border-slate-100 bg-slate-50/50 px-6 py-3.5 text-xs leading-relaxed text-slate-500 sm:px-7">
-        Final price depends on vehicle, season, and availability — message us
-        for a quote.
+        {t("footnote")}
       </p>
     </div>
   );

@@ -1,21 +1,25 @@
 import { FinalConversionCta } from "@/components/cta/final-conversion-cta";
-import { quickBookingCta } from "@/features/home/data/home-sections";
 import { LOGO_PATH } from "@/lib/site-brand-copy";
+import { getTranslations } from "next-intl/server";
 
-export function QuickBookingCtaSection() {
-  const { kicker, title, description, primaryCta, secondaryCta } = quickBookingCta;
+export async function QuickBookingCtaSection() {
+  const t = await getTranslations("Home");
+  const tNav = await getTranslations("Nav");
+  const tBrand = await getTranslations("Brand");
+  const footerLine = `${tBrand("locationKicker")} · ${tBrand("primarySupporting")}`;
 
   return (
     <FinalConversionCta
       titleId="quick-booking-title"
-      kicker={kicker}
-      title={title}
-      description={description}
-      primaryCta={primaryCta}
-      secondaryCta={secondaryCta}
+      kicker={t("quickCtaKicker")}
+      title={t("quickCtaTitle")}
+      description={t("quickCtaDescription")}
+      primaryCta={{ href: "/booking", label: t("quickCtaPrimary") }}
+      secondaryCta={{ href: "/#contact", label: t("quickCtaSecondary") }}
       imageSrc={LOGO_PATH}
-      imageAlt="Explore Malta Rentals"
+      imageAlt={tNav("logoAlt")}
       imageClassName="object-contain object-center scale-[0.92] opacity-[0.97]"
+      footerLine={footerLine}
     />
   );
 }
