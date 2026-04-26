@@ -322,6 +322,29 @@
   "BookingPage": {
     "heading": "Multi-step booking for Explore Malta Rentals",
     "intro": "Complete all booking stages from vehicle selection to terms acceptance. Pricing and backend submission are introduced in the next phases.",
+    "lookup": {
+      "submittedTitle": "Buchung eingegangen",
+      "submittedBody": "Deine Buchungsreferenz ist unten eingetragen. Gib dieselbe E-Mail-Adresse wie im Formular ein und tippe auf „Buchung laden“, um die Bestätigung aus unserem System zu sehen.",
+      "title": "Bestehende Buchung anzeigen",
+      "lead": "Verwende die Buchungsreferenz aus der Bestätigungs-E-Mail und die E-Mail-Adresse aus der Buchung. Wir laden die Mietzusammenfassung aus unserer Datenbank.",
+      "referenceLabelShort": "Buchungsreferenz",
+      "referencePlaceholder": "z. B. EMR-…",
+      "emailLabel": "E-Mail für die Buchung",
+      "emailPlaceholder": "du@beispiel.de",
+      "submit": "Buchung laden",
+      "loading": "Wird geladen…",
+      "referenceLabel": "Buchungsreferenz",
+      "statusLabel": "Status",
+      "vehicleLabel": "Fahrzeug",
+      "pickupLabel": "Abholung",
+      "returnLabel": "Rückgabe",
+      "status": {
+        "PENDING": "In Prüfung",
+        "CONFIRMED": "Bestätigt",
+        "CANCELLED": "Storniert",
+        "FAILED": "Fehlgeschlagen"
+      }
+    },
     "ratesHeading": "Rates at a glance",
     "ratesDescription": "Ballpark per-calendar-day amounts for motorcycles and scooters before extras, use these as a guide while you search.",
     "ratesLinkLead": "Want the full picture on what's included?",

@@ -322,6 +322,29 @@
   "BookingPage": {
     "heading": "Multi-step booking for Explore Malta Rentals",
     "intro": "Complete all booking stages from vehicle selection to terms acceptance. Pricing and backend submission are introduced in the next phases.",
+    "lookup": {
+      "submittedTitle": "Booking received",
+      "submittedBody": "Your booking reference is filled in below. Enter the same email address you used on the form, then choose “Load booking” to see your confirmation details from our system.",
+      "title": "View an existing booking",
+      "lead": "Use the booking reference from your confirmation email together with the email address you entered when you booked. We will load your rental summary from our database.",
+      "referenceLabelShort": "Booking reference",
+      "referencePlaceholder": "e.g. EMR-…",
+      "emailLabel": "Email used for the booking",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Load booking",
+      "loading": "Loading…",
+      "referenceLabel": "Booking reference",
+      "statusLabel": "Status",
+      "vehicleLabel": "Vehicle",
+      "pickupLabel": "Pickup",
+      "returnLabel": "Return",
+      "status": {
+        "PENDING": "Pending review",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled",
+        "FAILED": "Failed"
+      }
+    },
     "ratesHeading": "Rates at a glance",
     "ratesDescription": "Ballpark per-calendar-day amounts for motorcycles and scooters before extras, use these as a guide while you search.",
     "ratesLinkLead": "Want the full picture on what's included?",

@@ -17,6 +17,8 @@ type BookingPageProps = Readonly<{
     pickupTime?: string;
     dropoffTime?: string;
     returnTime?: string;
+    ref?: string;
+    submitted?: string;
   }>;
 }>;
 
@@ -36,10 +38,22 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "BookingPage" });
-  const { vehicle, date, returnDate, pickupDate, dropoffDate, pickupTime, dropoffTime, returnTime } =
-    await searchParams;
+  const {
+    vehicle,
+    date,
+    returnDate,
+    pickupDate,
+    dropoffDate,
+    pickupTime,
+    dropoffTime,
+    returnTime,
+    ref,
+    submitted,
+  } = await searchParams;
   const resolvedPickupDate = date ?? pickupDate;
   const resolvedReturnDate = returnDate ?? dropoffDate;
+  const bookingLookupReference = typeof ref === "string" && ref.trim().length > 0 ? ref.trim() : undefined;
+  const bookingSubmittedBanner = submitted === "1" || submitted === "true";
 
   return (
     <main className="flex flex-1 flex-col">
@@ -83,6 +97,8 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
                   pickupTime,
                   returnTime: returnTime ?? dropoffTime,
                 }}
+                bookingLookupReference={bookingLookupReference}
+                bookingSubmittedBanner={bookingSubmittedBanner}
               />
             </div>
           </div>

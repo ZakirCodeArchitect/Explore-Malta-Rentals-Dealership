@@ -8,7 +8,7 @@ import { BookingStepper } from "@/features/booking-flow/components/booking-stepp
 import { ReservationBanner } from "@/features/booking-flow/components/reservation-banner";
 import { HoldExpiredNotice } from "@/features/booking-flow/components/hold-expired-notice";
 import { TermsConsentModal } from "@/features/booking-flow/components/terms-consent-modal";
-import { BookingSuccess } from "@/features/booking-flow/components/booking-success";
+import { BookingLookupPanel } from "@/features/booking-flow/components/booking-lookup-panel";
 import { useHoldHeartbeat } from "@/features/booking-flow/hooks/use-hold-heartbeat";
 import { useHoldCountdown } from "@/features/booking-flow/hooks/use-hold-countdown";
 import { BOOKING_FLOW_STEPS } from "@/features/booking-flow/lib/steps";
@@ -23,16 +23,14 @@ import { OptionsDeliveryStep } from "@/features/booking-flow/steps/options-deliv
 import { YourInformationStep } from "@/features/booking-flow/steps/your-information-step";
 import { ReviewConfirmStep } from "@/features/booking-flow/steps/review-confirm-step";
 
-type SuccessState = {
-  bookingReference: string;
-  customerEmail: string;
-  vehicleName: string;
+type BookingFlowBodyProps = {
+  bookingLookupReference?: string;
+  bookingSubmittedBanner?: boolean;
 };
 
-function BookingFlowBody() {
+function BookingFlowBody({ bookingLookupReference, bookingSubmittedBanner }: BookingFlowBodyProps) {
   const router = useRouter();
   const t = useTranslations("BookingFlow");
-  const [success, setSuccess] = useState<SuccessState | null>(null);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -86,7 +84,7 @@ function BookingFlowBody() {
   useHoldHeartbeat({
     holdReference: reservationHold.holdReference,
     status: reservationHold.status,
-    enabled: success === null && !submitting,
+    enabled: !submitting,
     onHeartbeatSuccess: (expiresAt, status) => {
       setHeartbeatWarning(null);
       setReservationHoldError(null);
@@ -182,9 +180,6 @@ function BookingFlowBody() {
       return;
     }
 
-    const customerEmail = stateAfterConsent.customer.email.trim();
-    const vehicleName = stateAfterConsent.rental.vehicleName;
-
     setSubmitting(true);
     setSubmitError(null);
     clearServerFieldErrors();
@@ -195,13 +190,11 @@ function BookingFlowBody() {
 
     if (result.ok) {
       setTermsModalOpen(false);
-      setSuccess({
-        bookingReference: result.bookingReference,
-        customerEmail,
-        vehicleName,
-      });
       clearReservationHold();
       resetBookingForm();
+      router.push(
+        `/booking?ref=${encodeURIComponent(result.bookingReference)}&submitted=1`,
+      );
       return;
     }
 
@@ -240,6 +233,7 @@ function BookingFlowBody() {
     markReservationHoldExpired,
     reservationHold.holdReference,
     resetBookingForm,
+    router,
     t,
     updateSection,
   ]);
@@ -250,18 +244,12 @@ function BookingFlowBody() {
     router.push("/vehicles");
   }, [releaseReservationHold, resetBookingForm, router]);
 
-  if (success) {
-    return (
-      <BookingSuccess
-        bookingReference={success.bookingReference}
-        customerEmail={success.customerEmail}
-        vehicleName={success.vehicleName}
-      />
-    );
-  }
-
   return (
     <div className="space-y-5">
+      <BookingLookupPanel
+        initialReference={bookingLookupReference}
+        showSubmittedBanner={bookingSubmittedBanner}
+      />
       <BookingStepper />
 
       {holdIsActive ? (
@@ -359,12 +347,22 @@ type BookingFlowProps = {
     returnDate?: string;
     returnTime?: string;
   };
+  bookingLookupReference?: string;
+  bookingSubmittedBanner?: boolean;
 };
 
-export function BookingFlow({ initialVehicleSlug, initialRental }: BookingFlowProps) {
+export function BookingFlow({
+  initialVehicleSlug,
+  initialRental,
+  bookingLookupReference,
+  bookingSubmittedBanner,
+}: BookingFlowProps) {
   return (
     <BookingFlowProvider initialVehicleSlug={initialVehicleSlug} initialRental={initialRental}>
-      <BookingFlowBody />
+      <BookingFlowBody
+        bookingLookupReference={bookingLookupReference}
+        bookingSubmittedBanner={bookingSubmittedBanner}
+      />
     </BookingFlowProvider>
   );
 }
