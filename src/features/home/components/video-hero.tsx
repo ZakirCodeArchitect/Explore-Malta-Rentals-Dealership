@@ -54,7 +54,6 @@ export async function VideoHero() {
               loop
               playsInline
               preload="metadata"
-              webkit-playsinline
               disablePictureInPicture
             >
               <source src={heroContent.media.videoSrc} type="video/mp4" />
@@ -96,7 +95,7 @@ export async function VideoHero() {
                     height={96}
                     priority
                     className="h-16 w-auto max-w-[min(100%,22rem)] object-contain object-left drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] sm:h-20 md:h-24 md:max-w-[min(100%,26rem)]"
-                    style={{ width: "auto" }}
+                    style={{ width: "auto", height: "auto" }}
                   />
                 </div>
 

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import type { AbstractIntlMessages } from "next-intl";
 import { NextIntlClientProvider } from "next-intl";
+import { defaultTimeZone } from "@/i18n/routing";
 
 type NextIntlWithReportingProps = Readonly<{
   locale: string;
@@ -18,7 +19,7 @@ type NextIntlWithReportingProps = Readonly<{
  */
 export function NextIntlWithReporting({ locale, messages, children }: NextIntlWithReportingProps) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone={defaultTimeZone}>
       {children}
     </NextIntlClientProvider>
   );
