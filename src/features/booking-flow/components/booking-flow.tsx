@@ -84,7 +84,8 @@ function BookingFlowBody() {
   useHoldHeartbeat({
     holdReference: reservationHold.holdReference,
     status: reservationHold.status,
-    enabled: success === null,
+    // Pause heartbeat during final submit to avoid concurrent ReservationHold writes.
+    enabled: success === null && !submitting,
     onHeartbeatSuccess: (expiresAt, status) => {
       setHeartbeatWarning(null);
       setReservationHoldError(null);

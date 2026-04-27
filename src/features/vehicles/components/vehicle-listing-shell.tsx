@@ -90,28 +90,20 @@ export function VehicleListingShell({
   const colorParam = searchParams.get("color");
   const seatsParam = searchParams.get("seats");
   const locationParam = searchParams.get("location");
-  const dateParam = searchParams.get("date");
-  const returnDateParam = searchParams.get("returnDate");
-  /** From booking form `buildVehiclesSearchUrl` — fallback when `date` / `returnDate` absent. */
   const pickupDateParam = searchParams.get("pickupDate");
-  const dropoffDateParam = searchParams.get("dropoffDate");
+  const returnDateParam = searchParams.get("returnDate");
   const hotelDeliveryParam = searchParams.get("hotelDelivery");
   const ccParam = searchParams.get("cc");
   const pickupTimeParam = searchParams.get("pickupTime");
-  const dropoffTimeParam = searchParams.get("dropoffTime");
+  const returnTimeParam = searchParams.get("returnTime");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
   const initialTransmission =
     parseTransmissionSearchParam(transmissionParam);
   const initialColor = parseColorSearchParam(colorParam);
   const initialSeats = parseSeatsSearchParam(seatsParam);
-  const initialPickup =
-    parsePickupDateParam(dateParam) ??
-    parsePickupDateParam(pickupDateParam) ??
-    DEFAULT_PICKUP_DATE;
-  const parsedReturn =
-    parsePickupDateParam(returnDateParam) ??
-    parsePickupDateParam(dropoffDateParam);
+  const initialPickup = parsePickupDateParam(pickupDateParam) ?? DEFAULT_PICKUP_DATE;
+  const parsedReturn = parsePickupDateParam(returnDateParam);
   const initialReturn = parsedReturn
     ? clampTripEndDate(initialPickup, parsedReturn)
     : addDays(initialPickup, TRIP_MIN_SPAN_DAYS);
@@ -134,18 +126,16 @@ export function VehicleListingShell({
   const [selectedSeats, setSelectedSeats] =
     useState<VehicleSeatsFilter>(initialSeats);
 
-  const bookingPickupDate =
-    dateParam ?? pickupDateParam ?? formatPickupDateParam(pickupDate);
-  const bookingReturnDate =
-    returnDateParam ?? dropoffDateParam ?? formatPickupDateParam(returnDate);
+  const bookingPickupDate = pickupDateParam ?? formatPickupDateParam(pickupDate);
+  const bookingReturnDate = returnDateParam ?? formatPickupDateParam(returnDate);
   const bookingPickupTime = pickupTimeParam;
-  const bookingReturnTime = dropoffTimeParam;
+  const bookingReturnTime = returnTimeParam;
 
   /** Hold-aware listing only after trip is committed to the URL (Search). */
-  const urlTripPickupDate = (dateParam ?? pickupDateParam)?.trim() || "";
-  const urlTripReturnDate = (returnDateParam ?? dropoffDateParam)?.trim() || "";
+  const urlTripPickupDate = pickupDateParam?.trim() || "";
+  const urlTripReturnDate = returnDateParam?.trim() || "";
   const urlTripPickupTime = pickupTimeParam?.trim() || "";
-  const urlTripReturnTime = dropoffTimeParam?.trim() || "";
+  const urlTripReturnTime = returnTimeParam?.trim() || "";
 
   const vehiclesFetchRentalWindow = useMemo(() => {
     if (!urlTripPickupDate || !urlTripReturnDate) {
@@ -245,11 +235,8 @@ export function VehicleListingShell({
 
   useEffect(() => {
     const pu =
-      parsePickupDateParam(dateParam) ??
       parsePickupDateParam(pickupDateParam);
-    const ret =
-      parsePickupDateParam(returnDateParam) ??
-      parsePickupDateParam(dropoffDateParam);
+    const ret = parsePickupDateParam(returnDateParam);
     if (pu) {
       setPickupDate(pu);
       setReturnDate(
@@ -257,10 +244,8 @@ export function VehicleListingShell({
       );
     }
   }, [
-    dateParam,
     returnDateParam,
     pickupDateParam,
-    dropoffDateParam,
   ]);
 
   useEffect(() => {
@@ -329,13 +314,12 @@ export function VehicleListingShell({
       } else {
         p.delete("location");
       }
-      p.set("date", formatPickupDateParam(pickupDate));
+      p.set("pickupDate", formatPickupDateParam(pickupDate));
       p.set("returnDate", formatPickupDateParam(returnDate));
-      p.set("pickupTime", pickupTimeParam?.trim() || DEFAULT_LISTING_PICKUP_TIME);
-      p.set("dropoffTime", dropoffTimeParam?.trim() || DEFAULT_LISTING_DROPOFF_TIME);
-      p.delete("pickupDate");
-      p.delete("dropoffDate");
-      p.delete("returnElsewhere");
+      const pickupTime = pickupTimeParam?.trim() || DEFAULT_LISTING_PICKUP_TIME;
+      const returnTime = returnTimeParam?.trim() || DEFAULT_LISTING_DROPOFF_TIME;
+      p.set("pickupTime", pickupTime);
+      p.set("returnTime", returnTime);
       if (hotelDelivery) {
         p.set("hotelDelivery", "1");
       } else {
@@ -349,7 +333,7 @@ export function VehicleListingShell({
     });
   }, [
     hotelDelivery,
-    dropoffTimeParam,
+    returnTimeParam,
     pickupDate,
     pickupTimeParam,
     returnDate,
@@ -382,14 +366,11 @@ export function VehicleListingShell({
       p.set("color", vehicleColorToUrlParam("All"));
       p.set("seats", seatsFilterToUrlParam("All"));
       p.delete("location");
-      p.delete("date");
       p.delete("returnDate");
       p.delete("pickupDate");
-      p.delete("dropoffDate");
       p.delete("pickupTime");
-      p.delete("dropoffTime");
+      p.delete("returnTime");
       p.delete("hotelDelivery");
-      p.delete("returnElsewhere");
       p.delete("cc");
     });
   }, [replaceQuery]);
@@ -449,11 +430,24 @@ export function VehicleListingShell({
       return "/booking";
     }
     const bookingParams = new URLSearchParams();
-    bookingParams.set("date", vehiclesFetchRentalWindow.pickupDate);
+    bookingParams.set("pickupDate", vehiclesFetchRentalWindow.pickupDate);
     bookingParams.set("returnDate", vehiclesFetchRentalWindow.returnDate);
     bookingParams.set("pickupTime", vehiclesFetchRentalWindow.pickupTime);
-    bookingParams.set("dropoffTime", vehiclesFetchRentalWindow.returnTime);
+    bookingParams.set("returnTime", vehiclesFetchRentalWindow.returnTime);
     return `/booking?${bookingParams.toString()}`;
+  })();
+
+  const detailsQueryString = (() => {
+    if (!vehiclesFetchRentalWindow) {
+      return "";
+    }
+    const params = new URLSearchParams();
+    params.set("pickupDate", vehiclesFetchRentalWindow.pickupDate);
+    params.set("returnDate", vehiclesFetchRentalWindow.returnDate);
+    params.set("pickupTime", vehiclesFetchRentalWindow.pickupTime);
+    params.set("returnTime", vehiclesFetchRentalWindow.returnTime);
+    const qs = params.toString();
+    return qs.length > 0 ? `?${qs}` : "";
   })();
 
   const showListingSidebar = pathname === "/vehicles";
@@ -569,6 +563,7 @@ export function VehicleListingShell({
               key={vehicle.slug}
               vehicle={vehicle}
               bookingHref={bookingHref}
+              detailsHref={`/vehicles/${vehicle.slug}${detailsQueryString}`}
               tripDatesCommitted={tripDatesCommitted}
               onTripDatesRequired={() => setTripDatesPrompt(true)}
               pickupDate={vehiclesFetchRentalWindow?.pickupDate ?? null}

@@ -14,20 +14,15 @@ export const metadata: Metadata = {
 type BookingPageProps = Readonly<{
   searchParams: Promise<{
     vehicle?: string;
-    date?: string;
-    returnDate?: string;
     pickupDate?: string;
-    dropoffDate?: string;
+    returnDate?: string;
     pickupTime?: string;
-    dropoffTime?: string;
     returnTime?: string;
   }>;
 }>;
 
 export default async function BookingPage({ searchParams }: BookingPageProps) {
-  const { vehicle, date, returnDate, pickupDate, dropoffDate, pickupTime, dropoffTime, returnTime } = await searchParams;
-  const resolvedPickupDate = date ?? pickupDate;
-  const resolvedReturnDate = returnDate ?? dropoffDate;
+  const { vehicle, pickupDate, returnDate, pickupTime, returnTime } = await searchParams;
 
   return (
     <main className="flex flex-1 flex-col">
@@ -67,10 +62,10 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
               <BookingFlow
                 initialVehicleSlug={vehicle}
                 initialRental={{
-                  pickupDate: resolvedPickupDate,
-                  returnDate: resolvedReturnDate,
+                  pickupDate,
+                  returnDate,
                   pickupTime,
-                  returnTime: returnTime ?? dropoffTime,
+                  returnTime,
                 }}
               />
             </div>

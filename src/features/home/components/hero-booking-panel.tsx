@@ -15,6 +15,7 @@ import {
   vehicleTypeOptions,
 } from "@/features/home/data/hero-booking-options";
 import { SITE_SURFACE_RADIUS } from "@/components/site-shell";
+import { BOOKING_TIME_SLOTS } from "@/features/booking/lib/time-slots";
 import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
 import {
   vehicleFilterControlShellClass,
@@ -25,6 +26,8 @@ import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-pa
 import { loadMaltaLocationOptions } from "@/features/vehicles/lib/malta-pickup-location";
 
 const DEFAULT_HERO_PICKUP_DATE = new Date(2026, 5, 12);
+const DEFAULT_HERO_PICKUP_TIME = "09:00";
+const DEFAULT_HERO_RETURN_TIME = "09:00";
 
 function Toggle({
   label,
@@ -87,7 +90,8 @@ export function HeroBookingPanel() {
   const [returnDate, setReturnDate] = useState<Date>(() =>
     addDays(DEFAULT_HERO_PICKUP_DATE, TRIP_MIN_SPAN_DAYS),
   );
-  const [returnElsewhere, setReturnElsewhere] = useState(false);
+  const [pickupTime, setPickupTime] = useState(DEFAULT_HERO_PICKUP_TIME);
+  const [returnTime, setReturnTime] = useState(DEFAULT_HERO_RETURN_TIME);
   const [hotelDelivery, setHotelDelivery] = useState(true);
 
   useEffect(() => {
@@ -113,17 +117,24 @@ export function HeroBookingPanel() {
     if (pickupLocation?.label) {
       params.set("location", pickupLocation.label);
     }
-    params.set("date", formatPickupDateParam(pickupDate));
-    params.set("returnDate", formatPickupDateParam(returnDate));
-    params.set("returnElsewhere", returnElsewhere ? "1" : "0");
+    const pickupDateIso = formatPickupDateParam(pickupDate);
+    const returnDateIso = formatPickupDateParam(returnDate);
+    params.set("date", pickupDateIso);
+    params.set("returnDate", returnDateIso);
+    // Canonical trip params used by listing/details/booking.
+    params.set("pickupDate", pickupDateIso);
+    params.set("returnDate", returnDateIso);
+    params.set("pickupTime", pickupTime);
+    params.set("returnTime", returnTime);
     params.set("hotelDelivery", hotelDelivery ? "1" : "0");
     router.push(`/vehicles?${params.toString()}`);
   }, [
     hotelDelivery,
     pickupDate,
+    pickupTime,
     returnDate,
+    returnTime,
     pickupLocation,
-    returnElsewhere,
     router,
     vehicleType.value,
   ]);
@@ -225,12 +236,37 @@ export function HeroBookingPanel() {
       </div>
 
       <div className="mt-5 flex flex-col gap-4 border-t border-slate-200/80 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-10">
-          <Toggle
-            label="Return elsewhere"
-            active={returnElsewhere}
-            onToggle={() => setReturnElsewhere((previous) => !previous)}
-          />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <label className="flex min-w-[8.25rem] flex-col text-xs font-semibold text-slate-500">
+            Pickup time
+            <select
+              value={pickupTime}
+              onChange={(event) => setPickupTime(event.target.value)}
+              className="mt-1 min-h-10 rounded-lg border border-slate-200 bg-white px-2.5 text-sm font-semibold text-slate-800 focus:border-[var(--brand-blue)]/45 focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+              aria-label="Pickup time"
+            >
+              {BOOKING_TIME_SLOTS.map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex min-w-[8.25rem] flex-col text-xs font-semibold text-slate-500">
+            Return time
+            <select
+              value={returnTime}
+              onChange={(event) => setReturnTime(event.target.value)}
+              className="mt-1 min-h-10 rounded-lg border border-slate-200 bg-white px-2.5 text-sm font-semibold text-slate-800 focus:border-[var(--brand-blue)]/45 focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20"
+              aria-label="Return time"
+            >
+              {BOOKING_TIME_SLOTS.map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <Toggle
             label="Need hotel delivery"
             active={hotelDelivery}
