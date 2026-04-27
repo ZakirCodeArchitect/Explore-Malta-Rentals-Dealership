@@ -10,6 +10,7 @@ import {
 type VehicleCardProps = Readonly<{
   vehicle: Vehicle;
   bookingHref?: string;
+  detailsHref?: string;
   tripDatesCommitted?: boolean;
   onTripDatesRequired?: () => void;
   pickupDate?: string | null;
@@ -21,6 +22,7 @@ type VehicleCardProps = Readonly<{
 export function VehicleCard({
   vehicle,
   bookingHref = "/booking",
+  detailsHref,
   tripDatesCommitted = true,
   onTripDatesRequired,
   pickupDate,
@@ -100,7 +102,7 @@ export function VehicleCard({
         <div className="mt-5 flex justify-end border-t border-slate-200 pt-3">
           <div className="flex items-center gap-2">
             <Link
-              href={`/vehicles/${vehicle.slug}`}
+              href={detailsHref ?? `/vehicles/${vehicle.slug}`}
               className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
             >
               {t("viewDetails")}
