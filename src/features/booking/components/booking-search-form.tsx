@@ -42,7 +42,7 @@ const textareaClass =
   "mt-2 w-full min-h-[5rem] rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 const quickFilterChipClass =
-  "group inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white px-2.5 py-1 text-xs font-semibold text-[var(--brand-orange-strong)] shadow-sm transition-[transform,box-shadow,border-color,background-color,color] hover:-translate-y-px hover:border-[var(--brand-orange)] hover:bg-[var(--brand-orange)] hover:text-white hover:shadow-[0_10px_28px_-16px_rgba(255,147,15,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-1 active:translate-y-0";
+  "group inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm transition-[transform,box-shadow,border-color,background-color,color] hover:-translate-y-px hover:border-slate-400 hover:bg-slate-100 hover:text-slate-900 hover:shadow-[0_10px_24px_-16px_rgba(15,23,42,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 active:translate-y-0";
 
 const quickFilterChipIcon = "size-3.5 shrink-0";
 
@@ -177,7 +177,7 @@ export function BookingSearchForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <div className="flex flex-wrap gap-2">
-        <p className="w-full text-xs font-semibold tracking-normal text-[var(--brand-orange-strong)]">
+        <p className="w-full text-xs font-semibold tracking-normal text-slate-600">
           {tSearch("quickFilterTitle")}
         </p>
         <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>

@@ -187,18 +187,7 @@ export async function AboutContent({ contact }: Readonly<{ contact: AboutSiteCon
             <header className="text-center">
               <AboutUsHeadingWithWave titleId="company-story-narrative-title" label={t("headingWave")} />
             </header>
-            <div className="mt-8 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-50 shadow-sm ring-1 ring-slate-950/[0.04]">
-              <Image
-                src={ABOUT_US_IMAGE}
-                alt={t("imageAlt")}
-                width={1200}
-                height={800}
-                unoptimized
-                className="h-auto w-full object-cover object-center"
-                sizes="(min-width: 1024px) 42rem, 100vw"
-              />
-            </div>
-            <div className="mt-8 space-y-5 text-left text-sm leading-relaxed text-slate-600 sm:mt-9 sm:leading-7">
+            <div className="mt-10 space-y-5 text-left text-sm leading-relaxed text-slate-600 sm:mt-12 sm:leading-7">
               <p>{t("narrativeP1", { companyName })}</p>
               <p>{t("narrativeP2")}</p>
               <p>{t("narrativeP3")}</p>
