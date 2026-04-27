@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
+import { mapVehicleListItemToVehicle, type Vehicle } from "@/features/vehicles/data/vehicles";
 import { VehicleListingShell } from "@/features/vehicles/components/vehicle-listing-shell";
+import { getVehicles } from "@/lib/vehicles";
 
 type VehiclesPageProps = Readonly<{
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }>;
 
 export async function generateMetadata({ params }: VehiclesPageProps): Promise<Metadata> {
@@ -20,14 +23,37 @@ export async function generateMetadata({ params }: VehiclesPageProps): Promise<M
   };
 }
 
-export default async function VehiclesPage({ params }: VehiclesPageProps) {
+export default async function VehiclesPage({ params, searchParams }: VehiclesPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const resolvedSearchParams = (await searchParams) ?? {};
   const t = await getTranslations({ locale, namespace: "VehiclesPage" });
   const heroIntro = {
     title: t("heroTitle"),
     description: t("heroDescription"),
   } as const;
+
+  const pickupDateRaw = resolvedSearchParams.pickupDate ?? resolvedSearchParams.date;
+  const returnDateRaw = resolvedSearchParams.returnDate ?? resolvedSearchParams.dropoffDate;
+  const pickupTimeRaw = resolvedSearchParams.pickupTime;
+  const returnTimeRaw = resolvedSearchParams.dropoffTime;
+
+  const pickupDate = typeof pickupDateRaw === "string" ? pickupDateRaw.trim() : "";
+  const returnDate = typeof returnDateRaw === "string" ? returnDateRaw.trim() : "";
+  const pickupTime = typeof pickupTimeRaw === "string" ? pickupTimeRaw.trim() : "";
+  const returnTime = typeof returnTimeRaw === "string" ? returnTimeRaw.trim() : "";
+
+  const shouldHydrateAvailabilityFromApi =
+    pickupDate.length > 0 &&
+    returnDate.length > 0 &&
+    pickupTime.length > 0 &&
+    returnTime.length > 0;
+
+  let initialVehicles: Vehicle[] | undefined;
+  if (!shouldHydrateAvailabilityFromApi) {
+    const baseVehicles = await getVehicles();
+    initialVehicles = baseVehicles.vehicles.map(mapVehicleListItemToVehicle);
+  }
 
   return (
     <main className="flex flex-1 flex-col bg-[var(--background)]">
@@ -49,7 +75,7 @@ export default async function VehiclesPage({ params }: VehiclesPageProps) {
           </Container>
         }
       >
-        <VehicleListingShell heroIntro={heroIntro} />
+        <VehicleListingShell heroIntro={heroIntro} vehicles={initialVehicles} />
       </Suspense>
     </main>
   );

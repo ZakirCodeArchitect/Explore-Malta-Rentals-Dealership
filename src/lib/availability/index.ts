@@ -1,3 +1,4 @@
+export { batchCheckVehicleAvailabilityForList } from "@/lib/availability/batchCheckVehicleAvailabilityForList";
 export { checkVehicleAvailability } from "@/lib/availability/checkVehicleAvailability";
 export { checkVehicleTypeAvailability } from "@/lib/availability/checkVehicleTypeAvailability";
 export { findConflictingBlocks } from "@/lib/availability/findConflictingBlocks";

@@ -14,6 +14,8 @@ export type FindConflictingBlocksInput = {
   vehicleId?: string;
   vehicleIds?: string[];
   vehicleType?: VehicleType;
+  /** When set, matches blocks whose `vehicleType` is any of these (OR branch, same as single `vehicleType`). */
+  vehicleTypes?: VehicleType[];
 };
 
 function buildIdentityFilters(input: FindConflictingBlocksInput): Prisma.AvailabilityBlockWhereInput[] {
@@ -29,6 +31,10 @@ function buildIdentityFilters(input: FindConflictingBlocksInput): Prisma.Availab
 
   if (input.vehicleType) {
     filters.push({ vehicleType: input.vehicleType });
+  }
+
+  if (input.vehicleTypes && input.vehicleTypes.length > 0) {
+    filters.push({ vehicleType: { in: input.vehicleTypes } });
   }
 
   return filters;

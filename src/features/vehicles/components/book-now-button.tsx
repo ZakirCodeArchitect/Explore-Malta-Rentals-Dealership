@@ -20,6 +20,13 @@ type BookNowButtonProps = {
   returnTime?: string | null;
   className: string;
   busyClassName?: string;
+  /**
+   * When set, holding dates is permitted.
+   * If false with tripDatesCommitted=true, the button navigates instead of holding.
+   */
+  allowHold?: boolean;
+  /** When set (and allowHold is false), button shows this message instead of the error. */
+  holdBlockedMessage?: string | null;
 };
 
 export function buildBookingUrlWithVehicle(baseHref: string, vehicleSlug: string): string {
@@ -41,6 +48,8 @@ export function BookNowButton({
   returnTime,
   className,
   busyClassName,
+  allowHold,
+  holdBlockedMessage,
 }: BookNowButtonProps) {
   const router = useRouter();
   const [isReserving, setIsReserving] = useState(false);
@@ -64,6 +73,11 @@ export function BookNowButton({
         .getElementById(VEHICLE_TRIP_SEARCH_ANCHOR_ID)
         ?.scrollIntoView({ behavior: "smooth", block: "center" });
       onTripDatesRequired?.();
+      return;
+    }
+    // If availability was checked and vehicle is not available, block the hold.
+    if (allowHold === false && holdBlockedMessage) {
+      setError(holdBlockedMessage);
       return;
     }
     if (!canCreateHold) {

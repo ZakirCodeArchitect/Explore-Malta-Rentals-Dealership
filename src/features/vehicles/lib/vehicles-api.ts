@@ -20,6 +20,29 @@ type VehicleApiResponse = {
   message?: string;
 };
 
+type CacheEntry<T> = Readonly<{
+  data: T;
+  expiresAt: number;
+}>;
+
+const VEHICLES_CACHE_TTL_MS = 60_000;
+const vehiclesCache = new Map<string, CacheEntry<Vehicle[]>>();
+const vehicleBySlugCache = new Map<string, CacheEntry<Vehicle | null>>();
+
+function getFromCache<T>(cache: Map<string, CacheEntry<T>>, key: string): T | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCache<T>(cache: Map<string, CacheEntry<T>>, key: string, data: T) {
+  cache.set(key, { data, expiresAt: Date.now() + VEHICLES_CACHE_TTL_MS });
+}
+
 function isVehicleListItem(value: unknown): value is VehicleListApiItem {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
@@ -91,9 +114,17 @@ export async function fetchVehicles(
     }
   }
   const qs = search.toString();
+  const cacheKey = qs || "__base__";
+  const shouldBypassCache = Boolean(rentalWindow);
+  if (!shouldBypassCache) {
+    const cached = getFromCache(vehiclesCache, cacheKey);
+    if (cached) return cached;
+  }
+
   const response = await fetch(qs ? `/api/vehicles?${qs}` : "/api/vehicles", {
     method: "GET",
-    cache: "no-store",
+    cache: shouldBypassCache ? "no-store" : "force-cache",
+    ...(shouldBypassCache ? {} : { next: { revalidate: 60 } }),
     signal,
   });
   const body = await parseJsonBody<VehiclesApiResponse>(response);
@@ -106,7 +137,11 @@ export async function fetchVehicles(
     throw new Error("Unexpected vehicles response shape.");
   }
 
-  return body.vehicles.filter(isVehicleListItem).map(mapVehicleListItemToVehicle);
+  const mapped = body.vehicles.filter(isVehicleListItem).map(mapVehicleListItemToVehicle);
+  if (!shouldBypassCache) {
+    setCache(vehiclesCache, cacheKey, mapped);
+  }
+  return mapped;
 }
 
 export async function fetchVehicleBySlug(slug: string, signal?: AbortSignal): Promise<Vehicle | null> {
@@ -114,15 +149,21 @@ export async function fetchVehicleBySlug(slug: string, signal?: AbortSignal): Pr
   if (!safeSlug) {
     return null;
   }
+  const cached = getFromCache(vehicleBySlugCache, safeSlug);
+  if (cached !== null) {
+    return cached;
+  }
 
   const response = await fetch(`/api/vehicles/${encodeURIComponent(safeSlug)}`, {
     method: "GET",
-    cache: "no-store",
+    cache: "force-cache",
+    next: { revalidate: 60 },
     signal,
   });
   const body = await parseJsonBody<VehicleApiResponse>(response);
 
   if (response.status === 404) {
+    setCache(vehicleBySlugCache, safeSlug, null);
     return null;
   }
 
@@ -134,5 +175,7 @@ export async function fetchVehicleBySlug(slug: string, signal?: AbortSignal): Pr
     throw new Error("Unexpected vehicle response shape.");
   }
 
-  return mapVehicleDetailItemToVehicle(body.vehicle);
+  const mapped = mapVehicleDetailItemToVehicle(body.vehicle);
+  setCache(vehicleBySlugCache, safeSlug, mapped);
+  return mapped;
 }

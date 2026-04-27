@@ -1,10 +1,9 @@
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
-import { checkVehicleAvailability } from "@/lib/availability";
+import { batchCheckVehicleAvailabilityForList } from "@/lib/availability/batchCheckVehicleAvailabilityForList";
+import type { VehicleAvailabilityResult } from "@/lib/availability/types";
 import type { VehicleListItemDto, VehicleRentalWindowStatus } from "@/lib/vehicles/types";
 
-function holdsOnlyConflict(
-  result: Awaited<ReturnType<typeof checkVehicleAvailability>>,
-): boolean {
+function holdsOnlyConflict(result: VehicleAvailabilityResult): boolean {
   return (
     result.conflictingReservationHolds.length > 0 &&
     result.conflictingBookings.length === 0 &&
@@ -13,7 +12,7 @@ function holdsOnlyConflict(
 }
 
 function classifyRentalWindow(
-  result: Awaited<ReturnType<typeof checkVehicleAvailability>>,
+  result: VehicleAvailabilityResult,
   viewerSessionKey: string | undefined,
 ): VehicleRentalWindowStatus {
   if (result.isAvailable) {
@@ -57,18 +56,23 @@ export async function enrichVehicleListWithRentalWindow(
 
   const viewerSessionKey = input.viewerSessionKey?.trim() || undefined;
 
-  return Promise.all(
-    vehicles.map(async (vehicle) => {
-      const result = await checkVehicleAvailability({
-        vehicleId: vehicle.id,
-        vehicleType: vehicle.vehicleType,
-        requestedStart,
-        requestedEnd,
-      });
-      return {
-        ...vehicle,
-        rentalWindowStatus: classifyRentalWindow(result, viewerSessionKey),
-      };
-    }),
+  const availabilityById = await batchCheckVehicleAvailabilityForList(
+    vehicles,
+    requestedStart,
+    requestedEnd,
   );
+
+  return vehicles.map((vehicle) => {
+    const result = availabilityById.get(vehicle.id) ?? {
+      isAvailable: false,
+      conflictingBookings: [],
+      conflictingBlocks: [],
+      conflictingReservationHolds: [],
+      reason: "Selected vehicle does not exist",
+    };
+    return {
+      ...vehicle,
+      rentalWindowStatus: classifyRentalWindow(result, viewerSessionKey),
+    };
+  });
 }
