@@ -325,6 +325,8 @@
     "lookup": {
       "submittedTitle": "Reserva recibida",
       "submittedBody": "Tu referencia de reserva está rellenada abajo. Introduce el mismo correo que usaste en el formulario y pulsa «Cargar reserva» para ver los datos de confirmación en nuestro sistema.",
+      "toastTitle": "Tu reserva ha sido confirmada",
+      "toastBody": "Gracias por reservar con nosotros. Tu vehículo ha sido reservado correctamente.",
       "title": "Ver una reserva existente",
       "lead": "Usa la referencia del correo de confirmación junto con el email con el que reservaste. Cargaremos el resumen del alquiler desde nuestra base de datos.",
       "referenceLabelShort": "Referencia de reserva",

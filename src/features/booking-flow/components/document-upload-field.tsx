@@ -89,16 +89,25 @@ export function DocumentUploadField({
         id={inputId}
         ref={inputRef}
         type="file"
+        multiple={false}
         name={name}
         accept="image/jpeg,image/jpg,image/png,application/pdf"
         disabled={disabled || phase === "uploading"}
         className="mt-1 block w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-slate-800 hover:file:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
         onChange={(event) => {
-          const file = event.target.files?.[0];
+          const files = event.target.files;
+          if (!files || files.length !== 1) {
+            setPhase("error");
+            setErrorMessage("Please attach exactly one file (max 2 MB).");
+            event.target.value = "";
+            return;
+          }
+          const file = files[0];
           void handleFile(file);
           event.target.value = "";
         }}
       />
+      <p className="text-xs text-slate-500">Attach exactly one file, up to 2 MB.</p>
 
       {phase === "uploading" ? (
         <p className="text-xs font-medium text-[var(--brand-blue)]">Attaching…</p>

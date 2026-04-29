@@ -18,6 +18,8 @@ type BookingPageProps = Readonly<{
     dropoffTime?: string;
     returnTime?: string;
     ref?: string;
+    email?: string;
+    vehicle?: string;
     submitted?: string;
   }>;
 }>;
@@ -48,11 +50,16 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
     dropoffTime,
     returnTime,
     ref,
+    email,
+    vehicle: bookedVehicle,
     submitted,
   } = await searchParams;
   const resolvedPickupDate = date ?? pickupDate;
   const resolvedReturnDate = returnDate ?? dropoffDate;
   const bookingLookupReference = typeof ref === "string" && ref.trim().length > 0 ? ref.trim() : undefined;
+  const bookingLookupEmail = typeof email === "string" && email.trim().length > 0 ? email.trim() : undefined;
+  const bookedVehicleLabel =
+    typeof bookedVehicle === "string" && bookedVehicle.trim().length > 0 ? bookedVehicle.trim() : undefined;
   const bookingSubmittedBanner = submitted === "1" || submitted === "true";
 
   return (
@@ -98,7 +105,9 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
                   returnTime: returnTime ?? dropoffTime,
                 }}
                 bookingLookupReference={bookingLookupReference}
+                bookingLookupEmail={bookingLookupEmail}
                 bookingSubmittedBanner={bookingSubmittedBanner}
+                bookedVehicleLabel={bookedVehicleLabel}
               />
             </div>
           </div>

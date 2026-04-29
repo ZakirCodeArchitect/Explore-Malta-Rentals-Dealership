@@ -1,6 +1,6 @@
 import { UPLOAD_CATEGORIES, type UploadCategory } from "./types";
 
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
@@ -46,7 +46,7 @@ export function validateUploadFile(file: File | null | undefined): ValidateUploa
   }
 
   if (file.size > MAX_UPLOAD_BYTES) {
-    return { ok: false, message: "File is too large (max 5 MB)", status: 413 };
+    return { ok: false, message: "File is too large (max 2 MB)", status: 413 };
   }
 
   const mimeType = normalizeMimeType(file.type || "");

@@ -1,5 +1,4 @@
 import type { BookingSubmissionInput } from "@/lib/booking/types";
-import type { UploadCategory } from "@/lib/uploads/types";
 
 export type BookingApiValidationError = {
   path: string;
@@ -21,11 +20,6 @@ export type SubmitBookingErr = {
 
 export type SubmitBookingResult = SubmitBookingOk | SubmitBookingErr;
 
-export type SubmitBookingFileInput = {
-  category: UploadCategory;
-  file: File;
-};
-
 type BookingsSuccessJson = {
   success: true;
   bookingReference: string;
@@ -38,30 +32,14 @@ type BookingsErrorJson = {
   errors?: BookingApiValidationError[];
 };
 
-export async function submitBooking(
-  payload: BookingSubmissionInput,
-  uploads?: SubmitBookingFileInput[],
-): Promise<SubmitBookingResult> {
+export async function submitBooking(payload: BookingSubmissionInput): Promise<SubmitBookingResult> {
   let response: Response;
   try {
-    const hasUploads = Array.isArray(uploads) && uploads.length > 0;
-    if (hasUploads) {
-      const formData = new FormData();
-      formData.append("payload", JSON.stringify(payload));
-      for (const upload of uploads) {
-        formData.append(upload.category, upload.file);
-      }
-      response = await fetch("/api/bookings", {
-        method: "POST",
-        body: formData,
-      });
-    } else {
-      response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-    }
+    response = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("[submitBooking] Network error", error);

@@ -19,8 +19,18 @@ function getUploadedFile(formData: FormData, key: string): File | null {
   return candidate instanceof File && candidate.size > 0 ? candidate : null;
 }
 
+function assertSingleFilePerField(formData: FormData, key: string): void {
+  const values = formData.getAll(key).filter((entry) => entry instanceof File && entry.size > 0);
+  if (values.length > 1) {
+    throw new Error(`Multiple files provided for ${key}`);
+  }
+}
+
 async function parseMultipartPayload(request: Request): Promise<MultipartBookingRequest> {
   const formData = await request.formData();
+  assertSingleFilePerField(formData, "customer_license");
+  assertSingleFilePerField(formData, "customer_passport");
+  assertSingleFilePerField(formData, "additional_driver_passport");
   const payloadRaw = formData.get("payload");
   if (typeof payloadRaw !== "string") {
     throw new Error("Invalid multipart payload");

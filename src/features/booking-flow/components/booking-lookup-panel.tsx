@@ -7,6 +7,7 @@ import type { PublicBookingSummary } from "@/lib/booking/lookupPublicBooking";
 
 type BookingLookupPanelProps = {
   initialReference?: string;
+  initialEmail?: string;
   showSubmittedBanner?: boolean;
 };
 
@@ -64,14 +65,19 @@ function BookingSummaryCard({
   );
 }
 
-export function BookingLookupPanel({ initialReference, showSubmittedBanner }: BookingLookupPanelProps) {
+export function BookingLookupPanel({
+  initialReference,
+  initialEmail,
+  showSubmittedBanner,
+}: BookingLookupPanelProps) {
   const t = useTranslations("BookingPage.lookup");
   const format = useFormatter();
   const [reference, setReference] = useState(() => initialReference?.trim() ?? "");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => initialEmail?.trim() ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<PublicBookingSummary | null>(null);
+  const [autoLookupDone, setAutoLookupDone] = useState(false);
 
   useEffect(() => {
     const next = initialReference?.trim();
@@ -79,6 +85,13 @@ export function BookingLookupPanel({ initialReference, showSubmittedBanner }: Bo
       setReference(next);
     }
   }, [initialReference]);
+
+  useEffect(() => {
+    const next = initialEmail?.trim();
+    if (next) {
+      setEmail(next);
+    }
+  }, [initialEmail]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,6 +106,31 @@ export function BookingLookupPanel({ initialReference, showSubmittedBanner }: Bo
     }
     setError(result.message);
   }
+
+  useEffect(() => {
+    if (autoLookupDone || !showSubmittedBanner || !reference.trim() || !email.trim()) {
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setSummary(null);
+    void lookupBooking(reference, email).then((result) => {
+      if (cancelled) {
+        return;
+      }
+      setLoading(false);
+      setAutoLookupDone(true);
+      if (result.ok) {
+        setSummary(result.booking);
+        return;
+      }
+      setError(result.message);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [autoLookupDone, email, reference, showSubmittedBanner]);
 
   return (
     <section

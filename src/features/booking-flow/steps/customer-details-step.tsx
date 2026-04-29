@@ -198,7 +198,7 @@ export function CustomerDetailsStep() {
 
       <div className="mt-4 rounded-2xl border border-slate-200 p-4">
         <p className="text-sm font-semibold text-slate-900">{t("licenseHeading")}</p>
-        <p className="mt-1 text-xs text-slate-600">
+        <p className="mt-1 border-b border-slate-200 pb-2 text-xs text-slate-600">
           {t("pickupContext")}{" "}
           <span className="font-semibold">
             {requiresUploads ? t("requestDelivery") : t("collectFromOffice")}
@@ -206,7 +206,11 @@ export function CustomerDetailsStep() {
           .
         </p>
         <div className="mt-2">
-          <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <span
+            className={`flex items-center gap-2 text-sm font-medium ${
+              requiresUploads ? "text-slate-700 opacity-100" : "text-slate-400 opacity-50"
+            }`}
+          >
             <input type="radio" checked={requiresUploads} readOnly />
             {t("deliveryLicenseUpload")}
           </span>
@@ -229,13 +233,14 @@ export function CustomerDetailsStep() {
           ) : null}
         </div>
 
-        <label className="mt-3 flex flex-col gap-1 text-sm text-slate-700">
+        <div className="mt-3 flex flex-col gap-1 border-t border-slate-200 pt-3 text-sm text-slate-700">
           <span className="flex items-center gap-2">
             <input type="radio" checked={!requiresUploads} readOnly />
             <span>{t("officeLicenseConfirm")}</span>
           </span>
-          <span className="flex items-center gap-2 pl-7">
+          <label htmlFor="customer-license-confirmation" className="flex cursor-pointer items-center gap-2 pl-7">
             <input
+              id="customer-license-confirmation"
               type="checkbox"
               checked={state.customer.licenseConfirmationCheckbox}
               name="customer.licenseConfirmationCheckbox"
@@ -248,13 +253,13 @@ export function CustomerDetailsStep() {
             <span className={requiresUploads ? "text-slate-400" : ""}>
               {t("confirmPresentLicense")}
             </span>
-          </span>
-        </label>
+          </label>
+        </div>
       </div>
 
       <div className="mt-4 rounded-2xl border border-slate-200 p-4">
         <p className="text-sm font-semibold text-slate-900">{t("passportHeading")}</p>
-        <p className="mt-1 text-xs text-slate-600">
+        <p className="mt-1 border-b border-slate-200 pb-2 text-xs text-slate-600">
           {t("pickupContext")}{" "}
           <span className="font-semibold">
             {requiresUploads ? t("requestDelivery") : t("collectFromOffice")}
@@ -262,7 +267,11 @@ export function CustomerDetailsStep() {
           .
         </p>
         <div className="mt-2">
-          <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <span
+            className={`flex items-center gap-2 text-sm font-medium ${
+              requiresUploads ? "text-slate-700 opacity-100" : "text-slate-400 opacity-50"
+            }`}
+          >
             <input type="radio" checked={requiresUploads} readOnly />
             {t("deliveryPassportUpload")}
           </span>
@@ -284,13 +293,14 @@ export function CustomerDetailsStep() {
             </span>
           ) : null}
         </div>
-        <label className="mt-3 flex flex-col gap-1 text-sm text-slate-700">
+        <div className="mt-3 flex flex-col gap-1 border-t border-slate-200 pt-3 text-sm text-slate-700">
           <span className="flex items-center gap-2">
             <input type="radio" checked={!requiresUploads} readOnly />
             <span>{t("officePassportConfirm")}</span>
           </span>
-          <span className="flex items-center gap-2 pl-7">
+          <label htmlFor="customer-passport-confirmation" className="flex cursor-pointer items-center gap-2 pl-7">
             <input
+              id="customer-passport-confirmation"
               type="checkbox"
               checked={state.customer.idConfirmationCheckbox}
               name="customer.idConfirmationCheckbox"
@@ -303,8 +313,8 @@ export function CustomerDetailsStep() {
             <span className={requiresUploads ? "text-slate-400" : ""}>
               {t("confirmPresentId")}
             </span>
-          </span>
-        </label>
+          </label>
+        </div>
       </div>
 
       <div className="mt-4">
