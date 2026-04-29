@@ -67,11 +67,13 @@ export async function POST(request: Request) {
 
   try {
     const submissionPayload = payload as BookingSubmissionInput;
+    const bookingTempRef =
+      typeof submissionPayload.holdReference === "string" ? submissionPayload.holdReference : undefined;
 
     if (multipartFiles?.customerLicenseFile) {
       const uploaded = await uploadFile(multipartFiles.customerLicenseFile, {
         category: "customer_license",
-        bookingTempRef: submissionPayload.holdReference,
+        bookingTempRef,
         folderHint: "documents",
       });
       submissionPayload.customer.licenseUploadPath = uploaded.relativePath;
@@ -79,7 +81,7 @@ export async function POST(request: Request) {
     if (multipartFiles?.customerPassportFile) {
       const uploaded = await uploadFile(multipartFiles.customerPassportFile, {
         category: "customer_passport",
-        bookingTempRef: submissionPayload.holdReference,
+        bookingTempRef,
         folderHint: "documents",
       });
       submissionPayload.customer.passportUploadPath = uploaded.relativePath;
@@ -87,7 +89,7 @@ export async function POST(request: Request) {
     if (multipartFiles?.additionalDriverPassportFile) {
       const uploaded = await uploadFile(multipartFiles.additionalDriverPassportFile, {
         category: "additional_driver_passport",
-        bookingTempRef: submissionPayload.holdReference,
+        bookingTempRef,
         folderHint: "documents",
       });
       submissionPayload.additionalDriver.passportUploadPath = uploaded.relativePath;
