@@ -2,6 +2,7 @@ import { format } from "date-fns";
 
 import type { Booking } from "@/generated/prisma/client";
 
+import { buildCompanyEmailTemplate } from "./buildCompanyEmailTemplate";
 import type { BookingConfirmationEmailContent } from "./types";
 
 function escapeHtml(value: string): string {
@@ -127,7 +128,8 @@ export function buildBookingConfirmationEmail(booking: Booking): BookingConfirma
   const textSections = [
     `Hello ${booking.customerFullName},`,
     "",
-    "Thank you for choosing Explore Malta Rentals. We have received your booking request and are pleased to confirm the details below.",
+    "Thank you for choosing Explore Malta Rentals. Your reservation has been successfully recorded.",
+    "Please find your booking confirmation details below.",
     "",
     `BOOKING REFERENCE: ${booking.bookingReference}`,
     "",
@@ -151,7 +153,7 @@ export function buildBookingConfirmationEmail(booking: Booking): BookingConfirma
     "",
     "PAYMENT SUMMARY",
     `Rental subtotal: ${subtotal}`,
-    `Total amount due online (paid with submission): ${totalOnline}`,
+    `Amount paid online: ${totalOnline}`,
     `Deposit amount: ${deposit}`,
     `Deposit payment method: ${depositMethodLabel(booking.depositMethod)}`,
     `Amount due later (if any): ${dueLater}`,
@@ -159,64 +161,64 @@ export function buildBookingConfirmationEmail(booking: Booking): BookingConfirma
     "TERMS",
     termsNote,
     "",
-    "—",
-    "Explore Malta Rentals",
-    "If you need help with your booking, reply to this email or contact us using the details on our website.",
+    "If you need any amendments or support, reply to this email and our team will be happy to assist.",
   ];
 
   const text = textSections.join("\n");
+  const htmlBody = `<p style="margin:0 0 14px 0;">Hello ${customerName},</p>
+  <p style="margin:0 0 18px 0;color:#374151;">
+    Thank you for choosing <strong>Explore Malta Rentals</strong>. Your reservation has been successfully recorded.
+    Please find your booking confirmation details below.
+  </p>
 
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8" /><title>${subject}</title></head>
-<body style="font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; color: #1a1a1a;">
-  <p>Hello ${customerName},</p>
-  <p>Thank you for choosing <strong>Explore Malta Rentals</strong>. We have received your booking request and are pleased to confirm the details below.</p>
+  <div style="margin:0 0 18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;">
+    <p style="margin:0 0 6px 0;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Booking reference</p>
+    <p style="margin:0;font-size:22px;font-weight:700;color:#111827;letter-spacing:0.03em;">${ref}</p>
+  </div>
 
-  <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.1rem;">Booking reference</h2>
-  <p style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.02em;">${ref}</p>
+  <h2 style="margin:0 0 10px 0;font-size:16px;color:#111827;">Rental details</h2>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 16px 0;">
+    <tr><td style="padding:7px 0;color:#6b7280;width:42%;">Vehicle</td><td style="padding:7px 0;color:#111827;">${vehicle}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Pickup</td><td style="padding:7px 0;color:#111827;">${escapeHtml(pickupWhen)}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Return</td><td style="padding:7px 0;color:#111827;">${escapeHtml(returnWhen)}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Duration</td><td style="padding:7px 0;color:#111827;">${billableDays} billable day(s) (${escapeHtml(hours)} hours)</td></tr>
+  </table>
 
-  <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.1rem;">Rental details</h2>
-  <ul>
-    <li><strong>Vehicle:</strong> ${vehicle}</li>
-    <li><strong>Pickup:</strong> ${escapeHtml(pickupWhen)}</li>
-    <li><strong>Return:</strong> ${escapeHtml(returnWhen)}</li>
-    <li><strong>Billable days:</strong> ${billableDays} <span style="color:#444">(actual duration ≈ ${escapeHtml(hours)} hours)</span></li>
-  </ul>
+  <h2 style="margin:4px 0 10px 0;font-size:16px;color:#111827;">Pickup and return</h2>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 16px 0;">
+    <tr><td style="padding:7px 0;color:#6b7280;width:42%;">Pickup option</td><td style="padding:7px 0;color:#111827;">${pickupOpt}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Pickup address</td><td style="padding:7px 0;color:#111827;">${pickupAddr}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Drop-off option</td><td style="padding:7px 0;color:#111827;">${dropOpt}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Drop-off address</td><td style="padding:7px 0;color:#111827;">${dropAddr}</td></tr>
+  </table>
 
-  <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.1rem;">Pickup / drop-off</h2>
-  <ul>
-    <li><strong>Pickup option:</strong> ${pickupOpt}</li>
-    <li><strong>Pickup address (if delivery):</strong> ${pickupAddr}</li>
-    <li><strong>Drop-off option:</strong> ${dropOpt}</li>
-    <li><strong>Drop-off address (if applicable):</strong> ${dropAddr}</li>
-  </ul>
+  <h2 style="margin:4px 0 10px 0;font-size:16px;color:#111827;">Add-ons and protection</h2>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 16px 0;">
+    <tr><td style="padding:7px 0;color:#6b7280;width:42%;">CDW option</td><td style="padding:7px 0;color:#111827;">${cdw}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Additional driver</td><td style="padding:7px 0;color:#111827;">${addDriver}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Storage box</td><td style="padding:7px 0;color:#111827;">${storage}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Helmets</td><td style="padding:7px 0;color:#111827;">${escapeHtml(helmetText)}</td></tr>
+  </table>
 
-  <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.1rem;">Add-ons &amp; protection</h2>
-  <ul>
-    <li><strong>CDW:</strong> ${cdw}</li>
-    <li><strong>Additional driver:</strong> ${addDriver}</li>
-    <li><strong>Storage box:</strong> ${storage}</li>
-    <li><strong>Helmets:</strong> ${escapeHtml(helmetText)}</li>
-  </ul>
+  <h2 style="margin:4px 0 10px 0;font-size:16px;color:#111827;">Payment summary</h2>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 18px 0;">
+    <tr><td style="padding:7px 0;color:#6b7280;width:42%;">Rental subtotal</td><td style="padding:7px 0;color:#111827;">${escapeHtml(subtotal)}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Amount paid online</td><td style="padding:7px 0;color:#111827;">${escapeHtml(totalOnline)}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Deposit amount</td><td style="padding:7px 0;color:#111827;">${escapeHtml(deposit)}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Deposit method</td><td style="padding:7px 0;color:#111827;">${depositMethod}</td></tr>
+    <tr><td style="padding:7px 0;color:#6b7280;">Amount due later</td><td style="padding:7px 0;color:#111827;">${escapeHtml(dueLater)}</td></tr>
+  </table>
 
-  <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.1rem;">Payment summary</h2>
-  <ul>
-    <li><strong>Rental subtotal:</strong> ${escapeHtml(subtotal)}</li>
-    <li><strong>Total amount due online (with this booking):</strong> ${escapeHtml(totalOnline)}</li>
-    <li><strong>Deposit amount:</strong> ${escapeHtml(deposit)}</li>
-    <li><strong>Deposit payment method:</strong> ${depositMethod}</li>
-    <li><strong>Amount due later (if applicable):</strong> ${escapeHtml(dueLater)}</li>
-  </ul>
+  <h2 style="margin:4px 0 10px 0;font-size:16px;color:#111827;">Terms reminder</h2>
+  <p style="margin:0;color:#374151;">${escapeHtml(termsNote)}</p>
+  <p style="margin:14px 0 0 0;color:#374151;">If you need any amendments or support, simply reply to this email and our team will assist you.</p>`;
 
-  <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.1rem;">Terms reminder</h2>
-  <p>${escapeHtml(termsNote)}</p>
+  const { html, text: templatedText } = buildCompanyEmailTemplate({
+    subject,
+    previewText: `Booking ${booking.bookingReference} confirmed`,
+    htmlBody,
+    textBody: text,
+  });
 
-  <hr style="border: none; border-top: 1px solid #ddd; margin: 2rem 0;" />
-  <p style="font-size: 0.9rem; color: #555;"><strong>Explore Malta Rentals</strong><br />
-  If you need help with your booking, reply to this email or contact us using the details on our website.</p>
-</body>
-</html>`;
-
-  return { subject, html, text };
+  return { subject, html, text: templatedText };
 }

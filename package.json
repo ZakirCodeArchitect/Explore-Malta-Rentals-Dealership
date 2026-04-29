@@ -13,12 +13,14 @@
     "verify:uploads": "tsx scripts/verify-upload-phase.ts",
     "test:upload-api": "tsx scripts/test-upload-api.ts",
     "seed:vehicles": "node scripts/seed-vehicles.mjs",
+    "delete:bicycle": "node scripts/delete-bicycle-vehicles.mjs",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "node scripts/retry-prisma-migrate-deploy.mjs",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1038.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^3.10.0",

@@ -336,7 +336,7 @@ function mapBookingCreateData(
 ): Prisma.BookingUncheckedCreateInput {
   return {
     bookingReference,
-    status: "PENDING",
+    status: "CONFIRMED",
     vehicleId: vehicle.vehicleId,
     vehicleNameSnapshot: vehicle.vehicleNameSnapshot,
     vehicleTypeSnapshot: vehicle.vehicleTypeSnapshot,

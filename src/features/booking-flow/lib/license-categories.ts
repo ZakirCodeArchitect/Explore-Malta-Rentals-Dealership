@@ -4,6 +4,7 @@ export type LicenseCategory = (typeof LICENSE_CATEGORIES)[number];
 
 const LICENSES_FOR_50CC: readonly LicenseCategory[] = ["B", "AM"];
 const LICENSES_FOR_125CC: readonly LicenseCategory[] = ["A", "A1", "A2"];
+const LICENSES_FOR_ATV: readonly LicenseCategory[] = ["B"];
 
 export function getAllowedLicenseCategories(
   selectedVehicleType: string,
@@ -12,6 +13,9 @@ export function getAllowedLicenseCategories(
   const normalizedType = selectedVehicleType.toLowerCase();
   const normalizedId = (selectedVehicleId ?? "").toLowerCase();
   const normalized = `${normalizedType} ${normalizedId}`;
+  if (normalized.includes("atv")) {
+    return LICENSES_FOR_ATV;
+  }
   if (normalized.includes("50cc")) {
     return LICENSES_FOR_50CC;
   }
@@ -35,6 +39,8 @@ export function isLicenseAllowedForVehicle(
 }
 
 export function getLicenseCategoryHint(selectedVehicleType: string): string {
-  void selectedVehicleType;
+  if (selectedVehicleType.toLowerCase().includes("atv")) {
+    return "ATV requires license B.";
+  }
   return "50cc requires license B or AM. 125cc requires A, A1, or A2.";
 }
