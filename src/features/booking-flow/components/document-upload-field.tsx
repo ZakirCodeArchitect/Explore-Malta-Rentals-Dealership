@@ -1,8 +1,12 @@
 "use client";
 
 import { startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
-import { uploadBookingDocument } from "@/features/booking-flow/lib/upload-booking-document";
+import {
+  clearPendingBookingUpload,
+  setPendingBookingUpload,
+} from "@/features/booking-flow/lib/pending-booking-uploads";
 import type { UploadCategory } from "@/lib/uploads/types";
+import { validateUploadFile } from "@/lib/uploads/validators";
 
 type DocumentUploadFieldProps = {
   label: string;
@@ -56,19 +60,25 @@ export function DocumentUploadField({
 
       setPhase("uploading");
       setErrorMessage(null);
-
-      const result = await uploadBookingDocument(file, category, bookingSessionId);
-      if (!result.ok) {
+      const validation = validateUploadFile(file);
+      if (!validation.ok) {
         setPhase("error");
-        setErrorMessage(result.message);
+        setErrorMessage(validation.message);
         return;
       }
 
-      onPathChange(result.relativePath);
+      setPendingBookingUpload(bookingSessionId, category, file);
+      onPathChange(validation.file.originalName);
       setPhase("success");
     },
     [bookingSessionId, category, disabled, onPathChange],
   );
+
+  useEffect(() => {
+    if (!value.trim()) {
+      clearPendingBookingUpload(bookingSessionId, category);
+    }
+  }, [bookingSessionId, category, value]);
 
   return (
     <div className="space-y-2" data-field={dataField}>
@@ -91,18 +101,18 @@ export function DocumentUploadField({
       />
 
       {phase === "uploading" ? (
-        <p className="text-xs font-medium text-[var(--brand-blue)]">Uploading…</p>
+        <p className="text-xs font-medium text-[var(--brand-blue)]">Attaching…</p>
       ) : null}
       {phase === "success" || (phase === "idle" && hasPath) ? (
-        <p className="text-xs font-medium text-emerald-700">Uploaded successfully</p>
+        <p className="text-xs font-medium text-emerald-700">Attached successfully</p>
       ) : null}
       {phase === "error" && errorMessage ? (
-        <p className="text-xs font-medium text-red-600">Upload failed, please try again. {errorMessage}</p>
+        <p className="text-xs font-medium text-red-600">Attachment failed, please try again. {errorMessage}</p>
       ) : null}
 
       {hasPath ? (
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
-          <span className="break-all">Stored: {value}</span>
+          <span className="break-all">Attached: {value}</span>
           <button
             type="button"
             disabled={disabled || phase === "uploading"}

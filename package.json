@@ -13,6 +13,8 @@
     "verify:uploads": "tsx scripts/verify-upload-phase.ts",
     "test:upload-api": "tsx scripts/test-upload-api.ts",
     "seed:vehicles": "node scripts/seed-vehicles.mjs",
+    "seed:vehicle-images:s3": "node scripts/seed-vehicle-images-s3.mjs",
+    "seed:public-assets:s3": "node scripts/seed-public-assets-s3.mjs",
     "delete:bicycle": "node scripts/delete-bicycle-vehicles.mjs",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",

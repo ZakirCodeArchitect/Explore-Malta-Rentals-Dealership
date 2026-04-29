@@ -14,6 +14,10 @@ import { useHoldCountdown } from "@/features/booking-flow/hooks/use-hold-countdo
 import { BOOKING_FLOW_STEPS } from "@/features/booking-flow/lib/steps";
 import { mapBookingFlowStateToSubmission } from "@/features/booking-flow/lib/map-booking-flow-to-submission";
 import {
+  clearPendingBookingSessionUploads,
+  collectPendingBookingUploads,
+} from "@/features/booking-flow/lib/pending-booking-uploads";
+import {
   mapApiBookingErrorPathToFormPath,
   summarizeApiBookingErrors,
 } from "@/features/booking-flow/lib/map-api-booking-error-to-form";
@@ -38,6 +42,7 @@ function BookingFlowBody({ bookingLookupReference, bookingSubmittedBanner }: Boo
   const {
     bookingFlowSchema,
     state,
+    bookingSessionId,
     reservationHold,
     reservationHoldError,
     isCreatingHold,
@@ -185,11 +190,13 @@ function BookingFlowBody({ bookingLookupReference, bookingSubmittedBanner }: Boo
     clearServerFieldErrors();
 
     const payload = mapBookingFlowStateToSubmission(stateAfterConsent, reservationHold.holdReference);
-    const result = await submitBooking(payload);
+    const pendingUploads = collectPendingBookingUploads(bookingSessionId);
+    const result = await submitBooking(payload, pendingUploads);
     setSubmitting(false);
 
     if (result.ok) {
       setTermsModalOpen(false);
+      clearPendingBookingSessionUploads(bookingSessionId);
       clearReservationHold();
       resetBookingForm();
       router.push(
@@ -234,15 +241,17 @@ function BookingFlowBody({ bookingLookupReference, bookingSubmittedBanner }: Boo
     reservationHold.holdReference,
     resetBookingForm,
     router,
+    bookingSessionId,
     t,
     updateSection,
   ]);
 
   const handleCancelBooking = useCallback(async () => {
     await releaseReservationHold();
+    clearPendingBookingSessionUploads(bookingSessionId);
     resetBookingForm();
     router.push("/vehicles");
-  }, [releaseReservationHold, resetBookingForm, router]);
+  }, [bookingSessionId, releaseReservationHold, resetBookingForm, router]);
 
   return (
     <div className="space-y-5">
