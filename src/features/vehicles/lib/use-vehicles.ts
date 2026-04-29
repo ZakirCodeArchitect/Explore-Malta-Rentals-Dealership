@@ -75,7 +75,15 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult
         }
       }
     };
-    void loadVehicles();
+    // Attach a no-op rejection handler so that the AbortError emitted when the
+    // effect cleanup fires does not surface as an unhandled promise rejection in
+    // React StrictMode / during fast navigation.
+    loadVehicles().catch((e: unknown) => {
+      if (e instanceof DOMException && e.name === "AbortError") return;
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[useVehicles] Unhandled error outside async body", e);
+      }
+    });
 
     return () => controller.abort();
   }, [enabled, rentalWindow]);
@@ -120,7 +128,12 @@ export function useVehicle(slug: string): UseVehicleResult {
         }
       }
     };
-    void loadVehicle();
+    loadVehicle().catch((e: unknown) => {
+      if (e instanceof DOMException && e.name === "AbortError") return;
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[useVehicle] Unhandled error outside async body", e);
+      }
+    });
 
     return () => controller.abort();
   }, [normalizedSlug, shouldFetch]);

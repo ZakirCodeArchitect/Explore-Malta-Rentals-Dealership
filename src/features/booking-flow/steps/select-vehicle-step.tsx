@@ -123,32 +123,47 @@ export function SelectVehicleStep() {
           </Link>
         </div>
       ) : selectedVehicle ? (
-        <article className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-          <div className="relative h-48 bg-slate-100 sm:h-56">
+        <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_8px_32px_-16px_rgba(15,23,42,0.18)]">
+          {/* ── vehicle image ─────────────────────────────────────── */}
+          <div className="relative aspect-[16/9] w-full bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50">
             {selectedVehicleImageSrc ? (
-              <Image
-                src={selectedVehicleImageSrc}
-                alt={selectedVehicle.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 42rem"
-              />
+              <>
+                <Image
+                  src={selectedVehicleImageSrc}
+                  alt={selectedVehicle.name}
+                  fill
+                  className="object-contain p-6 drop-shadow-md transition-transform duration-500 hover:scale-[1.02]"
+                  sizes="(max-width: 768px) 100vw, 42rem"
+                  priority
+                />
+                {/* subtle radial glow under the vehicle */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute bottom-0 left-1/2 h-1/3 w-2/3 -translate-x-1/2 rounded-full bg-slate-200/60 blur-2xl"
+                />
+              </>
             ) : (
-              <div className="flex h-full items-center justify-center text-sm font-medium text-slate-500">
+              <div className="flex h-full items-center justify-center text-sm font-medium text-slate-400">
                 {t("imageComingSoon")}
               </div>
             )}
           </div>
-          <div className="space-y-2 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{t("yourSelection")}</p>
-            <h3 className="text-lg font-semibold text-slate-900">{selectedVehicle.name}</h3>
+
+          {/* ── vehicle info ──────────────────────────────────────── */}
+          <div className="border-t border-slate-100 px-5 py-4">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--brand-orange)]">
+              {t("yourSelection")}
+            </p>
+            <h3 className="mt-1 text-lg font-bold tracking-[-0.02em] text-slate-950">
+              {selectedVehicle.name}
+            </h3>
             {selectedVehicleBrandModel ? (
-              <p className="text-sm text-slate-600">{selectedVehicleBrandModel}</p>
+              <p className="mt-0.5 text-sm font-medium text-slate-600">{selectedVehicleBrandModel}</p>
             ) : null}
-            <p className="text-sm text-slate-600">
+            <p className="mt-1 text-sm leading-relaxed text-slate-600">
               {selectedVehicle.shortDescription ?? t("noShortDescription")}
             </p>
-            <p className="text-xs text-slate-700">
+            <p className="mt-2 text-xs text-slate-500">
               {formatVehicleTypeLabel(selectedVehicle.apiVehicleType)}
               {" · "}
               {t("helmetsSummary", { count: selectedVehicle.helmetIncludedCount })}
@@ -156,7 +171,10 @@ export function SelectVehicleStep() {
               {selectedVehicle.supportsStorageBox ? t("storageYes") : t("storageNo")}
             </p>
             {holdIsOnSelectedVehicle ? (
-              <p className="pt-1 text-xs font-semibold text-emerald-800">{t("reservedTemp")}</p>
+              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+                {t("reservedTemp")}
+              </p>
             ) : null}
           </div>
         </article>

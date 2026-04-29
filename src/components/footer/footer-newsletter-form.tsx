@@ -33,6 +33,7 @@ export function FooterNewsletterForm() {
           inputMode="email"
           placeholder={t("newsletterPlaceholder")}
           required
+          suppressHydrationWarning
           className={joinClasses(
             "min-h-11 w-full flex-1 rounded-xl border border-white/15 bg-white/[0.06] px-3.5 py-2 text-sm text-white placeholder:text-white/35",
             "transition-[border-color,background-color,box-shadow] duration-200",

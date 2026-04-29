@@ -375,6 +375,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                   onBlur={() => blurField("email")}
                   aria-invalid={touched.email && !!errors.email}
                   aria-describedby={errors.email ? "booking-email-error" : undefined}
+                  suppressHydrationWarning
                   placeholder="you@example.com"
                   className={inputClass}
                 />

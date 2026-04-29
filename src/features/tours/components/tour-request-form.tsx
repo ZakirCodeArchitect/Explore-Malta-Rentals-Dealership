@@ -102,6 +102,7 @@ export function TourRequestForm() {
             type="email"
             autoComplete="email"
             required
+            suppressHydrationWarning
             className={inputClass}
           />
         </div>

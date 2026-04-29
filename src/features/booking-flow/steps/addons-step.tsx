@@ -337,6 +337,7 @@ export function AddonsStep() {
                       updateSection("additionalDriver", { email: event.target.value })
                     }
                     className={`${fieldClass} ${isFieldInvalid("additionalDriver.email") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
+                    suppressHydrationWarning
                   />
                   {getFieldError("additionalDriver.email") ? (
                     <span className="mt-1 block text-xs text-red-600">

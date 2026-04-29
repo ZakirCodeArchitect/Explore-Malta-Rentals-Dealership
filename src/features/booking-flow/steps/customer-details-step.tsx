@@ -95,6 +95,7 @@ export function CustomerDetailsStep() {
             onChange={(event) => updateSection("customer", { email: event.target.value })}
             className={`${inputClass} ${isFieldInvalid("customer.email") ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""}`}
             placeholder={t("emailPh")}
+            suppressHydrationWarning
           />
           {getFieldError("customer.email") ? (
             <span className="mt-1 block text-xs text-red-600">{getFieldError("customer.email")}</span>
