@@ -34,6 +34,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const files = formData.getAll("file").filter((entry) => entry instanceof File && entry.size > 0);
+  if (files.length > 1) {
+    return NextResponse.json(
+      { success: false as const, message: "Only one file can be uploaded per request" },
+      { status: 400 },
+    );
+  }
+
   const fileEntry = formData.get("file");
   const file = fileEntry instanceof File ? fileEntry : null;
   const bookingTempRef = readOptionalFormString(formData.get("bookingTempRef"));

@@ -325,6 +325,8 @@
     "lookup": {
       "submittedTitle": "Buchung eingegangen",
       "submittedBody": "Deine Buchungsreferenz ist unten eingetragen. Gib dieselbe E-Mail-Adresse wie im Formular ein und tippe auf „Buchung laden“, um die Bestätigung aus unserem System zu sehen.",
+      "toastTitle": "Deine Buchung wurde bestätigt",
+      "toastBody": "Danke fuer deine Buchung. Dein Fahrzeug wurde erfolgreich reserviert.",
       "title": "Bestehende Buchung anzeigen",
       "lead": "Verwende die Buchungsreferenz aus der Bestätigungs-E-Mail und die E-Mail-Adresse aus der Buchung. Wir laden die Mietzusammenfassung aus unserer Datenbank.",
       "referenceLabelShort": "Buchungsreferenz",

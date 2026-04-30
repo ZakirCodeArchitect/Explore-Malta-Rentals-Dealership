@@ -325,6 +325,8 @@
     "lookup": {
       "submittedTitle": "Booking received",
       "submittedBody": "Your booking reference is filled in below. Enter the same email address you used on the form, then choose “Load booking” to see your confirmation details from our system.",
+      "toastTitle": "Your booking has been confirmed",
+      "toastBody": "Thanks for booking with us. Your vehicle has been reserved successfully.",
       "title": "View an existing booking",
       "lead": "Use the booking reference from your confirmation email together with the email address you entered when you booked. We will load your rental summary from our database.",
       "referenceLabelShort": "Booking reference",
