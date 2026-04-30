@@ -165,7 +165,7 @@ export function TermsPageContent() {
             <ul className="list-disc space-y-1 pl-5">
               <li>50cc scooter: EUR 150</li>
               <li>125cc scooter: EUR 250</li>
-              <li>ATV / Quad: EUR 400</li>
+              <li>ATV / Quad: EUR 250</li>
             </ul>
             <p>Deposit may be held for up to 7-10 days after return.</p>
           </>

@@ -281,7 +281,10 @@ export async function createReservationHold(payload: unknown) {
 
       return createHoldWithUniqueReference(input, sessionKey, tx);
     },
-    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    {
+      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      timeout: 30_000,
+    },
   );
 
   return toReservationHoldResponse(hold);
