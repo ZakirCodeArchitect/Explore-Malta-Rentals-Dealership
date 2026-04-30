@@ -4,6 +4,7 @@ import { VehicleDetailsShell } from "@/features/vehicles/components/vehicle-deta
 
 type VehicleDetailsPageProps = Readonly<{
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }>;
 
 export async function generateMetadata({ params }: VehicleDetailsPageProps): Promise<Metadata> {
@@ -18,13 +19,26 @@ export async function generateMetadata({ params }: VehicleDetailsPageProps): Pro
   };
 }
 
-export default async function VehicleDetailsPage({ params }: VehicleDetailsPageProps) {
+export default async function VehicleDetailsPage({ params, searchParams }: VehicleDetailsPageProps) {
   const { locale, slug } = await params;
+  const sp = await searchParams;
   setRequestLocale(locale);
+
+  const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+  const initialPickupDate = str(sp.pickupDate);
+  const initialReturnDate = str(sp.returnDate);
+  const initialPickupTime = str(sp.pickupTime);
+  const initialReturnTime = str(sp.returnTime);
 
   return (
     <main className="flex flex-1 flex-col bg-[var(--background)]">
-      <VehicleDetailsShell slug={slug} />
+      <VehicleDetailsShell
+        slug={slug}
+        initialPickupDate={initialPickupDate}
+        initialReturnDate={initialReturnDate}
+        initialPickupTime={initialPickupTime}
+        initialReturnTime={initialReturnTime}
+      />
     </main>
   );
 }

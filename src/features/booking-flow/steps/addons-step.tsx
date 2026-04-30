@@ -43,7 +43,7 @@ export function AddonsStep() {
       ] as const,
     [t],
   );
-  const cdwOptions = useMemo(
+  const allCdwOptions = useMemo(
     () =>
       [
         { value: "none", label: t("cdwNone") },
@@ -62,6 +62,21 @@ export function AddonsStep() {
   const [helmetSize2MenuOpen, setHelmetSize2MenuOpen] = useState(false);
   const helmetEnabled = state.addons.helmet;
   const supportsHelmet = vehicleTypeNeedsHelmetFlow(state.rental.vehicleType);
+
+  const allowedCdwValues = useMemo((): ReadonlyArray<string> => {
+    const vt = (state.rental.vehicleType ?? "").toUpperCase();
+    if (vt === "MOTORBIKE_50CC") return ["none", "scooter_50", "scooter_full"];
+    if (vt === "MOTORBIKE_125CC") return ["none", "scooter_125", "scooter_full"];
+    if (vt === "ATV") return ["none", "atv_full"];
+    if (vt === "BICYCLE") return ["none"];
+    return ["none", "scooter_50", "scooter_125", "scooter_full", "atv_full"];
+  }, [state.rental.vehicleType]);
+
+  const cdwOptions = useMemo(
+    () => allCdwOptions.filter((o) => allowedCdwValues.includes(o.value)),
+    [allCdwOptions, allowedCdwValues],
+  );
+
   const selectedCdwOption =
     cdwOptions.find((option) => option.value === state.addons.cdwPlan) ??
     cdwOptions[0];
@@ -120,6 +135,16 @@ export function AddonsStep() {
     state.additionalDriver.licenseCategory,
     updateSection,
   ]);
+
+  useEffect(() => {
+    if (
+      state.addons.cdwPlan &&
+      state.addons.cdwPlan !== "none" &&
+      !allowedCdwValues.includes(state.addons.cdwPlan)
+    ) {
+      updateSection("addons", { cdwPlan: "none", cdw: false });
+    }
+  }, [allowedCdwValues, state.addons.cdwPlan, updateSection]);
 
   useEffect(() => {
     if (state.delivery.pickupOption === "office" && state.additionalDriver.passportIdUpload) {

@@ -452,6 +452,16 @@ export function VehicleListingShell({
     return `/booking?${bookingParams.toString()}`;
   })();
 
+  const detailsDateQuery = (() => {
+    if (!vehiclesFetchRentalWindow) return "";
+    const p = new URLSearchParams();
+    p.set("pickupDate", vehiclesFetchRentalWindow.pickupDate);
+    p.set("returnDate", vehiclesFetchRentalWindow.returnDate);
+    p.set("pickupTime", vehiclesFetchRentalWindow.pickupTime);
+    p.set("returnTime", vehiclesFetchRentalWindow.returnTime);
+    return `?${p.toString()}`;
+  })();
+
   const showListingSidebar = pathname === "/vehicles";
   const isLg = useIsLgViewport();
   const hideSeatsInHero = showListingSidebar && isLg;
@@ -559,6 +569,7 @@ export function VehicleListingShell({
               key={vehicle.slug}
               vehicle={vehicle}
               bookingHref={bookingHref}
+              detailsHref={`/vehicles/${vehicle.slug}${detailsDateQuery}`}
               tripDatesCommitted={tripDatesCommitted}
               onTripDatesRequired={() => setTripDatesPrompt(true)}
               pickupDate={vehiclesFetchRentalWindow?.pickupDate ?? null}

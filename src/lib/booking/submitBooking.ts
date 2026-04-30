@@ -557,7 +557,10 @@ async function createBookingWithUniqueReference(
 
             return booking;
           },
-          { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+          {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+            timeout: 30_000,
+          },
         );
       } catch (error) {
         if (error instanceof AvailabilityConflictError) {

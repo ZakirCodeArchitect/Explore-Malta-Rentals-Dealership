@@ -83,19 +83,21 @@ function KeyInfoBar({ vehicle }: { vehicle: Vehicle }) {
   ];
 
   return (
-    <div className="flex flex-wrap gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:flex-nowrap sm:divide-x sm:divide-slate-100 sm:px-0">
-      {specs.map((s) => (
-        <div
-          key={s.label}
-          className="flex min-w-0 flex-1 flex-col items-center gap-1.5 px-4 py-1 text-center"
-        >
-          <span className="text-slate-500">{s.icon}</span>
-          <span className="text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400">
-            {s.label}
-          </span>
-          <span className="text-sm font-semibold text-slate-900">{s.value}</span>
-        </div>
-      ))}
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex min-w-max divide-x divide-slate-100">
+        {specs.map((s) => (
+          <div
+            key={s.label}
+            className="flex flex-col items-center gap-1.5 px-5 py-4 text-center"
+          >
+            <span className="text-slate-500">{s.icon}</span>
+            <span className="text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400 whitespace-nowrap">
+              {s.label}
+            </span>
+            <span className="text-sm font-semibold text-slate-900 whitespace-nowrap">{s.value}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -236,12 +238,38 @@ function PoliciesSection({ vehicle }: { vehicle: Vehicle }) {
 
 /* ─────────────────────────── Booking sidebar ─────────────────── */
 
-function BookingSidebar({ vehicle }: { vehicle: Vehicle }) {
+function formatDateDisplay(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(`${iso}T12:00:00`);
+  return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+}
+
+type BookingSidebarProps = {
+  vehicle: Vehicle;
+  initialPickupDate?: string;
+  initialReturnDate?: string;
+  initialPickupTime?: string;
+  initialReturnTime?: string;
+};
+
+function BookingSidebar({
+  vehicle,
+  initialPickupDate = "",
+  initialReturnDate = "",
+  initialPickupTime,
+  initialReturnTime,
+}: BookingSidebarProps) {
   const minDate = todayISO();
-  const [pickupDate, setPickupDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
-  const [pickupTime, setPickupTime] = useState(BOOKING_TIME_SLOTS[0] ?? "09:30");
-  const [returnTime, setReturnTime] = useState(BOOKING_TIME_SLOTS[0] ?? "09:30");
+  const defaultTime = BOOKING_TIME_SLOTS[0] ?? "09:30";
+  const [pickupDate, setPickupDate] = useState(initialPickupDate);
+  const [returnDate, setReturnDate] = useState(initialReturnDate);
+  const [pickupTime, setPickupTime] = useState(initialPickupTime || defaultTime);
+  const [returnTime, setReturnTime] = useState(initialReturnTime || defaultTime);
+  const [showDateWarning, setShowDateWarning] = useState(false);
+
+  /* When dates arrive from the URL they're already committed — skip the picker */
+  const datesFromUrl = isTripCommitted(initialPickupDate, initialReturnDate);
+  const [showDatePicker, setShowDatePicker] = useState(!datesFromUrl);
 
   const days = rentalDays(pickupDate, returnDate);
 
@@ -274,19 +302,24 @@ function BookingSidebar({ vehicle }: { vehicle: Vehicle }) {
     ? vehicle.pricePerDay * days
     : null;
 
-  const dateInputClass =
-    "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-[var(--brand-blue)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20";
+  const dateInputClass = (hasWarning: boolean) =>
+    [
+      "mt-1.5 block w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:outline-none focus:ring-2",
+      hasWarning
+        ? "border-rose-400 focus:border-rose-400/50 focus:ring-rose-400/20"
+        : "border-slate-200 focus:border-[var(--brand-blue)]/50 focus:ring-[var(--brand-blue)]/20",
+    ].join(" ");
   const timeSelectClass =
     "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-[var(--brand-blue)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20";
   const labelClass = "text-xs font-semibold uppercase tracking-wide text-slate-500";
 
   return (
-    <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.38)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+4rem)]">
+    <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.38)] sm:p-5 md:sticky md:top-[calc(env(safe-area-inset-top)+4rem)]">
       {/* price */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           {vehicle.pricePerDay > 0 ? (
-            <p className="text-3xl font-bold tracking-[-0.03em] text-slate-950">
+            <p className="text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               EUR {vehicle.pricePerDay}
               <span className="ml-1 text-base font-medium text-slate-500">/ day</span>
             </p>
@@ -299,7 +332,7 @@ function BookingSidebar({ vehicle }: { vehicle: Vehicle }) {
             </p>
           ) : null}
         </div>
-        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+        <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
           Free cancellation
         </span>
       </div>
@@ -308,66 +341,109 @@ function BookingSidebar({ vehicle }: { vehicle: Vehicle }) {
 
       {/* trip fields */}
       <div className="space-y-3">
-        <p className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
-          <CalendarRange className="h-4 w-4 text-slate-500" aria-hidden />
-          Select your trip
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label htmlFor="sb-pickup-date" className={labelClass}>Pickup date</label>
-            <input
-              id="sb-pickup-date"
-              type="date"
-              min={minDate}
-              value={pickupDate}
-              onChange={(e) => {
-                const v = e.target.value;
-                setPickupDate(v);
-                if (returnDate && v && returnDate <= v) setReturnDate("");
-              }}
-              className={dateInputClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="sb-return-date" className={labelClass}>Return date</label>
-            <input
-              id="sb-return-date"
-              type="date"
-              min={pickupDate || minDate}
-              value={returnDate}
-              onChange={(e) => setReturnDate(e.target.value)}
-              className={dateInputClass}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label htmlFor="sb-pickup-time" className={labelClass}>Pickup time</label>
-            <select
-              id="sb-pickup-time"
-              value={pickupTime}
-              onChange={(e) => setPickupTime(e.target.value)}
-              className={timeSelectClass}
+        <div className="flex items-center justify-between">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+            <CalendarRange className="h-4 w-4 text-slate-500" aria-hidden />
+            {showDatePicker ? "Select your trip" : "Your trip"}
+          </p>
+          {!showDatePicker && (
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(true)}
+              className="text-xs font-semibold text-[var(--brand-blue)] hover:underline"
             >
-              {BOOKING_TIME_SLOTS.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="sb-return-time" className={labelClass}>Return time</label>
-            <select
-              id="sb-return-time"
-              value={returnTime}
-              onChange={(e) => setReturnTime(e.target.value)}
-              className={timeSelectClass}
-            >
-              {BOOKING_TIME_SLOTS.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
+              Change dates
+            </button>
+          )}
         </div>
+
+        {showDatePicker ? (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label htmlFor="sb-pickup-date" className={labelClass}>Pickup date</label>
+                <input
+                  id="sb-pickup-date"
+                  type="date"
+                  min={minDate}
+                  value={pickupDate}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setPickupDate(v);
+                    if (returnDate && v && returnDate <= v) setReturnDate("");
+                    if (v) setShowDateWarning(false);
+                  }}
+                  className={dateInputClass(showDateWarning && !pickupDate)}
+                />
+              </div>
+              <div>
+                <label htmlFor="sb-return-date" className={labelClass}>Return date</label>
+                <input
+                  id="sb-return-date"
+                  type="date"
+                  min={pickupDate || minDate}
+                  value={returnDate}
+                  onChange={(e) => {
+                    setReturnDate(e.target.value);
+                    if (e.target.value) setShowDateWarning(false);
+                  }}
+                  className={dateInputClass(showDateWarning && !returnDate)}
+                />
+              </div>
+            </div>
+            {showDateWarning && (
+              <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-600" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                  <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+                Please select your trip dates to continue.
+              </p>
+            )}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label htmlFor="sb-pickup-time" className={labelClass}>Pickup time</label>
+                <select
+                  id="sb-pickup-time"
+                  value={pickupTime}
+                  onChange={(e) => setPickupTime(e.target.value)}
+                  className={timeSelectClass}
+                >
+                  {BOOKING_TIME_SLOTS.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="sb-return-time" className={labelClass}>Return time</label>
+                <select
+                  id="sb-return-time"
+                  value={returnTime}
+                  onChange={(e) => setReturnTime(e.target.value)}
+                  className={timeSelectClass}
+                >
+                  {BOOKING_TIME_SLOTS.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-slate-400">Pickup</p>
+                <p className="mt-0.5 font-semibold text-slate-900">{formatDateDisplay(pickupDate)}</p>
+                <p className="text-xs text-slate-500">{pickupTime}</p>
+              </div>
+              <div>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-slate-400">Return</p>
+                <p className="mt-0.5 font-semibold text-slate-900">{formatDateDisplay(returnDate)}</p>
+                <p className="text-xs text-slate-500">{returnTime}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* availability status */}
@@ -417,6 +493,7 @@ function BookingSidebar({ vehicle }: { vehicle: Vehicle }) {
           vehicle={vehicle}
           bookingHref={bookingHref}
           tripDatesCommitted={tripCommitted}
+          onTripDatesRequired={() => setShowDateWarning(true)}
           allowHold={allowHold}
           holdBlockedMessage={holdBlocked}
           pickupDate={tripCommitted ? pickupDate : null}
@@ -491,9 +568,21 @@ function Skeleton() {
 
 /* ─────────────────────────── main shell ─────────────────────── */
 
-type VehicleDetailsShellProps = Readonly<{ slug: string }>;
+type VehicleDetailsShellProps = Readonly<{
+  slug: string;
+  initialPickupDate?: string;
+  initialReturnDate?: string;
+  initialPickupTime?: string;
+  initialReturnTime?: string;
+}>;
 
-export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
+export function VehicleDetailsShell({
+  slug,
+  initialPickupDate = "",
+  initialReturnDate = "",
+  initialPickupTime = "",
+  initialReturnTime = "",
+}: VehicleDetailsShellProps) {
   const t = useTranslations("VehicleDetail");
   const { vehicle, isLoading, error } = useVehicle(slug);
   const { vehicles: allVehicles } = useVehicles({ enabled: Boolean(vehicle) });
@@ -535,7 +624,7 @@ export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
     <>
       {/* ─── HERO IMAGE (full-width, above container) ────────── */}
       <div>
-        <Container className="pb-24 pt-28 sm:pb-32 sm:pt-32">
+        <Container className="pb-24 pt-28 sm:pt-32 md:pb-16">
           {/* breadcrumb */}
           <nav aria-label={t("breadcrumb")} className="mb-4 text-xs text-slate-500">
             <Link href="/vehicles" className="hover:text-slate-900">
@@ -551,7 +640,7 @@ export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
                 {typeLabel}
               </p>
-              <h1 className="mt-1.5 text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">
+              <h1 className="mt-1.5 text-2xl font-bold tracking-[-0.035em] text-slate-950 sm:text-3xl md:text-4xl">
                 {vehicle.name}
               </h1>
               {brandModel ? (
@@ -591,9 +680,9 @@ export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
           </div>
 
           {/* main 2-col grid */}
-          <div className="mt-8 grid gap-10 lg:grid-cols-12">
-            {/* ── LEFT column ─────────────────────────────── */}
-            <div className="space-y-10 lg:col-span-7">
+          <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-10">
+            {/* ── LEFT column — content sections ──────────── */}
+            <div className="order-2 space-y-10 md:order-none md:col-span-7">
 
               {/* About */}
               <section aria-labelledby="v-about-h">
@@ -673,8 +762,14 @@ export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
             </div>
 
             {/* ── RIGHT column: booking sidebar ───────────── */}
-            <div className="lg:col-span-5">
-              <BookingSidebar vehicle={vehicle} />
+            <div className="order-1 md:order-none md:col-span-5">
+              <BookingSidebar
+                vehicle={vehicle}
+                initialPickupDate={initialPickupDate}
+                initialReturnDate={initialReturnDate}
+                initialPickupTime={initialPickupTime}
+                initialReturnTime={initialReturnTime}
+              />
             </div>
           </div>
 
@@ -684,8 +779,8 @@ export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
       </div>
 
 
-      {/* ─── MOBILE bottom sticky bar ────────────────────────── */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md lg:hidden">
+      {/* ─── MOBILE bottom sticky bar (hidden once 2-col sidebar is visible) ── */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md md:hidden">
         <div className="mx-auto flex max-w-md items-center justify-between gap-3">
           <div>
             {vehicle.pricePerDay > 0 ? (
@@ -699,7 +794,15 @@ export function VehicleDetailsShell({ slug }: VehicleDetailsShellProps) {
             <p className="text-xs text-slate-500">Free cancellation</p>
           </div>
           <Link
-            href={`/booking?vehicle=${encodeURIComponent(vehicle.slug)}`}
+            href={(() => {
+              const p = new URLSearchParams();
+              p.set("vehicle", vehicle.slug);
+              if (initialPickupDate) p.set("pickupDate", initialPickupDate);
+              if (initialReturnDate) p.set("returnDate", initialReturnDate);
+              if (initialPickupTime) p.set("pickupTime", initialPickupTime);
+              if (initialReturnTime) p.set("returnTime", initialReturnTime);
+              return `/booking?${p.toString()}`;
+            })()}
             className="inline-flex min-h-11 items-center rounded-full bg-[var(--brand-orange)] px-6 text-sm font-bold text-slate-950 shadow-[0_8px_24px_-10px_rgba(255,147,15,0.7)] transition hover:bg-[var(--brand-orange-strong)]"
           >
             Reserve now

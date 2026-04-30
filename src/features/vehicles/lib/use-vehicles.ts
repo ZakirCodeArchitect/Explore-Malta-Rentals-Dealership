@@ -78,8 +78,13 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult
     // Attach a no-op rejection handler so that the AbortError emitted when the
     // effect cleanup fires does not surface as an unhandled promise rejection in
     // React StrictMode / during fast navigation.
+    // Guard covers both DOMException("AbortError") and the plain Error("signal is
+    // aborted without reason") thrown by newer fetch/Node implementations.
     loadVehicles().catch((e: unknown) => {
-      if (e instanceof DOMException && e.name === "AbortError") return;
+      const isAbort =
+        (e instanceof DOMException && e.name === "AbortError") ||
+        (e instanceof Error && e.name === "AbortError");
+      if (isAbort) return;
       if (process.env.NODE_ENV !== "production") {
         console.error("[useVehicles] Unhandled error outside async body", e);
       }
