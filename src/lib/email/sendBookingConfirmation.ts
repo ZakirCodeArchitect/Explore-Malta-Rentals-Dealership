@@ -2,11 +2,13 @@ import type { Booking } from "@/generated/prisma/client";
 
 import { buildBookingConfirmationEmail } from "./buildBookingConfirmationEmail";
 import { sendEmail } from "./emailClient";
+import { sendAdminBookingNotification } from "./sendAdminBookingNotification";
 import type { SendBookingConfirmationResult } from "./types";
 
 /**
- * Sends the customer booking confirmation email. Does not update the database.
- * Booking rows should be updated by the caller based on the returned result.
+ * Sends the customer booking confirmation email and (in parallel) an internal
+ * admin notification to the business owner.
+ * Does not update the database — the caller is responsible for that.
  */
 export async function sendBookingConfirmation(booking: Booking): Promise<SendBookingConfirmationResult> {
   let subject: string;
@@ -23,16 +25,25 @@ export async function sendBookingConfirmation(booking: Booking): Promise<SendBoo
     return { success: false, reason: "template_build_failed", cause: error };
   }
 
-  const result = await sendEmail({
-    to: booking.customerEmail,
-    subject,
-    html,
-    text,
-  });
+  // Send customer confirmation and admin notification concurrently.
+  // Admin notification failure never blocks the customer-facing result.
+  const [customerResult] = await Promise.all([
+    sendEmail({
+      to: booking.customerEmail,
+      subject,
+      html,
+      text,
+    }),
+    sendAdminBookingNotification(booking),
+  ]);
 
-  if (result.ok) {
-    return { success: true, deliveryMode: result.deliveryMode };
+  if (customerResult.ok) {
+    return { success: true, deliveryMode: customerResult.deliveryMode };
   }
 
-  return { success: false, reason: result.reason, cause: result.cause };
+  return {
+    success: false,
+    reason: customerResult.reason,
+    cause: customerResult.cause,
+  };
 }

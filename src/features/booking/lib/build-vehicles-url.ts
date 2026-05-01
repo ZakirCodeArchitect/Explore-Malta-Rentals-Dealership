@@ -28,7 +28,6 @@ export function buildVehiclesSearchUrl(values: BookingFormValues): string {
     returnTime: values.dropoffTime,
     differentDropoff: values.differentDropoff ? "1" : "0",
     alternatePickup: values.alternatePickupRequested ? "1" : "0",
-    depositPref: values.depositPreference,
   });
 
   return `/vehicles?${params.toString()}`;

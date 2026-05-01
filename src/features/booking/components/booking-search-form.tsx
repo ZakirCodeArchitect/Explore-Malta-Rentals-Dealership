@@ -18,7 +18,6 @@ import { CalendarDays, Gauge, Loader2, MapPin, Sparkles } from "lucide-react";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   createBookingFormSchema,
-  SECURITY_DEPOSIT_EUR,
   TRIP_MAX_SPAN_DAYS,
   TRIP_MIN_SPAN_DAYS,
   type BookingFormValues,
@@ -97,7 +96,6 @@ export function BookingSearchForm() {
       alternatePickupAddress: "",
       differentDropoff: false,
       dropoffAddress: "",
-      depositPreference: "pay_at_meeting",
       pickupDate: defPu,
       dropoffDate: defDo,
       pickupTime: defaultPickupTime,
@@ -304,23 +302,6 @@ export function BookingSearchForm() {
               })}
             </p>
           ) : null}
-
-          <fieldset>
-            <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-              {tSearch("depositLegend", { amount: SECURITY_DEPOSIT_EUR })}
-            </legend>
-            <p className="mt-1 text-xs text-slate-600">{tSearch("depositIntro")}</p>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
-                <input type="radio" value="pay_at_meeting" className="text-[var(--brand-orange)]" {...register("depositPreference")} />
-                {tSearch("payAtMeeting")}
-              </label>
-              <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
-                <input type="radio" value="pay_online" className="text-[var(--brand-orange)]" {...register("depositPreference")} />
-                {tSearch("payOnline")}
-              </label>
-            </div>
-          </fieldset>
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">

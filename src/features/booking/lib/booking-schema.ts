@@ -34,7 +34,6 @@ export function createBookingFormSchema(m: BookingFormMessages) {
       alternatePickupAddress: z.string().optional(),
       differentDropoff: z.boolean(),
       dropoffAddress: z.string().optional(),
-      depositPreference: z.enum(["pay_online", "pay_at_meeting"]),
       pickupDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/u, m.invalidPickupDate),
       dropoffDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/u, m.invalidDropoffDate),
       pickupTime: z

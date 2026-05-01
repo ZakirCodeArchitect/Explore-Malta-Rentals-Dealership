@@ -3,6 +3,8 @@ export type EmailPayload = {
   subject: string;
   html: string;
   text: string;
+  /** Optional reply-to override. Defaults to the business contact email. */
+  replyTo?: string;
 };
 
 export type BookingConfirmationEmailContent = {
@@ -11,9 +13,15 @@ export type BookingConfirmationEmailContent = {
   text: string;
 };
 
+export type AdminBookingNotificationEmailContent = {
+  subject: string;
+  html: string;
+  text: string;
+};
+
 export type SendEmailSuccess = {
   ok: true;
-  deliveryMode: "gmail" | "development_console";
+  deliveryMode: "resend" | "development_console";
 };
 
 export type SendEmailFailureReason = "transport_create_failed" | "send_failed";
@@ -31,5 +39,5 @@ export type SendBookingConfirmationFailureReason =
   | SendEmailFailureReason;
 
 export type SendBookingConfirmationResult =
-  | { success: true; deliveryMode: "gmail" | "development_console" }
+  | { success: true; deliveryMode: "resend" | "development_console" }
   | { success: false; reason: SendBookingConfirmationFailureReason; cause?: unknown };
