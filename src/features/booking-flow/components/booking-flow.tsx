@@ -8,6 +8,7 @@ import { BookingStepper } from "@/features/booking-flow/components/booking-stepp
 import { ReservationBanner } from "@/features/booking-flow/components/reservation-banner";
 import { HoldExpiredNotice } from "@/features/booking-flow/components/hold-expired-notice";
 import { TermsConsentModal } from "@/features/booking-flow/components/terms-consent-modal";
+import { NoVehicleModal } from "@/features/booking-flow/components/no-vehicle-modal";
 import { BookingLookupPanel } from "@/features/booking-flow/components/booking-lookup-panel";
 import { useHoldHeartbeat } from "@/features/booking-flow/hooks/use-hold-heartbeat";
 import { useHoldCountdown } from "@/features/booking-flow/hooks/use-hold-countdown";
@@ -443,8 +444,14 @@ export function BookingFlow({
   bookingSubmittedBanner,
   bookedVehicleLabel,
 }: BookingFlowProps) {
+  const [showNoVehicleModal, setShowNoVehicleModal] = useState(!initialVehicleSlug);
+
   return (
     <BookingFlowProvider initialVehicleSlug={initialVehicleSlug} initialRental={initialRental}>
+      <NoVehicleModal
+        show={showNoVehicleModal}
+        onDismiss={() => setShowNoVehicleModal(false)}
+      />
       <BookingFlowBody
         bookingLookupReference={bookingLookupReference}
         bookingLookupEmail={bookingLookupEmail}
