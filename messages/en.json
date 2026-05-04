@@ -39,6 +39,9 @@
     "logoAlt": "Explore Malta Rentals",
     "language": "Language"
   },
+  "SiteBanner": {
+    "onlineBookingUnavailable": "Online booking is currently not available"
+  },
   "Common": {
     "bookNow": "Book now",
     "back": "Back",

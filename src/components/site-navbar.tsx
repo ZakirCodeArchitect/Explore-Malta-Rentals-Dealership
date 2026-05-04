@@ -37,6 +37,7 @@ const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover
 
 export function SiteNavbar() {
   const t = useTranslations("Nav");
+  const tBanner = useTranslations("SiteBanner");
   const pathname = usePathname();
   const [hash, setHash] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -226,6 +227,12 @@ export function SiteNavbar() {
           </div>
         </div>
       </nav>
+      <div
+        role="status"
+        className="pointer-events-auto w-full border-b border-black/10 bg-[var(--brand-orange-strong)] px-4 py-2.5 text-center text-sm font-semibold tracking-wide text-white shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
+      >
+        {tBanner("onlineBookingUnavailable")}
+      </div>
     </header>
   );
 }
