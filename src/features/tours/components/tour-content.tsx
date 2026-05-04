@@ -9,7 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
 import { BookingFormDisabledBanner } from "@/components/booking/booking-form-disabled-banner";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { getBookingControl } from "@/lib/booking-control";
 
 const TOUR_BIKES_PHOTO_SRC = `/TourPage-images/${encodeURIComponent("TOURS PAGE BIKES PHOTO.webp")}`;
 const TOUR_QUAD_PHOTO_SRC = `/TourPage-images/${encodeURIComponent("TOURS PAGE PHOTO QUAD.jpg")}`;
@@ -35,6 +35,7 @@ export type TourSiteContact = Readonly<{
 }>;
 
 export async function TourContent({ contact }: Readonly<{ contact: TourSiteContact }>) {
+  const bookingControl = getBookingControl();
   const { companyName } = contact;
   const t = await getTranslations("Tours");
 
@@ -213,14 +214,21 @@ export async function TourContent({ contact }: Readonly<{ contact: TourSiteConta
                 {t("ctaTagline")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                {ONLINE_BOOKING_DISABLED ? (
+                {!bookingControl.enabled ? (
                   <>
-                    <BookingFormDisabledBanner variant="dark" className="w-full max-w-prose" />
+                    <BookingFormDisabledBanner
+                      message={bookingControl.disabledMessage}
+                      variant="dark"
+                      className="w-full max-w-prose"
+                    />
                     <span
                       aria-disabled
                       className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-md bg-white/20 px-5 py-2.5 text-sm font-medium tracking-tight text-white/80"
                     >
-                      <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-white/90" />
+                      <BookingDisabledCtaContent
+                        message={bookingControl.disabledMessage}
+                        iconClassName="h-4 w-4 shrink-0 text-white/90"
+                      />
                     </span>
                   </>
                 ) : (

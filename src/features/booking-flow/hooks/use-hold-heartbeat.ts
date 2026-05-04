@@ -59,6 +59,10 @@ export function useHoldHeartbeat({
         onOk(result.data.expiresAt, result.data.status);
         return;
       }
+      if (result.status === 423) {
+        onExpired(result.message);
+        return;
+      }
       const terminalState =
         result.status === 404 ||
         result.status === 409 ||

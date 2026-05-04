@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { messageFromBookingLockedBody } from "@/lib/booking-control-message";
 import type { ApiVehicleType } from "@/features/vehicles/data/vehicles";
 
 /* ─── state shape ────────────────────────────────────────────── */
@@ -78,11 +79,13 @@ export function useVehicleAvailabilityCheck(
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
+          const message =
+            res.status === 423
+              ? messageFromBookingLockedBody(body)
+              : (body as { message?: string }).message ?? "Could not check availability. Try again.";
           setAvailability({
             kind: "error",
-            message:
-              (body as { message?: string }).message ??
-              "Could not check availability. Try again.",
+            message,
           });
           return;
         }

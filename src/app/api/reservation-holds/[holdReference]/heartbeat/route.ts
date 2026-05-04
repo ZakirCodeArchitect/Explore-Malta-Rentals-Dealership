@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 import { heartbeatReservationHold, ReservationHoldStateError } from "@/lib/reservation-holds";
 
 type RouteContext = {
@@ -9,6 +10,11 @@ type RouteContext = {
 };
 
 export async function POST(_request: Request, context: RouteContext) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   const { holdReference: holdReferenceRaw } = await context.params;
   const holdReference = holdReferenceRaw?.trim();
 

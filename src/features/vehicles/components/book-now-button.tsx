@@ -6,7 +6,8 @@ import type { Vehicle } from "@/features/vehicles/data/vehicles";
 import { createReservationHoldWithRetry } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
+import { warnBookingActionBlocked } from "@/lib/booking-control-constants";
 
 export const VEHICLE_TRIP_SEARCH_ANCHOR_ID = "vehicle-trip-search";
 
@@ -59,6 +60,7 @@ export function BookNowButton({
   holdBlockedMessage,
   inlineWithSiblingActions = false,
 }: BookNowButtonProps) {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const router = useRouter();
   const [isReserving, setIsReserving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +77,7 @@ export function BookNowButton({
   );
 
   const handleClick = async () => {
-    if (ONLINE_BOOKING_DISABLED) {
+    if (!bookingEnabled) {
       warnBookingActionBlocked("BookNowButton.handleClick");
       return;
     }
@@ -138,7 +140,7 @@ export function BookNowButton({
     ? "inline-flex flex-col items-end gap-2"
     : "flex w-full max-w-xs flex-col items-stretch gap-2 sm:max-w-none sm:items-end";
 
-  if (ONLINE_BOOKING_DISABLED) {
+  if (!bookingEnabled) {
     return (
       <div className={shellClassName}>
         <button
@@ -147,7 +149,7 @@ export function BookNowButton({
           aria-disabled
           className={[className, disabledClasses].filter(Boolean).join(" ")}
         >
-          <BookingDisabledCtaContent />
+          <BookingDisabledCtaContent message={disabledMessage} />
         </button>
         {error ? (
           <span className="max-w-56 text-right text-[11px] font-medium text-rose-700">{error}</span>

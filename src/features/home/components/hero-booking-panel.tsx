@@ -26,7 +26,8 @@ import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-pa
 import { loadMaltaLocationOptions } from "@/features/vehicles/lib/malta-pickup-location";
 import { BookingUnavailableNotice } from "@/components/booking/booking-unavailable-notice";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
+import { warnBookingActionBlocked } from "@/lib/booking-control-constants";
 
 const DEFAULT_HERO_PICKUP_DATE = new Date(2026, 5, 12);
 
@@ -80,6 +81,7 @@ function makeHeroFilterDropdownIndicator(changeLabel: string) {
 }
 
 export function HeroBookingPanel() {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const t = useTranslations("HomeHeroPanel");
   const tCommon = useTranslations("Common");
   const tVehicle = useTranslations("VehicleFilters");
@@ -143,7 +145,7 @@ export function HeroBookingPanel() {
   }, []);
 
   const handleSearch = useCallback(() => {
-    if (ONLINE_BOOKING_DISABLED) {
+    if (!bookingEnabled) {
       warnBookingActionBlocked("HeroBookingPanel.handleSearch");
       return;
     }
@@ -158,6 +160,7 @@ export function HeroBookingPanel() {
     params.set("hotelDelivery", hotelDelivery ? "1" : "0");
     router.push(`/vehicles?${params.toString()}`);
   }, [
+    bookingEnabled,
     hotelDelivery,
     pickupDate,
     returnDate,
@@ -185,13 +188,13 @@ export function HeroBookingPanel() {
     );
   }
 
-  const panelDisabled = ONLINE_BOOKING_DISABLED;
+  const panelDisabled = !bookingEnabled;
 
   return (
     <div id="booking-preview" className={panelShellClass}>
       {panelDisabled ? (
         <div className="mb-4">
-          <BookingUnavailableNotice />
+          <BookingUnavailableNotice message={disabledMessage} />
         </div>
       ) : null}
       <div className="grid gap-3 sm:gap-3.5 lg:grid-cols-4">
@@ -296,7 +299,7 @@ export function HeroBookingPanel() {
             disabled={panelDisabled}
             className="group relative inline-flex min-h-[2.75rem] w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-75 sm:min-h-[3rem] sm:w-auto sm:min-w-[10.5rem] sm:self-auto sm:px-7 sm:text-base"
           >
-            {panelDisabled ? <BookingDisabledCtaContent /> : tVehicle("search")}
+            {panelDisabled ? <BookingDisabledCtaContent message={disabledMessage} /> : tVehicle("search")}
             {panelDisabled ? null : (
               <span
                 aria-hidden="true"

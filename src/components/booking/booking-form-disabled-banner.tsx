@@ -1,14 +1,15 @@
 import { CalendarClock } from "lucide-react";
-import { BOOKING_FORM_DISABLED_BANNER } from "@/lib/booking-availability";
 
 type BookingFormDisabledBannerProps = Readonly<{
+  message: string;
   /** `dark`: solid panel on photo / dark sections. `light`: solid amber on white UI. */
   variant?: "light" | "dark";
   className?: string;
 }>;
 
-/** Solid (non-transparent) notice: online booking off + contact hint, with icon. */
+/** Solid notice: online booking off + configured message, with icon. */
 export function BookingFormDisabledBanner({
+  message,
   variant = "light",
   className,
 }: BookingFormDisabledBannerProps) {
@@ -27,7 +28,7 @@ export function BookingFormDisabledBanner({
           ].join(" ")}
           aria-hidden
         />
-        <span>{BOOKING_FORM_DISABLED_BANNER}</span>
+        <span>{message}</span>
       </p>
     </div>
   );

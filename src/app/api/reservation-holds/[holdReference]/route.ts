@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 import {
   getReservationHoldByReference,
   toReservationHoldStatusResponse,
@@ -12,6 +13,11 @@ type RouteContext = {
 };
 
 export async function GET(_request: Request, context: RouteContext) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   const { holdReference: holdReferenceRaw } = await context.params;
   const holdReference = holdReferenceRaw?.trim();
 

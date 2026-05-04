@@ -1,9 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
 
 export type FinalConversionCtaProps = Readonly<{
   /** Section `aria-labelledby` target */
@@ -43,6 +45,7 @@ export function FinalConversionCta({
   imageClassName,
   footerLine,
 }: FinalConversionCtaProps) {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const decorativeImage = !imageAlt;
 
   return (
@@ -127,7 +130,7 @@ export function FinalConversionCta({
             {description}
           </p>
 
-          {ONLINE_BOOKING_DISABLED ? (
+          {!bookingEnabled ? (
             <div
               className={joinClasses(
                 "final-cta-fade-up mt-10 w-full max-w-lg text-left sm:text-center",
@@ -139,7 +142,10 @@ export function FinalConversionCta({
                   aria-disabled
                   className="inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 text-sm font-semibold text-white/75 sm:w-auto"
                 >
-                  <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-white/90" />
+                  <BookingDisabledCtaContent
+                    message={disabledMessage}
+                    iconClassName="h-4 w-4 shrink-0 text-white/90"
+                  />
                 </span>
               </div>
             </div>

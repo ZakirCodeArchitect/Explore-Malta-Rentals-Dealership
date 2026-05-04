@@ -33,7 +33,7 @@ import {
 import { BookNowButton } from "@/features/vehicles/components/book-now-button";
 import { BookingUnavailableNotice } from "@/components/booking/booking-unavailable-notice";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 
@@ -261,6 +261,7 @@ function BookingSidebar({
   initialPickupTime,
   initialReturnTime,
 }: BookingSidebarProps) {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const minDate = todayISO();
   const defaultTime = BOOKING_TIME_SLOTS[0] ?? "09:30";
   const [pickupDate, setPickupDate] = useState(initialPickupDate);
@@ -314,16 +315,16 @@ function BookingSidebar({
   const timeSelectClass =
     "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-[var(--brand-blue)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20";
   const labelClass = "text-xs font-semibold uppercase tracking-wide text-slate-500";
-  const tripFieldsDisabled = ONLINE_BOOKING_DISABLED;
+  const tripFieldsDisabled = !bookingEnabled;
   const fieldDisabledClass = tripFieldsDisabled
     ? "cursor-not-allowed bg-slate-50 text-slate-600 opacity-80"
     : "";
 
   return (
     <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.38)] sm:p-5 md:sticky md:top-[calc(env(safe-area-inset-top)+4rem)]">
-      {ONLINE_BOOKING_DISABLED ? (
+      {!bookingEnabled ? (
         <div className="mb-4">
-          <BookingUnavailableNotice />
+          <BookingUnavailableNotice message={disabledMessage} />
         </div>
       ) : null}
       {/* price */}
@@ -604,6 +605,7 @@ export function VehicleDetailsShell({
   initialPickupTime = "",
   initialReturnTime = "",
 }: VehicleDetailsShellProps) {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const t = useTranslations("VehicleDetail");
   const { vehicle, isLoading, error } = useVehicle(slug);
   const { vehicles: allVehicles } = useVehicles({ enabled: Boolean(vehicle) });
@@ -814,12 +816,15 @@ export function VehicleDetailsShell({
             )}
             <p className="text-xs text-slate-500">Free cancellation</p>
           </div>
-          {ONLINE_BOOKING_DISABLED ? (
+          {!bookingEnabled ? (
             <span
               aria-disabled
               className="inline-flex min-h-11 cursor-not-allowed items-center rounded-full bg-slate-200 px-6 text-sm font-bold text-slate-600"
             >
-              <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-slate-600" />
+              <BookingDisabledCtaContent
+                message={disabledMessage}
+                iconClassName="h-4 w-4 shrink-0 text-slate-600"
+              />
             </span>
           ) : (
             <Link

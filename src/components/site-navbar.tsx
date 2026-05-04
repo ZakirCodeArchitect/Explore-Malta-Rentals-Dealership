@@ -11,7 +11,7 @@ import {
 } from "@/components/site-shell";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
 
 const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
@@ -39,6 +39,7 @@ const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover
 
 export function SiteNavbar() {
   const t = useTranslations("Nav");
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const pathname = usePathname();
   const [hash, setHash] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -212,12 +213,13 @@ export function SiteNavbar() {
                   </div>
                 </div>
 
-                {ONLINE_BOOKING_DISABLED ? (
+                {!bookingEnabled ? (
                   <span
                     aria-disabled
-                    className="inline-flex min-h-8 max-w-[10rem] items-center justify-center rounded-full bg-slate-300 px-2.5 py-1.5 text-center text-[0.65rem] font-semibold leading-tight tracking-tight text-slate-700 sm:max-w-none sm:px-3.5 sm:text-xs"
+                    className="inline-flex min-h-8 max-w-[min(100%,14rem)] items-center justify-center rounded-full bg-slate-300 px-2.5 py-1.5 text-center text-[0.65rem] font-semibold leading-tight tracking-tight text-slate-700 sm:max-w-[18rem] sm:px-3.5 sm:text-xs"
                   >
                     <BookingDisabledCtaContent
+                      message={disabledMessage}
                       className="gap-1.5"
                       iconClassName="h-3 w-3 shrink-0 opacity-90 sm:h-3.5 sm:w-3.5"
                     />

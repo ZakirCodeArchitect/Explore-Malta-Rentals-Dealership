@@ -39,7 +39,7 @@ import type { BookingApiValidationError } from "@/features/booking-flow/lib/subm
 import { getReservationHold } from "@/features/booking-flow/lib/reservation-hold-api";
 import { useReservationHold } from "@/features/booking-flow/hooks/use-reservation-hold";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
 
 function createBookingSessionId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -164,6 +164,7 @@ type BookingFlowProviderProps = PropsWithChildren<{
 }>;
 
 export function BookingFlowProvider({ children, initialVehicleSlug, initialRental }: BookingFlowProviderProps) {
+  const { enabled: bookingOnlineEnabled } = useBookingControl();
   const tVal = useTranslations("BookingValidation");
   const tFlow = useTranslations("BookingFlow");
   const validationMessages = useMemo<BookingValidationMessages>(
@@ -490,14 +491,14 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
   }, [markReservationHoldExpired, mergeReservationHold, reservationHold.holdReference, tFlow]);
 
   useEffect(() => {
-    if (ONLINE_BOOKING_DISABLED || !reservationHold.holdReference) {
+    if (!bookingOnlineEnabled || !reservationHold.holdReference) {
       return;
     }
     const timeoutId = window.setTimeout(() => {
       void refreshReservationHoldFromServer();
     }, 0);
     return () => window.clearTimeout(timeoutId);
-  }, [refreshReservationHoldFromServer, reservationHold.holdReference]);
+  }, [bookingOnlineEnabled, refreshReservationHoldFromServer, reservationHold.holdReference]);
 
   const resetBookingForm = useCallback(() => {
     form.reset(buildBookingInitialState(initialVehicleSlugRef.current, initialRentalRef.current));

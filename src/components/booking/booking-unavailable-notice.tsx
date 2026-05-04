@@ -1,10 +1,12 @@
-import { BOOKING_UNAVAILABLE_GLOBAL_MESSAGE } from "@/lib/booking-availability";
+import { DEFAULT_BOOKING_DISABLED_MESSAGE } from "@/lib/booking-control-constants";
 
 type BookingUnavailableNoticeProps = Readonly<{
   className?: string;
+  message?: string;
 }>;
 
-export function BookingUnavailableNotice({ className }: BookingUnavailableNoticeProps) {
+export function BookingUnavailableNotice({ className, message }: BookingUnavailableNoticeProps) {
+  const text = message?.trim() || DEFAULT_BOOKING_DISABLED_MESSAGE;
   return (
     <div
       role="status"
@@ -13,7 +15,7 @@ export function BookingUnavailableNotice({ className }: BookingUnavailableNotice
         "rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950 shadow-sm"
       }
     >
-      <p className="font-medium text-amber-950">{BOOKING_UNAVAILABLE_GLOBAL_MESSAGE}</p>
+      <p className="font-medium text-amber-950">{text}</p>
     </div>
   );
 }

@@ -3,11 +3,8 @@
 import { useCallback } from "react";
 import type { BookingFlowState, ReservationHoldState } from "@/features/booking-flow/lib/types";
 import { createReservationHoldWithRetry, releaseReservationHold } from "@/features/booking-flow/lib/reservation-hold-api";
-import {
-  BOOKING_DISABLED_USER_HINT,
-  ONLINE_BOOKING_DISABLED,
-  warnBookingActionBlocked,
-} from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
+import { warnBookingActionBlocked } from "@/lib/booking-control-constants";
 
 type UseReservationHoldInput = {
   bookingState: BookingFlowState;
@@ -41,10 +38,12 @@ export function useReservationHold({
   clearHold,
   setError,
 }: UseReservationHoldInput) {
+  const { enabled: bookingOnlineEnabled, disabledMessage } = useBookingControl();
+
   const createOrRefreshHold = useCallback(async (): Promise<HoldActionResult> => {
-    if (ONLINE_BOOKING_DISABLED) {
+    if (!bookingOnlineEnabled) {
       warnBookingActionBlocked("useReservationHold.createOrRefreshHold");
-      return { ok: false, message: BOOKING_DISABLED_USER_HINT };
+      return { ok: false, message: disabledMessage };
     }
 
     const { rental, customer } = bookingState;
@@ -103,15 +102,10 @@ export function useReservationHold({
     });
     setError(null);
     return { ok: true };
-  }, [bookingState, clearHold, reservationHold, setError, setHold]);
+  }, [bookingOnlineEnabled, bookingState, clearHold, disabledMessage, reservationHold, setError, setHold]);
 
   const releaseActiveHold = useCallback(async (): Promise<void> => {
     if (!reservationHold.holdReference) {
-      clearHold();
-      return;
-    }
-    if (ONLINE_BOOKING_DISABLED) {
-      warnBookingActionBlocked("useReservationHold.releaseActiveHold");
       clearHold();
       return;
     }

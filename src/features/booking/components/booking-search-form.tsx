@@ -34,7 +34,7 @@ import {
 } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 import { pricingService } from "@/lib/pricing/service";
 import { BookingFormDisabledBanner } from "@/components/booking/booking-form-disabled-banner";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
 
 const inputShell =
   "flex w-full min-h-[3rem] items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
@@ -56,6 +56,7 @@ function defaultDates() {
 }
 
 export function BookingSearchForm() {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const router = useRouter();
   const tSearch = useTranslations("BookingSearch");
   const tForm = useTranslations("BookingForm");
@@ -174,7 +175,7 @@ export function BookingSearchForm() {
 
   const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
 
-  if (ONLINE_BOOKING_DISABLED) {
+  if (!bookingEnabled) {
     return (
       <div className="flex w-full flex-col gap-6">
         <div className="flex flex-wrap gap-2">
@@ -196,6 +197,7 @@ export function BookingSearchForm() {
         </div>
 
         <BookingFormDisabledBanner
+          message={disabledMessage}
           variant="light"
           className="rounded-[1.35rem] p-5 text-[0.95rem] shadow-[0_24px_60px_-40px_rgba(15,23,42,0.25)] sm:p-6 sm:text-base lg:p-7"
         />

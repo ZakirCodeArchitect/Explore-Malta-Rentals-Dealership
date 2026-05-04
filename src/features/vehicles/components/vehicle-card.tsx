@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -7,7 +9,7 @@ import {
   buildBookingUrlWithVehicle,
 } from "@/features/vehicles/components/book-now-button";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
 
 type VehicleCardProps = Readonly<{
   vehicle: Vehicle;
@@ -32,6 +34,7 @@ export function VehicleCard({
   pickupTime,
   returnTime,
 }: VehicleCardProps) {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const t = useTranslations("VehicleCard");
   const mainImage = vehicle.mainImageUrl ?? vehicle.images[0] ?? null;
   const brandModel = [vehicle.brand, vehicle.model].filter(Boolean).join(" ");
@@ -110,12 +113,15 @@ export function VehicleCard({
               {t("viewDetails")}
             </Link>
             {status === "reserved_you" ? (
-              ONLINE_BOOKING_DISABLED ? (
+              !bookingEnabled ? (
                 <span
                   aria-disabled
                   className="inline-flex cursor-not-allowed items-center rounded-md border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500"
                 >
-                  <BookingDisabledCtaContent iconClassName="h-3.5 w-3.5 shrink-0 opacity-90" />
+                  <BookingDisabledCtaContent
+                    message={disabledMessage}
+                    iconClassName="h-3.5 w-3.5 shrink-0 opacity-90"
+                  />
                 </span>
               ) : (
                 <Link

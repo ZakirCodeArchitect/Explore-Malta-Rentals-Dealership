@@ -5,6 +5,7 @@ import {
   SubmitBookingValidationError,
   type BookingSubmissionInput,
 } from "@/lib/booking";
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 import { uploadFile } from "@/lib/uploads/uploadService";
 
 type MultipartBookingRequest = {
@@ -46,6 +47,11 @@ async function parseMultipartPayload(request: Request): Promise<MultipartBooking
 }
 
 export async function POST(request: Request) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   let payload: unknown;
   const contentType = request.headers.get("content-type") ?? "";
   let multipartFiles: Omit<MultipartBookingRequest, "payload"> | null = null;

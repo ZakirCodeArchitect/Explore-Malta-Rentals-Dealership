@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { lookupPublicBookingByReferenceAndEmail } from "@/lib/booking/lookupPublicBooking";
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 
 const lookupBodySchema = z.object({
   reference: z.string().trim().min(3).max(80),
@@ -10,6 +11,11 @@ const lookupBodySchema = z.object({
 const NOT_FOUND_MESSAGE = "No booking matches that reference and email. Check the details and try again.";
 
 export async function POST(request: Request) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   let body: unknown;
   try {
     body = await request.json();

@@ -5,7 +5,8 @@ import { CalendarRange, Globe, Lock, Mail, Package, ShieldCheck, User, Phone } f
 import type { Vehicle, VehicleType } from "@/features/vehicles/data/vehicles";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
 import { BookingFormDisabledBanner } from "@/components/booking/booking-form-disabled-banner";
-import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
+import { warnBookingActionBlocked } from "@/lib/booking-control-constants";
 
 type VehicleBookingCardProps = Readonly<{
   vehicle: Vehicle;
@@ -60,7 +61,8 @@ const inputClass =
 const labelClass = "text-sm font-semibold text-slate-800";
 
 export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
-  const formDisabled = ONLINE_BOOKING_DISABLED;
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
+  const formDisabled = !bookingEnabled;
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
@@ -221,7 +223,11 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
     <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] motion-safe:transition-shadow motion-safe:duration-300 hover:shadow-[0_28px_56px_-32px_rgba(58,124,165,0.22)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+3.75rem)]">
       {formDisabled ? (
         <div className="mb-4">
-          <BookingFormDisabledBanner variant="light" className="text-xs sm:text-sm" />
+          <BookingFormDisabledBanner
+            message={disabledMessage}
+            variant="light"
+            className="text-xs sm:text-sm"
+          />
         </div>
       ) : null}
       {storageAddOn ? (
@@ -654,7 +660,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition-[transform,box-shadow,opacity] duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60 motion-safe:hover:scale-[1.01] motion-reduce:hover:scale-100"
           >
             {formDisabled
-              ? <BookingDisabledCtaContent />
+              ? <BookingDisabledCtaContent message={disabledMessage} />
               : submitting
                 ? "Sending request…"
                 : "Confirm booking request"}

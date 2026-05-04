@@ -7,7 +7,7 @@ import { Container } from "@/components/ui/container";
 import { LOGO_PATH, SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 import { FooterColumn, FooterTrustItem } from "./footer-column";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { getBookingControl } from "@/lib/booking-control";
 import { FooterNewsletterForm } from "./footer-newsletter-form";
 import { FooterSocialLinks } from "./footer-social-links";
 import { digitsOnlyForWa, getEnvValue, normalizeUrl } from "./footer-utils";
@@ -27,6 +27,7 @@ function hasConfiguredSocialLinks() {
 }
 
 export async function SiteFooter() {
+  const bookingControl = getBookingControl();
   const t = await getTranslations("Footer");
   const tBrand = await getTranslations("Brand");
   const tCommon = await getTranslations("Common");
@@ -59,7 +60,7 @@ export async function SiteFooter() {
   const supportLinks = [
     { href: "/#faq", label: t("supportHelp") },
     { href: "/contact", label: t("supportTalk") },
-    ONLINE_BOOKING_DISABLED
+    !bookingControl.enabled
       ? { href: "/contact", label: t("supportBook") }
       : { href: "/booking", label: t("supportBook") },
   ] as const;
@@ -103,12 +104,15 @@ export async function SiteFooter() {
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-              {ONLINE_BOOKING_DISABLED ? (
+              {!bookingControl.enabled ? (
                 <span
                   aria-disabled
-                  className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-full border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white/70"
+                  className="inline-flex min-h-12 max-w-full cursor-not-allowed items-center justify-center rounded-full border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white/70"
                 >
-                  <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-white/85" />
+                  <BookingDisabledCtaContent
+                    message={bookingControl.disabledMessage}
+                    iconClassName="h-4 w-4 shrink-0 text-white/85"
+                  />
                 </span>
               ) : (
                 <ButtonLink href="/booking">{t("bookRental")}</ButtonLink>

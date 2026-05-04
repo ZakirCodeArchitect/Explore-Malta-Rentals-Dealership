@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 import { UploadRejectedError } from "@/lib/uploads/errors";
 import { uploadFile } from "@/lib/uploads/uploadService";
 import { isUploadCategory } from "@/lib/uploads/validators";
@@ -15,6 +16,11 @@ function readOptionalFormString(value: FormDataEntryValue | null): string | unde
 }
 
 export async function POST(request: Request) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   let formData: FormData;
   try {
     formData = await request.formData();

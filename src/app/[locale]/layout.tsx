@@ -6,7 +6,8 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { DocumentLang } from "@/components/document-lang";
 import { Footer } from "@/features/home/components/footer";
 import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
-import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
+import { BookingControlProvider } from "@/components/booking/booking-control-provider";
+import { getBookingControl } from "@/lib/booking-control";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { NextIntlWithReporting } from "@/components/next-intl-with-reporting";
@@ -57,15 +58,18 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   setRequestLocale(locale);
   const messages = await getMessages();
+  const bookingControl = getBookingControl();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <DocumentLang locale={locale} />
       <NextIntlWithReporting locale={locale} messages={messages}>
-        <SiteNavbar />
-        {children}
-        <Footer />
-        {ONLINE_BOOKING_DISABLED ? null : <WhatsAppFloatingButton />}
+        <BookingControlProvider initialValue={bookingControl}>
+          <SiteNavbar />
+          {children}
+          <Footer />
+          {bookingControl.enabled ? <WhatsAppFloatingButton /> : null}
+        </BookingControlProvider>
       </NextIntlWithReporting>
     </div>
   );

@@ -1,6 +1,7 @@
 import { VehicleType } from "@/generated/prisma/client";
 import { NextResponse } from "next/server";
 
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 import { checkVehicleAvailability, checkVehicleTypeAvailability } from "@/lib/availability";
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 
@@ -34,6 +35,11 @@ function parseAvailabilityRange(url: URL): { requestedStart: Date; requestedEnd:
 }
 
 export async function GET(request: Request) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   const url = new URL(request.url);
   const vehicleId = normalizeQueryValue(url.searchParams.get("vehicleId"));
   const vehicleTypeRaw = normalizeQueryValue(url.searchParams.get("vehicleType"));

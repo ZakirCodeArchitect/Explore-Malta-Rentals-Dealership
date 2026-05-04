@@ -5,8 +5,14 @@ import {
   ReservationHoldConflictError,
   ReservationHoldValidationError,
 } from "@/lib/reservation-holds";
+import { assertBookingEnabledOr423 } from "@/lib/booking-control";
 
 export async function POST(request: Request) {
+  const locked = assertBookingEnabledOr423();
+  if (locked) {
+    return locked;
+  }
+
   let payload: unknown;
 
   try {

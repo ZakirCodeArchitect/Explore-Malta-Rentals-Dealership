@@ -1,5 +1,5 @@
 import type { UploadApiResponse, UploadCategory } from "@/lib/uploads/types";
-import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
+import { messageFromBookingLockedBody } from "@/lib/booking-control-message";
 
 export type UploadBookingDocumentOk = {
   ok: true;
@@ -20,11 +20,6 @@ export async function uploadBookingDocument(
   category: UploadCategory,
   bookingSessionId: string,
 ): Promise<UploadBookingDocumentResult> {
-  if (ONLINE_BOOKING_DISABLED) {
-    warnBookingActionBlocked("uploadBookingDocument");
-    return { ok: false, message: "Online booking is temporarily unavailable." };
-  }
-
   const formData = new FormData();
   formData.append("file", file);
   formData.append("category", category);
@@ -48,6 +43,10 @@ export async function uploadBookingDocument(
     body = await response.json();
   } catch {
     return { ok: false, message: "Upload failed. Unexpected server response." };
+  }
+
+  if (response.status === 423) {
+    return { ok: false, message: messageFromBookingLockedBody(body) };
   }
 
   const parsed = body as UploadApiResponse;

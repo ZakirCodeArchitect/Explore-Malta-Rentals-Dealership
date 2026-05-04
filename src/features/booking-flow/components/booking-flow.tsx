@@ -29,7 +29,8 @@ import { OptionsDeliveryStep } from "@/features/booking-flow/steps/options-deliv
 import { YourInformationStep } from "@/features/booking-flow/steps/your-information-step";
 import { ReviewConfirmStep } from "@/features/booking-flow/steps/review-confirm-step";
 import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
-import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
+import { useBookingControl } from "@/components/booking/booking-control-provider";
+import { warnBookingActionBlocked } from "@/lib/booking-control-constants";
 
 type BookingFlowBodyProps = {
   bookingLookupReference?: string;
@@ -44,6 +45,7 @@ function BookingFlowBody({
   bookingSubmittedBanner,
   bookedVehicleLabel,
 }: BookingFlowBodyProps) {
+  const { enabled: bookingEnabled, disabledMessage } = useBookingControl();
   const router = useRouter();
   const t = useTranslations("BookingFlow");
   const tLookup = useTranslations("BookingPage.lookup");
@@ -104,7 +106,7 @@ function BookingFlowBody({
   useHoldHeartbeat({
     holdReference: reservationHold.holdReference,
     status: reservationHold.status,
-    enabled: !ONLINE_BOOKING_DISABLED && !submitting,
+    enabled: bookingEnabled && !submitting,
     onHeartbeatSuccess: (expiresAt, status) => {
       setHeartbeatWarning(null);
       setReservationHoldError(null);
@@ -161,7 +163,7 @@ function BookingFlowBody({
     ) : null;
 
   const handlePrimaryClick = useCallback(async () => {
-    if (ONLINE_BOOKING_DISABLED) {
+    if (!bookingEnabled) {
       warnBookingActionBlocked("BookingFlow.handlePrimaryClick");
       return;
     }
@@ -198,6 +200,7 @@ function BookingFlowBody({
     setTermsModalOpen(true);
   }, [
     activeStepId,
+    bookingEnabled,
     bookingFlowSchema,
     clearServerFieldErrors,
     createOrRefreshReservationHold,
@@ -210,7 +213,7 @@ function BookingFlowBody({
   ]);
 
   const handleTermsAgree = useCallback(async () => {
-    if (ONLINE_BOOKING_DISABLED) {
+    if (!bookingEnabled) {
       warnBookingActionBlocked("BookingFlow.handleTermsAgree");
       setTermsModalOpen(false);
       return;
@@ -304,6 +307,7 @@ function BookingFlowBody({
   }, [
     applyApiValidationErrors,
     applyConsentFromTermsModal,
+    bookingEnabled,
     clearServerFieldErrors,
     clearReservationHold,
     getBookingValues,
@@ -328,8 +332,8 @@ function BookingFlowBody({
   return (
     <div ref={flowContainerRef} className="space-y-5">
       <div
-        className={ONLINE_BOOKING_DISABLED ? "space-y-5 opacity-[0.88]" : "space-y-5"}
-        inert={ONLINE_BOOKING_DISABLED ? true : undefined}
+        className={!bookingEnabled ? "space-y-5 opacity-[0.88]" : "space-y-5"}
+        inert={!bookingEnabled ? true : undefined}
       >
       <BookingLookupPanel
         initialReference={bookingLookupReference}
@@ -404,7 +408,7 @@ function BookingFlowBody({
             onClick={() => {
               void handleCancelBooking();
             }}
-            disabled={ONLINE_BOOKING_DISABLED || submitting || isReleasingHold}
+            disabled={!bookingEnabled || submitting || isReleasingHold}
             className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isReleasingHold ? t("cancelling") : t("cancelBooking")}
@@ -412,7 +416,7 @@ function BookingFlowBody({
           <button
             type="button"
             onClick={goBack}
-            disabled={ONLINE_BOOKING_DISABLED || isFirstStep || submitting || isCreatingHold}
+            disabled={!bookingEnabled || isFirstStep || submitting || isCreatingHold}
             className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {t("back")}
@@ -423,15 +427,15 @@ function BookingFlowBody({
               void handlePrimaryClick();
             }}
             disabled={
-              ONLINE_BOOKING_DISABLED ||
+              !bookingEnabled ||
               submitting ||
               isCreatingHold ||
               (isLastStep && (!holdIsActive || !holdMatchesCurrentRental || holdIsExpired))
             }
             className="min-h-11 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {ONLINE_BOOKING_DISABLED
-              ? <BookingDisabledCtaContent />
+            {!bookingEnabled
+              ? <BookingDisabledCtaContent message={disabledMessage} />
               : isCreatingHold
                 ? t("reserving")
                 : isLastStep
