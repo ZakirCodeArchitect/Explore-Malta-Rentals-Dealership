@@ -16,15 +16,18 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
 
   useEffect(() => {
     if (show) {
-      setMounted(true);
+      queueMicrotask(() => {
+        setMounted(true);
+      });
       // small delay so the CSS transition fires after mount
       const id = requestAnimationFrame(() => setVisible(true));
       return () => cancelAnimationFrame(id);
-    } else {
-      setVisible(false);
-      const id = setTimeout(() => setMounted(false), 300);
-      return () => clearTimeout(id);
     }
+    queueMicrotask(() => {
+      setVisible(false);
+    });
+    const id = setTimeout(() => setMounted(false), 300);
+    return () => clearTimeout(id);
   }, [show]);
 
   // Close on backdrop click
@@ -106,7 +109,7 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
             onClick={onDismiss}
             className="mt-3 w-full rounded-xl px-6 py-2.5 text-sm text-slate-500 transition-colors hover:text-slate-700"
           >
-            I'll choose later
+            I&apos;ll choose later
           </button>
         </div>
       </div>

@@ -29,6 +29,7 @@ export type TripDateSelectorProps = Readonly<{
   /** First selectable calendar day. Defaults to **today** (same idea as the booking form). */
   minDate?: Date;
   className?: string;
+  disabled?: boolean;
 }>;
 
 export function TripDateSelector({
@@ -37,6 +38,7 @@ export function TripDateSelector({
   onRangeChange,
   minDate,
   className,
+  disabled = false,
 }: TripDateSelectorProps) {
   const t = useTranslations("TripDate");
   const [open, setOpen] = useState(false);
@@ -65,11 +67,18 @@ export function TripDateSelector({
   return (
     <div className={className}>
       <p className="text-xs font-semibold text-slate-500">{t("label")}</p>
-      <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Root
+        open={disabled ? false : open}
+        onOpenChange={(next) => {
+          if (!disabled) setOpen(next);
+        }}
+      >
         <Popover.Trigger asChild>
           <button
             type="button"
-            className={tripTriggerClass}
+            disabled={disabled}
+            aria-disabled={disabled}
+            className={`${tripTriggerClass} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
             aria-label={t("ariaSummary", { summary: dateSummary })}
           >
             <span className="flex min-w-0 flex-1 items-center gap-2 text-left">

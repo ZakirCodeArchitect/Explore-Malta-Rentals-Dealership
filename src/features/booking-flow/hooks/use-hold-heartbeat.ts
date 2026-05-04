@@ -28,11 +28,14 @@ export function useHoldHeartbeat({
     onHeartbeatExpired,
     onHeartbeatTransientError,
   });
-  callbacksRef.current = {
-    onHeartbeatSuccess,
-    onHeartbeatExpired,
-    onHeartbeatTransientError,
-  };
+
+  useEffect(() => {
+    callbacksRef.current = {
+      onHeartbeatSuccess,
+      onHeartbeatExpired,
+      onHeartbeatTransientError,
+    };
+  }, [onHeartbeatSuccess, onHeartbeatExpired, onHeartbeatTransientError]);
 
   useEffect(() => {
     if (!enabled || !holdReference || status !== "ACTIVE") {

@@ -16,6 +16,7 @@ type TimeSlotSelectProps = Readonly<{
   "aria-labelledby"?: string;
   /** Defaults to full day; pass booking-only slots (e.g. 09:30–19:00) when needed. */
   slots?: readonly string[];
+  disabled?: boolean;
 }>;
 
 export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>(
@@ -27,6 +28,7 @@ export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>
       onBlur,
       "aria-labelledby": ariaLabelledBy,
       slots = TIME_SLOTS,
+      disabled = false,
     },
     ref,
   ) {
@@ -35,15 +37,22 @@ export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>
     const [open, setOpen] = useState(false);
 
     return (
-      <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Root
+        open={disabled ? false : open}
+        onOpenChange={(next) => {
+          if (!disabled) setOpen(next);
+        }}
+      >
         <Popover.Trigger asChild>
           <button
             ref={ref}
             type="button"
             id={id}
+            disabled={disabled}
+            aria-disabled={disabled}
             aria-labelledby={ariaLabelledBy}
             aria-haspopup="listbox"
-            className={`${triggerShell} justify-between`}
+            className={`${triggerShell} justify-between ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
             onBlur={onBlur}
           >
           <Clock className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />

@@ -28,6 +28,8 @@ import { RentalDetailsStep } from "@/features/booking-flow/steps/rental-details-
 import { OptionsDeliveryStep } from "@/features/booking-flow/steps/options-delivery-step";
 import { YourInformationStep } from "@/features/booking-flow/steps/your-information-step";
 import { ReviewConfirmStep } from "@/features/booking-flow/steps/review-confirm-step";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
 
 type BookingFlowBodyProps = {
   bookingLookupReference?: string;
@@ -102,7 +104,7 @@ function BookingFlowBody({
   useHoldHeartbeat({
     holdReference: reservationHold.holdReference,
     status: reservationHold.status,
-    enabled: !submitting,
+    enabled: !ONLINE_BOOKING_DISABLED && !submitting,
     onHeartbeatSuccess: (expiresAt, status) => {
       setHeartbeatWarning(null);
       setReservationHoldError(null);
@@ -129,9 +131,14 @@ function BookingFlowBody({
     if (!bookingSubmittedBanner || !bookingLookupReference) {
       return;
     }
-    setShowSuccessToast(true);
+    const showId = window.setTimeout(() => {
+      setShowSuccessToast(true);
+    }, 0);
     const timer = window.setTimeout(() => setShowSuccessToast(false), 6000);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(showId);
+      window.clearTimeout(timer);
+    };
   }, [bookingLookupReference, bookingSubmittedBanner]);
 
   useEffect(() => {
@@ -154,6 +161,10 @@ function BookingFlowBody({
     ) : null;
 
   const handlePrimaryClick = useCallback(async () => {
+    if (ONLINE_BOOKING_DISABLED) {
+      warnBookingActionBlocked("BookingFlow.handlePrimaryClick");
+      return;
+    }
     if (!isLastStep) {
       if (activeStepId === "rental_details") {
         setSubmitError(null);
@@ -199,6 +210,11 @@ function BookingFlowBody({
   ]);
 
   const handleTermsAgree = useCallback(async () => {
+    if (ONLINE_BOOKING_DISABLED) {
+      warnBookingActionBlocked("BookingFlow.handleTermsAgree");
+      setTermsModalOpen(false);
+      return;
+    }
     if (!reservationHold.holdReference || !holdIsActive || !holdMatchesCurrentRental) {
       setTermsModalOpen(false);
       setSubmitError(t("holdExpiredDefault"));
@@ -254,8 +270,9 @@ function BookingFlowBody({
       clearPendingBookingSessionUploads(bookingSessionId);
       clearReservationHold();
       resetBookingForm();
+      const rental = getBookingValues().rental;
       router.push(
-        `/booking?ref=${encodeURIComponent(result.bookingReference)}&submitted=1&email=${encodeURIComponent(payload.customer.email)}&vehicle=${encodeURIComponent(state.rental.vehicleSlug || state.rental.vehicleType)}`,
+        `/booking?ref=${encodeURIComponent(result.bookingReference)}&submitted=1&email=${encodeURIComponent(payload.customer.email)}&vehicle=${encodeURIComponent(rental.vehicleSlug || rental.vehicleType)}`,
       );
       return;
     }
@@ -310,6 +327,10 @@ function BookingFlowBody({
 
   return (
     <div ref={flowContainerRef} className="space-y-5">
+      <div
+        className={ONLINE_BOOKING_DISABLED ? "space-y-5 opacity-[0.88]" : "space-y-5"}
+        inert={ONLINE_BOOKING_DISABLED ? true : undefined}
+      >
       <BookingLookupPanel
         initialReference={bookingLookupReference}
         initialEmail={bookingLookupEmail}
@@ -383,7 +404,7 @@ function BookingFlowBody({
             onClick={() => {
               void handleCancelBooking();
             }}
-            disabled={submitting || isReleasingHold}
+            disabled={ONLINE_BOOKING_DISABLED || submitting || isReleasingHold}
             className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isReleasingHold ? t("cancelling") : t("cancelBooking")}
@@ -391,7 +412,7 @@ function BookingFlowBody({
           <button
             type="button"
             onClick={goBack}
-            disabled={isFirstStep || submitting || isCreatingHold}
+            disabled={ONLINE_BOOKING_DISABLED || isFirstStep || submitting || isCreatingHold}
             className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-semibold text-slate-800 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {t("back")}
@@ -402,21 +423,25 @@ function BookingFlowBody({
               void handlePrimaryClick();
             }}
             disabled={
+              ONLINE_BOOKING_DISABLED ||
               submitting ||
               isCreatingHold ||
               (isLastStep && (!holdIsActive || !holdMatchesCurrentRental || holdIsExpired))
             }
             className="min-h-11 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isCreatingHold
-              ? t("reserving")
-              : isLastStep
-                ? (submitting ? t("submitting") : t("confirmBooking"))
-                : activeStepId === "rental_details"
-                  ? t("bookNow")
-                  : t("next")}
+            {ONLINE_BOOKING_DISABLED
+              ? <BookingDisabledCtaContent />
+              : isCreatingHold
+                ? t("reserving")
+                : isLastStep
+                  ? (submitting ? t("submitting") : t("confirmBooking"))
+                  : activeStepId === "rental_details"
+                    ? t("bookNow")
+                    : t("next")}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

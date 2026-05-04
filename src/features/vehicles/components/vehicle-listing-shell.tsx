@@ -17,6 +17,8 @@ import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
 import { LOGO_PATH } from "@/lib/site-brand-copy";
+import { BookingUnavailableNotice } from "@/components/booking/booking-unavailable-notice";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
@@ -494,6 +496,7 @@ export function VehicleListingShell({
       onHotelDeliveryChange={setHotelDelivery}
       onClearFilters={handleClearFilters}
       onSearch={handleSearchResults}
+      filtersDisabled={ONLINE_BOOKING_DISABLED}
     />
   );
 
@@ -511,6 +514,7 @@ export function VehicleListingShell({
       onColorChange={(v) => persistListingFilters({ color: v })}
       selectedSeats={selectedSeats}
       onSeatsChange={(v) => persistListingFilters({ seats: v })}
+      filtersDisabled={ONLINE_BOOKING_DISABLED}
     />
   ) : null;
 
@@ -520,10 +524,14 @@ export function VehicleListingShell({
         {tListing("showing", { count: filteredVehicles.length })}
       </p>
 
+      {ONLINE_BOOKING_DISABLED ? (
+        <BookingUnavailableNotice className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950" />
+      ) : null}
+
       {tripDatesPrompt ? (
         <div
           role="status"
-          className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950"
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
         >
           {tListing("tripDatesHint")}
         </div>

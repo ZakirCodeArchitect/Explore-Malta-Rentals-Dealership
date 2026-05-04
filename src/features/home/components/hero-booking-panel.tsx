@@ -24,6 +24,9 @@ import {
 import { TripDateSelector } from "@/features/vehicles/components/trip-date-selector";
 import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-params";
 import { loadMaltaLocationOptions } from "@/features/vehicles/lib/malta-pickup-location";
+import { BookingUnavailableNotice } from "@/components/booking/booking-unavailable-notice";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
 
 const DEFAULT_HERO_PICKUP_DATE = new Date(2026, 5, 12);
 
@@ -31,17 +34,20 @@ function Toggle({
   label,
   active,
   onToggle,
+  disabled,
 }: {
   label: string;
   active: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       aria-pressed={active}
+      disabled={disabled}
       onClick={onToggle}
-      className="inline-flex items-center gap-3 text-left text-sm font-medium text-slate-700"
+      className={`inline-flex items-center gap-3 text-left text-sm font-medium text-slate-700 ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
     >
       <span>{label}</span>
       <span
@@ -137,6 +143,10 @@ export function HeroBookingPanel() {
   }, []);
 
   const handleSearch = useCallback(() => {
+    if (ONLINE_BOOKING_DISABLED) {
+      warnBookingActionBlocked("HeroBookingPanel.handleSearch");
+      return;
+    }
     const params = new URLSearchParams();
     params.set("type", vehicleType.value);
     if (pickupLocation?.label) {
@@ -175,8 +185,15 @@ export function HeroBookingPanel() {
     );
   }
 
+  const panelDisabled = ONLINE_BOOKING_DISABLED;
+
   return (
     <div id="booking-preview" className={panelShellClass}>
+      {panelDisabled ? (
+        <div className="mb-4">
+          <BookingUnavailableNotice />
+        </div>
+      ) : null}
       <div className="grid gap-3 sm:gap-3.5 lg:grid-cols-4">
         <div className={`${fieldClassName} lg:col-span-2`}>
           <span className="text-xs font-semibold text-slate-500">
@@ -195,6 +212,7 @@ export function HeroBookingPanel() {
               defaultOptions={maltaDefaultLocationOptions}
               loadOptions={loadMaltaLocationOptions}
               isSearchable
+              isDisabled={panelDisabled}
               onChange={(option) => setPickupLocation(option)}
               styles={vehicleFilterReactSelectStyles}
               components={heroSelectComponents}
@@ -231,6 +249,7 @@ export function HeroBookingPanel() {
               value={vehicleType}
               onChange={(option) => option && setVehicleTypeValue(option.value)}
               options={[...vehicleTypeOptionsLocalized]}
+              isDisabled={panelDisabled}
               isSearchable={false}
               styles={vehicleFilterReactSelectStyles}
               components={heroSelectComponents}
@@ -248,6 +267,7 @@ export function HeroBookingPanel() {
             tripStart={pickupDate}
             tripEnd={returnDate}
             onRangeChange={handleTripDatesChange}
+            disabled={panelDisabled}
             className="flex min-h-0 flex-1 flex-col justify-between"
           />
         </div>
@@ -258,38 +278,45 @@ export function HeroBookingPanel() {
           <Toggle
             label={t("returnElsewhere")}
             active={returnElsewhere}
+            disabled={panelDisabled}
             onToggle={() => setReturnElsewhere((previous) => !previous)}
           />
           <Toggle
             label={t("hotelDelivery")}
             active={hotelDelivery}
+            disabled={panelDisabled}
             onToggle={() => setHotelDelivery((previous) => !previous)}
           />
         </div>
 
-        <button
-          type="button"
-          onClick={handleSearch}
-          className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 self-end rounded-lg bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:self-auto sm:px-7 sm:text-base"
-        >
-          {tVehicle("search")}
-          <span
-            aria-hidden="true"
-            className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+        <div className="flex w-full flex-col items-stretch gap-2 self-end sm:w-auto sm:items-end">
+          <button
+            type="button"
+            onClick={handleSearch}
+            disabled={panelDisabled}
+            className="group relative inline-flex min-h-[2.75rem] w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-75 sm:min-h-[3rem] sm:w-auto sm:min-w-[10.5rem] sm:self-auto sm:px-7 sm:text-base"
           >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
-            </svg>
-          </span>
-        </button>
+            {panelDisabled ? <BookingDisabledCtaContent /> : tVehicle("search")}
+            {panelDisabled ? null : (
+              <span
+                aria-hidden="true"
+                className="inline-flex transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" />
+                </svg>
+              </span>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

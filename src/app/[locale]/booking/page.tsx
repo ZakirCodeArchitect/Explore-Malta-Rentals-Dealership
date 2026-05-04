@@ -5,6 +5,8 @@ import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-
 import { Container } from "@/components/ui/container";
 import { BookingFlow } from "@/features/booking-flow/components/booking-flow";
 import { Link } from "@/i18n/navigation";
+import { BookingUnavailableNotice } from "@/components/booking/booking-unavailable-notice";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 type BookingPageProps = Readonly<{
   params: Promise<{ locale: string }>;
@@ -91,6 +93,11 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600 sm:mx-0 sm:text-lg">
                 {t("intro")}
               </p>
+              {ONLINE_BOOKING_DISABLED ? (
+                <div className="mx-auto mt-6 max-w-3xl sm:mx-0">
+                  <BookingUnavailableNotice />
+                </div>
+              ) : null}
             </header>
 
             <div className="mt-10">

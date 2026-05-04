@@ -7,6 +7,9 @@ import { SectionHeader } from "@/features/home/components/section-header";
 import { TourRequestForm } from "@/features/tours/components/tour-request-form";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { BookingFormDisabledBanner } from "@/components/booking/booking-form-disabled-banner";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 const TOUR_BIKES_PHOTO_SRC = `/TourPage-images/${encodeURIComponent("TOURS PAGE BIKES PHOTO.webp")}`;
 const TOUR_QUAD_PHOTO_SRC = `/TourPage-images/${encodeURIComponent("TOURS PAGE PHOTO QUAD.jpg")}`;
@@ -210,12 +213,24 @@ export async function TourContent({ contact }: Readonly<{ contact: TourSiteConta
                 {t("ctaTagline")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/booking"
-                  className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--brand-orange)] px-5 py-2.5 text-sm font-medium tracking-tight text-slate-950 transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-                >
-                  {t("ctaRequestTour")}
-                </Link>
+                {ONLINE_BOOKING_DISABLED ? (
+                  <>
+                    <BookingFormDisabledBanner variant="dark" className="w-full max-w-prose" />
+                    <span
+                      aria-disabled
+                      className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-md bg-white/20 px-5 py-2.5 text-sm font-medium tracking-tight text-white/80"
+                    >
+                      <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-white/90" />
+                    </span>
+                  </>
+                ) : (
+                  <Link
+                    href="/booking"
+                    className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--brand-orange)] px-5 py-2.5 text-sm font-medium tracking-tight text-slate-950 transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                  >
+                    {t("ctaRequestTour")}
+                  </Link>
+                )}
                 <Link
                   href="/#booking-preview"
                   className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/20 bg-white px-5 py-2.5 text-sm font-medium tracking-tight text-slate-900 transition-colors hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"

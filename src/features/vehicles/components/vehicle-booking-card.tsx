@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarRange, Globe, Lock, Mail, Package, ShieldCheck, User, Phone } from "lucide-react";
 import type { Vehicle, VehicleType } from "@/features/vehicles/data/vehicles";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { BookingFormDisabledBanner } from "@/components/booking/booking-form-disabled-banner";
+import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
 
 type VehicleBookingCardProps = Readonly<{
   vehicle: Vehicle;
@@ -57,6 +60,7 @@ const inputClass =
 const labelClass = "text-sm font-semibold text-slate-800";
 
 export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
+  const formDisabled = ONLINE_BOOKING_DISABLED;
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
@@ -139,6 +143,10 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (formDisabled) {
+      warnBookingActionBlocked("VehicleBookingCard.handleSubmit");
+      return;
+    }
     const next = validate();
     setErrors(next);
     setTouched({
@@ -158,7 +166,9 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
       await new Promise((r) => setTimeout(r, 900));
       setSuccess(true);
     } catch {
-      setErrors({ submit: "Something went wrong. Please try again or contact us on WhatsApp." });
+      setErrors({
+        submit: "Something went wrong. Please try again or reach us through the contact page.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -209,6 +219,11 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
 
   return (
     <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_52px_-35px_rgba(15,23,42,0.35)] motion-safe:transition-shadow motion-safe:duration-300 hover:shadow-[0_28px_56px_-32px_rgba(58,124,165,0.22)] lg:sticky lg:top-[calc(env(safe-area-inset-top)+3.75rem)]">
+      {formDisabled ? (
+        <div className="mb-4">
+          <BookingFormDisabledBanner variant="light" className="text-xs sm:text-sm" />
+        </div>
+      ) : null}
       {storageAddOn ? (
         <dialog
           ref={storageDialogRef}
@@ -228,6 +243,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-sm">
               <input
                 type="checkbox"
+                disabled={formDisabled}
                 checked={selectedAddOns.includes("storage-box")}
                 onChange={(event) => {
                   setSelectedAddOns((previous) =>
@@ -308,6 +324,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 name="fullName"
                 type="text"
                 autoComplete="name"
+                disabled={formDisabled}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 onBlur={() => blurField("fullName")}
@@ -338,6 +355,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 name="nationality"
                 type="text"
                 autoComplete="country-name"
+                disabled={formDisabled}
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
                 onBlur={() => blurField("nationality")}
@@ -370,6 +388,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                   type="email"
                   autoComplete="email"
                   inputMode="email"
+                  disabled={formDisabled}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onBlur={() => blurField("email")}
@@ -401,6 +420,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                   type="tel"
                   autoComplete="tel"
                   inputMode="tel"
+                  disabled={formDisabled}
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   onBlur={() => blurField("mobile")}
@@ -437,6 +457,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 name="pickupDate"
                 type="date"
                 min={minDate}
+                disabled={formDisabled}
                 value={pickupDate}
                 onChange={(e) => {
                   setPickupDate(e.target.value);
@@ -462,6 +483,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                 name="returnDate"
                 type="date"
                 min={pickupDate || minDate}
+                disabled={formDisabled}
                 value={returnDate}
                 onChange={(e) => setReturnDate(e.target.value)}
                 onBlur={() => blurField("returnDate")}
@@ -485,8 +507,9 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
               <p className="mt-1 text-xs text-slate-500">
                 <button
                   type="button"
+                  disabled={formDisabled}
                   onClick={() => storageDialogRef.current?.showModal()}
-                  className="font-semibold text-[var(--brand-blue)] underline decoration-[var(--brand-orange)]/40 underline-offset-2 transition hover:text-[var(--brand-orange-strong)]"
+                  className="font-semibold text-[var(--brand-blue)] underline decoration-[var(--brand-orange)]/40 underline-offset-2 transition hover:text-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Storage box
                 </button>{" "}
@@ -504,6 +527,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
                     <span className="flex items-center gap-2">
                       <input
                         type="checkbox"
+                        disabled={formDisabled}
                         checked={checked}
                         onChange={(event) => {
                           setSelectedAddOns((previous) =>
@@ -562,6 +586,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             <label className="flex cursor-pointer gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-sm text-slate-700 transition-colors hover:bg-slate-50">
               <input
                 type="checkbox"
+                disabled={formDisabled}
                 checked={licenseConfirmed}
                 onChange={(e) => {
                   setLicenseConfirmed(e.target.checked);
@@ -590,6 +615,7 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
             <label className="flex cursor-pointer gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-sm text-slate-700 transition-colors hover:bg-slate-50">
               <input
                 type="checkbox"
+                disabled={formDisabled}
                 checked={licenseConfirmed}
                 onChange={(e) => {
                   setLicenseConfirmed(e.target.checked);
@@ -621,13 +647,19 @@ export function VehicleBookingCard({ vehicle }: VehicleBookingCardProps) {
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition-[transform,box-shadow,opacity] duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60 motion-safe:hover:scale-[1.01] motion-reduce:hover:scale-100"
-        >
-          {submitting ? "Sending request…" : "Confirm booking request"}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            type="submit"
+            disabled={formDisabled || submitting}
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition-[transform,box-shadow,opacity] duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60 motion-safe:hover:scale-[1.01] motion-reduce:hover:scale-100"
+          >
+            {formDisabled
+              ? <BookingDisabledCtaContent />
+              : submitting
+                ? "Sending request…"
+                : "Confirm booking request"}
+          </button>
+        </div>
         <p className="text-center text-xs text-slate-500">No payment is taken online — we&apos;ll confirm first.</p>
       </form>
     </aside>

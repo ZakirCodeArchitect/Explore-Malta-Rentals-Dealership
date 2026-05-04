@@ -5,6 +5,8 @@ import { useRouter } from "@/i18n/navigation";
 import type { Vehicle } from "@/features/vehicles/data/vehicles";
 import { createReservationHoldWithRetry } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED, warnBookingActionBlocked } from "@/lib/booking-availability";
 
 export const VEHICLE_TRIP_SEARCH_ANCHOR_ID = "vehicle-trip-search";
 
@@ -27,6 +29,11 @@ type BookNowButtonProps = {
   allowHold?: boolean;
   /** When set (and allowHold is false), button shows this message instead of the error. */
   holdBlockedMessage?: string | null;
+  /**
+   * Use next to other actions (e.g. “View details”) so the wrapper does not stretch full width.
+   * Default keeps a full-width column for sidebar-style CTAs.
+   */
+  inlineWithSiblingActions?: boolean;
 };
 
 export function buildBookingUrlWithVehicle(baseHref: string, vehicleSlug: string): string {
@@ -50,6 +57,7 @@ export function BookNowButton({
   busyClassName,
   allowHold,
   holdBlockedMessage,
+  inlineWithSiblingActions = false,
 }: BookNowButtonProps) {
   const router = useRouter();
   const [isReserving, setIsReserving] = useState(false);
@@ -67,6 +75,11 @@ export function BookNowButton({
   );
 
   const handleClick = async () => {
+    if (ONLINE_BOOKING_DISABLED) {
+      warnBookingActionBlocked("BookNowButton.handleClick");
+      return;
+    }
+
     setError(null);
     if (!tripDatesCommitted) {
       document
@@ -119,8 +132,32 @@ export function BookNowButton({
     router.push(nextUrl);
   };
 
+  const disabledClasses = "cursor-not-allowed opacity-75";
+
+  const shellClassName = inlineWithSiblingActions
+    ? "inline-flex flex-col items-end gap-2"
+    : "flex w-full max-w-xs flex-col items-stretch gap-2 sm:max-w-none sm:items-end";
+
+  if (ONLINE_BOOKING_DISABLED) {
+    return (
+      <div className={shellClassName}>
+        <button
+          type="button"
+          disabled
+          aria-disabled
+          className={[className, disabledClasses].filter(Boolean).join(" ")}
+        >
+          <BookingDisabledCtaContent />
+        </button>
+        {error ? (
+          <span className="max-w-56 text-right text-[11px] font-medium text-rose-700">{error}</span>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className={shellClassName}>
       <button
         type="button"
         onClick={() => {

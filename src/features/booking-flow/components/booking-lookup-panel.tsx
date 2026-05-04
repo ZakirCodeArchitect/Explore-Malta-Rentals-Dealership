@@ -82,14 +82,18 @@ export function BookingLookupPanel({
   useEffect(() => {
     const next = initialReference?.trim();
     if (next) {
-      setReference(next);
+      queueMicrotask(() => {
+        setReference(next);
+      });
     }
   }, [initialReference]);
 
   useEffect(() => {
     const next = initialEmail?.trim();
     if (next) {
-      setEmail(next);
+      queueMicrotask(() => {
+        setEmail(next);
+      });
     }
   }, [initialEmail]);
 
@@ -112,9 +116,11 @@ export function BookingLookupPanel({
       return;
     }
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setSummary(null);
+    queueMicrotask(() => {
+      setLoading(true);
+      setError(null);
+      setSummary(null);
+    });
     void lookupBooking(reference, email).then((result) => {
       if (cancelled) {
         return;

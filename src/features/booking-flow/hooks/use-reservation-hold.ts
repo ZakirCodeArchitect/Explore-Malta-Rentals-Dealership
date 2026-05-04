@@ -3,6 +3,11 @@
 import { useCallback } from "react";
 import type { BookingFlowState, ReservationHoldState } from "@/features/booking-flow/lib/types";
 import { createReservationHoldWithRetry, releaseReservationHold } from "@/features/booking-flow/lib/reservation-hold-api";
+import {
+  BOOKING_DISABLED_USER_HINT,
+  ONLINE_BOOKING_DISABLED,
+  warnBookingActionBlocked,
+} from "@/lib/booking-availability";
 
 type UseReservationHoldInput = {
   bookingState: BookingFlowState;
@@ -37,6 +42,11 @@ export function useReservationHold({
   setError,
 }: UseReservationHoldInput) {
   const createOrRefreshHold = useCallback(async (): Promise<HoldActionResult> => {
+    if (ONLINE_BOOKING_DISABLED) {
+      warnBookingActionBlocked("useReservationHold.createOrRefreshHold");
+      return { ok: false, message: BOOKING_DISABLED_USER_HINT };
+    }
+
     const { rental, customer } = bookingState;
     if (!rental.vehicleId) {
       return {
@@ -97,6 +107,11 @@ export function useReservationHold({
 
   const releaseActiveHold = useCallback(async (): Promise<void> => {
     if (!reservationHold.holdReference) {
+      clearHold();
+      return;
+    }
+    if (ONLINE_BOOKING_DISABLED) {
+      warnBookingActionBlocked("useReservationHold.releaseActiveHold");
       clearHold();
       return;
     }

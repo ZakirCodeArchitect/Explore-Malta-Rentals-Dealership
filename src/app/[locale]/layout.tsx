@@ -6,6 +6,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { DocumentLang } from "@/components/document-lang";
 import { Footer } from "@/features/home/components/footer";
 import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { NextIntlWithReporting } from "@/components/next-intl-with-reporting";
@@ -64,7 +65,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <SiteNavbar />
         {children}
         <Footer />
-        <WhatsAppFloatingButton />
+        {ONLINE_BOOKING_DISABLED ? null : <WhatsAppFloatingButton />}
       </NextIntlWithReporting>
     </div>
   );

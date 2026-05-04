@@ -104,16 +104,23 @@ export const vehicleFilterReactSelectStyles: StylesConfig<
 type VehiclePickupLocationFieldProps = Readonly<{
   pickupLocation: BookingOption | null;
   onPickupLocationChange: (option: BookingOption | null) => void;
+  disabled?: boolean;
 }>;
 
 export function VehiclePickupLocationField({
   pickupLocation,
   onPickupLocationChange,
+  disabled = false,
 }: VehiclePickupLocationFieldProps) {
   const defaultLocationOptions = useMemo(() => [...locationOptions], []);
 
   return (
-    <label className="flex min-w-0 w-full flex-col text-xs font-semibold text-slate-500">
+    <label
+      className={[
+        "flex min-w-0 w-full flex-col text-xs font-semibold text-slate-500",
+        disabled ? "opacity-70" : "",
+      ].join(" ")}
+    >
       Pick-up location
       <div className={fieldWrapClass}>
         <MapPin
@@ -128,6 +135,7 @@ export function VehiclePickupLocationField({
           defaultOptions={defaultLocationOptions}
           loadOptions={loadMaltaLocationOptions}
           isSearchable
+          isDisabled={disabled}
           onChange={(option) => onPickupLocationChange(option)}
           styles={vehicleFilterReactSelectStyles}
           menuPortalTarget={

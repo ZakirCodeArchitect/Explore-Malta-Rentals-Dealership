@@ -6,6 +6,8 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Container } from "@/components/ui/container";
 import { LOGO_PATH, SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 import { FooterColumn, FooterTrustItem } from "./footer-column";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 import { FooterNewsletterForm } from "./footer-newsletter-form";
 import { FooterSocialLinks } from "./footer-social-links";
 import { digitsOnlyForWa, getEnvValue, normalizeUrl } from "./footer-utils";
@@ -57,7 +59,9 @@ export async function SiteFooter() {
   const supportLinks = [
     { href: "/#faq", label: t("supportHelp") },
     { href: "/contact", label: t("supportTalk") },
-    { href: "/booking", label: t("supportBook") },
+    ONLINE_BOOKING_DISABLED
+      ? { href: "/contact", label: t("supportBook") }
+      : { href: "/booking", label: t("supportBook") },
   ] as const;
 
   const legalLinks = [
@@ -99,7 +103,16 @@ export async function SiteFooter() {
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-              <ButtonLink href="/booking">{t("bookRental")}</ButtonLink>
+              {ONLINE_BOOKING_DISABLED ? (
+                <span
+                  aria-disabled
+                  className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-full border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white/70"
+                >
+                  <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-white/85" />
+                </span>
+              ) : (
+                <ButtonLink href="/booking">{t("bookRental")}</ButtonLink>
+              )}
               <Link
                 href="/#fleet-preview"
                 className={joinClasses(

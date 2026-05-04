@@ -1,6 +1,11 @@
 "use client";
 
 import type { ReservationHoldStatus } from "@/features/booking-flow/lib/types";
+import {
+  BOOKING_DISABLED_USER_HINT,
+  ONLINE_BOOKING_DISABLED,
+  warnBookingActionBlocked,
+} from "@/lib/booking-availability";
 
 export type CreateReservationHoldPayload = {
   vehicleId: string;
@@ -61,6 +66,15 @@ function fallbackMessage(response: Response, fallback: string): string {
 export async function createReservationHold(
   payload: CreateReservationHoldPayload,
 ): Promise<{ ok: true; data: CreateHoldSuccess } | { ok: false; status: number; message: string }> {
+  if (ONLINE_BOOKING_DISABLED) {
+    warnBookingActionBlocked("createReservationHold");
+    return {
+      ok: false,
+      status: 503,
+      message: BOOKING_DISABLED_USER_HINT,
+    };
+  }
+
   const response = await fetch("/api/reservation-holds", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -125,6 +139,15 @@ export async function createReservationHoldWithRetry(
 export async function heartbeatReservationHold(
   holdReference: string,
 ): Promise<{ ok: true; data: HeartbeatHoldSuccess } | { ok: false; status: number; message: string; holdStatus?: ReservationHoldStatus }> {
+  if (ONLINE_BOOKING_DISABLED) {
+    warnBookingActionBlocked("heartbeatReservationHold");
+    return {
+      ok: false,
+      status: 503,
+      message: "Online booking is temporarily unavailable.",
+    };
+  }
+
   const response = await fetch(`/api/reservation-holds/${encodeURIComponent(holdReference)}/heartbeat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -148,6 +171,11 @@ export async function heartbeatReservationHold(
 export async function releaseReservationHold(
   holdReference: string,
 ): Promise<{ ok: true; status?: ReservationHoldStatus } | { ok: false; message: string }> {
+  if (ONLINE_BOOKING_DISABLED) {
+    warnBookingActionBlocked("releaseReservationHold");
+    return { ok: true };
+  }
+
   const response = await fetch(`/api/reservation-holds/${encodeURIComponent(holdReference)}/release`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -172,6 +200,15 @@ export async function releaseReservationHold(
 export async function getReservationHold(
   holdReference: string,
 ): Promise<{ ok: true; data: GetHoldSuccess } | { ok: false; status: number; message: string }> {
+  if (ONLINE_BOOKING_DISABLED) {
+    warnBookingActionBlocked("getReservationHold");
+    return {
+      ok: false,
+      status: 503,
+      message: "Online booking is temporarily unavailable.",
+    };
+  }
+
   const response = await fetch(`/api/reservation-holds/${encodeURIComponent(holdReference)}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },

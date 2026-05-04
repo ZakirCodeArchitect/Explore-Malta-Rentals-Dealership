@@ -33,6 +33,8 @@ import {
   getIndicativeMotorcycleScooterTripTotalEur,
 } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 import { pricingService } from "@/lib/pricing/service";
+import { BookingFormDisabledBanner } from "@/components/booking/booking-form-disabled-banner";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 const inputShell =
   "flex w-full min-h-[3rem] items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
@@ -171,6 +173,35 @@ export function BookingSearchForm() {
     : "";
 
   const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
+
+  if (ONLINE_BOOKING_DISABLED) {
+    return (
+      <div className="flex w-full flex-col gap-6">
+        <div className="flex flex-wrap gap-2">
+          <p className="w-full text-xs font-semibold tracking-normal text-slate-600">
+            {tSearch("quickFilterTitle")}
+          </p>
+          <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
+            <Gauge className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
+            <span className="tabular-nums tracking-tight">{tSearch("chip125")}</span>
+          </Link>
+          <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
+            <Gauge className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
+            <span className="tabular-nums tracking-tight">{tSearch("chip50")}</span>
+          </Link>
+          <Link href="/#services" className={quickFilterChipClass}>
+            <Sparkles className={quickFilterChipIcon} strokeWidth={2} aria-hidden />
+            <span className="tracking-tight">{tSearch("chipServices")}</span>
+          </Link>
+        </div>
+
+        <BookingFormDisabledBanner
+          variant="light"
+          className="rounded-[1.35rem] p-5 text-[0.95rem] shadow-[0_24px_60px_-40px_rgba(15,23,42,0.25)] sm:p-6 sm:text-base lg:p-7"
+        />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
@@ -434,20 +465,22 @@ export function BookingSearchForm() {
             })}
           </p>
         </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-7 text-sm font-semibold text-white shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:opacity-70"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              {tSearch("submitSearching")}
-            </>
-          ) : (
-            tSearch("submitIdle")
-          )}
-        </button>
+        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-7 text-sm font-semibold text-white shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                {tSearch("submitSearching")}
+              </>
+            ) : (
+              tSearch("submitIdle")
+            )}
+          </button>
+        </div>
       </div>
     </form>
   );

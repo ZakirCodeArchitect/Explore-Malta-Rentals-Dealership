@@ -51,6 +51,8 @@ type VehicleListingSidebarProps = Readonly<{
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
   className?: string;
+  /** When true, filter controls stay visible but cannot be changed. */
+  filtersDisabled?: boolean;
 }>;
 
 function ChevronLeftIcon() {
@@ -151,6 +153,7 @@ function RadioRow({
   checked,
   onChange,
   sleek,
+  disabled = false,
 }: Readonly<{
   name: string;
   id: string;
@@ -158,12 +161,21 @@ function RadioRow({
   checked: boolean;
   onChange: () => void;
   sleek?: boolean;
+  disabled?: boolean;
 }>) {
+  const labelState = disabled
+    ? "cursor-not-allowed opacity-60"
+    : "cursor-pointer";
   if (sleek) {
     return (
       <label
         htmlFor={id}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-[13px] font-medium leading-snug text-slate-600 transition-[background-color,border-color,box-shadow,color] duration-150 hover:border-slate-200/70 hover:bg-white/60 has-[:checked]:border-[color-mix(in_srgb,var(--brand-orange)_28%,transparent)] has-[:checked]:bg-[color-mix(in_srgb,var(--brand-orange)_10%,white)] has-[:checked]:text-slate-800 has-[:checked]:shadow-[0_1px_3px_rgba(15,23,42,0.05)]"
+        className={[
+          "flex items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-[13px] font-medium leading-snug text-slate-600 transition-[background-color,border-color,box-shadow,color] duration-150",
+          labelState,
+          "has-[:checked]:border-[color-mix(in_srgb,var(--brand-orange)_28%,transparent)] has-[:checked]:bg-[color-mix(in_srgb,var(--brand-orange)_10%,white)] has-[:checked]:text-slate-800 has-[:checked]:shadow-[0_1px_3px_rgba(15,23,42,0.05)]",
+          disabled ? "" : "hover:border-slate-200/70 hover:bg-white/60",
+        ].join(" ")}
       >
         <input
           id={id}
@@ -171,7 +183,9 @@ function RadioRow({
           type="radio"
           checked={checked}
           onChange={onChange}
-          className="size-3.5 shrink-0 border-slate-300/80 text-[var(--brand-orange)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35"
+          disabled={disabled}
+          aria-disabled={disabled}
+          className="size-3.5 shrink-0 border-slate-300/80 text-[var(--brand-orange)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 disabled:cursor-not-allowed"
         />
         <span>{label}</span>
       </label>
@@ -180,7 +194,12 @@ function RadioRow({
   return (
     <label
       htmlFor={id}
-      className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-100/80 has-[:checked]:bg-slate-100/90"
+      className={[
+        "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-slate-700 transition-colors",
+        labelState,
+        "has-[:checked]:bg-slate-100/90",
+        disabled ? "" : "hover:bg-slate-100/80",
+      ].join(" ")}
     >
       <input
         id={id}
@@ -188,7 +207,9 @@ function RadioRow({
         type="radio"
         checked={checked}
         onChange={onChange}
-        className="h-4 w-4 shrink-0 border-slate-300 text-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/35"
+        disabled={disabled}
+        aria-disabled={disabled}
+        className="h-4 w-4 shrink-0 border-slate-300 text-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/35 disabled:cursor-not-allowed"
       />
       <span>{label}</span>
     </label>
@@ -199,10 +220,12 @@ function SeatsDropdown({
   value,
   onChange,
   sleek,
+  disabled = false,
 }: Readonly<{
   value: VehicleSeatsFilter;
   onChange: (v: VehicleSeatsFilter) => void;
   sleek?: boolean;
+  disabled?: boolean;
 }>) {
   const styles: StylesConfig<BookingOption, false> = {
     container: (base) => ({
@@ -296,6 +319,7 @@ function SeatsDropdown({
       menuPortalTarget={typeof document !== "undefined" ? document.body : null}
       menuPosition="fixed"
       classNamePrefix="vehicle-sidebar-seats"
+      isDisabled={disabled}
     />
   );
 }
@@ -318,7 +342,10 @@ export function VehicleListingSidebar({
   collapsed = false,
   onToggleCollapsed,
   className,
+  filtersDisabled = false,
 }: VehicleListingSidebarProps) {
+  const effectiveCollapsed = filtersDisabled ? false : collapsed;
+
   const surfaceClass =
     variant === "rail"
       ? "border-0 bg-transparent p-0 shadow-none backdrop-blur-none"
@@ -344,6 +371,7 @@ export function VehicleListingSidebar({
             checked={selectedType === value}
             onChange={() => onTypeChange(value)}
             sleek={sleekRail}
+            disabled={filtersDisabled}
           />
         ))}
       </FilterSection>
@@ -358,6 +386,7 @@ export function VehicleListingSidebar({
             checked={selectedTransmission === value}
             onChange={() => onTransmissionChange(value)}
             sleek={sleekRail}
+            disabled={filtersDisabled}
           />
         ))}
       </FilterSection>
@@ -367,6 +396,7 @@ export function VehicleListingSidebar({
           value={selectedSeats}
           onChange={onSeatsChange}
           sleek={sleekRail}
+          disabled={filtersDisabled}
         />
       </FilterSection>
 
@@ -380,6 +410,7 @@ export function VehicleListingSidebar({
             checked={selectedColor === value}
             onChange={() => onColorChange(value)}
             sleek={sleekRail}
+            disabled={filtersDisabled}
           />
         ))}
       </FilterSection>
@@ -397,10 +428,11 @@ export function VehicleListingSidebar({
       <button
         type="button"
         onClick={onToggleCollapsed}
+        disabled={filtersDisabled}
         aria-expanded="true"
         aria-controls={filterPanelId}
         title="Hide filters"
-        className="hidden size-8 items-center justify-center rounded-full border border-slate-200/70 bg-white/90 text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[color,box-shadow,background-color] hover:border-slate-300/80 hover:bg-white hover:text-slate-800 hover:shadow-[0_2px_6px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 lg:inline-flex"
+        className="hidden size-8 items-center justify-center rounded-full border border-slate-200/70 bg-white/90 text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-[color,box-shadow,background-color] hover:border-slate-300/80 hover:bg-white hover:text-slate-800 hover:shadow-[0_2px_6px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-slate-200/70 disabled:hover:bg-white/90 lg:inline-flex"
       >
         <ChevronLeftIcon />
         <span className="sr-only">Hide filters</span>
@@ -417,20 +449,21 @@ export function VehicleListingSidebar({
     </>
   );
 
-  const collapsedStrip = collapsibleRail && (
+  const collapsedStrip = collapsibleRail && !filtersDisabled && (
     <div
       className={joinClasses(
         "hidden flex-col items-center pt-1",
-        collapsed ? "lg:flex" : "",
+        effectiveCollapsed ? "lg:flex" : "",
       )}
     >
       <button
         type="button"
         onClick={onToggleCollapsed}
+        disabled={filtersDisabled}
         aria-expanded="false"
         aria-controls={filterPanelId}
         title="Show filters"
-        className="flex shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-2 text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 focus-visible:ring-offset-0"
+        className="flex shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-2 text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/35 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <CollapsedRailFilterIcon />
         <span className="sr-only">Show filters</span>
@@ -449,7 +482,7 @@ export function VehicleListingSidebar({
         {collapsibleRail ? (
           <div
             className={joinClasses(
-              collapsed ? "max-lg:block lg:hidden" : "",
+              effectiveCollapsed ? "max-lg:block lg:hidden" : "",
             )}
           >
             {expandedBody}

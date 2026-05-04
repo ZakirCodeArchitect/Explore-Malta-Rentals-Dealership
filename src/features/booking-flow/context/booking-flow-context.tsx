@@ -39,6 +39,7 @@ import type { BookingApiValidationError } from "@/features/booking-flow/lib/subm
 import { getReservationHold } from "@/features/booking-flow/lib/reservation-hold-api";
 import { useReservationHold } from "@/features/booking-flow/hooks/use-reservation-hold";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 function createBookingSessionId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -489,7 +490,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
   }, [markReservationHoldExpired, mergeReservationHold, reservationHold.holdReference, tFlow]);
 
   useEffect(() => {
-    if (!reservationHold.holdReference) {
+    if (ONLINE_BOOKING_DISABLED || !reservationHold.holdReference) {
       return;
     }
     const timeoutId = window.setTimeout(() => {

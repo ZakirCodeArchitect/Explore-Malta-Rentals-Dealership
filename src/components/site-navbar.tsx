@@ -10,6 +10,8 @@ import {
   SITE_SHELL_INNER_PAD,
 } from "@/components/site-shell";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
@@ -210,17 +212,29 @@ export function SiteNavbar() {
                   </div>
                 </div>
 
-                <Link
-                  href="/booking"
-                  className={joinClasses(
-                    "inline-flex min-h-8 min-w-[2.5rem] items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold tracking-[-0.03em] text-white sm:min-h-8 sm:px-3.5 sm:py-2 sm:text-sm",
-                    "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
-                    "hover:bg-[var(--brand-orange-strong)]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
-                  )}
-                >
-                  {t("bookNow")}
-                </Link>
+                {ONLINE_BOOKING_DISABLED ? (
+                  <span
+                    aria-disabled
+                    className="inline-flex min-h-8 max-w-[10rem] items-center justify-center rounded-full bg-slate-300 px-2.5 py-1.5 text-center text-[0.65rem] font-semibold leading-tight tracking-tight text-slate-700 sm:max-w-none sm:px-3.5 sm:text-xs"
+                  >
+                    <BookingDisabledCtaContent
+                      className="gap-1.5"
+                      iconClassName="h-3 w-3 shrink-0 opacity-90 sm:h-3.5 sm:w-3.5"
+                    />
+                  </span>
+                ) : (
+                  <Link
+                    href="/booking"
+                    className={joinClasses(
+                      "inline-flex min-h-8 min-w-[2.5rem] items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold tracking-[-0.03em] text-white sm:min-h-8 sm:px-3.5 sm:py-2 sm:text-sm",
+                      "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
+                      "hover:bg-[var(--brand-orange-strong)]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
+                    )}
+                  >
+                    {t("bookNow")}
+                  </Link>
+                )}
               </div>
             </div>
           </div>

@@ -1,4 +1,9 @@
 import type { PublicBookingSummary } from "@/lib/booking/lookupPublicBooking";
+import {
+  BOOKING_DISABLED_USER_HINT,
+  ONLINE_BOOKING_DISABLED,
+  warnBookingActionBlocked,
+} from "@/lib/booking-availability";
 
 export type LookupBookingOk = {
   ok: true;
@@ -24,6 +29,15 @@ type LookupErrorJson = {
 };
 
 export async function lookupBooking(reference: string, email: string): Promise<LookupBookingResult> {
+  if (ONLINE_BOOKING_DISABLED) {
+    warnBookingActionBlocked("lookupBooking");
+    return {
+      ok: false,
+      status: 503,
+      message: BOOKING_DISABLED_USER_HINT,
+    };
+  }
+
   let response: Response;
   try {
     response = await fetch("/api/bookings/lookup", {

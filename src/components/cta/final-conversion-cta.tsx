@@ -2,6 +2,8 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SITE_LOCATION_KICKER, SITE_PRIMARY_TAGLINE } from "@/lib/site-brand-copy";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 export type FinalConversionCtaProps = Readonly<{
   /** Section `aria-labelledby` target */
@@ -125,22 +127,40 @@ export function FinalConversionCta({
             {description}
           </p>
 
-          <div
-            className={joinClasses(
-              "final-cta-fade-up mt-10 flex w-full max-w-md flex-col items-stretch sm:max-w-none sm:flex-row sm:justify-center",
-              secondaryCta ? "final-cta-delay-5" : "final-cta-delay-4",
-            )}
-          >
-            <ButtonLink
-              href={primaryCta.href}
+          {ONLINE_BOOKING_DISABLED ? (
+            <div
               className={joinClasses(
-                "w-full min-w-[12rem] justify-center shadow-[0_22px_50px_-18px_rgba(255,147,15,0.65)] transition-[transform,box-shadow] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.4,0,0.2,1)] motion-safe:hover:scale-[1.03] motion-safe:hover:shadow-[0_26px_56px_-16px_rgba(255,147,15,0.75)] motion-reduce:hover:scale-100 sm:w-auto",
-                "focus-visible:ring-offset-4 focus-visible:ring-offset-black/50",
+                "final-cta-fade-up mt-10 w-full max-w-lg text-left sm:text-center",
+                secondaryCta ? "final-cta-delay-5" : "final-cta-delay-4",
               )}
             >
-              {primaryCta.label}
-            </ButtonLink>
-          </div>
+              <div className="flex w-full max-w-md flex-col items-stretch sm:mx-auto sm:max-w-none sm:items-center">
+                <span
+                  aria-disabled
+                  className="inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 text-sm font-semibold text-white/75 sm:w-auto"
+                >
+                  <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-white/90" />
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div
+              className={joinClasses(
+                "final-cta-fade-up mt-10 flex w-full max-w-md flex-col items-stretch sm:max-w-none sm:flex-row sm:justify-center",
+                secondaryCta ? "final-cta-delay-5" : "final-cta-delay-4",
+              )}
+            >
+              <ButtonLink
+                href={primaryCta.href}
+                className={joinClasses(
+                  "w-full min-w-[12rem] justify-center shadow-[0_22px_50px_-18px_rgba(255,147,15,0.65)] transition-[transform,box-shadow] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.4,0,0.2,1)] motion-safe:hover:scale-[1.03] motion-safe:hover:shadow-[0_26px_56px_-16px_rgba(255,147,15,0.75)] motion-reduce:hover:scale-100 sm:w-auto",
+                  "focus-visible:ring-offset-4 focus-visible:ring-offset-black/50",
+                )}
+              >
+                {primaryCta.label}
+              </ButtonLink>
+            </div>
+          )}
 
           <p
             className={joinClasses(

@@ -1,4 +1,9 @@
 import type { BookingSubmissionInput } from "@/lib/booking/types";
+import {
+  BOOKING_DISABLED_USER_HINT,
+  ONLINE_BOOKING_DISABLED,
+  warnBookingActionBlocked,
+} from "@/lib/booking-availability";
 
 export type BookingApiValidationError = {
   path: string;
@@ -33,6 +38,15 @@ type BookingsErrorJson = {
 };
 
 export async function submitBooking(payload: BookingSubmissionInput): Promise<SubmitBookingResult> {
+  if (ONLINE_BOOKING_DISABLED) {
+    warnBookingActionBlocked("submitBooking");
+    return {
+      ok: false,
+      status: 503,
+      message: BOOKING_DISABLED_USER_HINT,
+    };
+  }
+
   let response: Response;
   try {
     response = await fetch("/api/bookings", {

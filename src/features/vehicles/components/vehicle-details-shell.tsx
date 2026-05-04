@@ -16,7 +16,6 @@ import {
   Cpu,
   Settings2,
   BadgeCheck,
-  PhoneCall,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -32,6 +31,9 @@ import {
   holdBlockedMessageForTrip,
 } from "@/features/vehicles/lib/use-vehicle-availability-check";
 import { BookNowButton } from "@/features/vehicles/components/book-now-button";
+import { BookingUnavailableNotice } from "@/components/booking/booking-unavailable-notice";
+import { BookingDisabledCtaContent } from "@/components/booking/booking-disabled-cta-content";
+import { ONLINE_BOOKING_DISABLED } from "@/lib/booking-availability";
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 
@@ -312,9 +314,18 @@ function BookingSidebar({
   const timeSelectClass =
     "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-[var(--brand-blue)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--brand-blue)]/20";
   const labelClass = "text-xs font-semibold uppercase tracking-wide text-slate-500";
+  const tripFieldsDisabled = ONLINE_BOOKING_DISABLED;
+  const fieldDisabledClass = tripFieldsDisabled
+    ? "cursor-not-allowed bg-slate-50 text-slate-600 opacity-80"
+    : "";
 
   return (
     <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.38)] sm:p-5 md:sticky md:top-[calc(env(safe-area-inset-top)+4rem)]">
+      {ONLINE_BOOKING_DISABLED ? (
+        <div className="mb-4">
+          <BookingUnavailableNotice />
+        </div>
+      ) : null}
       {/* price */}
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
@@ -350,7 +361,9 @@ function BookingSidebar({
             <button
               type="button"
               onClick={() => setShowDatePicker(true)}
-              className="text-xs font-semibold text-[var(--brand-blue)] hover:underline"
+              disabled={tripFieldsDisabled}
+              aria-disabled={tripFieldsDisabled}
+              className="text-xs font-semibold text-[var(--brand-blue)] hover:underline disabled:cursor-not-allowed disabled:text-slate-400 disabled:no-underline disabled:hover:no-underline"
             >
               Change dates
             </button>
@@ -367,13 +380,17 @@ function BookingSidebar({
                   type="date"
                   min={minDate}
                   value={pickupDate}
+                  disabled={tripFieldsDisabled}
+                  aria-disabled={tripFieldsDisabled}
                   onChange={(e) => {
                     const v = e.target.value;
                     setPickupDate(v);
                     if (returnDate && v && returnDate <= v) setReturnDate("");
                     if (v) setShowDateWarning(false);
                   }}
-                  className={dateInputClass(showDateWarning && !pickupDate)}
+                  className={[dateInputClass(showDateWarning && !pickupDate), fieldDisabledClass]
+                    .filter(Boolean)
+                    .join(" ")}
                 />
               </div>
               <div>
@@ -383,11 +400,15 @@ function BookingSidebar({
                   type="date"
                   min={pickupDate || minDate}
                   value={returnDate}
+                  disabled={tripFieldsDisabled}
+                  aria-disabled={tripFieldsDisabled}
                   onChange={(e) => {
                     setReturnDate(e.target.value);
                     if (e.target.value) setShowDateWarning(false);
                   }}
-                  className={dateInputClass(showDateWarning && !returnDate)}
+                  className={[dateInputClass(showDateWarning && !returnDate), fieldDisabledClass]
+                    .filter(Boolean)
+                    .join(" ")}
                 />
               </div>
             </div>
@@ -405,8 +426,10 @@ function BookingSidebar({
                 <select
                   id="sb-pickup-time"
                   value={pickupTime}
+                  disabled={tripFieldsDisabled}
+                  aria-disabled={tripFieldsDisabled}
                   onChange={(e) => setPickupTime(e.target.value)}
-                  className={timeSelectClass}
+                  className={[timeSelectClass, fieldDisabledClass].filter(Boolean).join(" ")}
                 >
                   {BOOKING_TIME_SLOTS.map((s) => (
                     <option key={s} value={s}>{s}</option>
@@ -418,8 +441,10 @@ function BookingSidebar({
                 <select
                   id="sb-return-time"
                   value={returnTime}
+                  disabled={tripFieldsDisabled}
+                  aria-disabled={tripFieldsDisabled}
                   onChange={(e) => setReturnTime(e.target.value)}
-                  className={timeSelectClass}
+                  className={[timeSelectClass, fieldDisabledClass].filter(Boolean).join(" ")}
                 >
                   {BOOKING_TIME_SLOTS.map((s) => (
                     <option key={s} value={s}>{s}</option>
@@ -505,16 +530,12 @@ function BookingSidebar({
         />
       </div>
 
-      {/* secondary CTA */}
-      <a
-        href="https://wa.me/35699999999"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+      <Link
+        href="/contact"
+        className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
       >
-        <PhoneCall className="h-4 w-4" aria-hidden />
-        Contact us on WhatsApp
-      </a>
+        Contact us
+      </Link>
 
       {/* trust row */}
       <ul className="mt-5 space-y-2">
@@ -793,20 +814,29 @@ export function VehicleDetailsShell({
             )}
             <p className="text-xs text-slate-500">Free cancellation</p>
           </div>
-          <Link
-            href={(() => {
-              const p = new URLSearchParams();
-              p.set("vehicle", vehicle.slug);
-              if (initialPickupDate) p.set("pickupDate", initialPickupDate);
-              if (initialReturnDate) p.set("returnDate", initialReturnDate);
-              if (initialPickupTime) p.set("pickupTime", initialPickupTime);
-              if (initialReturnTime) p.set("returnTime", initialReturnTime);
-              return `/booking?${p.toString()}`;
-            })()}
-            className="inline-flex min-h-11 items-center rounded-full bg-[var(--brand-orange)] px-6 text-sm font-bold text-slate-950 shadow-[0_8px_24px_-10px_rgba(255,147,15,0.7)] transition hover:bg-[var(--brand-orange-strong)]"
-          >
-            Reserve now
-          </Link>
+          {ONLINE_BOOKING_DISABLED ? (
+            <span
+              aria-disabled
+              className="inline-flex min-h-11 cursor-not-allowed items-center rounded-full bg-slate-200 px-6 text-sm font-bold text-slate-600"
+            >
+              <BookingDisabledCtaContent iconClassName="h-4 w-4 shrink-0 text-slate-600" />
+            </span>
+          ) : (
+            <Link
+              href={(() => {
+                const p = new URLSearchParams();
+                p.set("vehicle", vehicle.slug);
+                if (initialPickupDate) p.set("pickupDate", initialPickupDate);
+                if (initialReturnDate) p.set("returnDate", initialReturnDate);
+                if (initialPickupTime) p.set("pickupTime", initialPickupTime);
+                if (initialReturnTime) p.set("returnTime", initialReturnTime);
+                return `/booking?${p.toString()}`;
+              })()}
+              className="inline-flex min-h-11 items-center rounded-full bg-[var(--brand-orange)] px-6 text-sm font-bold text-slate-950 shadow-[0_8px_24px_-10px_rgba(255,147,15,0.7)] transition hover:bg-[var(--brand-orange-strong)]"
+            >
+              Reserve now
+            </Link>
+          )}
         </div>
       </div>
     </>

@@ -48,6 +48,8 @@ type VehicleFiltersProps = Readonly<{
   onHotelDeliveryChange: (value: boolean) => void;
   onClearFilters?: () => void;
   onSearch: () => void;
+  /** When true, all controls stay visible but are non-interactive (e.g. online booking off). */
+  filtersDisabled?: boolean;
 }>;
 
 function optionByValue(
@@ -82,16 +84,21 @@ function VehicleFilterToggle({
   checked,
   onCheckedChange,
   switchId,
+  disabled = false,
 }: Readonly<{
   label: string;
   checked: boolean;
   onCheckedChange: (next: boolean) => void;
   switchId: string;
+  disabled?: boolean;
 }>) {
   return (
     <label
       htmlFor={switchId}
-      className="inline-flex cursor-pointer items-center gap-3 select-none whitespace-nowrap"
+      className={[
+        "inline-flex items-center gap-3 select-none whitespace-nowrap",
+        disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer",
+      ].join(" ")}
     >
       <span className="text-sm font-semibold leading-none text-slate-700">
         {label}
@@ -109,8 +116,13 @@ function VehicleFilterToggle({
           role="switch"
           checked={checked}
           aria-checked={checked}
+          disabled={disabled}
+          aria-disabled={disabled}
           onChange={(event) => onCheckedChange(event.target.checked)}
-          className="absolute inset-0 z-10 m-0 cursor-pointer opacity-0"
+          className={[
+            "absolute inset-0 z-10 m-0 opacity-0",
+            disabled ? "cursor-not-allowed" : "cursor-pointer",
+          ].join(" ")}
         />
         <span
           aria-hidden
@@ -147,6 +159,7 @@ export function VehicleFilters({
   onHotelDeliveryChange,
   onClearFilters,
   onSearch,
+  filtersDisabled = false,
 }: VehicleFiltersProps) {
   const t = useTranslations("VehicleFilters");
   const tCommon = useTranslations("Common");
@@ -244,13 +257,17 @@ export function VehicleFilters({
     <section
       id="vehicle-trip-search"
       aria-label={t("ariaVehicleSearch")}
-      className="sticky top-18 z-20 scroll-mt-28 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5"
+      className={[
+        "sticky top-18 z-20 scroll-mt-28 rounded-md border border-slate-200/75 bg-white/90 p-4 backdrop-blur-md md:p-5",
+        filtersDisabled ? "opacity-[0.97]" : "",
+      ].join(" ")}
     >
       <div className={mainGridClass}>
         <div className="min-w-0">
           <VehiclePickupLocationField
             pickupLocation={pickupLocation}
             onPickupLocationChange={onPickupLocationChange}
+            disabled={filtersDisabled}
           />
         </div>
         <div className="min-w-0">
@@ -258,6 +275,7 @@ export function VehicleFilters({
             tripStart={tripStart}
             tripEnd={tripEnd}
             onRangeChange={onTripDatesChange}
+            disabled={filtersDisabled}
           />
         </div>
           <label className={filterCellClass} htmlFor="vehicles-filter-type">
@@ -285,6 +303,7 @@ export function VehicleFilters({
                 menuPosition="fixed"
                 className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-type"
+                isDisabled={filtersDisabled}
               />
             </div>
           </label>
@@ -321,6 +340,7 @@ export function VehicleFilters({
                 menuPosition="fixed"
                 className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-transmission"
+                isDisabled={filtersDisabled}
               />
             </div>
           </label>
@@ -357,6 +377,7 @@ export function VehicleFilters({
                   menuPosition="fixed"
                   className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-seats"
+                  isDisabled={filtersDisabled}
                 />
               </div>
             </label>
@@ -392,6 +413,7 @@ export function VehicleFilters({
                   menuPosition="fixed"
                   className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-color"
+                  isDisabled={filtersDisabled}
                 />
               </div>
             </label>
@@ -420,6 +442,7 @@ export function VehicleFilters({
                 switchId="vehicles-filter-hotel-delivery"
                 checked={hotelDelivery}
                 onCheckedChange={onHotelDeliveryChange}
+                disabled={filtersDisabled}
               />
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
@@ -427,7 +450,9 @@ export function VehicleFilters({
                 <button
                   type="button"
                   onClick={onClearFilters}
-                  className="mr-1 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 sm:mr-2"
+                  disabled={filtersDisabled}
+                  aria-disabled={filtersDisabled}
+                  className="mr-1 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/35 sm:mr-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-slate-600 disabled:hover:no-underline"
                 >
                   {t("clearFilters")}
                 </button>
@@ -435,7 +460,9 @@ export function VehicleFilters({
               <button
                 type="button"
                 onClick={onSearch}
-                className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base"
+                disabled={filtersDisabled}
+                aria-disabled={filtersDisabled}
+                className="group relative inline-flex min-h-[2.75rem] shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--brand-orange)] px-5 text-sm font-semibold tracking-[-0.02em] text-white shadow-[0_10px_28px_-10px_rgba(255,147,15,0.65)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_14px_36px_-12px_rgba(255,147,15,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-white enabled:active:scale-[0.98] sm:min-h-[3rem] sm:min-w-[10.5rem] sm:px-7 sm:text-base disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-[var(--brand-orange)]"
               >
                 {t("search")}
                 <span

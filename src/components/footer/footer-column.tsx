@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 export type FooterNavItem = Readonly<{
   href: string;
   label: string;
+  /** Use a plain anchor (e.g. `mailto:`, `https://wa.me/…`) instead of locale-aware `Link`. */
+  external?: boolean;
 }>;
 
 type FooterColumnProps = Readonly<{
@@ -23,17 +25,31 @@ export function FooterColumn({ id, title, links }: FooterColumnProps) {
         {title}
       </p>
       <ul className="mt-4 list-none space-y-2.5 p-0">
-        {links.map(({ href, label }) => (
+        {links.map(({ href, label, external }) => (
           <li key={href + label}>
-            <Link
-              href={href}
-              className={joinClasses(
-                "text-sm text-white/80 transition-colors duration-200",
-                "hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1628] rounded-sm",
-              )}
-            >
-              {label}
-            </Link>
+            {external ? (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={joinClasses(
+                  "text-sm text-white/80 transition-colors duration-200",
+                  "hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1628] rounded-sm",
+                )}
+              >
+                {label}
+              </a>
+            ) : (
+              <Link
+                href={href}
+                className={joinClasses(
+                  "text-sm text-white/80 transition-colors duration-200",
+                  "hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1628] rounded-sm",
+                )}
+              >
+                {label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>
