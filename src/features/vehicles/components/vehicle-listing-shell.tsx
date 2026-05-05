@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   useCallback,
   useEffect,
   useMemo,
@@ -77,11 +77,18 @@ type VehicleListingShellProps = Readonly<{
     title: string;
     description: string;
   }>;
+  /**
+   * When provided, replaces the built-in VehicleFilters block inside the hero
+   * section.  Pass <BookingSearchFormFromUrl /> here to show the Quick Search
+   * card on the vehicles listing page without duplicating any logic.
+   */
+  searchPanel?: React.ReactNode;
 }>;
 
 export function VehicleListingShell({
   vehicles,
   heroIntro,
+  searchPanel,
 }: VehicleListingShellProps) {
   const tListing = useTranslations("VehicleListing");
   const shouldFetchFromApi = !vehicles;
@@ -624,7 +631,7 @@ export function VehicleListingShell({
           <p className="mt-4 max-w-3xl text-base leading-relaxed text-white/90 sm:text-lg">
             {heroIntro.description}
           </p>
-          <div className="mt-8">{filters}</div>
+          <div className="mt-8">{searchPanel ?? filters}</div>
         </Container>
       </section>
     );

@@ -48,7 +48,7 @@ function assertEqual(name, actual, expected) {
   console.log(`PASS ${name}`);
 }
 
-async function createVehicle(nameSuffix, vehicleType = "MOTORBIKE_50CC") {
+async function createVehicle(nameSuffix, vehicleType = "Scooter") {
   const id = randomUUID();
   const slug = `${TEST_PREFIX}-${nameSuffix}-${Math.random().toString(36).slice(2, 8)}`;
   await pool.query(
@@ -67,7 +67,7 @@ async function createVehicle(nameSuffix, vehicleType = "MOTORBIKE_50CC") {
 
 async function createBooking({
   vehicleId,
-  vehicleType = "MOTORBIKE_50CC",
+  vehicleType = "Scooter",
   status = "CONFIRMED",
   start,
   end,
@@ -227,7 +227,7 @@ async function main() {
   await cleanup();
 
   try {
-    const type = "MOTORBIKE_50CC";
+    const type = "Scooter";
 
     const vehicleA = await createVehicle("a", type);
     const vehicleB = await createVehicle("b", type);

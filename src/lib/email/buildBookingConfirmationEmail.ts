@@ -34,18 +34,7 @@ function formatDateTime(d: Date): string {
 }
 
 function vehicleLabel(vehicleType: Booking["vehicleType"]): string {
-  switch (vehicleType) {
-    case "MOTORBIKE_50CC":
-      return "50cc motorbike";
-    case "MOTORBIKE_125CC":
-      return "125cc motorbike";
-    case "BICYCLE":
-      return "Bicycle";
-    case "ATV":
-      return "ATV";
-    default:
-      return vehicleType;
-  }
+  return vehicleType;
 }
 
 function pickupOptionLabel(option: Booking["pickupOption"]): string {

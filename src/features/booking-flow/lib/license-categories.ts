@@ -12,14 +12,13 @@ export function getAllowedLicenseCategories(
 ): readonly LicenseCategory[] {
   const normalizedType = selectedVehicleType.toLowerCase();
   const normalizedId = (selectedVehicleId ?? "").toLowerCase();
-  const normalized = `${normalizedType} ${normalizedId}`;
-  if (normalized.includes("atv")) {
+  if (normalizedType === "atv" || normalizedId.includes("atv")) {
     return LICENSES_FOR_ATV;
   }
-  if (normalized.includes("50cc")) {
+  if (normalizedType === "scooter" || normalizedId.includes("50cc")) {
     return LICENSES_FOR_50CC;
   }
-  if (normalized.includes("125cc")) {
+  if (normalizedType === "motorcycle" || normalizedId.includes("125cc")) {
     return LICENSES_FOR_125CC;
   }
   return LICENSE_CATEGORIES;

@@ -64,11 +64,11 @@ export function AddonsStep() {
   const supportsHelmet = vehicleTypeNeedsHelmetFlow(state.rental.vehicleType);
 
   const allowedCdwValues = useMemo((): ReadonlyArray<string> => {
-    const vt = (state.rental.vehicleType ?? "").toUpperCase();
-    if (vt === "MOTORBIKE_50CC") return ["none", "scooter_50", "scooter_full"];
-    if (vt === "MOTORBIKE_125CC") return ["none", "scooter_125", "scooter_full"];
-    if (vt === "ATV") return ["none", "atv_full"];
-    if (vt === "BICYCLE") return ["none"];
+    const vt = (state.rental.vehicleType ?? "").toLowerCase();
+    if (vt === "scooter") return ["none", "scooter_50", "scooter_full"];
+    if (vt === "motorcycle") return ["none", "scooter_125", "scooter_full"];
+    if (vt === "atv") return ["none", "atv_full"];
+    if (vt === "bicycle") return ["none"];
     return ["none", "scooter_50", "scooter_125", "scooter_full", "atv_full"];
   }, [state.rental.vehicleType]);
 

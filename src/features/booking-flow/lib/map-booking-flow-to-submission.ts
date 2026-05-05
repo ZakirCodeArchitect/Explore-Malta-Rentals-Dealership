@@ -13,25 +13,22 @@ export function mapVehicleTypeToApiVehicleType(
   const slug = vehicleSlug.toLowerCase();
   const display = stateVehicleType.toLowerCase();
   if (display === "bicycle" || slug.includes("bicycle")) {
-    return "BICYCLE";
+    return "Bicycle";
   }
   if (display === "atv" || slug.includes("atv")) {
     return "ATV";
   }
-  if (slug.includes("50cc")) {
-    return "MOTORBIKE_50CC";
+  if (display === "scooter" || slug.includes("50cc")) {
+    return "Scooter";
   }
-  if (slug.includes("125cc")) {
-    return "MOTORBIKE_125CC";
+  if (display === "motorcycle" || slug.includes("125cc")) {
+    return "Motorcycle";
   }
-  if (display === "scooter" || display === "motorcycle") {
-    return "MOTORBIKE_125CC";
-  }
-  return "MOTORBIKE_125CC";
+  return "Scooter";
 }
 
 function isHelmetRequiredForApiVehicle(apiVehicle: ApiVehicleType): boolean {
-  return apiVehicle === "MOTORBIKE_50CC" || apiVehicle === "MOTORBIKE_125CC" || apiVehicle === "ATV";
+  return apiVehicle === "Scooter" || apiVehicle === "Motorcycle" || apiVehicle === "ATV";
 }
 
 function toHelmetSize(value: string): "S" | "M" | "L" | null {
@@ -56,10 +53,10 @@ function mapCdwPlanToApi(
     return "FULL_COVERAGE_50CC_125CC";
   }
   if (plan === "scooter_50") {
-    return apiVehicle === "MOTORBIKE_50CC" ? "REDUCE_350_50CC" : "NO_CDW";
+    return apiVehicle === "Scooter" ? "REDUCE_350_50CC" : "NO_CDW";
   }
   if (plan === "scooter_125") {
-    return apiVehicle === "MOTORBIKE_125CC" ? "REDUCE_500_125CC" : "NO_CDW";
+    return apiVehicle === "Motorcycle" ? "REDUCE_500_125CC" : "NO_CDW";
   }
   return "NO_CDW";
 }

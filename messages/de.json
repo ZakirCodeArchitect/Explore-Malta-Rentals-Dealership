@@ -711,6 +711,8 @@
     "offDropoff": " · Andere Rückgabe",
     "offSiteExtra": " · +€{amount} außerhalb",
     "indicativeSummary": "Richtwert Motorräder/Roller gesamt ~€{tripEur} (€{dailyEur}/Tag × {days} {dayLabel}) · Endpreis hängt von Fahrzeug und Extras ab.",
+    "vehicleTypeLabel": "Fahrzeugtyp",
+    "vehicleTypeAll": "Alle Typen",
     "submitSearching": "Suche läuft…",
     "submitIdle": "Verfügbare Fahrzeuge suchen"
   },

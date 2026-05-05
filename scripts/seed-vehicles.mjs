@@ -14,7 +14,7 @@ const vehicles = [
   {
     name: "Neco One 50cc",
     slug: "neco-one-50cc",
-    vehicleType: "MOTORBIKE_50CC",
+    vehicleType: "Scooter",
     brand: "Neco",
     model: "One 50cc",
     shortDescription: "Compact automatic 50cc scooter for city rides.",
@@ -28,7 +28,7 @@ const vehicles = [
   {
     name: "Lexmoto Aura 125cc",
     slug: "lexmoto-aura-125cc",
-    vehicleType: "MOTORBIKE_125CC",
+    vehicleType: "Motorcycle",
     brand: "Lexmoto",
     model: "Aura 125",
     shortDescription: "Reliable 125cc automatic scooter for island touring.",
@@ -42,7 +42,7 @@ const vehicles = [
   {
     name: "Giant Escape City Bike",
     slug: "giant-escape-city-bike",
-    vehicleType: "BICYCLE",
+    vehicleType: "Bicycle",
     brand: "Giant",
     model: "Escape",
     shortDescription: "Comfort-focused bicycle for scenic daytime routes.",

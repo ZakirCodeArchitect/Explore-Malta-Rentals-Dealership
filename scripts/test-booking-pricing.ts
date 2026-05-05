@@ -19,7 +19,7 @@ type BookingPayload = z.input<typeof bookingSubmissionSchema>;
 
 const scenario50ccTwoDaysInPerson: BookingPricingInput = {
   rental: {
-    vehicle: { type: "MOTORBIKE_50CC" },
+    vehicle: { type: "Scooter" },
     pickupDate: "2026-05-10",
     returnDate: "2026-05-12",
     pickupTime: "10:00",
@@ -88,7 +88,7 @@ function expectSchemaFailure(
 
 const bookingBody: BookingPayload = {
   rental: {
-    vehicleType: "MOTORBIKE_50CC",
+    vehicleType: "Scooter",
     pickupDate: "2026-05-10",
     returnDate: "2026-05-12",
     pickupTime: "10:00",
@@ -145,7 +145,7 @@ const bookingBody: BookingPayload = {
 
 function runNegativeValidationTests(): void {
   expectSchemaFailure(
-    "wrong license (A1 on MOTORBIKE_50CC)",
+    "wrong license (A1 on Scooter)",
     {
       ...bookingBody,
       customer: { ...bookingBody.customer, licenseCategory: "A1" },

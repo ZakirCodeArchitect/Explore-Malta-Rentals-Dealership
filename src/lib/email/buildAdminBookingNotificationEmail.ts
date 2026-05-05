@@ -29,13 +29,8 @@ function formatDateTime(d: Date): string {
 }
 
 function vehicleLabel(vehicleType: Booking["vehicleType"]): string {
-  switch (vehicleType) {
-    case "MOTORBIKE_50CC":  return "50cc Motorbike";
-    case "MOTORBIKE_125CC": return "125cc Motorbike";
-    case "BICYCLE":         return "Bicycle";
-    case "ATV":             return "ATV / Quad";
-    default:                return vehicleType;
-  }
+  if (vehicleType === "ATV") return "ATV / Quad";
+  return vehicleType;
 }
 
 function cdwLabel(option: Booking["cdwOption"]): string {

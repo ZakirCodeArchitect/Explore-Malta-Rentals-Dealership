@@ -25,10 +25,15 @@ export function buildVehiclesSearchUrl(values: BookingFormValues): string {
     pickupDate: values.pickupDate,
     returnDate: values.dropoffDate,
     pickupTime: values.pickupTime,
-    returnTime: values.dropoffTime,
+    dropoffTime: values.dropoffTime,
     differentDropoff: values.differentDropoff ? "1" : "0",
     alternatePickup: values.alternatePickupRequested ? "1" : "0",
   });
+
+  const type = values.vehicleType?.trim();
+  if (type && type !== "all") {
+    params.set("type", type);
+  }
 
   return `/vehicles?${params.toString()}`;
 }

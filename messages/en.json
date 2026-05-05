@@ -711,6 +711,8 @@
     "offDropoff": " · Different drop-off",
     "offSiteExtra": " · +€{amount} off-site",
     "indicativeSummary": "Indicative motorcycles/scooters total ~€{tripEur} (€{dailyEur}/day × {days} {dayLabel}) · Final price depends on vehicle and add-ons.",
+    "vehicleTypeLabel": "Vehicle type",
+    "vehicleTypeAll": "All types",
     "submitSearching": "Searching…",
     "submitIdle": "Search available vehicles"
   },

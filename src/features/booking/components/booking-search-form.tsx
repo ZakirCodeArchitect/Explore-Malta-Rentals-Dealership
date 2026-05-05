@@ -14,7 +14,8 @@ import {
   parse,
   startOfDay,
 } from "date-fns";
-import { CalendarDays, Gauge, Loader2, MapPin, Sparkles } from "lucide-react";
+import { CalendarDays, ChevronDown, Gauge, Loader2, MapPin, Sparkles } from "lucide-react";
+import { VEHICLE_TYPES } from "@/features/vehicles/data/vehicles";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   createBookingFormSchema,
@@ -53,7 +54,17 @@ function defaultDates() {
   };
 }
 
-export function BookingSearchForm() {
+type BookingSearchFormProps = Readonly<{
+  initialValues?: Partial<{
+    vehicleType: string;
+    pickupDate: string;
+    dropoffDate: string;
+    pickupTime: string;
+    dropoffTime: string;
+  }>;
+}>;
+
+export function BookingSearchForm({ initialValues }: BookingSearchFormProps = {}) {
   const router = useRouter();
   const tSearch = useTranslations("BookingSearch");
   const tForm = useTranslations("BookingForm");
@@ -92,14 +103,15 @@ export function BookingSearchForm() {
   const form = useForm<BookingFormValues>({
     resolver: formResolver,
     defaultValues: {
+      vehicleType: initialValues?.vehicleType ?? "all",
       alternatePickupRequested: false,
       alternatePickupAddress: "",
       differentDropoff: false,
       dropoffAddress: "",
-      pickupDate: defPu,
-      dropoffDate: defDo,
-      pickupTime: defaultPickupTime,
-      dropoffTime: defaultDropoffTime,
+      pickupDate: initialValues?.pickupDate ?? defPu,
+      dropoffDate: initialValues?.dropoffDate ?? defDo,
+      pickupTime: initialValues?.pickupTime ?? defaultPickupTime,
+      dropoffTime: initialValues?.dropoffTime ?? defaultDropoffTime,
     },
   });
 
@@ -302,6 +314,30 @@ export function BookingSearchForm() {
               })}
             </p>
           ) : null}
+
+          <div className="min-w-0">
+            <label htmlFor="booking-vehicle-type" className="mb-1.5 block text-xs font-semibold text-slate-500">
+              {tSearch("vehicleTypeLabel")}
+            </label>
+            <div className="relative">
+              <select
+                id="booking-vehicle-type"
+                className={`${inputShell} appearance-none pr-9`}
+                {...register("vehicleType")}
+              >
+                <option value="all">{tSearch("vehicleTypeAll")}</option>
+                {VEHICLE_TYPES.map((type) => (
+                  <option key={type} value={type.toLowerCase()}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                aria-hidden
+              />
+            </div>
+          </div>
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">

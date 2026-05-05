@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
 import { mapVehicleListItemToVehicle, type Vehicle } from "@/features/vehicles/data/vehicles";
 import { VehicleListingShell } from "@/features/vehicles/components/vehicle-listing-shell";
+import { BookingSearchFormFromUrl } from "@/features/booking/components/booking-search-form-from-url";
 import { getVehicles } from "@/lib/vehicles";
 
 type VehiclesPageProps = Readonly<{
@@ -75,7 +76,15 @@ export default async function VehiclesPage({ params, searchParams }: VehiclesPag
           </Container>
         }
       >
-        <VehicleListingShell heroIntro={heroIntro} vehicles={initialVehicles} />
+        <VehicleListingShell
+          heroIntro={heroIntro}
+          vehicles={initialVehicles}
+          searchPanel={
+            <Suspense fallback={<div className="h-[440px] animate-pulse rounded-2xl bg-white/10" aria-hidden />}>
+              <BookingSearchFormFromUrl />
+            </Suspense>
+          }
+        />
       </Suspense>
     </main>
   );

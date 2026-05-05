@@ -4,7 +4,7 @@ import { z } from "zod";
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^\d{2}:\d{2}$/;
 
-export const VEHICLE_TYPES = ["MOTORBIKE_50CC", "MOTORBIKE_125CC", "BICYCLE", "ATV"] as const;
+export const VEHICLE_TYPES = ["Scooter", "Motorcycle", "Bicycle", "ATV"] as const;
 export const PICKUP_OPTIONS = ["OFFICE", "DELIVERY"] as const;
 export const DROPOFF_OPTIONS = ["OFFICE", "DROPOFF"] as const;
 export const LICENSE_CATEGORIES = ["AM", "A1", "A2", "A", "B"] as const;
@@ -152,17 +152,17 @@ export function combineDateAndTime(date: string, time: string): Date | null {
 }
 
 const ALLOWED_LICENSE_BY_VEHICLE: Record<string, ReadonlySet<string> | null> = {
-  MOTORBIKE_50CC: new Set(["B", "AM"]),
-  MOTORBIKE_125CC: new Set(["A", "A1", "A2"]),
-  BICYCLE: null,
+  Scooter: new Set(["B", "AM"]),
+  Motorcycle: new Set(["A", "A1", "A2"]),
+  Bicycle: null,
   ATV: null,
 };
 
 const ALLOWED_CDW_BY_VEHICLE: Record<(typeof VEHICLE_TYPES)[number], ReadonlySet<string>> = {
-  MOTORBIKE_50CC: new Set(["NO_CDW", "REDUCE_350_50CC", "FULL_COVERAGE_50CC_125CC"]),
-  MOTORBIKE_125CC: new Set(["NO_CDW", "REDUCE_500_125CC", "FULL_COVERAGE_50CC_125CC"]),
+  Scooter: new Set(["NO_CDW", "REDUCE_350_50CC", "FULL_COVERAGE_50CC_125CC"]),
+  Motorcycle: new Set(["NO_CDW", "REDUCE_500_125CC", "FULL_COVERAGE_50CC_125CC"]),
   ATV: new Set(["NO_CDW", "REDUCE_800_ATV"]),
-  BICYCLE: new Set(["NO_CDW"]),
+  Bicycle: new Set(["NO_CDW"]),
 };
 
 function isLicenseAllowed(vehicleType: string, licenseCategory: string): boolean {
@@ -463,8 +463,8 @@ export const bookingSubmissionSchema = z
     }
 
     const helmetRequired =
-      payload.rental.vehicleType === "MOTORBIKE_50CC" ||
-      payload.rental.vehicleType === "MOTORBIKE_125CC" ||
+      payload.rental.vehicleType === "Scooter" ||
+      payload.rental.vehicleType === "Motorcycle" ||
       payload.rental.vehicleType === "ATV";
 
     if (helmetRequired && (!payload.addons.helmetSize1 || !payload.addons.helmetSize2)) {

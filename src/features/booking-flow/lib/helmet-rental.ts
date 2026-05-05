@@ -1,6 +1,6 @@
 /**
  * Helmet size UI and submit validation apply for these rental categories.
- * `vehicleType` may be an API code (e.g. MOTORBIKE_125CC) or a display label (Scooter).
+ * `vehicleType` accepts any of the VehicleType values: Scooter, Motorcycle, Bicycle, ATV.
  */
 export function vehicleTypeNeedsHelmetFlow(vehicleType: string | null | undefined): boolean {
   const t = (vehicleType ?? "").trim().toLowerCase();

@@ -49,10 +49,10 @@ function bookingFieldsForVehicleType(vehicleType: string): {
   helmetSize1: "S" | "M" | "L" | null;
   helmetSize2: "S" | "M" | "L" | null;
 } {
-  if (vehicleType === "MOTORBIKE_50CC") {
+  if (vehicleType === "Scooter") {
     return { licenseCategory: "B", helmetSize1: "M", helmetSize2: "L" };
   }
-  if (vehicleType === "MOTORBIKE_125CC") {
+  if (vehicleType === "Motorcycle") {
     return { licenseCategory: "A1", helmetSize1: "M", helmetSize2: "L" };
   }
   if (vehicleType === "ATV") {

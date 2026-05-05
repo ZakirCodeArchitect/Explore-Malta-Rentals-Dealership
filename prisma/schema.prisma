@@ -20,9 +20,9 @@ enum BookingStatus {
 }
 
 enum VehicleType {
-  MOTORBIKE_50CC
-  MOTORBIKE_125CC
-  BICYCLE
+  Scooter
+  Motorcycle
+  Bicycle
   ATV
 }
 

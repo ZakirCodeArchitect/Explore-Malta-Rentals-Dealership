@@ -7,20 +7,15 @@ import Select, {
 } from "react-select";
 import type { ReactNode } from "react";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
-import type {
-  Transmission,
-  VehicleColor,
-  VehicleSeatsFilter,
-  VehicleType,
+import {
+  VEHICLE_TYPES,
+  type Transmission,
+  type VehicleColor,
+  type VehicleSeatsFilter,
+  type VehicleType,
 } from "@/features/vehicles/data/vehicles";
 
-const VEHICLE_TYPES: readonly (VehicleType | "All")[] = [
-  "All",
-  "Scooter",
-  "Motorcycle",
-  "ATV",
-  "Bicycle",
-];
+const VEHICLE_TYPE_OPTIONS: readonly (VehicleType | "All")[] = ["All", ...VEHICLE_TYPES];
 
 const TRANSMISSIONS: readonly (Transmission | "All")[] = [
   "All",
@@ -335,7 +330,7 @@ export function VehicleListingSidebar({
       className={sleekRail ? "space-y-3.5" : "space-y-5"}
     >
       <FilterSection title="Vehicle type" sleek={sleekRail}>
-        {VEHICLE_TYPES.map((value) => (
+        {VEHICLE_TYPE_OPTIONS.map((value) => (
           <RadioRow
             key={value}
             name="vehicle-type"

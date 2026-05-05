@@ -3,7 +3,7 @@ import type { BookingSubmissionInput, BookingValidationResult } from "@/lib/book
 
 const BASE_VALID_50CC_PAYLOAD: BookingSubmissionInput = {
   rental: {
-    vehicleType: "MOTORBIKE_50CC",
+    vehicleType: "Scooter",
     pickupDate: "2026-05-10",
     returnDate: "2026-05-12",
     pickupTime: "10:00",

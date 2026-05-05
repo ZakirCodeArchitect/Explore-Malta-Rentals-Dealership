@@ -1,7 +1,9 @@
 import type { VehicleRentalWindowStatus } from "@/lib/vehicles/types";
 
-export type ApiVehicleType = "MOTORBIKE_50CC" | "MOTORBIKE_125CC" | "BICYCLE" | "ATV";
-export type VehicleType = "Scooter" | "Motorcycle" | "ATV" | "Bicycle";
+export const VEHICLE_TYPES = ["Scooter", "Motorcycle", "Bicycle", "ATV"] as const;
+
+export type ApiVehicleType = (typeof VEHICLE_TYPES)[number];
+export type VehicleType = ApiVehicleType;
 export type Transmission = "Automatic" | "Manual";
 
 /** Listing filter: exact seat count (1–3 only). */
@@ -88,29 +90,16 @@ const PLACEHOLDER_ADDONS: readonly VehicleAddOn[] = [
 ];
 
 function readableApiVehicleType(type: ApiVehicleType): string {
-  switch (type) {
-    case "MOTORBIKE_50CC":
-      return "Motorbike 50cc";
-    case "MOTORBIKE_125CC":
-      return "Motorbike 125cc";
-    case "BICYCLE":
-      return "Bicycle";
-    case "ATV":
-      return "ATV";
-    default:
-      return "Vehicle";
-  }
+  return type;
 }
 
 function mapApiTypeToListingType(type: ApiVehicleType): VehicleType {
-  if (type === "ATV") return "ATV";
-  if (type === "BICYCLE") return "Bicycle";
-  return "Scooter";
+  return type;
 }
 
 function engineByApiType(type: ApiVehicleType): string {
-  if (type === "MOTORBIKE_50CC") return "50cc";
-  if (type === "MOTORBIKE_125CC") return "125cc";
+  if (type === "Scooter") return "50cc";
+  if (type === "Motorcycle") return "125cc";
   if (type === "ATV") return "ATV";
   return "Bicycle";
 }
@@ -163,9 +152,9 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
     helmetIncludedCount: item.helmetIncludedCount,
     supportsStorageBox,
     pricePerDay: 0,
-    seats: inferredType === "Bicycle" ? 1 : 2,
-    transmission: inferredType === "Bicycle" ? "Manual" : "Automatic",
-    fuel: inferredType === "Bicycle" ? "Human powered" : "Petrol",
+    seats: item.vehicleType === "Bicycle" ? 1 : 2,
+    transmission: item.vehicleType === "Bicycle" ? "Manual" : "Automatic",
+    fuel: item.vehicleType === "Bicycle" ? "Human powered" : "Petrol",
     color: "Gray",
     engine: engineByApiType(item.vehicleType),
     rating: 0,
@@ -200,10 +189,5 @@ export function formatVehicleTypeLabel(type: ApiVehicleType): string {
 }
 
 export function isApiVehicleType(value: string): value is ApiVehicleType {
-  return (
-    value === "MOTORBIKE_50CC" ||
-    value === "MOTORBIKE_125CC" ||
-    value === "BICYCLE" ||
-    value === "ATV"
-  );
+  return (VEHICLE_TYPES as readonly string[]).includes(value);
 }

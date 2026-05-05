@@ -711,6 +711,8 @@
     "offDropoff": " · Devolución distinta",
     "offSiteExtra": " · +€{amount} fuera de sede",
     "indicativeSummary": "Total orientativo motos/scooters ~€{tripEur} (€{dailyEur}/día × {days} {dayLabel}) · El precio final depende del vehículo y extras.",
+    "vehicleTypeLabel": "Tipo de vehículo",
+    "vehicleTypeAll": "Todos los tipos",
     "submitSearching": "Buscando…",
     "submitIdle": "Buscar vehículos disponibles"
   },
