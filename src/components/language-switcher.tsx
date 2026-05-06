@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 
 const LABELS: Record<(typeof routing.locales)[number], string> = {
   en: "EN",
+  mt: "MT",
   es: "ES",
   de: "DE",
 };
