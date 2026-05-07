@@ -607,7 +607,7 @@ export function VehicleListingShell({
         className="relative isolate overflow-hidden pb-12 pt-28 sm:pb-14 sm:pt-32"
       >
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-          <div className="absolute inset-0 flex items-center justify-center bg-[#0b1624]">
+          <div className="absolute inset-0 flex items-start justify-center bg-[#0b1624] pt-28 sm:pt-32">
             <Image
               src={LOGO_PATH}
               alt=""
