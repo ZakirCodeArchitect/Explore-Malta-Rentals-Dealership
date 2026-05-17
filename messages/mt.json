@@ -37,7 +37,8 @@
     "close": "Agħlaq",
     "bookNow": "Ibbukkja Issa",
     "logoAlt": "Explore Malta Rentals",
-    "language": "Lingwa"
+    "language": "Lingwa",
+    "selectLanguage": "Agħżel il-lingwa"
   },
   "SiteBanner": {
     "onlineBookingUnavailable": "Il-prenotazzjoni online mhix disponibbli bħalissa"

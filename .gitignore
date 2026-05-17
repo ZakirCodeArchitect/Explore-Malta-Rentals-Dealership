@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Local booking document uploads (Phase 4.4)
 public/uploads/bookings/**
+
+# i18n generation caches (scripts/generate-locale-messages.mjs)
+scripts/.cache-i18n-*.json

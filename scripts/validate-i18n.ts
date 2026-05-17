@@ -6,8 +6,23 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 const ROOT = path.resolve(__dirname, "..");
-const LOCALES = ["en", "es", "de"] as const;
-const FILES = LOCALES.map((loc) => path.join(ROOT, "messages", `${loc}.json`));
+const REFERENCE_LOCALE = "en";
+const LOCALES = [
+  "en",
+  "mt",
+  "es",
+  "de",
+  "ko",
+  "tr",
+  "it",
+  "vi",
+  "id",
+  "th",
+  "pl",
+  "nl",
+  "bn",
+  "ur",
+] as const;
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [k: string]: JsonValue };
 
@@ -15,10 +30,7 @@ function isPlainObject(v: unknown): v is Record<string, JsonValue> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
-function flattenKeys(
-  obj: JsonValue,
-  prefix = "",
-): Map<string, string> {
+function flattenKeys(obj: JsonValue, prefix = ""): Map<string, string> {
   const out = new Map<string, string>();
   if (obj === null || typeof obj !== "object") {
     if (prefix) out.set(prefix, typeof obj === "string" ? obj : JSON.stringify(obj));
@@ -58,34 +70,37 @@ function extractPlaceholders(message: string): Set<string> {
   return found;
 }
 
-function main() {
-  const maps: Map<string, string>[] = [];
+function loadLocaleMap(locale: string): Map<string, string> {
+  const file = path.join(ROOT, "messages", `${locale}.json`);
+  if (!fs.existsSync(file)) {
+    console.error(`Missing file: ${file}`);
+    process.exit(1);
+  }
+  const raw = fs.readFileSync(file, "utf8");
+  let parsed: JsonValue;
+  try {
+    parsed = JSON.parse(raw) as JsonValue;
+  } catch (e) {
+    console.error(`Invalid JSON: ${file}`, e);
+    process.exit(1);
+  }
+  return flattenKeys(parsed);
+}
 
-  for (const file of FILES) {
-    if (!fs.existsSync(file)) {
-      console.error(`Missing file: ${file}`);
-      process.exit(1);
-    }
-    const raw = fs.readFileSync(file, "utf8");
-    let parsed: JsonValue;
-    try {
-      parsed = JSON.parse(raw) as JsonValue;
-    } catch (e) {
-      console.error(`Invalid JSON: ${file}`, e);
-      process.exit(1);
-    }
-    maps.push(flattenKeys(parsed));
+function main() {
+  const maps = new Map<string, Map<string, string>>();
+  for (const locale of LOCALES) {
+    maps.set(locale, loadLocaleMap(locale));
   }
 
-  const [enMap, esMap, deMap] = maps;
+  const enMap = maps.get(REFERENCE_LOCALE)!;
   const enKeys = new Set(enMap.keys());
-
   let failed = false;
 
   const reportMissing = (locale: string, missing: string[]) => {
     if (missing.length) {
       failed = true;
-      console.error(`[${locale}] Missing ${missing.length} key(s) (vs en):`);
+      console.error(`[${locale}] Missing ${missing.length} key(s) (vs ${REFERENCE_LOCALE}):`);
       missing.slice(0, 40).forEach((k) => console.error(`  - ${k}`));
       if (missing.length > 40) console.error(`  ... and ${missing.length - 40} more`);
     }
@@ -94,37 +109,24 @@ function main() {
   const reportExtra = (locale: string, extra: string[]) => {
     if (extra.length) {
       failed = true;
-      console.error(`[${locale}] Extra ${extra.length} key(s) (not in en):`);
+      console.error(`[${locale}] Extra ${extra.length} key(s) (not in ${REFERENCE_LOCALE}):`);
       extra.slice(0, 40).forEach((k) => console.error(`  + ${k}`));
       if (extra.length > 40) console.error(`  ... and ${extra.length - 40} more`);
     }
   };
 
-  for (const [locale, map, ref] of [
-    ["es", esMap, enKeys],
-    ["de", deMap, enKeys],
-  ] as const) {
-    const missing = [...ref].filter((k) => !map.has(k)).sort();
-    const extra = [...map.keys()].filter((k) => !ref.has(k)).sort();
+  for (const locale of LOCALES) {
+    if (locale === REFERENCE_LOCALE) continue;
+    const map = maps.get(locale)!;
+    const missing = [...enKeys].filter((k) => !map.has(k)).sort();
+    const extra = [...map.keys()].filter((k) => !enKeys.has(k)).sort();
     reportMissing(locale, missing);
     reportExtra(locale, extra);
   }
 
-  const esExtraVsDe = [...esMap.keys()].filter((k) => !deMap.has(k)).sort();
-  const deExtraVsEs = [...deMap.keys()].filter((k) => !esMap.has(k)).sort();
-  if (esExtraVsDe.length || deExtraVsEs.length) {
-    failed = true;
-    console.error("es vs de key mismatch:");
-    reportExtra("es\\de", esExtraVsDe);
-    reportExtra("de\\es", deExtraVsEs);
-  }
-
   for (const key of [...enKeys].sort()) {
-    for (const [locale, map] of [
-      ["en", enMap],
-      ["es", esMap],
-      ["de", deMap],
-    ] as const) {
+    for (const locale of LOCALES) {
+      const map = maps.get(locale)!;
       const v = map.get(key);
       if (v === undefined) continue;
       if (v.trim() === "") {
@@ -137,10 +139,9 @@ function main() {
   for (const key of [...enKeys].sort()) {
     const enVal = enMap.get(key)!;
     const enPh = extractPlaceholders(enVal);
-    for (const [locale, map] of [
-      ["es", esMap],
-      ["de", deMap],
-    ] as const) {
+    for (const locale of LOCALES) {
+      if (locale === REFERENCE_LOCALE) continue;
+      const map = maps.get(locale)!;
       const oVal = map.get(key);
       if (oVal === undefined) continue;
       const oPh = extractPlaceholders(oVal);
@@ -148,7 +149,7 @@ function main() {
       const extraPh = [...oPh].filter((p) => !enPh.has(p)).sort();
       if (missingPh.length || extraPh.length) {
         failed = true;
-        console.error(`Placeholder mismatch for "${key}" (${locale} vs en):`);
+        console.error(`Placeholder mismatch for "${key}" (${locale} vs ${REFERENCE_LOCALE}):`);
         if (missingPh.length) console.error(`  missing in ${locale}: ${missingPh.join(", ")}`);
         if (extraPh.length) console.error(`  extra in ${locale}: ${extraPh.join(", ")}`);
       }
@@ -159,7 +160,9 @@ function main() {
     console.error("\ni18n validation failed.");
     process.exit(1);
   }
-  console.log("i18n validation OK: en, es, and de share the same keys with no empty values or placeholder mismatches.");
+  console.log(
+    `i18n validation OK: ${LOCALES.join(", ")} share the same keys with no empty values or placeholder mismatches.`,
+  );
 }
 
 main();

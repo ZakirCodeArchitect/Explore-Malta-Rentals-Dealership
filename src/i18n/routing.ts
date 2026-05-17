@@ -4,7 +4,22 @@ import { defineRouting } from "next-intl/routing";
 export const defaultTimeZone = "Europe/Malta";
 
 export const routing = defineRouting({
-  locales: ["en", "mt", "es", "de"],
+  locales: [
+    "en",
+    "mt",
+    "es",
+    "de",
+    "ko",
+    "tr",
+    "it",
+    "vi",
+    "id",
+    "th",
+    "pl",
+    "nl",
+    "bn",
+    "ur",
+  ],
   defaultLocale: "en",
   localePrefix: "always",
 });
