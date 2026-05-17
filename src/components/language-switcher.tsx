@@ -139,7 +139,7 @@ export function LanguageSwitcher() {
             id={`${menuId}-listbox`}
             role="listbox"
             aria-labelledby={`${menuId}-trigger`}
-            className="absolute end-0 top-[calc(100%+0.35rem)] z-50 max-h-[min(18rem,70vh)] min-w-[11.5rem] overflow-y-auto rounded-xl border border-slate-200/90 bg-white py-1 text-[0.7rem] font-semibold text-slate-800 shadow-lg sm:text-xs"
+            className="language-switcher-dropdown absolute end-0 top-[calc(100%+0.35rem)] z-50 max-h-[min(18rem,70vh)] min-w-[11.5rem] overflow-y-auto overscroll-contain rounded-md border border-slate-200/90 bg-white py-1 text-[0.7rem] font-semibold text-slate-800 shadow-lg sm:text-xs"
           >
             {localeList.map(({ code, label, nativeLabel }) => {
               const active = code === locale;
