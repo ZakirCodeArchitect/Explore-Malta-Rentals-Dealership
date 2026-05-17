@@ -109,6 +109,55 @@ export const localeMetadata: Record<AppLocale, LocaleMeta> = {
     shortLabel: "UR",
     direction: "rtl",
   },
+  zh: {
+    code: "zh",
+    label: "Chinese",
+    nativeLabel: "中文",
+    shortLabel: "ZH",
+    direction: "ltr",
+  },
+  hi: {
+    code: "hi",
+    label: "Hindi",
+    nativeLabel: "हिन्दी",
+    shortLabel: "HI",
+    direction: "ltr",
+  },
+  ar: {
+    code: "ar",
+    label: "Arabic",
+    nativeLabel: "العربية",
+    shortLabel: "AR",
+    direction: "rtl",
+  },
+  fr: {
+    code: "fr",
+    label: "French",
+    nativeLabel: "Français",
+    shortLabel: "FR",
+    direction: "ltr",
+  },
+  pt: {
+    code: "pt",
+    label: "Portuguese",
+    nativeLabel: "Português",
+    shortLabel: "PT",
+    direction: "ltr",
+  },
+  ru: {
+    code: "ru",
+    label: "Russian",
+    nativeLabel: "Русский",
+    shortLabel: "RU",
+    direction: "ltr",
+  },
+  ja: {
+    code: "ja",
+    label: "Japanese",
+    nativeLabel: "日本語",
+    shortLabel: "JA",
+    direction: "ltr",
+  },
 };
 
 export const localeList = Object.values(localeMetadata);

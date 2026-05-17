@@ -5,20 +5,9 @@ export const defaultTimeZone = "Europe/Malta";
 
 export const routing = defineRouting({
   locales: [
-    "en",
-    "mt",
-    "es",
-    "de",
-    "ko",
-    "tr",
-    "it",
-    "vi",
-    "id",
-    "th",
-    "pl",
-    "nl",
-    "bn",
-    "ur",
+    "en", "mt", "es", "de", "it", "nl", "pl", "tr",
+    "ko", "vi", "id", "th", "bn", "ur",
+    "zh", "hi", "ar", "fr", "pt", "ru", "ja",
   ],
   defaultLocale: "en",
   localePrefix: "always",
