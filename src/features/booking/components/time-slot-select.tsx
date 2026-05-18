@@ -6,7 +6,7 @@ import { forwardRef, useId, useState } from "react";
 import { TIME_SLOTS } from "@/features/booking/lib/time-slots";
 
 const triggerShell =
-  "flex w-full min-h-[3rem] cursor-pointer items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-visible:border-[var(--brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/25 data-[state=open]:border-[var(--brand-blue)] data-[state=open]:ring-2 data-[state=open]:ring-[var(--brand-blue)]/20";
+  "flex w-full min-h-[3rem] cursor-pointer items-center gap-2 rounded-lg border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-visible:border-[var(--brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)]/25 data-[state=open]:border-[var(--brand-blue)] data-[state=open]:ring-2 data-[state=open]:ring-[var(--brand-blue)]/20";
 
 type TimeSlotSelectProps = Readonly<{
   id?: string;
@@ -46,7 +46,7 @@ export const TimeSlotSelect = forwardRef<HTMLButtonElement, TimeSlotSelectProps>
             className={`${triggerShell} justify-between`}
             onBlur={onBlur}
           >
-          <Clock className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />
+          <Clock className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
           <span className="min-w-0 flex-1 truncate tabular-nums">{value}</span>
           <ChevronDown
             className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}

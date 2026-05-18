@@ -131,8 +131,8 @@ export async function VideoHero() {
             </div>
 
             {/* booking search form */}
-            <div className="w-full max-w-5xl shrink-0">
-              <BookingSearchForm />
+            <div className="w-full shrink-0">
+              <BookingSearchForm quickFilterTone="hero" />
             </div>
           </div>
         </SiteShell>
