@@ -65,7 +65,10 @@
     "days": "hari",
     "change": "Mengubah",
     "search": "Mencari",
-    "pickupLabel": "Menjemput"
+    "pickupLabel": "Menjemput",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "Pieta, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Tinjau & Konfirmasi"
       }
-    }
+    },
+    "holdExpiredTitle": "Reservasi kedaluwarsa",
+    "reservationBannerTitle": "Kendaraan ini sementara dipesan untuk Anda.",
+    "reservationBannerExpires": "Reservasi berakhir dalam {remaining}.",
+    "documentUploadHint": "Lampirkan tepat satu file, hingga 2 MB.",
+    "documentUploadAttaching": "Melampirkan…",
+    "documentUploadSuccess": "Berhasil dilampirkan",
+    "documentUploadFailed": "Gagal melampirkan, coba lagi. {message}",
+    "documentUploadOneFile": "Lampirkan tepat satu file (maks. 2 MB).",
+    "documentUploadAttached": "Dilampirkan: {name}",
+    "noVehicleChooseLater": "Saya pilih nanti",
+    "noVehicleDismiss": "Tutup",
+    "termsConsentKicker": "Persetujuan hukum",
+    "termsConsentReviewLead": "Harap baca kontrak lengkap sebelum mengonfirmasi pemesanan.",
+    "termsConsentOpenFull": "Buka syarat lengkap di tab baru",
+    "termsConsentAgreeCheckbox": "Saya telah membaca Syarat & Ketentuan lengkap dan setuju melanjutkan.",
+    "termsConsentSubmitting": "Mengirim…",
+    "termsConsentCancel": "Batal"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "Jenis kendaraan wajib diisi",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Ngobrol di WhatsApp",
-    "faqLabel": "Ada apa"
+    "faqLabel": "Ada apa",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "Menampilkan kendaraan {count}",

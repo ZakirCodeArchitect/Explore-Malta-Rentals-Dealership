@@ -65,7 +65,10 @@
     "days": "días",
     "change": "Cambiar",
     "search": "Buscar",
-    "pickupLabel": "Recogida"
+    "pickupLabel": "Recogida",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Abrir Explore Malta Rentals en Google Maps",
+    "mapViewOnMaps": "Ver en Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -144,19 +147,19 @@
       "t1": {
         "name": "Marta",
         "location": "Tourist",
-        "date": "Jun 01, 2024",
+        "date": "01 jun 2024",
         "quote": "Pickup was smooth, the bike felt like new, and we had the best day exploring around Malta."
       },
       "t2": {
         "name": "Daniel",
-        "location": "Weekend rider",
-        "date": "Nov 09, 2024",
-        "quote": "Clear instructions, friendly support, and great recommendations for where to go. Highly recommend!"
+        "location": "Conductor de fin de semana",
+        "date": "09 nov 2024",
+        "quote": "Instrucciones claras, trato amable y excelentes recomendaciones sobre dónde ir. ¡Muy recomendable!"
       },
       "t3": {
         "name": "Sofia",
-        "location": "Family trip",
-        "date": "Oct 17, 2024",
+        "location": "Viaje en familia",
+        "date": "17 oct 2024",
         "quote": "Perfect for our Malta plan. Comfortable ride, quick communication, and a super easy process."
       }
     },
@@ -235,34 +238,34 @@
   },
   "Footer": {
     "exploreHome": "Home",
-    "exploreFleet": "Fleet & bikes",
-    "exploreServices": "Services & tours",
+    "exploreFleet": "Flota y motos",
+    "exploreServices": "Servicios y tours",
     "exploreFaq": "FAQ",
-    "companyAbout": "About us",
+    "companyAbout": "Sobre nosotros",
     "companyTours": "Tours",
     "companyContact": "Contact",
-    "companyHow": "How renting works",
-    "supportHelp": "Help center",
-    "supportTalk": "Talk to us",
-    "supportBook": "Book a rental",
-    "legalTerms": "Terms of service",
-    "legalPrivacy": "Privacy policy",
-    "legalCookies": "Cookies & data",
-    "bookRental": "Book a rental",
-    "seeFleetTours": "See fleet & tours",
-    "trustBookingTitle": "Straightforward booking",
+    "companyHow": "Cómo funciona el alquiler",
+    "supportHelp": "Centro de ayuda",
+    "supportTalk": "Habla con nosotros",
+    "supportBook": "Reservar un alquiler",
+    "legalTerms": "Términos de servicio",
+    "legalPrivacy": "Política de privacidad",
+    "legalCookies": "Cookies y datos",
+    "bookRental": "Reservar un alquiler",
+    "seeFleetTours": "Ver flota y tours",
+    "trustBookingTitle": "Reserva sencilla",
     "trustBookingDesc": "Clear pricing and simple pick-up from Pietà so you know what to expect before you ride.",
-    "trustFleetTitle": "Well-kept fleet",
-    "trustFleetDesc": "Safety-minded maintenance and practical kit so you can focus on the ride, not the paperwork.",
-    "trustSupportTitle": "Visitor-friendly support",
+    "trustFleetTitle": "Flota bien cuidada",
+    "trustFleetDesc": "Mantenimiento orientado a la seguridad y equipamiento práctico para que te centres en la ruta, no en el papeleo.",
+    "trustSupportTitle": "Atención para visitantes",
     "trustSupportDesc": "WhatsApp help, local tips, and quick answers when plans change mid-trip.",
-    "newsletterTitle": "Stay in the loop",
+    "newsletterTitle": "Mantente informado",
     "newsletterDesc": "Occasional updates on seasonal offers, new arrivals, and Malta riding tips — no spam.",
-    "newsletterPlaceholder": "Email address",
+    "newsletterPlaceholder": "Correo electrónico",
     "newsletterSubmit": "Subscribe",
-    "newsletterSuccess": "Thanks — you're subscribed.",
-    "followUs": "Follow us",
-    "copyright": "© {year} {brand}. All rights reserved.",
+    "newsletterSuccess": "Gracias — estás suscrito.",
+    "followUs": "Síguenos",
+    "copyright": "© {year} {brand}. Todos los derechos reservados.",
     "madeInMalta": "Made in Malta · Built for riders and explorers",
     "columnExplore": "Explorar",
     "columnCompany": "Empresa",
@@ -325,7 +328,7 @@
   },
   "BookingPage": {
     "heading": "Multi-step booking for Explore Malta Rentals",
-    "intro": "Complete all booking stages from vehicle selection to terms acceptance. Pricing and backend submission are introduced in the next phases.",
+    "intro": "Completa todas las etapas de la reserva, desde la elección del vehículo hasta la aceptación de los términos. Los precios y el envío al sistema se gestionan en fases posteriores.",
     "lookup": {
       "submittedTitle": "Reserva recibida",
       "submittedBody": "Tu referencia de reserva está rellenada abajo. Introduce el mismo correo que usaste en el formulario y pulsa «Cargar reserva» para ver los datos de confirmación en nuestro sistema.",
@@ -351,14 +354,14 @@
         "FAILED": "Fallida"
       }
     },
-    "ratesHeading": "Rates at a glance",
-    "ratesDescription": "Ballpark per-calendar-day amounts for motorcycles and scooters before extras, use these as a guide while you search.",
-    "ratesLinkLead": "Want the full picture on what's included?",
-    "ratesLink": "Services & benefits"
+    "ratesHeading": "Tarifas de un vistazo",
+    "ratesDescription": "Importes orientativos por día natural para motos y scooters antes de extras; úsalos como guía mientras buscas.",
+    "ratesLinkLead": "¿Quieres el detalle de lo incluido?",
+    "ratesLink": "Servicios y ventajas"
   },
   "VehiclesPage": {
     "heroTitle": "Find your perfect Malta ride. Explore Malta your way.",
-    "heroDescription": "Compare scooters by engine size and colour, then lock in your dates. Transparent pricing and quick booking."
+    "heroDescription": "Compara scooters por cilindrada y color, luego confirma tus fechas. Precios transparentes y reserva rápida."
   },
   "VehicleCard": {
     "imageSoon": "Imagen del vehículo próximamente",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Revisar y confirmar"
       }
-    }
+    },
+    "holdExpiredTitle": "Reserva caducada",
+    "reservationBannerTitle": "Este vehículo está reservado temporalmente para ti.",
+    "reservationBannerExpires": "La reserva caduca en {remaining}.",
+    "documentUploadHint": "Adjunta un solo archivo, hasta 2 MB.",
+    "documentUploadAttaching": "Adjuntando…",
+    "documentUploadSuccess": "Adjunto correctamente",
+    "documentUploadFailed": "Error al adjuntar, inténtalo de nuevo. {message}",
+    "documentUploadOneFile": "Adjunta un solo archivo (máx. 2 MB).",
+    "documentUploadAttached": "Adjunto: {name}",
+    "noVehicleChooseLater": "Elegiré más tarde",
+    "noVehicleDismiss": "Cerrar",
+    "termsConsentKicker": "Consentimiento legal",
+    "termsConsentReviewLead": "Revisa el contrato completo antes de confirmar esta reserva.",
+    "termsConsentOpenFull": "Abrir términos completos en una pestaña nueva",
+    "termsConsentAgreeCheckbox": "He leído los Términos y condiciones completos y acepto continuar.",
+    "termsConsentSubmitting": "Enviando…",
+    "termsConsentCancel": "Cancelar"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "El tipo de vehículo es obligatorio",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Chat on WhatsApp",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "Número de WhatsApp",
+    "numberLabel": "Número de WhatsApp",
+    "openContact": "Abrir contacto de WhatsApp",
+    "openApp": "Abrir WhatsApp",
+    "envDisabledHint": "WhatsApp (configura NEXT_PUBLIC_WHATSAPP_NUMBER para activar)",
+    "envSetupHint": "Configura whatsapp_number en tu archivo .env y reinicia el servidor de desarrollo."
   },
   "VehicleListing": {
     "showing": "Mostrando {count} vehículos",
@@ -816,7 +842,7 @@
       "cdwCost": "CDW:",
       "addDriverCost": "Conductor adicional:",
       "storageCost": "Baúl:",
-      "subtotal": "Subtotal:",
+      "subtotal": "Importe parcial:",
       "pricingPending": "El precio aparecerá cuando el vehículo y las fechas/horas sean válidos.",
       "section3": "Sección 3 - Fianza y totales",
       "securityDeposit": "Fianza:",

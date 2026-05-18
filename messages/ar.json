@@ -65,7 +65,10 @@
     "days": "أيام",
     "change": "تغيير",
     "search": "بحث",
-    "pickupLabel": "الاستلام"
+    "pickupLabel": "الاستلام",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Ouvrir Explore Malta Rentals dans Google Maps",
+    "mapViewOnMaps": "Voir sur Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "المراجعة والتأكيد"
       }
-    }
+    },
+    "holdExpiredTitle": "انتهت صلاحية الحجز",
+    "reservationBannerTitle": "هذه المركبة محجوزة لك مؤقتاً.",
+    "reservationBannerExpires": "ينتهي الحجز خلال {remaining}.",
+    "documentUploadHint": "أرفق ملفاً واحداً فقط، حتى 2 ميجابايت.",
+    "documentUploadAttaching": "جارٍ الإرفاق…",
+    "documentUploadSuccess": "تم الإرفاق بنجاح",
+    "documentUploadFailed": "فشل الإرفاق، يرجى المحاولة مرة أخرى. {message}",
+    "documentUploadOneFile": "يرجى إرفاق ملف واحد فقط (بحد أقصى 2 ميجابايت).",
+    "documentUploadAttached": "المرفق: {name}",
+    "noVehicleChooseLater": "سأختار لاحقاً",
+    "noVehicleDismiss": "إغلاق",
+    "termsConsentKicker": "موافقة قانونية",
+    "termsConsentReviewLead": "يرجى مراجعة العقد الكامل قبل تأكيد هذا الحجز.",
+    "termsConsentOpenFull": "افتح الشروط الكاملة في تبويب جديد",
+    "termsConsentAgreeCheckbox": "لقد قرأت الشروط والأحكام الكاملة وأوافق على المتابعة.",
+    "termsConsentSubmitting": "جارٍ الإرسال…",
+    "termsConsentCancel": "إلغاء"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "نوع المركبة مطلوب",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "دردشة على WhatsApp",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "عرض {count} مركبات",

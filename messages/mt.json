@@ -65,7 +65,10 @@
     "days": "ijiem",
     "change": "Ibdel",
     "search": "Fittex",
-    "pickupLabel": "Irkupru"
+    "pickupLabel": "Irkupru",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Iftaħ Explore Malta Rentals fuq Google Maps",
+    "mapViewOnMaps": "Ara fuq Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -86,7 +89,7 @@
     "heroFieldVehicle": "Tip ta' vettura",
     "heroFieldVehicleValue": "Il-vetturi kollha",
     "heroFieldDate": "Data tal-irkupru",
-    "heroFieldDateValue": "12 Jun 2026",
+    "heroFieldDateValue": "12 Ġun 2026",
     "aboutBusinessTitle": "Dwar in-Negozju",
     "aboutBusinessTagline": "Agħżel il-vjaġġ it-tajjeb, ikseb gwida ċara, u esplora Malta b'kunfidenza.",
     "aboutPricingFrom": "Minn €10 / jum",
@@ -368,7 +371,7 @@
     "holdNotice": "Għandek riżervazzoni attiva għal din il-vettura għad-dati magħżula. Kompli biex tlesti l-prenotazzjoni tiegħek.",
     "reservedOtherNotice": "Temporanjament fuq hold għal dawn id-dati — klijent ieħor jista' jkun qed jikkonkludi l-checkout.",
     "unavailableWindow": "Mhux disponibbli għall-finestra magħżula tal-irkupru u r-ritorn.",
-    "helmetsInline": "{count, plural, one {# helmet} other {# helmets}}",
+    "helmetsInline": "{count, plural, one {# kaskett} other {# kasketti}}",
     "storageYes": "Kaxxa ta' ħażna appoġġata",
     "storageNo": "Ebda kaxxa ta' ħażna",
     "perDay": "/ jum",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Irrevedi u Ikkonferma"
       }
-    }
+    },
+    "holdExpiredTitle": "Ir-riservazzjoni skadiet",
+    "reservationBannerTitle": "Dan il-vettura huwa riżervat temporanjament għalik.",
+    "reservationBannerExpires": "Ir-riservazzjoni tiskadi fi {remaining}.",
+    "documentUploadHint": "Ehmeż fajl wieħed biss, sa 2 MB.",
+    "documentUploadAttaching": "Qed jingħaqad…",
+    "documentUploadSuccess": "Mehmuż b'suċċess",
+    "documentUploadFailed": "L-attachment falla, erġa' pprova. {message}",
+    "documentUploadOneFile": "Ehmeż fajl wieħed biss (max 2 MB).",
+    "documentUploadAttached": "Mehmuż: {name}",
+    "noVehicleChooseLater": "Nagħżel aktar tard",
+    "noVehicleDismiss": "Agħlaq",
+    "termsConsentKicker": "Kunsens legali",
+    "termsConsentReviewLead": "Aqra l-kuntratt sħiħ qabel tikkonferma din ir-riservazzjoni.",
+    "termsConsentOpenFull": "Iftaħ it-termini sħaħ f'tab ġdida",
+    "termsConsentAgreeCheckbox": "Qrajt it-Termini u Kundizzjonijiet sħaħ u naqbel li nkompli.",
+    "termsConsentSubmitting": "Qed jintbagħat…",
+    "termsConsentCancel": "Ikkanċella"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "It-tip ta' vettura huwa meħtieġ",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Iċċettja fuq WhatsApp",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "Qed jintwera {count} vetturi",
@@ -816,7 +842,7 @@
       "cdwCost": "CDW:",
       "addDriverCost": "Sewwieq Addizzjonali:",
       "storageCost": "Kaxxa ta' Ħażna:",
-      "subtotal": "Subtotal:",
+      "subtotal": "Subtotali:",
       "pricingPending": "Previżjoni tal-prezzar tidher ladarba l-vettura u d-dati/ħinijiet tal-kiri jkunu validi.",
       "section3": "Sezzjoni 3 - Depożitu u Totali",
       "securityDeposit": "Depożitu ta' sigurtà:",

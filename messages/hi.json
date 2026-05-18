@@ -65,7 +65,10 @@
     "days": "दिन",
     "change": "बदलें",
     "search": "खोजें",
-    "pickupLabel": "पिकअप"
+    "pickupLabel": "पिकअप",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "समीक्षा और पुष्टि"
       }
-    }
+    },
+    "holdExpiredTitle": "आरक्षण समाप्त",
+    "reservationBannerTitle": "यह वाहन अस्थायी रूप से आपके लिए आरक्षित है।",
+    "reservationBannerExpires": "आरक्षण {remaining} में समाप्त होगा।",
+    "documentUploadHint": "केवल एक फ़ाइल संलग्न करें, अधिकतम 2 MB।",
+    "documentUploadAttaching": "संलग्न हो रहा है…",
+    "documentUploadSuccess": "सफलतापूर्वक संलग्न",
+    "documentUploadFailed": "संलग्न करने में विफल, पुनः प्रयास करें। {message}",
+    "documentUploadOneFile": "कृपया केवल एक फ़ाइल संलग्न करें (अधिकतम 2 MB)।",
+    "documentUploadAttached": "संलग्न: {name}",
+    "noVehicleChooseLater": "मैं बाद में चुनूंगा",
+    "noVehicleDismiss": "बंद करें",
+    "termsConsentKicker": "कानूनी सहमति",
+    "termsConsentReviewLead": "यह बुकिंग पुष्टि करने से पहले पूरा अनुबंध पढ़ें।",
+    "termsConsentOpenFull": "नए टैब में पूर्ण नियम खोलें",
+    "termsConsentAgreeCheckbox": "मैंने पूर्ण नियम और शर्तें पढ़ ली हैं और आगे बढ़ने से सहमत हूँ।",
+    "termsConsentSubmitting": "जमा हो रहा है…",
+    "termsConsentCancel": "रद्द करें"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "वाहन का प्रकार आवश्यक है",
@@ -521,7 +541,7 @@
     "mapSectionTitle": "Malta को अपने तरीके से एक्सप्लोर करें",
     "mapSectionDescription": "आपके मार्ग की योजना बनाने में मदद करने के लिए आकर्षण बिंदुओं के साथ पर्यटक गाइड मैप।",
     "mapImageAlt": "आकर्षणों के साथ Malta का पर्यटक गाइड मैप",
-    "parkingTitleBefore": "",
+    "parkingTitleBefore": "माल्टा में स्कूटर के लिए ",
     "parkingTitleHighlight": "पार्किंग नियम",
     "parkingTitleAfter": " — Malta में स्कूटर के लिए गाइड",
     "parkingSectionIntro": "सफेद रेखाएं सही पार्किंग स्थान चिह्नित करती हैं। कभी भी पीली, नीली या हरी रेखाओं पर पार्क न करें: पीली गैरेज और आरक्षित पार्किंग / पार्किंग निषेध के लिए; नीली विकलांग बे के लिए; हरी स्थानीय क्षेत्र के निवासियों के लिए। हमेशा MC स्थानों के भीतर या सफेद पार्किंग स्थान में किन्हीं दो कारों के बीच पार्क करें।",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "WhatsApp पर चैट करें",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count} वाहन दिखाए जा रहे हैं",

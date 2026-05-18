@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bike, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 type NoVehicleModalProps = {
@@ -10,6 +11,8 @@ type NoVehicleModalProps = {
 };
 
 export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
+  const t = useTranslations("BookingSteps.selectVehicle");
+  const tFlow = useTranslations("BookingFlow");
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -67,7 +70,7 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
         <button
           type="button"
           onClick={onDismiss}
-          aria-label="Dismiss"
+          aria-label={tFlow("noVehicleDismiss")}
           className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
         >
           <X className="h-4 w-4" />
@@ -83,13 +86,10 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
             id="no-vehicle-modal-title"
             className="text-xl font-bold tracking-[-0.03em] text-slate-900"
           >
-            No vehicle selected yet
+            {t("noneSelectedTitle")}
           </h2>
 
-          <p className="mt-2 text-sm leading-relaxed text-slate-500">
-            To complete your booking, please choose a vehicle first. Browse our full fleet and pick
-            the one that suits your trip.
-          </p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-500">{t("noneSelectedBodyLong")}</p>
 
           {/* CTA */}
           <Link
@@ -97,7 +97,7 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
             className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--brand-orange)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2"
           >
             <Bike className="h-4 w-4" />
-            Browse Fleet
+            {t("browseFleet")}
           </Link>
 
           {/* Dismiss link */}
@@ -106,7 +106,7 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
             onClick={onDismiss}
             className="mt-3 w-full rounded-xl px-6 py-2.5 text-sm text-slate-500 transition-colors hover:text-slate-700"
           >
-            I'll choose later
+            {tFlow("noVehicleChooseLater")}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 import { WhatsAppIcon } from "@/features/home/components/whatsapp-action-link";
 import { getWhatsAppChatUrl, toWhatsAppDigits } from "@/lib/whatsapp-number";
@@ -8,6 +9,7 @@ const DEFAULT_MESSAGE =
   "Hi! I'd like to book a ride / ask about availability in Malta.";
 
 export function WhatsAppFloatingButton() {
+  const t = useTranslations("WhatsApp");
   const panelId = useId();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -46,13 +48,13 @@ export function WhatsAppFloatingButton() {
           <div
             id={panelId}
             role="dialog"
-            aria-label="WhatsApp number"
+            aria-label={t("panelAriaLabel")}
             className="w-[min(calc(100vw-2rem),18rem)] rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)]"
           >
             {digits ? (
               <>
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  WhatsApp number
+                  {t("numberLabel")}
                 </p>
                 <p className="mt-1 break-all text-lg font-semibold tabular-nums text-slate-950">
                   {displayNumber}
@@ -63,7 +65,7 @@ export function WhatsAppFloatingButton() {
                   rel="noreferrer"
                   className="mt-4 flex min-h-10 w-full items-center justify-center rounded-full bg-[#25D366] px-4 text-sm font-semibold text-white transition-opacity hover:opacity-95"
                 >
-                  Open WhatsApp
+                  {t("openApp")}
                 </a>
               </>
             ) : (
@@ -81,8 +83,8 @@ export function WhatsAppFloatingButton() {
 
         <button
           type="button"
-          aria-label="Open WhatsApp contact"
-          title="WhatsApp"
+          aria-label={t("openContact")}
+          title={t("faqLabel")}
           aria-expanded={open}
           aria-controls={open ? panelId : undefined}
           onClick={() => setOpen((v) => !v)}

@@ -65,7 +65,10 @@
     "days": "দিন",
     "change": "পরিবর্তন",
     "search": "অনুসন্ধান করুন",
-    "pickupLabel": "পিকআপ"
+    "pickupLabel": "পিকআপ",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "পিয়েটা, মাল্টা",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "পর্যালোচনা এবং নিশ্চিত করুন"
       }
-    }
+    },
+    "holdExpiredTitle": "রিজার্ভেশন মেয়াদোত্তীর্ণ",
+    "reservationBannerTitle": "এই যানবাহনটি সাময়িকভাবে আপনার জন্য সংরক্ষিত।",
+    "reservationBannerExpires": "রিজার্ভেশন {remaining} পরে শেষ হবে।",
+    "documentUploadHint": "শুধু একটি ফাইল সংযুক্ত করুন, সর্বোচ্চ ২ MB।",
+    "documentUploadAttaching": "সংযুক্ত হচ্ছে…",
+    "documentUploadSuccess": "সফলভাবে সংযুক্ত",
+    "documentUploadFailed": "সংযুক্ত করতে ব্যর্থ, আবার চেষ্টা করুন। {message}",
+    "documentUploadOneFile": "অনুগ্রহ করে একটি ফাইল সংযুক্ত করুন (সর্বোচ্চ ২ MB)।",
+    "documentUploadAttached": "সংযুক্ত: {name}",
+    "noVehicleChooseLater": "পরে বেছে নেব",
+    "noVehicleDismiss": "বন্ধ",
+    "termsConsentKicker": "আইনি সম্মতি",
+    "termsConsentReviewLead": "এই বুকিং নিশ্চিত করার আগে সম্পূর্ণ চুক্তি পড়ুন।",
+    "termsConsentOpenFull": "নতুন ট্যাবে সম্পূর্ণ শর্তাবলী খুলুন",
+    "termsConsentAgreeCheckbox": "আমি সম্পূর্ণ শর্তাবলী পড়েছি এবং এগিয়ে যেতে সম্মত।",
+    "termsConsentSubmitting": "জমা দেওয়া হচ্ছে…",
+    "termsConsentCancel": "বাতিল"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "গাড়ির ধরন প্রয়োজন",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "হোয়াটসঅ্যাপে চ্যাট করুন",
-    "faqLabel": "হোয়াটসঅ্যাপ"
+    "faqLabel": "হোয়াটসঅ্যাপ",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count} যানবাহন দেখানো হচ্ছে",

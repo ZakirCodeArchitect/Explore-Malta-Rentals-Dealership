@@ -112,6 +112,7 @@ export function LanguageSwitcher() {
       ref={rootRef}
       role="group"
       aria-label={t("language")}
+      data-testid="language-switcher"
       className="relative flex items-center gap-0.5 rounded-full border border-slate-300/90 bg-white/90 p-0.5 text-[0.65rem] font-bold tracking-wide text-slate-700 shadow-sm sm:text-xs"
     >
       <LocalePill loc={primary} active={locale === primary} onSelect={switchLocale} />

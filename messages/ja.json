@@ -65,7 +65,10 @@
     "days": "日間",
     "change": "変更",
     "search": "検索",
-    "pickupLabel": "受け取り"
+    "pickupLabel": "受け取り",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "確認と承認"
       }
-    }
+    },
+    "holdExpiredTitle": "予約の有効期限が切れました",
+    "reservationBannerTitle": "この車両は一時的に予約されています。",
+    "reservationBannerExpires": "予約の有効期限: {remaining}",
+    "documentUploadHint": "ファイルは1つだけ添付してください（最大2MB）。",
+    "documentUploadAttaching": "添付中…",
+    "documentUploadSuccess": "添付しました",
+    "documentUploadFailed": "添付に失敗しました。もう一度お試しください。{message}",
+    "documentUploadOneFile": "ファイルは1つだけ添付してください（最大2MB）。",
+    "documentUploadAttached": "添付: {name}",
+    "noVehicleChooseLater": "後で選択",
+    "noVehicleDismiss": "閉じる",
+    "termsConsentKicker": "法的同意",
+    "termsConsentReviewLead": "予約を確定する前に契約全文をご確認ください。",
+    "termsConsentOpenFull": "新しいタブで全文の規約を開く",
+    "termsConsentAgreeCheckbox": "利用規約の全文を読み、続行に同意します。",
+    "termsConsentSubmitting": "送信中…",
+    "termsConsentCancel": "キャンセル"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "車両タイプは必須です",
@@ -521,7 +541,7 @@
     "mapSectionTitle": "自分のスタイルでMaltaを探索",
     "mapSectionDescription": "ルート計画に役立つアトラクションポイント付き観光ガイドマップ。",
     "mapImageAlt": "アトラクション付きMalta観光ガイドマップ",
-    "parkingTitleBefore": "",
+    "parkingTitleBefore": "マルタのスクーター向け",
     "parkingTitleHighlight": "駐車ルール",
     "parkingTitleAfter": " — Maltaのスクーター向けガイド",
     "parkingSectionIntro": "白い線が正しい駐車スペースを示します。黄色、青、または緑の線には絶対に駐車しないでください：黄色はガレージと予約駐車/駐車禁止；青は障害者用スペース；緑は地域の住民用。常にMCスペース内、または白い駐車スペースで2台の車の間に駐車してください。",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "WhatsAppでチャット",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count}台の車両を表示",

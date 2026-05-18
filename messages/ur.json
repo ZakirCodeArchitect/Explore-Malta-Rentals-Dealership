@@ -65,7 +65,10 @@
     "days": "دن",
     "change": "تبدیلی",
     "search": "تلاش کریں۔",
-    "pickupLabel": "اٹھاؤ"
+    "pickupLabel": "اٹھاؤ",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "پیئٹا، مالٹا",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "جائزہ لیں اور تصدیق کریں۔"
       }
-    }
+    },
+    "holdExpiredTitle": "ریزرویشن ختم ہو گئی",
+    "reservationBannerTitle": "یہ گاڑی عارضی طور پر آپ کے لیے محفوظ ہے۔",
+    "reservationBannerExpires": "ریزرویشن {remaining} میں ختم ہوگی۔",
+    "documentUploadHint": "صرف ایک فائل منسلک کریں، زیادہ سے زیادہ 2 MB۔",
+    "documentUploadAttaching": "منسلک ہو رہا ہے…",
+    "documentUploadSuccess": "کامیابی سے منسلک",
+    "documentUploadFailed": "منسلک نہیں ہوا، دوبارہ کوشش کریں۔ {message}",
+    "documentUploadOneFile": "براہ کرم صرف ایک فائل منسلک کریں (زیادہ سے زیادہ 2 MB)۔",
+    "documentUploadAttached": "منسلک: {name}",
+    "noVehicleChooseLater": "میں بعد میں منتخب کروں گا",
+    "noVehicleDismiss": "بند کریں",
+    "termsConsentKicker": "قانونی رضامندی",
+    "termsConsentReviewLead": "اس بکنگ کی تصدیق سے پہلے مکمل معاہدہ پڑھیں۔",
+    "termsConsentOpenFull": "نئی ٹیب میں مکمل شرائط کھولیں",
+    "termsConsentAgreeCheckbox": "میں نے مکمل شرائط و ضوابط پڑھ لیے ہیں اور آگے بڑھنے سے اتفاق کرتا/کرتی ہوں۔",
+    "termsConsentSubmitting": "جمع ہو رہا ہے…",
+    "termsConsentCancel": "منسوخ"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "گاڑی کی قسم درکار ہے۔",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "واٹس ایپ پر چیٹ کریں۔",
-    "faqLabel": "واٹس ایپ"
+    "faqLabel": "واٹس ایپ",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count} گاڑیاں دکھا رہا ہے۔",

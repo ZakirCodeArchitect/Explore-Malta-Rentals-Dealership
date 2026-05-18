@@ -65,7 +65,10 @@
     "days": "날",
     "change": "변화",
     "search": "찾다",
-    "pickupLabel": "찾다"
+    "pickupLabel": "찾다",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "피에타, 몰타",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "검토 및 확인"
       }
-    }
+    },
+    "holdExpiredTitle": "예약이 만료되었습니다",
+    "reservationBannerTitle": "이 차량이 일시적으로 예약되었습니다.",
+    "reservationBannerExpires": "예약 만료: {remaining}",
+    "documentUploadHint": "파일 1개만 첨부하세요(최대 2MB).",
+    "documentUploadAttaching": "첨부 중…",
+    "documentUploadSuccess": "첨부 완료",
+    "documentUploadFailed": "첨부에 실패했습니다. 다시 시도하세요. {message}",
+    "documentUploadOneFile": "파일 1개만 첨부하세요(최대 2MB).",
+    "documentUploadAttached": "첨부됨: {name}",
+    "noVehicleChooseLater": "나중에 선택",
+    "noVehicleDismiss": "닫기",
+    "termsConsentKicker": "법적 동의",
+    "termsConsentReviewLead": "예약을 확정하기 전에 전체 계약서를 검토하세요.",
+    "termsConsentOpenFull": "새 탭에서 전체 약관 열기",
+    "termsConsentAgreeCheckbox": "전체 이용약관을 읽었으며 계속 진행에 동의합니다.",
+    "termsConsentSubmitting": "제출 중…",
+    "termsConsentCancel": "취소"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "차량 유형은 필수 항목입니다.",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "WhatsApp에서 채팅",
-    "faqLabel": "왓츠앱"
+    "faqLabel": "왓츠앱",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count} 차량 표시",

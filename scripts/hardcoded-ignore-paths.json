@@ -1,0 +1,31 @@
+{
+  "ignoreFilePatterns": [
+    "/api/",
+    "\\.test\\.",
+    "\\.spec\\.",
+    "__tests__",
+    "booking-flow-context\\.tsx",
+    "types\\.ts",
+    "validators\\.ts",
+    "submit-booking",
+    "terms-page-content\\.tsx",
+    "terms-consent-modal\\.tsx",
+    "pricing-step\\.tsx"
+  ],
+  "ignoreTextPatterns": [
+    "^\\): Promise",
+    "^Promise$",
+    "^void ",
+    "^void\\|",
+    "^NECO ",
+    "^LEX ",
+    "^EUR ",
+    "^50cc",
+    "^125cc",
+    "^ATV",
+    "^AM$",
+    "^A1",
+    "^Remove$",
+    "^Replace$"
+  ]
+}

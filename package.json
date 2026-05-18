@@ -9,6 +9,11 @@
     "start": "next start",
     "lint": "eslint",
     "validate:i18n": "tsx scripts/validate-i18n.ts",
+    "audit:i18n-content": "tsx scripts/audit-i18n-content.ts",
+    "audit:hardcoded-text": "tsx scripts/audit-hardcoded-text.ts",
+    "test:i18n-render": "playwright test tests/i18n-render.spec.ts",
+    "audit:i18n-page-diff": "playwright test tests/i18n-page-diff.spec.ts",
+    "audit:i18n": "tsx scripts/run-i18n-audit.ts",
     "test:booking-pricing": "tsx scripts/test-booking-pricing.ts",
     "verify:uploads": "tsx scripts/verify-upload-phase.ts",
     "test:upload-api": "tsx scripts/test-upload-api.ts",
@@ -60,6 +65,7 @@
     "eslint-config-next": "16.2.1",
     "prisma": "^7.7.0",
     "tailwindcss": "^4",
+    "@playwright/test": "^1.52.0",
     "tsx": "^4.21.0",
     "typescript": "^5"
   }

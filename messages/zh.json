@@ -65,7 +65,10 @@
     "days": "天",
     "change": "更改",
     "search": "搜索",
-    "pickupLabel": "取车"
+    "pickupLabel": "取车",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "审核与确认"
       }
-    }
+    },
+    "holdExpiredTitle": "预订已过期",
+    "reservationBannerTitle": "此车辆已为您临时预留。",
+    "reservationBannerExpires": "预订将于 {remaining} 后过期",
+    "documentUploadHint": "请仅附加一个文件，最大 2 MB。",
+    "documentUploadAttaching": "正在附加…",
+    "documentUploadSuccess": "附加成功",
+    "documentUploadFailed": "附加失败，请重试。{message}",
+    "documentUploadOneFile": "请仅附加一个文件（最大 2 MB）。",
+    "documentUploadAttached": "已附加：{name}",
+    "noVehicleChooseLater": "稍后选择",
+    "noVehicleDismiss": "关闭",
+    "termsConsentKicker": "法律同意",
+    "termsConsentReviewLead": "确认预订前请阅读完整合同。",
+    "termsConsentOpenFull": "在新标签页中打开完整条款",
+    "termsConsentAgreeCheckbox": "我已阅读完整条款与条件并同意继续。",
+    "termsConsentSubmitting": "正在提交…",
+    "termsConsentCancel": "取消"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "车辆类型为必填项",
@@ -521,7 +541,7 @@
     "mapSectionTitle": "以您的方式探索 Malta",
     "mapSectionDescription": "带有景点的旅游指南地图，帮助您规划路线。",
     "mapImageAlt": "带有景点的 Malta 旅游指南地图",
-    "parkingTitleBefore": "",
+    "parkingTitleBefore": "马耳他踏板车",
     "parkingTitleHighlight": "停车规则",
     "parkingTitleAfter": "——Malta 踏板车指南",
     "parkingSectionIntro": "白线标记正确的停车位。切勿在黄色、蓝色或绿色线上停车：黄色为车库和预留停车/禁止停车；蓝色为残疾人停车位；绿色为当地居民。始终在摩托车停车位内或两辆汽车之间的白色停车位停车。",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "在 WhatsApp 上聊天",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "显示 {count} 辆车",

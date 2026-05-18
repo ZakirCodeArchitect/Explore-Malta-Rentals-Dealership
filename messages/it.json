@@ -65,7 +65,10 @@
     "days": "giorni",
     "change": "Modifica",
     "search": "Ricerca",
-    "pickupLabel": "Raccolta"
+    "pickupLabel": "Raccolta",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Apri Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "Vedi su Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Rivedi e conferma"
       }
-    }
+    },
+    "holdExpiredTitle": "Prenotazione scaduta",
+    "reservationBannerTitle": "Questo veicolo è temporaneamente riservato per te.",
+    "reservationBannerExpires": "La prenotazione scade tra {remaining}.",
+    "documentUploadHint": "Allega un solo file, fino a 2 MB.",
+    "documentUploadAttaching": "Allegamento in corso…",
+    "documentUploadSuccess": "Allegato correttamente",
+    "documentUploadFailed": "Allegato non riuscito, riprova. {message}",
+    "documentUploadOneFile": "Allega un solo file (max 2 MB).",
+    "documentUploadAttached": "Allegato: {name}",
+    "noVehicleChooseLater": "Scelgo più tardi",
+    "noVehicleDismiss": "Chiudi",
+    "termsConsentKicker": "Consenso legale",
+    "termsConsentReviewLead": "Leggi il contratto completo prima di confermare questa prenotazione.",
+    "termsConsentOpenFull": "Apri i termini completi in una nuova scheda",
+    "termsConsentAgreeCheckbox": "Ho letto i Termini e condizioni completi e accetto di procedere.",
+    "termsConsentSubmitting": "Invio in corso…",
+    "termsConsentCancel": "Annulla"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "Il tipo di veicolo è obbligatorio",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Chatta su WhatsApp",
-    "faqLabel": "Whatsapp"
+    "faqLabel": "Whatsapp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "Visualizzazione dei veicoli {count}",

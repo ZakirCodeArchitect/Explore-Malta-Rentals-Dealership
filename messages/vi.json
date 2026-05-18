@@ -65,7 +65,10 @@
     "days": "ngày",
     "change": "Thay đổi",
     "search": "Tìm kiếm",
-    "pickupLabel": "Nhặt lên"
+    "pickupLabel": "Nhặt lên",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Xem lại và xác nhận"
       }
-    }
+    },
+    "holdExpiredTitle": "Đặt chỗ đã hết hạn",
+    "reservationBannerTitle": "Xe này đang được giữ tạm thời cho bạn.",
+    "reservationBannerExpires": "Đặt chỗ hết hạn sau {remaining}.",
+    "documentUploadHint": "Đính kèm đúng một tệp, tối đa 2 MB.",
+    "documentUploadAttaching": "Đang đính kèm…",
+    "documentUploadSuccess": "Đã đính kèm thành công",
+    "documentUploadFailed": "Đính kèm thất bại, vui lòng thử lại. {message}",
+    "documentUploadOneFile": "Vui lòng đính kèm một tệp (tối đa 2 MB).",
+    "documentUploadAttached": "Đã đính kèm: {name}",
+    "noVehicleChooseLater": "Tôi sẽ chọn sau",
+    "noVehicleDismiss": "Đóng",
+    "termsConsentKicker": "Đồng ý pháp lý",
+    "termsConsentReviewLead": "Vui lòng đọc hợp đồng đầy đủ trước khi xác nhận đặt chỗ.",
+    "termsConsentOpenFull": "Mở điều khoản đầy đủ trong tab mới",
+    "termsConsentAgreeCheckbox": "Tôi đã đọc đầy đủ Điều khoản & Điều kiện và đồng ý tiếp tục.",
+    "termsConsentSubmitting": "Đang gửi…",
+    "termsConsentCancel": "Hủy"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "Loại phương tiện là bắt buộc",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Trò chuyện trên WhatsApp",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "Đang hiển thị xe {count}",

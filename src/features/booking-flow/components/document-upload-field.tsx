@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   clearPendingBookingUpload,
@@ -31,6 +32,7 @@ export function DocumentUploadField({
   name,
   "data-field": dataField,
 }: DocumentUploadFieldProps) {
+  const t = useTranslations("BookingFlow");
   const reactId = useId();
   const inputId = `${reactId}-file`;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -98,7 +100,7 @@ export function DocumentUploadField({
           const files = event.target.files;
           if (!files || files.length !== 1) {
             setPhase("error");
-            setErrorMessage("Please attach exactly one file (max 2 MB).");
+            setErrorMessage(t("documentUploadOneFile"));
             event.target.value = "";
             return;
           }
@@ -107,21 +109,23 @@ export function DocumentUploadField({
           event.target.value = "";
         }}
       />
-      <p className="text-xs text-slate-500">Attach exactly one file, up to 2 MB.</p>
+      <p className="text-xs text-slate-500">{t("documentUploadHint")}</p>
 
       {phase === "uploading" ? (
-        <p className="text-xs font-medium text-[var(--brand-blue)]">Attaching…</p>
+        <p className="text-xs font-medium text-[var(--brand-blue)]">{t("documentUploadAttaching")}</p>
       ) : null}
       {phase === "success" || (phase === "idle" && hasPath) ? (
-        <p className="text-xs font-medium text-emerald-700">Attached successfully</p>
+        <p className="text-xs font-medium text-emerald-700">{t("documentUploadSuccess")}</p>
       ) : null}
       {phase === "error" && errorMessage ? (
-        <p className="text-xs font-medium text-red-600">Attachment failed, please try again. {errorMessage}</p>
+        <p className="text-xs font-medium text-red-600">
+          {t("documentUploadFailed", { message: errorMessage })}
+        </p>
       ) : null}
 
       {hasPath ? (
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
-          <span className="break-all">Attached: {value}</span>
+          <span className="break-all">{t("documentUploadAttached", { name: value })}</span>
           <button
             type="button"
             disabled={disabled || phase === "uploading"}

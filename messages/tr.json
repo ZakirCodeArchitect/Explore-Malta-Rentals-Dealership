@@ -65,7 +65,10 @@
     "days": "günler",
     "change": "Değiştirmek",
     "search": "Aramak",
-    "pickupLabel": "Toplamak"
+    "pickupLabel": "Toplamak",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Explore Malta Rentals in Google Maps öffnen",
+    "mapViewOnMaps": "In Google Maps ansehen"
   },
   "Brand": {
     "locationKicker": "Pieta, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "İncele ve Onayla"
       }
-    }
+    },
+    "holdExpiredTitle": "Reservierung abgelaufen",
+    "reservationBannerTitle": "Dieses Fahrzeug ist vorübergehend für dich reserviert.",
+    "reservationBannerExpires": "Reservierung läuft ab in {remaining}.",
+    "documentUploadHint": "Genau eine Datei anhängen, bis zu 2 MB.",
+    "documentUploadAttaching": "Wird angehängt…",
+    "documentUploadSuccess": "Erfolgreich angehängt",
+    "documentUploadFailed": "Anhang fehlgeschlagen, bitte erneut versuchen. {message}",
+    "documentUploadOneFile": "Bitte genau eine Datei anhängen (max. 2 MB).",
+    "documentUploadAttached": "Angehängt: {name}",
+    "noVehicleChooseLater": "Ich wähle später",
+    "noVehicleDismiss": "Schließen",
+    "termsConsentKicker": "Rechtliche Zustimmung",
+    "termsConsentReviewLead": "Bitte lies den vollständigen Vertrag, bevor du diese Buchung bestätigst.",
+    "termsConsentOpenFull": "Vollständige Bedingungen in neuem Tab öffnen",
+    "termsConsentAgreeCheckbox": "Ich habe die vollständigen AGB gelesen und stimme zu.",
+    "termsConsentSubmitting": "Wird gesendet…",
+    "termsConsentCancel": "Abbrechen"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "Araç türü gerekli",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "WhatsApp'ta sohbet edin",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count} araçlar gösteriliyor",

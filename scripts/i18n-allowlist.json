@@ -1,0 +1,32 @@
+{
+  "globalAllowedValues": [
+    "Explore Malta Rentals",
+    "Malta",
+    "Gozo",
+    "Comino",
+    "WhatsApp",
+    "Stripe",
+    "PayPal",
+    "FAQ",
+    "SUV",
+    "ATV",
+    "CDW",
+    "Google Maps",
+    "Pietà",
+    "Pieta",
+    "EMR",
+    "EUR",
+    "€",
+    "Instagram",
+    "Facebook"
+  ],
+  "allowedKeys": [
+    "Metadata.siteName",
+    "Metadata.ogSiteName",
+    "Nav.logoAlt",
+    "Brand.locationKicker",
+    "WhatsApp.envSetupHint",
+    "WhatsApp.faqLabel",
+    "Common.mapEmbedTitle"
+  ]
+}

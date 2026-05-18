@@ -65,7 +65,10 @@
     "days": "dias",
     "change": "Alterar",
     "search": "Pesquisar",
-    "pickupLabel": "Levantamento"
+    "pickupLabel": "Levantamento",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Abrir Explore Malta Rentals no Google Maps",
+    "mapViewOnMaps": "Ver no Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Revisão e Confirmação"
       }
-    }
+    },
+    "holdExpiredTitle": "Reserva expirada",
+    "reservationBannerTitle": "Este veículo está temporariamente reservado para si.",
+    "reservationBannerExpires": "A reserva expira em {remaining}.",
+    "documentUploadHint": "Anexe um único ficheiro, até 2 MB.",
+    "documentUploadAttaching": "A anexar…",
+    "documentUploadSuccess": "Anexado com sucesso",
+    "documentUploadFailed": "Falha no anexo, tente novamente. {message}",
+    "documentUploadOneFile": "Anexe um único ficheiro (máx. 2 MB).",
+    "documentUploadAttached": "Anexado: {name}",
+    "noVehicleChooseLater": "Escolho mais tarde",
+    "noVehicleDismiss": "Fechar",
+    "termsConsentKicker": "Consentimento legal",
+    "termsConsentReviewLead": "Leia o contrato completo antes de confirmar esta reserva.",
+    "termsConsentOpenFull": "Abrir termos completos num novo separador",
+    "termsConsentAgreeCheckbox": "Li os Termos e condições completos e concordo em prosseguir.",
+    "termsConsentSubmitting": "A enviar…",
+    "termsConsentCancel": "Cancelar"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "O tipo de veículo é obrigatório",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Conversar no WhatsApp",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "A mostrar {count} veículos",
@@ -816,7 +842,7 @@
       "cdwCost": "CDW:",
       "addDriverCost": "Condutor Adicional:",
       "storageCost": "Caixa de Armazenamento:",
-      "subtotal": "Subtotal:",
+      "subtotal": "Subtotal parcial:",
       "pricingPending": "A pré-visualização de preços aparecerá quando o veículo e as datas/horas de aluguer forem válidos.",
       "section3": "Secção 3 - Depósito e Totais",
       "securityDeposit": "Depósito de segurança:",

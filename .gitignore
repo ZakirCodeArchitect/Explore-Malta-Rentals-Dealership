@@ -47,3 +47,8 @@ public/uploads/bookings/**
 
 # i18n generation caches (scripts/generate-locale-messages.mjs)
 scripts/.cache-i18n-*.json
+
+# i18n audit outputs (regenerate with npm run audit:i18n)
+/reports/
+/test-results/
+/playwright-report/

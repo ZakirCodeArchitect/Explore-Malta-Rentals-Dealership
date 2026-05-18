@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type TermsConsentModalProps = {
   isOpen: boolean;
@@ -165,6 +166,8 @@ const TERMS_SUMMARY_SECTIONS = [
 ] as const;
 
 export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = false }: TermsConsentModalProps) {
+  const t = useTranslations("BookingFlow");
+  const tTerms = useTranslations("BookingWizard.terms");
   const [confirmChecked, setConfirmChecked] = useState(false);
 
   useEffect(() => {
@@ -213,13 +216,13 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = fa
         className="flex max-h-[calc(100dvh-2rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl sm:max-h-[calc(100dvh-3rem)]"
       >
         <header className="border-b border-slate-200 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Legal Consent</p>
-          <h3 id="terms-modal-title" className="mt-1 text-lg font-bold text-slate-900">
-            Terms & Conditions
-          </h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Please review the complete contract before confirming this booking.
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            {t("termsConsentKicker")}
           </p>
+          <h3 id="terms-modal-title" className="mt-1 text-lg font-bold text-slate-900">
+            {tTerms("modalTitle")}
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">{t("termsConsentReviewLead")}</p>
         </header>
 
         <div className="min-h-0 px-5 py-4 text-sm text-slate-700">
@@ -239,7 +242,7 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = fa
           </div>
           <p className="mt-3">
             <Link href="/terms" target="_blank" className="font-semibold text-[var(--brand-blue)] underline">
-              Open full terms in a new tab
+              {t("termsConsentOpenFull")}
             </Link>
           </p>
         </div>
@@ -253,7 +256,7 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = fa
               onChange={(event) => setConfirmChecked(event.target.checked)}
               className="mt-0.5 h-4 w-4"
             />
-            <span>I have read the full Terms & Conditions and agree to proceed.</span>
+            <span>{t("termsConsentAgreeCheckbox")}</span>
           </label>
 
           <div className="mt-4 flex justify-end gap-2">
@@ -266,7 +269,7 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = fa
               disabled={isSubmitting}
               className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Cancel
+              {t("termsConsentCancel")}
             </button>
             <button
               type="button"
@@ -277,7 +280,7 @@ export function TermsConsentModal({ isOpen, onCancel, onAgree, isSubmitting = fa
               disabled={!confirmChecked || isSubmitting}
               className="rounded-full bg-[var(--brand-orange)] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Submitting…" : "I Agree"}
+              {isSubmitting ? t("termsConsentSubmitting") : tTerms("iAgree")}
             </button>
           </div>
         </footer>

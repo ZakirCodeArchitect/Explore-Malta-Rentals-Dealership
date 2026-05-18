@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { getWhatsAppChatUrl, toWhatsAppDigits } from "@/lib/whatsapp-number";
 
 export function WhatsAppIcon({ className }: { className?: string }) {
@@ -23,6 +26,7 @@ export function WhatsAppActionLink({
   children?: ReactNode;
   message?: string;
 }) {
+  const t = useTranslations("WhatsApp");
   const raw = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
   const digits = toWhatsAppDigits(raw);
   const text =
@@ -34,7 +38,7 @@ export function WhatsAppActionLink({
   const content = (
     <span className="inline-flex items-center gap-2">
       <WhatsAppIcon className="h-5 w-5" />
-      {children ?? "WhatsApp"}
+      {children ?? t("faqLabel")}
     </span>
   );
 
@@ -44,7 +48,7 @@ export function WhatsAppActionLink({
         role="link"
         aria-disabled="true"
         className={`${className ?? ""} cursor-not-allowed opacity-70`}
-        aria-label="WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)"
+        aria-label={t("envDisabledHint")}
       >
         {content}
       </span>
@@ -57,7 +61,7 @@ export function WhatsAppActionLink({
       target="_blank"
       rel="noreferrer"
       className={className}
-      aria-label="Chat on WhatsApp"
+      aria-label={t("floatingLabel")}
     >
       {content}
     </a>

@@ -65,7 +65,10 @@
     "days": "วัน",
     "change": "เปลี่ยน",
     "search": "ค้นหา",
-    "pickupLabel": "หยิบ"
+    "pickupLabel": "หยิบ",
+    "mapEmbedTitle": "Google Maps : Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Open Explore Malta Rentals in Google Maps",
+    "mapViewOnMaps": "View on Google Maps"
   },
   "Brand": {
     "locationKicker": "ปีเอตา, มอลตา",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "ตรวจสอบและยืนยัน"
       }
-    }
+    },
+    "holdExpiredTitle": "การจองหมดอายุ",
+    "reservationBannerTitle": "รถคันนี้ถูกจองชั่วคราวให้คุณ",
+    "reservationBannerExpires": "การจองหมดอายุใน {remaining}",
+    "documentUploadHint": "แนบไฟล์เพียงไฟล์เดียว สูงสุด 2 MB",
+    "documentUploadAttaching": "กำลังแนบ…",
+    "documentUploadSuccess": "แนบสำเร็จ",
+    "documentUploadFailed": "แนบไม่สำเร็จ โปรดลองอีกครั้ง {message}",
+    "documentUploadOneFile": "โปรดแนบไฟล์เพียงไฟล์เดียว (สูงสุด 2 MB)",
+    "documentUploadAttached": "แนบแล้ว: {name}",
+    "noVehicleChooseLater": "เลือกภายหลัง",
+    "noVehicleDismiss": "ปิด",
+    "termsConsentKicker": "ความยินยอมทางกฎหมาย",
+    "termsConsentReviewLead": "โปรดอ่านสัญญาฉบับเต็มก่อนยืนยันการจอง",
+    "termsConsentOpenFull": "เปิดข้อกำหนดฉบับเต็มในแท็บใหม่",
+    "termsConsentAgreeCheckbox": "ฉันได้อ่านข้อกำหนดและเงื่อนไขฉบับเต็มและยอมรับที่จะดำเนินการต่อ",
+    "termsConsentSubmitting": "กำลังส่ง…",
+    "termsConsentCancel": "ยกเลิก"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "ต้องระบุประเภทยานพาหนะ",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "แชทบน WhatsApp",
-    "faqLabel": "วอทส์แอพพ์"
+    "faqLabel": "วอทส์แอพพ์",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "กำลังแสดงยานพาหนะ {count}",

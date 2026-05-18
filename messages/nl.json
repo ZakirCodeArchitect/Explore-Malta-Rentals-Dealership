@@ -65,7 +65,10 @@
     "days": "dagen",
     "change": "Wijziging",
     "search": "Zoekopdracht",
-    "pickupLabel": "Ophalen"
+    "pickupLabel": "Ophalen",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Explore Malta Rentals openen in Google Maps",
+    "mapViewOnMaps": "Bekijken in Google Maps"
   },
   "Brand": {
     "locationKicker": "Pietà, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Beoordelen en bevestigen"
       }
-    }
+    },
+    "holdExpiredTitle": "Reservering verlopen",
+    "reservationBannerTitle": "Dit voertuig is tijdelijk voor u gereserveerd.",
+    "reservationBannerExpires": "Reservering verloopt over {remaining}.",
+    "documentUploadHint": "Voeg precies één bestand toe, tot 2 MB.",
+    "documentUploadAttaching": "Bezig met bijvoegen…",
+    "documentUploadSuccess": "Succesvol bijgevoegd",
+    "documentUploadFailed": "Bijlage mislukt, probeer opnieuw. {message}",
+    "documentUploadOneFile": "Voeg precies één bestand toe (max. 2 MB).",
+    "documentUploadAttached": "Bijgevoegd: {name}",
+    "noVehicleChooseLater": "Ik kies later",
+    "noVehicleDismiss": "Sluiten",
+    "termsConsentKicker": "Juridische toestemming",
+    "termsConsentReviewLead": "Lees het volledige contract voordat u deze boeking bevestigt.",
+    "termsConsentOpenFull": "Volledige voorwaarden openen in nieuw tabblad",
+    "termsConsentAgreeCheckbox": "Ik heb de volledige voorwaarden gelezen en ga akkoord om door te gaan.",
+    "termsConsentSubmitting": "Bezig met verzenden…",
+    "termsConsentCancel": "Annuleren"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "Voertuigtype is vereist",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Chatten op WhatsApp",
-    "faqLabel": "WhatsAppen"
+    "faqLabel": "WhatsAppen",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "{count}-voertuigen worden weergegeven",

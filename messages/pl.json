@@ -65,7 +65,10 @@
     "days": "dni",
     "change": "Zmiana",
     "search": "Szukaj",
-    "pickupLabel": "Ulec poprawie"
+    "pickupLabel": "Ulec poprawie",
+    "mapEmbedTitle": "Google Maps — Explore Malta Rentals, Pietà",
+    "mapOpenAria": "Otwórz Explore Malta Rentals w Google Maps",
+    "mapViewOnMaps": "Zobacz w Google Maps"
   },
   "Brand": {
     "locationKicker": "Pieta, Malta",
@@ -431,7 +434,24 @@
       "review_confirm": {
         "title": "Przejrzyj i potwierdź"
       }
-    }
+    },
+    "holdExpiredTitle": "Rezerwacja wygasła",
+    "reservationBannerTitle": "Ten pojazd jest tymczasowo zarezerwowany dla Ciebie.",
+    "reservationBannerExpires": "Rezerwacja wygasa za {remaining}.",
+    "documentUploadHint": "Dołącz dokładnie jeden plik, do 2 MB.",
+    "documentUploadAttaching": "Dołączanie…",
+    "documentUploadSuccess": "Dołączono pomyślnie",
+    "documentUploadFailed": "Nie udało się dołączyć, spróbuj ponownie. {message}",
+    "documentUploadOneFile": "Dołącz dokładnie jeden plik (maks. 2 MB).",
+    "documentUploadAttached": "Dołączono: {name}",
+    "noVehicleChooseLater": "Wybiorę później",
+    "noVehicleDismiss": "Zamknij",
+    "termsConsentKicker": "Zgoda prawna",
+    "termsConsentReviewLead": "Przeczytaj pełną umowę przed potwierdzeniem rezerwacji.",
+    "termsConsentOpenFull": "Otwórz pełny regulamin w nowej karcie",
+    "termsConsentAgreeCheckbox": "Przeczytałem/am pełny regulamin i zgadzam się kontynuować.",
+    "termsConsentSubmitting": "Wysyłanie…",
+    "termsConsentCancel": "Anuluj"
   },
   "BookingValidation": {
     "vehicleTypeRequired": "Typ pojazdu jest wymagany",
@@ -624,7 +644,13 @@
   },
   "WhatsApp": {
     "floatingLabel": "Czatuj na WhatsAppie",
-    "faqLabel": "WhatsApp"
+    "faqLabel": "WhatsApp",
+    "panelAriaLabel": "WhatsApp number",
+    "numberLabel": "WhatsApp number",
+    "openContact": "Open WhatsApp contact",
+    "openApp": "Open WhatsApp",
+    "envDisabledHint": "WhatsApp (set NEXT_PUBLIC_WHATSAPP_NUMBER to enable)",
+    "envSetupHint": "Set whatsapp_number in your .env file and restart the dev server."
   },
   "VehicleListing": {
     "showing": "Wyświetlanie pojazdów {count}",
