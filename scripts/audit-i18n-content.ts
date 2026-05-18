@@ -92,7 +92,9 @@ function main(): void {
     totalFindings: findings.length,
     localesAudited: ACTIVE_LOCALES.filter((l) => l !== REFERENCE_LOCALE).length,
     byLocaleCount: Object.fromEntries(
-      [...byLocale.entries()].map(([loc, f]) => [loc, f.length]).sort(([a], [b]) => a.localeCompare(b)),
+      [...byLocale.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([loc, f]) => [loc, f.length]),
     ),
     findings,
   };
