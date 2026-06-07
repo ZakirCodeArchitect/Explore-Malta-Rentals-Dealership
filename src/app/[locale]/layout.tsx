@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { SiteNavbar } from "@/components/site-navbar";
 import { DocumentLang } from "@/components/document-lang";
-import { Footer } from "@/features/home/components/footer";
-import { WhatsAppFloatingButton } from "@/features/home/components/whatsapp-floating-button";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { NextIntlWithReporting } from "@/components/next-intl-with-reporting";
@@ -61,10 +58,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <div className="flex min-h-0 flex-1 flex-col">
       <DocumentLang locale={locale} />
       <NextIntlWithReporting locale={locale} messages={messages}>
-        <SiteNavbar />
         {children}
-        <Footer />
-        <WhatsAppFloatingButton />
       </NextIntlWithReporting>
     </div>
   );

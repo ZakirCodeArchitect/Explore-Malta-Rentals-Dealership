@@ -45,15 +45,22 @@ if (process.env.NODE_ENV !== "production") {
 
 const adapter = new PrismaPg(pool);
 
-const hasVehicleDelegate = (client: PrismaClient | undefined): client is PrismaClient => {
+const hasCurrentPrismaDelegates = (client: PrismaClient | undefined): client is PrismaClient => {
   if (!client) {
     return false;
   }
-  return typeof (client as PrismaClient & { vehicle?: unknown }).vehicle !== "undefined";
+  const delegateClient = client as PrismaClient & {
+    vehicle?: unknown;
+    adminSession?: unknown;
+  };
+  return (
+    typeof delegateClient.vehicle !== "undefined" &&
+    typeof delegateClient.adminSession !== "undefined"
+  );
 };
 
 const prismaClient =
-  hasVehicleDelegate(globalForPrisma.prisma)
+  hasCurrentPrismaDelegates(globalForPrisma.prisma)
     ? globalForPrisma.prisma
     : new PrismaClient({
         adapter,
