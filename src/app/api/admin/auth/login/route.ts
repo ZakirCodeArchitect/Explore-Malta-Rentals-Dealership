@@ -3,9 +3,15 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 
 import {
+  ADMIN_LOGIN_GENERIC_ERROR,
   authenticateAdminCredentials,
   buildAdminSessionCookie,
+  cleanupStaleAdminLoginLockouts,
+  clearAdminLoginAttempts,
   createAdminSession,
+  isAdminLoginLocked,
+  recordAdminLoginFailure,
+  resolveAdminLoginIdentity,
   verifyAdminPassword,
 } from "@/lib/admin-auth";
 
@@ -29,8 +35,22 @@ export async function POST(request: Request) {
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false as const, message: "Invalid email or password" },
+      { success: false as const, message: ADMIN_LOGIN_GENERIC_ERROR },
       { status: 400 },
+    );
+  }
+
+  await cleanupStaleAdminLoginLockouts().catch(() => undefined);
+
+  const { emailNormalized, ipAddressHash } = resolveAdminLoginIdentity(
+    request,
+    parsed.data.email,
+  );
+
+  if (await isAdminLoginLocked(emailNormalized, ipAddressHash)) {
+    return NextResponse.json(
+      { success: false as const, message: ADMIN_LOGIN_GENERIC_ERROR },
+      { status: 401 },
     );
   }
 
@@ -41,11 +61,14 @@ export async function POST(request: Request) {
   );
 
   if (!user) {
+    await recordAdminLoginFailure(emailNormalized, ipAddressHash);
     return NextResponse.json(
-      { success: false as const, message: "Invalid email or password" },
+      { success: false as const, message: ADMIN_LOGIN_GENERIC_ERROR },
       { status: 401 },
     );
   }
+
+  await clearAdminLoginAttempts(emailNormalized, ipAddressHash);
 
   const { token } = await createAdminSession(user.id);
   const cookie = buildAdminSessionCookie(token);

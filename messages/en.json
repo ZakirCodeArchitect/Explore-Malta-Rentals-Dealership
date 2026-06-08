@@ -1023,7 +1023,7 @@
     "logInButton": "Log In",
     "signingIn": "Signing in…",
     "signOut": "Sign out",
-    "loginErrorGeneric": "Unable to sign in. Check your credentials and try again.",
+    "loginErrorGeneric": "Invalid credentials or too many attempts. Please try again later.",
     "comingSoon": "Coming soon",
     "soonBadge": "Soon",
     "unauthorizedTitle": "Access denied",
