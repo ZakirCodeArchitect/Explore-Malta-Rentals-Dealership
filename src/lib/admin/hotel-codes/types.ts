@@ -11,6 +11,7 @@ export type AdminHotelCodeListItem = Readonly<{
   bookingCount: number;
   totalBookingValue: number;
   canDelete: boolean;
+  deleteBlockedReason: "has_history" | null;
 }>;
 
 export type AdminHotelCodeDetail = Readonly<{
@@ -26,6 +27,7 @@ export type AdminHotelCodeDetail = Readonly<{
   bookingCount: number;
   totalBookingValue: number;
   canDelete: boolean;
+  deleteBlockedReason: "has_history" | null;
   createdAt: string;
   updatedAt: string;
 }>;

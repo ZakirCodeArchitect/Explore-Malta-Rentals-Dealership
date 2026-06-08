@@ -4,9 +4,14 @@ export {
   deactivateAdminHotelCode,
   deleteAdminHotelCode,
   DuplicateHotelCodeError,
+  INACTIVE_HOTEL_FOR_ACTIVE_CODE,
   InactiveHotelPartnerError,
   updateAdminHotelCode,
 } from "@/lib/admin/hotel-codes/mutateAdminHotelCode";
+export {
+  HOTEL_CODE_DELETE_ERROR_CODE,
+  HOTEL_CODE_DELETE_ERROR_MESSAGE,
+} from "@/lib/admin/hotel-codes/hotel-code-errors";
 export {
   adminHotelCodeListQuerySchema,
   adminHotelCodeWriteSchema,

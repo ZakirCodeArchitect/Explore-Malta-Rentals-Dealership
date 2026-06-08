@@ -6,6 +6,11 @@ import {
   InactiveHotelPartnerError,
 } from "@/lib/admin/hotel-codes/mutateAdminHotelCode";
 import type { AdminHotelCodeDetail } from "@/lib/admin/hotel-codes/types";
+import {
+  HOTEL_DELETE_ERROR_CODES,
+  hotelDeleteBlockedReason,
+  type HotelDeleteBlockedReason,
+} from "@/lib/admin/hotel-partners/hotel-partner-errors";
 import { getAdminHotelPartnerById } from "@/lib/admin/hotel-partners/listAdminHotelPartners";
 import type { AdminHotelPartnerCreateInput } from "@/lib/admin/hotel-partners/hotel-partner-schema";
 import type { AdminHotelPartnerDetail } from "@/lib/admin/hotel-partners/types";
@@ -101,9 +106,13 @@ export async function createAdminHotelPartner(
     throw new Error("Failed to load hotel partner after create");
   }
 
-  const initialCode = initialCodeId ? await getAdminHotelCodeById(initialCodeId) : undefined;
-  if (initialCodeId && !initialCode) {
-    throw new Error("Failed to load initial hotel code after create");
+  let initialCode: AdminHotelCodeDetail | undefined;
+  if (initialCodeId) {
+    const loadedCode = await getAdminHotelCodeById(initialCodeId);
+    if (!loadedCode) {
+      throw new Error("Failed to load initial hotel code after create");
+    }
+    initialCode = loadedCode;
   }
 
   return { partner, initialCode };
@@ -181,7 +190,7 @@ export async function deactivateAdminHotelPartner(
 
 export type DeleteAdminHotelPartnerResult =
   | { ok: true }
-  | { ok: false; reason: "not_found" | "has_related_records" };
+  | { ok: false; reason: "not_found" | HotelDeleteBlockedReason };
 
 export async function deleteAdminHotelPartner(id: string): Promise<DeleteAdminHotelPartnerResult> {
   const existing = await prisma.hotelPartner.findUnique({
@@ -201,11 +210,17 @@ export async function deleteAdminHotelPartner(id: string): Promise<DeleteAdminHo
     return { ok: false, reason: "not_found" };
   }
 
-  if (existing._count.hotelCodes > 0 || existing._count.bookings > 0) {
-    return { ok: false, reason: "has_related_records" };
+  const blockedReason = hotelDeleteBlockedReason(
+    existing._count.hotelCodes,
+    existing._count.bookings,
+  );
+  if (blockedReason) {
+    return { ok: false, reason: blockedReason };
   }
 
   await prisma.hotelPartner.delete({ where: { id } });
 
   return { ok: true };
 }
+
+export { HOTEL_DELETE_ERROR_CODES };

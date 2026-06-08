@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma/index";
 
+import { INACTIVE_HOTEL_FOR_ACTIVE_CODE } from "@/lib/admin/hotel-codes/hotel-code-errors";
 import { getAdminHotelCodeById } from "@/lib/admin/hotel-codes/listAdminHotelCodes";
 import type { AdminHotelCodeDetail } from "@/lib/admin/hotel-codes/types";
 import type { AdminHotelCodeWriteInput } from "@/lib/admin/hotel-codes/hotel-code-schema";
@@ -156,7 +157,7 @@ export async function deactivateAdminHotelCode(id: string): Promise<DeactivateAd
 
 export type DeleteAdminHotelCodeResult =
   | { ok: true }
-  | { ok: false; reason: "not_found" | "has_related_records" };
+  | { ok: false; reason: "not_found" | "has_history" };
 
 export async function deleteAdminHotelCode(id: string): Promise<DeleteAdminHotelCodeResult> {
   const existing = await prisma.hotelCode.findUnique({
@@ -174,10 +175,12 @@ export async function deleteAdminHotelCode(id: string): Promise<DeleteAdminHotel
   }
 
   if (existing._count.bookings > 0) {
-    return { ok: false, reason: "has_related_records" };
+    return { ok: false, reason: "has_history" };
   }
 
   await prisma.hotelCode.delete({ where: { id } });
 
   return { ok: true };
 }
+
+export { INACTIVE_HOTEL_FOR_ACTIVE_CODE };

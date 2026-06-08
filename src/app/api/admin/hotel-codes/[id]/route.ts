@@ -5,9 +5,11 @@ import {
   deleteAdminHotelCode,
   DuplicateHotelCodeError,
   getAdminHotelCodeById,
+  INACTIVE_HOTEL_FOR_ACTIVE_CODE,
   InactiveHotelPartnerError,
   updateAdminHotelCode,
 } from "@/lib/admin/hotel-codes";
+import { HOTEL_CODE_DELETE_ERROR_CODE, HOTEL_CODE_DELETE_ERROR_MESSAGE } from "@/lib/admin/hotel-codes/hotel-code-errors";
 import { AdminUnauthorizedError, requireAdminApi } from "@/lib/admin-auth";
 
 type RouteContext = {
@@ -74,7 +76,10 @@ export async function PATCH(request: Request, context: RouteContext) {
       return NextResponse.json({ success: false as const, message: error.message }, { status: 409 });
     }
     if (error instanceof InactiveHotelPartnerError) {
-      return NextResponse.json({ success: false as const, message: error.message }, { status: 400 });
+      return NextResponse.json(
+        { success: false as const, code: INACTIVE_HOTEL_FOR_ACTIVE_CODE, message: error.message },
+        { status: 400 },
+      );
     }
     throw error;
   }
@@ -93,7 +98,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
       return NextResponse.json(
         {
           success: false as const,
-          message: "Cannot delete a hotel code with booking history. Deactivate instead.",
+          code: HOTEL_CODE_DELETE_ERROR_CODE,
+          message: HOTEL_CODE_DELETE_ERROR_MESSAGE,
         },
         { status: 409 },
       );

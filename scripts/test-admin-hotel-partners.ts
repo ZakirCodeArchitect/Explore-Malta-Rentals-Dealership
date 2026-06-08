@@ -19,9 +19,18 @@ import "dotenv/config";
 import assert from "node:assert/strict";
 
 import {
+  createAdminHotelCode,
+  deleteAdminHotelCode,
+  deactivateAdminHotelCode,
+} from "../src/lib/admin/hotel-codes";
+import {
   adminHotelPartnerCreateSchema,
   createAdminHotelPartner,
+  deactivateAdminHotelPartner,
+  deleteAdminHotelPartner,
+  getAdminHotelPartnerById,
 } from "../src/lib/admin/hotel-partners";
+import { getAdminHotelCodeById } from "../src/lib/admin/hotel-codes/listAdminHotelCodes";
 import { DuplicateHotelCodeError } from "../src/lib/admin/hotel-codes";
 import { prisma } from "../src/lib/prisma";
 
@@ -159,7 +168,187 @@ async function run() {
     assert.equal(emptyCodePartner.initialCode, undefined);
     assert.equal(emptyCodePartner.partner.hotelCodeCount, 0);
 
-    console.log("Admin hotel partner + initial code checks passed.");
+    const deletableHotelParsed = adminHotelPartnerCreateSchema.safeParse({
+      name: `${testPrefix} Deletable`,
+      isActive: true,
+    });
+    assert.equal(deletableHotelParsed.success, true);
+    const deletableHotel = await createAdminHotelPartner(deletableHotelParsed.data!);
+    createdPartnerIds.push(deletableHotel.partner.id);
+    const deletableLoaded = await getAdminHotelPartnerById(deletableHotel.partner.id);
+    assert.ok(deletableLoaded);
+    assert.equal(deletableLoaded.canDelete, true);
+    assert.equal(deletableLoaded.deleteBlockedReason, null);
+
+    const deleteEmpty = await deleteAdminHotelPartner(deletableHotel.partner.id);
+    assert.equal(deleteEmpty.ok, true);
+    createdPartnerIds.pop();
+
+    const hotelWithCode = await createAdminHotelPartner({
+      name: `${testPrefix} Has Code`,
+      isActive: true,
+      initialCode: {
+        code: `${testPrefix}-DEL`,
+        discountPercent: 5,
+        isActive: true,
+      },
+    });
+    createdPartnerIds.push(hotelWithCode.partner.id);
+    const withCodeLoaded = await getAdminHotelPartnerById(hotelWithCode.partner.id);
+    assert.ok(withCodeLoaded);
+    assert.equal(withCodeLoaded.canDelete, false);
+    assert.equal(withCodeLoaded.deleteBlockedReason, "HAS_CODES");
+
+    const blockedHotelDelete = await deleteAdminHotelPartner(hotelWithCode.partner.id);
+    assert.equal(blockedHotelDelete.ok, false);
+    if (!blockedHotelDelete.ok) {
+      assert.equal(blockedHotelDelete.reason, "HAS_CODES");
+    }
+
+    const unusedCodeHotelParsed = adminHotelPartnerCreateSchema.safeParse({
+      name: `${testPrefix} Unused Code`,
+      isActive: true,
+    });
+    assert.equal(unusedCodeHotelParsed.success, true);
+    const unusedCodeHotel = await createAdminHotelPartner(unusedCodeHotelParsed.data!);
+    createdPartnerIds.push(unusedCodeHotel.partner.id);
+    const unusedCode = await createAdminHotelCode({
+      code: `${testPrefix}-UNUSED`,
+      hotelPartnerId: unusedCodeHotel.partner.id,
+      discountPercent: 10,
+      isActive: true,
+      validFrom: null,
+      validUntil: null,
+    });
+    const unusedCodeLoaded = await getAdminHotelCodeById(unusedCode.id);
+    assert.ok(unusedCodeLoaded);
+    assert.equal(unusedCodeLoaded.canDelete, true);
+
+    const deleteUnusedCode = await deleteAdminHotelCode(unusedCode.id);
+    assert.equal(deleteUnusedCode.ok, true);
+
+    const usedCode = await createAdminHotelCode({
+      code: `${testPrefix}-USED`,
+      hotelPartnerId: hotelWithCode.partner.id,
+      discountPercent: 8,
+      isActive: true,
+      validFrom: null,
+      validUntil: null,
+    });
+    const bookingRef = `TEST-${testPrefix}-BK`;
+    await prisma.booking.create({
+      data: {
+        bookingReference: bookingRef,
+        status: "PENDING",
+        vehicleType: "Scooter",
+        pickupDateTime: new Date("2026-07-01T10:00:00.000Z"),
+        returnDateTime: new Date("2026-07-02T10:00:00.000Z"),
+        actualDurationHours: 24,
+        billableDays: 1,
+        pickupOption: "OFFICE",
+        dropoffOption: "OFFICE",
+        customerFullName: "Test User",
+        customerPhone: "+35600000000",
+        customerEmail: "test@example.com",
+        customerNationality: "Malta",
+        customerDateOfBirth: new Date("1990-01-01T00:00:00.000Z"),
+        customerLicenseCategory: "B",
+        depositMethod: "IN_PERSON",
+        hotelCodeId: usedCode.id,
+        hotelPartnerId: hotelWithCode.partner.id,
+        hotelCodeSnapshot: usedCode.code,
+        hotelPartnerNameSnapshot: hotelWithCode.partner.name,
+        hotelDiscountPercentSnapshot: 8,
+        hotelDiscountAmountSnapshot: 10,
+        subtotalAfterHotelDiscountSnapshot: 90,
+      },
+    });
+
+    const usedCodeLoaded = await getAdminHotelCodeById(usedCode.id);
+    assert.ok(usedCodeLoaded);
+    assert.equal(usedCodeLoaded.canDelete, false);
+    assert.equal(usedCodeLoaded.deleteBlockedReason, "has_history");
+
+    const blockedCodeDelete = await deleteAdminHotelCode(usedCode.id);
+    assert.equal(blockedCodeDelete.ok, false);
+    if (!blockedCodeDelete.ok) {
+      assert.equal(blockedCodeDelete.reason, "has_history");
+    }
+
+    const deactivateUsedCode = await deactivateAdminHotelCode(usedCode.id);
+    assert.equal(deactivateUsedCode.ok, true);
+    if (deactivateUsedCode.ok) {
+      assert.equal(deactivateUsedCode.code.isActive, false);
+    }
+
+    const hotelWithHistoryParsed = adminHotelPartnerCreateSchema.safeParse({
+      name: `${testPrefix} Has History`,
+      isActive: true,
+    });
+    assert.equal(hotelWithHistoryParsed.success, true);
+    const hotelWithHistory = await createAdminHotelPartner(hotelWithHistoryParsed.data!);
+    createdPartnerIds.push(hotelWithHistory.partner.id);
+    await prisma.booking.create({
+      data: {
+        bookingReference: `TEST-${testPrefix}-HIST`,
+        status: "PENDING",
+        vehicleType: "Scooter",
+        pickupDateTime: new Date("2026-07-03T10:00:00.000Z"),
+        returnDateTime: new Date("2026-07-04T10:00:00.000Z"),
+        actualDurationHours: 24,
+        billableDays: 1,
+        pickupOption: "OFFICE",
+        dropoffOption: "OFFICE",
+        customerFullName: "History User",
+        customerPhone: "+35600000001",
+        customerEmail: "history@example.com",
+        customerNationality: "Malta",
+        customerDateOfBirth: new Date("1990-01-01T00:00:00.000Z"),
+        customerLicenseCategory: "B",
+        depositMethod: "IN_PERSON",
+        hotelPartnerId: hotelWithHistory.partner.id,
+        hotelPartnerNameSnapshot: hotelWithHistory.partner.name,
+      },
+    });
+
+    const historyLoaded = await getAdminHotelPartnerById(hotelWithHistory.partner.id);
+    assert.ok(historyLoaded);
+    assert.equal(historyLoaded.canDelete, false);
+    assert.equal(historyLoaded.deleteBlockedReason, "HAS_HISTORY");
+
+    const blockedHistoryDelete = await deleteAdminHotelPartner(hotelWithHistory.partner.id);
+    assert.equal(blockedHistoryDelete.ok, false);
+    if (!blockedHistoryDelete.ok) {
+      assert.equal(blockedHistoryDelete.reason, "HAS_HISTORY");
+    }
+
+    const cascadeHotel = await createAdminHotelPartner({
+      name: `${testPrefix} Cascade`,
+      isActive: true,
+      initialCode: {
+        code: `${testPrefix}-CASC`,
+        discountPercent: 5,
+        isActive: true,
+      },
+    });
+    createdPartnerIds.push(cascadeHotel.partner.id);
+    assert.ok(cascadeHotel.initialCode);
+    assert.equal(cascadeHotel.initialCode.isActive, true);
+
+    const deactivateCascade = await deactivateAdminHotelPartner(cascadeHotel.partner.id);
+    assert.equal(deactivateCascade.ok, true);
+    if (deactivateCascade.ok) {
+      assert.equal(deactivateCascade.partner.isActive, false);
+      const cascCode = await getAdminHotelCodeById(cascadeHotel.initialCode!.id);
+      assert.ok(cascCode);
+      assert.equal(cascCode.isActive, false);
+    }
+
+    await prisma.booking.deleteMany({
+      where: { bookingReference: { in: [bookingRef, `TEST-${testPrefix}-HIST`] } },
+    });
+
+    console.log("Admin hotel partner + initial code + delete/deactivate checks passed.");
   } finally {
     await cleanup(createdPartnerIds);
     await prisma.$disconnect();

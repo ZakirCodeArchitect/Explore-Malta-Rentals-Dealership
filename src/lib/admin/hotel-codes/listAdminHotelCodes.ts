@@ -43,6 +43,7 @@ function mapCodeRow(row: HotelCodeRow) {
     hotelPartnerIsActive: row.hotelPartner.isActive,
     bookingCount: row._count.bookings,
     totalBookingValue,
+    deleteBlockedReason: row._count.bookings > 0 ? ("has_history" as const) : null,
     canDelete: row._count.bookings === 0,
     createdAt: row.createdAt?.toISOString() ?? "",
     updatedAt: row.updatedAt?.toISOString() ?? "",
@@ -120,6 +121,7 @@ export async function listAdminHotelCodes(
         hotelPartnerIsActive: mapped.hotelPartnerIsActive,
         bookingCount: mapped.bookingCount,
         totalBookingValue: mapped.totalBookingValue,
+        deleteBlockedReason: mapped.deleteBlockedReason,
         canDelete: mapped.canDelete,
       };
     }),

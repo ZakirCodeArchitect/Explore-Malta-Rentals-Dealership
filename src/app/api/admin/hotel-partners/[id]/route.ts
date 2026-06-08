@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 import {
   deleteAdminHotelPartner,
   getAdminHotelPartnerById,
+  HOTEL_DELETE_ERROR_CODES,
   updateAdminHotelPartner,
   adminHotelPartnerWriteSchema,
 } from "@/lib/admin/hotel-partners";
+import { HOTEL_DELETE_ERROR_MESSAGES } from "@/lib/admin/hotel-partners/hotel-partner-errors";
 import { AdminUnauthorizedError, requireAdminApi } from "@/lib/admin-auth";
 
 type RouteContext = {
@@ -82,10 +84,12 @@ export async function DELETE(_request: Request, context: RouteContext) {
       if (result.reason === "not_found") {
         return NextResponse.json({ success: false as const, message: "Hotel not found" }, { status: 404 });
       }
+      const code = HOTEL_DELETE_ERROR_CODES[result.reason];
       return NextResponse.json(
         {
           success: false as const,
-          message: "Cannot delete a hotel with linked codes or bookings. Deactivate instead.",
+          code,
+          message: HOTEL_DELETE_ERROR_MESSAGES[result.reason],
         },
         { status: 409 },
       );

@@ -5,6 +5,7 @@ import {
   adminHotelCodeWriteSchema,
   createAdminHotelCode,
   DuplicateHotelCodeError,
+  INACTIVE_HOTEL_FOR_ACTIVE_CODE,
   InactiveHotelPartnerError,
   listAdminHotelCodes,
 } from "@/lib/admin/hotel-codes";
@@ -75,7 +76,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false as const, message: error.message }, { status: 409 });
     }
     if (error instanceof InactiveHotelPartnerError) {
-      return NextResponse.json({ success: false as const, message: error.message }, { status: 400 });
+      return NextResponse.json(
+        { success: false as const, code: INACTIVE_HOTEL_FOR_ACTIVE_CODE, message: error.message },
+        { status: 400 },
+      );
     }
     throw error;
   }

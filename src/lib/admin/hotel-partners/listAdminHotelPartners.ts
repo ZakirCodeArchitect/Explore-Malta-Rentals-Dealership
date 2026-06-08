@@ -1,5 +1,6 @@
 import type { Prisma } from "@/generated/prisma/index";
 
+import { hotelDeleteBlockedReason } from "@/lib/admin/hotel-partners/hotel-partner-errors";
 import type {
   AdminHotelPartnerDetail,
   AdminHotelPartnerListFilters,
@@ -65,7 +66,12 @@ export async function listAdminHotelPartners(
       isActive: partner.isActive,
       hotelCodeCount: partner._count.hotelCodes,
       bookingCount: partner._count.bookings,
-      canDelete: partner._count.hotelCodes === 0 && partner._count.bookings === 0,
+      deleteBlockedReason: hotelDeleteBlockedReason(
+        partner._count.hotelCodes,
+        partner._count.bookings,
+      ),
+      canDelete:
+        hotelDeleteBlockedReason(partner._count.hotelCodes, partner._count.bookings) === null,
     })),
   };
 }
@@ -119,7 +125,12 @@ export async function getAdminHotelPartnerById(id: string): Promise<AdminHotelPa
     isActive: partner.isActive,
     hotelCodeCount: partner._count.hotelCodes,
     bookingCount: partner._count.bookings,
-    canDelete: partner._count.hotelCodes === 0 && partner._count.bookings === 0,
+    deleteBlockedReason: hotelDeleteBlockedReason(
+      partner._count.hotelCodes,
+      partner._count.bookings,
+    ),
+    canDelete:
+      hotelDeleteBlockedReason(partner._count.hotelCodes, partner._count.bookings) === null,
     createdAt: partner.createdAt.toISOString(),
     updatedAt: partner.updatedAt.toISOString(),
   };

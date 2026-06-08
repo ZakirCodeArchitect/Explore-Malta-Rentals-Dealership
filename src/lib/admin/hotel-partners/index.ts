@@ -7,8 +7,14 @@ export {
   createAdminHotelPartner,
   deactivateAdminHotelPartner,
   deleteAdminHotelPartner,
+  HOTEL_DELETE_ERROR_CODES,
   updateAdminHotelPartner,
 } from "@/lib/admin/hotel-partners/mutateAdminHotelPartner";
+export {
+  HOTEL_DELETE_ERROR_MESSAGES,
+  hotelDeleteBlockedReason,
+  type HotelDeleteBlockedReason,
+} from "@/lib/admin/hotel-partners/hotel-partner-errors";
 export {
   adminHotelPartnerCreateSchema,
   adminHotelPartnerListQuerySchema,

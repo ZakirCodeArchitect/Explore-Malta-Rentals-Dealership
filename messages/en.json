@@ -1043,8 +1043,8 @@
       "vehiclesBody": "Manage fleet catalog, pricing rules, and availability blocks.",
       "bookings": "Booking management",
       "bookingsBody": "Review, update, and track customer bookings and status history.",
-      "partners": "Hotels",
-      "partnersBody": "Manage hotels, discount codes, and monthly payment tracking."
+      "hotels": "Hotels",
+      "hotelsBody": "Manage hotels and hotel discount codes."
     },
     "vehicles": {
       "header": "Vehicle management",
@@ -1259,7 +1259,8 @@
         "edit": "Edit",
         "deactivate": "Deactivate",
         "delete": "Delete",
-        "deleteDisabledTooltip": "This hotel has linked codes or bookings and cannot be deleted. Deactivate instead.",
+        "deleteDisabledTooltipHasCodes": "This hotel has linked hotel codes. Delete unused codes or deactivate used codes first.",
+        "deleteDisabledTooltipHasHistory": "This hotel has booking or payment history. Deactivate it instead to preserve reporting history.",
         "empty": "No hotels match your filters."
       },
       "deleteDialog": {
@@ -1271,7 +1272,7 @@
       },
       "permanentDeleteDialog": {
         "title": "Delete hotel permanently?",
-        "description": "Are you sure you want to permanently delete {name}? This action cannot be undone.",
+        "description": "Permanently delete {name}? This is only allowed for hotels with no linked codes and no booking or payment history. This action cannot be undone.",
         "confirm": "Delete permanently"
       },
       "form": {
@@ -1346,7 +1347,7 @@
         "edit": "Edit",
         "deactivate": "Deactivate",
         "delete": "Delete",
-        "deleteDisabledTooltip": "This code has booking history and cannot be deleted. Deactivate instead.",
+        "deleteDisabledTooltip": "This hotel code has booking history. Deactivate it instead to preserve reporting history.",
         "empty": "No codes match your filters."
       },
       "deleteDialog": {
@@ -1357,8 +1358,8 @@
         "confirm": "Deactivate"
       },
       "permanentDeleteDialog": {
-        "title": "Delete code permanently?",
-        "description": "Are you sure you want to permanently delete code {code}?",
+        "title": "Delete hotel code permanently?",
+        "description": "Permanently delete code {code}? This is only allowed for unused codes with no booking or payment history. This action cannot be undone.",
         "confirm": "Delete permanently"
       },
       "form": {

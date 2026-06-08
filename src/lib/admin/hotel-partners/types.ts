@@ -1,3 +1,5 @@
+import type { HotelDeleteBlockedReason } from "@/lib/admin/hotel-partners/hotel-partner-errors";
+
 export type AdminHotelPartnerListItem = Readonly<{
   id: string;
   name: string;
@@ -8,6 +10,7 @@ export type AdminHotelPartnerListItem = Readonly<{
   hotelCodeCount: number;
   bookingCount: number;
   canDelete: boolean;
+  deleteBlockedReason: HotelDeleteBlockedReason | null;
 }>;
 
 export type AdminHotelPartnerDetail = Readonly<{
@@ -21,6 +24,7 @@ export type AdminHotelPartnerDetail = Readonly<{
   hotelCodeCount: number;
   bookingCount: number;
   canDelete: boolean;
+  deleteBlockedReason: HotelDeleteBlockedReason | null;
   createdAt: string;
   updatedAt: string;
 }>;

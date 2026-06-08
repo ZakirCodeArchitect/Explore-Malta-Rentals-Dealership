@@ -154,7 +154,13 @@ export function AdminHotelPartnerTable({ locale, partners }: AdminHotelPartnerTa
                           type="button"
                           onClick={() => setDialogTarget({ partner, mode: "delete" })}
                           disabled={!partner.canDelete || actionId === partner.id}
-                          title={!partner.canDelete ? t("table.deleteDisabledTooltip") : undefined}
+                          title={
+                            partner.deleteBlockedReason === "HAS_CODES"
+                              ? t("table.deleteDisabledTooltipHasCodes")
+                              : partner.deleteBlockedReason === "HAS_HISTORY"
+                                ? t("table.deleteDisabledTooltipHasHistory")
+                                : undefined
+                          }
                           className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           <Trash2 className="size-3.5" aria-hidden />

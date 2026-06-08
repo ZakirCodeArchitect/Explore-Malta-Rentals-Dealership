@@ -163,7 +163,11 @@ export function AdminHotelCodeTable({ locale, codes }: AdminHotelCodeTableProps)
                           type="button"
                           onClick={() => setDialogTarget({ code, mode: "delete" })}
                           disabled={!code.canDelete || actionId === code.id}
-                          title={!code.canDelete ? t("table.deleteDisabledTooltip") : undefined}
+                          title={
+                            code.deleteBlockedReason === "has_history"
+                              ? t("table.deleteDisabledTooltip")
+                              : undefined
+                          }
                           className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           <Trash2 className="size-3.5" aria-hidden />
