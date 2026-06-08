@@ -24,7 +24,12 @@ import { Container } from "@/components/ui/container";
 import { VehicleDetailGallery } from "@/features/vehicles/components/vehicle-detail-gallery";
 import { VehicleRelatedSlider } from "@/features/vehicles/components/vehicle-related-slider";
 import { formatVehicleTypeLabel, type Vehicle } from "@/features/vehicles/data/vehicles";
+import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
 import { useVehicle, useVehicles } from "@/features/vehicles/lib/use-vehicles";
+import {
+  buildDurationPricingPreview,
+  calculateVehicleRentalPricing,
+} from "@/lib/pricing/duration-pricing";
 import { BOOKING_TIME_SLOTS } from "@/features/booking/lib/time-slots";
 import {
   useVehicleAvailabilityCheck,
@@ -259,6 +264,7 @@ function BookingSidebar({
   initialPickupTime,
   initialReturnTime,
 }: BookingSidebarProps) {
+  const { rules: durationRules } = useDurationPricingRules();
   const minDate = todayISO();
   const defaultTime = BOOKING_TIME_SLOTS[0] ?? "09:30";
   const [pickupDate, setPickupDate] = useState(initialPickupDate);
@@ -298,9 +304,22 @@ function BookingSidebar({
     return qs ? `/booking?${qs}` : "/booking";
   }, [pickupDate, returnDate, pickupTime, returnTime]);
 
-  const estimatedTotal = vehicle.pricePerDay > 0 && days > 0
-    ? vehicle.pricePerDay * days
-    : null;
+  const durationPreview = useMemo(
+    () => buildDurationPricingPreview(vehicle.baseDailyRate, vehicle.apiVehicleType, durationRules),
+    [durationRules, vehicle.apiVehicleType, vehicle.baseDailyRate],
+  );
+
+  const estimatedPricing =
+    vehicle.baseDailyRate > 0 && days > 0 && durationRules.length > 0
+      ? calculateVehicleRentalPricing(
+          vehicle.baseDailyRate,
+          vehicle.apiVehicleType,
+          days,
+          durationRules,
+        )
+      : null;
+  const estimatedTotal = estimatedPricing?.rentalSubtotal ?? null;
+  const estimatedTierDailyRate = estimatedPricing?.appliedDailyRate ?? null;
 
   const dateInputClass = (hasWarning: boolean) =>
     [
@@ -318,14 +337,23 @@ function BookingSidebar({
       {/* price */}
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          {vehicle.pricePerDay > 0 ? (
+          {vehicle.baseDailyRate > 0 ? (
             <p className="text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl">
-              EUR {vehicle.pricePerDay}
+              From €{vehicle.baseDailyRate}
               <span className="ml-1 text-base font-medium text-slate-500">/ day</span>
             </p>
           ) : (
             <p className="text-lg font-semibold text-slate-700">Price on request</p>
           )}
+          {durationPreview.length > 0 ? (
+            <ul className="mt-3 space-y-1 text-xs text-slate-600">
+              {durationPreview.map((row) => (
+                <li key={`${row.minDays}-${row.maxDays ?? "plus"}`}>
+                  {row.label}: {row.discountPercent}% off → €{row.appliedDailyRate}/day
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {vehicle.securityDepositEUR != null ? (
             <p className="mt-0.5 text-xs text-slate-500">
               + EUR {vehicle.securityDepositEUR} deposit (refundable)
@@ -475,14 +503,14 @@ function BookingSidebar({
       ) : null}
 
       {/* price breakdown */}
-      {estimatedTotal !== null ? (
+      {estimatedTotal !== null && estimatedTierDailyRate !== null ? (
         <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
           <div className="flex justify-between text-sm text-slate-600">
-            <span>EUR {vehicle.pricePerDay} × {days} day{days !== 1 ? "s" : ""}</span>
-            <span className="font-semibold text-slate-900">EUR {estimatedTotal}</span>
+            <span>€{estimatedTierDailyRate} × {days} day{days !== 1 ? "s" : ""}</span>
+            <span className="font-semibold text-slate-900">€{estimatedTotal}</span>
           </div>
           <p className="mt-1 text-[0.65rem] text-slate-400">
-            Final price confirmed before you pay — no card taken online.
+            Flat tier rate applied to the full trip duration. Final price confirmed before you pay — no card taken online.
           </p>
         </div>
       ) : null}
@@ -646,6 +674,9 @@ export function VehicleDetailsShell({
               {brandModel ? (
                 <p className="mt-1.5 text-base font-medium text-slate-600">{brandModel}</p>
               ) : null}
+              <p className="mt-1 text-sm font-semibold text-slate-800">
+                {t("licensePlateLabel", { plate: vehicle.licensePlate })}
+              </p>
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1 text-sm text-slate-600">
                   <MapPin className="h-3.5 w-3.5 text-[var(--brand-orange)]" aria-hidden />
@@ -716,6 +747,7 @@ export function VehicleDetailsShell({
                 <dl className="mt-4 grid gap-3 sm:grid-cols-2">
                   {[
                     { label: "Vehicle type", value: typeLabel },
+                    { label: t("specLicensePlate"), value: vehicle.licensePlate },
                     { label: "Brand / Model", value: brandModel ?? "Not specified" },
                     { label: "Engine", value: vehicle.engine || "—" },
                     { label: "Transmission", value: vehicle.transmission },
@@ -783,9 +815,9 @@ export function VehicleDetailsShell({
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md md:hidden">
         <div className="mx-auto flex max-w-md items-center justify-between gap-3">
           <div>
-            {vehicle.pricePerDay > 0 ? (
+            {vehicle.baseDailyRate > 0 ? (
               <p className="text-lg font-bold text-slate-950">
-                EUR {vehicle.pricePerDay}
+                From €{vehicle.baseDailyRate}
                 <span className="ml-1 text-xs font-medium text-slate-500">/day</span>
               </p>
             ) : (

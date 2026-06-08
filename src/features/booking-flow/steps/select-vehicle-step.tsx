@@ -49,6 +49,7 @@ export function SelectVehicleStep() {
       vehicleId: preselectedBySlug.id,
       vehicleSlug: preselectedBySlug.slug,
       vehicleName: preselectedBySlug.name,
+      vehicleLicensePlate: preselectedBySlug.licensePlate,
       vehicleType: preselectedBySlug.apiVehicleType,
     });
   }, [state.rental.vehicleSlug, state.rental.vehicleId, updateSection, vehicles]);
@@ -165,6 +166,8 @@ export function SelectVehicleStep() {
             </p>
             <p className="mt-2 text-xs text-slate-500">
               {formatVehicleTypeLabel(selectedVehicle.apiVehicleType)}
+              {" · "}
+              {t("licensePlate", { plate: selectedVehicle.licensePlate })}
               {" · "}
               {t("helmetsSummary", { count: selectedVehicle.helmetIncludedCount })}
               {" · "}

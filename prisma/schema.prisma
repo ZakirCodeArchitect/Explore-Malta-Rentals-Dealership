@@ -26,6 +26,15 @@ enum VehicleType {
   ATV
 }
 
+enum VehicleCatalogStatus {
+  AVAILABLE
+  BOOKED
+  UNDER_PROCESS
+  SOLD
+  MAINTENANCE
+  INACTIVE
+}
+
 enum PickupOption {
   OFFICE
   DELIVERY
@@ -129,8 +138,11 @@ model Vehicle {
   shortDescription    String?
   description         String?
   mainImageUrl        String?
+  catalogStatus       VehicleCatalogStatus @default(AVAILABLE)
   isActive            Boolean     @default(true)
   displayOrder        Int         @default(0)
+  licensePlate        String      @unique
+  baseDailyRate       Decimal     @db.Decimal(10, 2)
   helmetIncludedCount Int         @default(2)
   supportsStorageBox  Boolean     @default(false)
   createdAt           DateTime    @default(now())
@@ -144,6 +156,7 @@ model Vehicle {
 
   @@index([isActive, displayOrder])
   @@index([vehicleType, isActive])
+  @@index([catalogStatus, isActive])
 }
 
 model VehicleImage {
@@ -159,6 +172,20 @@ model VehicleImage {
 
   @@index([vehicleId, sortOrder])
   @@index([vehicleId, isPrimary])
+}
+
+model DurationPricingRule {
+  id              String      @id @default(cuid())
+  vehicleType     VehicleType
+  minDays         Int
+  maxDays         Int?
+  discountPercent Decimal     @db.Decimal(5, 2)
+  isActive        Boolean     @default(true)
+  displayOrder    Int         @default(0)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([vehicleType, isActive, displayOrder])
 }
 
 model VehiclePricingRule {
@@ -236,8 +263,9 @@ model Booking {
   updatedAt        DateTime      @updatedAt
 
   vehicleId           String?
-  vehicleNameSnapshot String?
-  vehicleTypeSnapshot VehicleType?
+  vehicleNameSnapshot         String?
+  vehicleLicensePlateSnapshot String?
+  vehicleTypeSnapshot         VehicleType?
   termsVersionId      String?
 
   vehicleType         VehicleType
@@ -289,6 +317,9 @@ model Booking {
   helmetSize2               HelmetSize?
   storageBoxSelected        Boolean     @default(false)
   storageBoxCost            Decimal     @default(0) @db.Decimal(10, 2)
+  baseDailyRateSnapshot           Decimal?    @db.Decimal(10, 2)
+  durationDiscountPercentSnapshot Decimal?    @db.Decimal(5, 2)
+  appliedDailyRateSnapshot        Decimal?    @db.Decimal(10, 2)
   rentalCost                Decimal     @default(0) @db.Decimal(10, 2)
   deliveryFee               Decimal     @default(0) @db.Decimal(10, 2)
   dropoffFee                Decimal     @default(0) @db.Decimal(10, 2)

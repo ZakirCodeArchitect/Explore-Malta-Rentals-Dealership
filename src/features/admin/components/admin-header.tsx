@@ -3,6 +3,7 @@
 import { Bell, ChevronDown, LogOut } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { LOGO_PATH } from "@/lib/site-brand-copy";
@@ -11,8 +12,24 @@ import type { AdminSessionUser } from "@/lib/admin-auth/types";
 type AdminHeaderProps = Readonly<{
   locale: string;
   user: AdminSessionUser;
-  title: string;
+  title?: string;
 }>;
+
+function resolveAdminHeaderTitle(pathname: string, t: (key: string) => string): string {
+  if (pathname.includes("/admin/vehicles/new")) {
+    return t("vehicles.createHeader");
+  }
+  if (pathname.includes("/admin/vehicles/") && pathname.endsWith("/edit")) {
+    return t("vehicles.editHeader");
+  }
+  if (/\/admin\/vehicles\/[^/]+$/.test(pathname) && !pathname.endsWith("/new")) {
+    return t("vehicles.detailsHeader");
+  }
+  if (pathname.includes("/admin/vehicles")) {
+    return t("vehicles.header");
+  }
+  return t("dashboardOverviewTitle");
+}
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -27,6 +44,8 @@ function initialsFromName(name: string): string {
 
 export function AdminHeader({ locale, user, title }: AdminHeaderProps) {
   const t = useTranslations("Admin");
+  const pathname = usePathname();
+  const resolvedTitle = title ?? resolveAdminHeaderTitle(pathname, t);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +62,7 @@ export function AdminHeader({ locale, user, title }: AdminHeaderProps) {
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-slate-200/80 bg-[#f4f7fb]/95 px-4 py-4 backdrop-blur-sm sm:px-6 lg:px-8">
-      <h1 className="text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">{title}</h1>
+      <h1 className="text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">{resolvedTitle}</h1>
 
       <div className="flex items-center gap-2 sm:gap-3">
         <button

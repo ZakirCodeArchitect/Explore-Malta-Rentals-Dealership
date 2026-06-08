@@ -1,0 +1,171 @@
+import type { Prisma } from "@/generated/prisma/index";
+
+import type {
+  AdminVehicleDetail,
+  AdminVehicleListFilters,
+  AdminVehicleListResult,
+} from "@/lib/admin/vehicles/types";
+import { prisma } from "@/lib/prisma";
+
+const vehicleRelationCountSelect = {
+  bookings: true,
+  reservationHolds: true,
+  availabilityBlocks: true,
+} as const;
+
+function canDeleteVehicle(counts: {
+  bookings: number;
+  reservationHolds: number;
+  availabilityBlocks: number;
+}): boolean {
+  return counts.bookings === 0 && counts.reservationHolds === 0 && counts.availabilityBlocks === 0;
+}
+
+function normalizeSearchTerm(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : undefined;
+}
+
+export async function listAdminVehicles(filters: AdminVehicleListFilters = {}): Promise<AdminVehicleListResult> {
+  const where: Prisma.VehicleWhereInput = {};
+  const search = normalizeSearchTerm(filters.search);
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { slug: { contains: search, mode: "insensitive" } },
+      { licensePlate: { contains: search, mode: "insensitive" } },
+      { brand: { contains: search, mode: "insensitive" } },
+      { model: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  if (filters.vehicleType) {
+    where.vehicleType = filters.vehicleType;
+  }
+
+  if (filters.catalogStatus) {
+    where.catalogStatus = filters.catalogStatus;
+  }
+
+  const [vehicles, total] = await Promise.all([
+    prisma.vehicle.findMany({
+      where,
+      orderBy: [{ displayOrder: "asc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        vehicleType: true,
+        brand: true,
+        model: true,
+        mainImageUrl: true,
+        catalogStatus: true,
+        isActive: true,
+        displayOrder: true,
+        licensePlate: true,
+        images: {
+          orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
+          take: 1,
+          select: { imageUrl: true },
+        },
+        _count: {
+          select: vehicleRelationCountSelect,
+        },
+      },
+    }),
+    prisma.vehicle.count({ where }),
+  ]);
+
+  return {
+    total,
+    vehicles: vehicles.map((vehicle) => ({
+      id: vehicle.id,
+      name: vehicle.name,
+      slug: vehicle.slug,
+      vehicleType: vehicle.vehicleType,
+      brand: vehicle.brand,
+      model: vehicle.model,
+      mainImageUrl: vehicle.mainImageUrl ?? vehicle.images[0]?.imageUrl ?? null,
+      catalogStatus: vehicle.catalogStatus,
+      isActive: vehicle.isActive,
+      displayOrder: vehicle.displayOrder,
+      licensePlate: vehicle.licensePlate,
+      bookingCount: vehicle._count.bookings,
+      canDelete: canDeleteVehicle(vehicle._count),
+    })),
+  };
+}
+
+export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetail | null> {
+  const vehicle = await prisma.vehicle.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      vehicleType: true,
+      brand: true,
+      model: true,
+      shortDescription: true,
+      description: true,
+      mainImageUrl: true,
+      catalogStatus: true,
+      isActive: true,
+      displayOrder: true,
+      licensePlate: true,
+      baseDailyRate: true,
+      helmetIncludedCount: true,
+      supportsStorageBox: true,
+      createdAt: true,
+      updatedAt: true,
+      images: {
+        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          imageUrl: true,
+          altText: true,
+          sortOrder: true,
+          isPrimary: true,
+        },
+      },
+      _count: {
+        select: vehicleRelationCountSelect,
+      },
+    },
+  });
+
+  if (!vehicle) {
+    return null;
+  }
+
+  return {
+    id: vehicle.id,
+    name: vehicle.name,
+    slug: vehicle.slug,
+    vehicleType: vehicle.vehicleType,
+    brand: vehicle.brand,
+    model: vehicle.model,
+    shortDescription: vehicle.shortDescription,
+    description: vehicle.description,
+    mainImageUrl: vehicle.mainImageUrl ?? vehicle.images[0]?.imageUrl ?? null,
+    catalogStatus: vehicle.catalogStatus,
+    isActive: vehicle.isActive,
+    displayOrder: vehicle.displayOrder,
+    licensePlate: vehicle.licensePlate,
+    helmetIncludedCount: vehicle.helmetIncludedCount,
+    supportsStorageBox: vehicle.supportsStorageBox,
+    baseDailyRate: vehicle.baseDailyRate.toNumber(),
+    bookingCount: vehicle._count.bookings,
+    canDelete: canDeleteVehicle(vehicle._count),
+    images: vehicle.images.map((image) => ({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      altText: image.altText,
+      sortOrder: image.sortOrder,
+      isPrimary: image.isPrimary,
+    })),
+    createdAt: vehicle.createdAt.toISOString(),
+    updatedAt: vehicle.updatedAt.toISOString(),
+  };
+}

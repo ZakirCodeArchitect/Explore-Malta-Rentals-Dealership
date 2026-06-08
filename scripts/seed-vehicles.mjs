@@ -1,8 +1,11 @@
 import "dotenv/config";
+
 import { randomUUID } from "node:crypto";
+
 import pg from "pg";
 
 const connectionString = process.env.DATABASE_URL;
+
 if (!connectionString) {
   console.error("DATABASE_URL is not set.");
   process.exit(1);
@@ -14,6 +17,7 @@ const vehicles = [
   {
     name: "Neco One 50cc",
     slug: "neco-one-50cc",
+    licensePlate: "MLT-101",
     vehicleType: "Scooter",
     brand: "Neco",
     model: "One 50cc",
@@ -24,10 +28,12 @@ const vehicles = [
     displayOrder: 10,
     helmetIncludedCount: 2,
     supportsStorageBox: true,
+    baseDailyRate: 25,
   },
   {
     name: "Lexmoto Aura 125cc",
     slug: "lexmoto-aura-125cc",
+    licensePlate: "MLT-204",
     vehicleType: "Motorcycle",
     brand: "Lexmoto",
     model: "Aura 125",
@@ -38,10 +44,12 @@ const vehicles = [
     displayOrder: 20,
     helmetIncludedCount: 2,
     supportsStorageBox: true,
+    baseDailyRate: 30,
   },
   {
     name: "Giant Escape City Bike",
     slug: "giant-escape-city-bike",
+    licensePlate: "MLT-318",
     vehicleType: "Bicycle",
     brand: "Giant",
     model: "Escape",
@@ -52,10 +60,12 @@ const vehicles = [
     displayOrder: 30,
     helmetIncludedCount: 1,
     supportsStorageBox: false,
+    baseDailyRate: 20,
   },
   {
     name: "CFMOTO CForce ATV",
     slug: "cfmoto-cforce-atv",
+    licensePlate: "MLT-452",
     vehicleType: "ATV",
     brand: "CFMOTO",
     model: "CForce",
@@ -66,6 +76,7 @@ const vehicles = [
     displayOrder: 40,
     helmetIncludedCount: 2,
     supportsStorageBox: true,
+    baseDailyRate: 110,
   },
 ];
 
@@ -74,6 +85,7 @@ const upsertSql = `
     "id",
     "name",
     "slug",
+    "licensePlate",
     "vehicleType",
     "brand",
     "model",
@@ -84,15 +96,17 @@ const upsertSql = `
     "displayOrder",
     "helmetIncludedCount",
     "supportsStorageBox",
+    "baseDailyRate",
     "createdAt",
     "updatedAt"
   )
   VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, true, $10, $11, $12, NOW(), NOW()
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true, $11, $12, $13, $14, NOW(), NOW()
   )
   ON CONFLICT ("slug")
   DO UPDATE SET
     "name" = EXCLUDED."name",
+    "licensePlate" = EXCLUDED."licensePlate",
     "vehicleType" = EXCLUDED."vehicleType",
     "brand" = EXCLUDED."brand",
     "model" = EXCLUDED."model",
@@ -103,6 +117,7 @@ const upsertSql = `
     "displayOrder" = EXCLUDED."displayOrder",
     "helmetIncludedCount" = EXCLUDED."helmetIncludedCount",
     "supportsStorageBox" = EXCLUDED."supportsStorageBox",
+    "baseDailyRate" = EXCLUDED."baseDailyRate",
     "updatedAt" = NOW()
   RETURNING "id", "slug";
 `;
@@ -115,6 +130,7 @@ async function main() {
       randomUUID(),
       vehicle.name,
       vehicle.slug,
+      vehicle.licensePlate,
       vehicle.vehicleType,
       vehicle.brand,
       vehicle.model,
@@ -124,10 +140,11 @@ async function main() {
       vehicle.displayOrder,
       vehicle.helmetIncludedCount,
       vehicle.supportsStorageBox,
+      vehicle.baseDailyRate,
     ]);
 
     const row = result.rows[0];
-    console.log(`Upserted vehicle: ${row.slug} (${row.id})`);
+    console.log(`Upserted vehicle: ${row.slug} (${row.id}) @ €${vehicle.baseDailyRate}/day base rate`);
   }
 
   console.log("Vehicle seed complete.");

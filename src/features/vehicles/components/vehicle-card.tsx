@@ -79,6 +79,9 @@ export function VehicleCard({
           <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-950">{vehicle.name}</h3>
           <p className="mt-1 text-sm text-slate-600">{vehicle.shortDescription ?? vehicle.tagline}</p>
           {brandModel ? <p className="mt-1 text-xs text-slate-500">{brandModel}</p> : null}
+          <p className="mt-1 text-xs font-medium text-slate-600">
+            {t("licensePlateInline", { plate: vehicle.licensePlate })}
+          </p>
           {status === "reserved_you" ? (
             <p className="mt-2 text-xs font-medium text-emerald-800">{t("holdNotice")}</p>
           ) : null}
@@ -94,9 +97,18 @@ export function VehicleCard({
           <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-slate-800">
             {t("helmetsInline", { count: vehicle.helmetIncludedCount })}
           </span>
-          <p className="text-xs text-slate-600">
-            {vehicle.supportsStorageBox ? t("storageYes") : t("storageNo")}
-          </p>
+          <div className="text-right">
+            {vehicle.pricePerDay > 0 ? (
+              <p className="text-sm font-semibold text-slate-900">
+                {t("fromPerDay", { price: vehicle.pricePerDay })}
+              </p>
+            ) : (
+              <p className="text-xs font-medium text-slate-500">{t("priceOnRequest")}</p>
+            )}
+            <p className="text-xs text-slate-600">
+              {vehicle.supportsStorageBox ? t("storageYes") : t("storageNo")}
+            </p>
+          </div>
         </div>
 
         <div className="mt-5 flex justify-end border-t border-slate-200 pt-3">

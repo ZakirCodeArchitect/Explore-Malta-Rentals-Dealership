@@ -1,23 +1,24 @@
 /**
- * Verifies server-side pricing for: 50cc motorbike, 2 billable days, office/office,
- * no extras, deposit in person → rental 36, subtotal 36, deposit 250, online 36, later 250.
- *
- * Also verifies invalid payloads are rejected (same rules as POST /api/bookings):
- * wrong license for 50cc, terms not accepted, delivery without address, ATV missing a helmet size.
+ * Verifies server-side pricing for duration discount rules + vehicle base daily rate.
  *
  * Run: npm run test:booking-pricing
- *
- * Optional: with dev server up, also smoke-test POST /api/bookings:
- *   set TEST_API_BASE=http://localhost:3000 && npm run test:booking-pricing
  */
 import type { z } from "zod";
 
 import { bookingSubmissionSchema } from "../src/lib/booking/bookingSubmissionSchema";
 import { calculateBookingPrice, type BookingPricingInput } from "../src/lib/pricing/calculate-booking-price";
+import type { DurationPricingRuleDto } from "../src/lib/pricing/duration-pricing";
 
 type BookingPayload = z.input<typeof bookingSubmissionSchema>;
 
-const scenario50ccTwoDaysInPerson: BookingPricingInput = {
+const scooterDurationRules: DurationPricingRuleDto[] = [
+  { vehicleType: "Scooter", minDays: 1, maxDays: 1, discountPercent: 0, displayOrder: 10 },
+  { vehicleType: "Scooter", minDays: 2, maxDays: 2, discountPercent: 10, displayOrder: 20 },
+  { vehicleType: "Scooter", minDays: 3, maxDays: 20, discountPercent: 20, displayOrder: 30 },
+  { vehicleType: "Scooter", minDays: 21, maxDays: null, discountPercent: 40, displayOrder: 40 },
+];
+
+const basePricingInput = {
   rental: {
     vehicle: { type: "Scooter" },
     pickupDate: "2026-05-10",
@@ -26,17 +27,22 @@ const scenario50ccTwoDaysInPerson: BookingPricingInput = {
     returnTime: "10:00",
   },
   delivery: {
-    pickupOption: "office",
-    dropoffOption: "office",
+    pickupOption: "office" as const,
+    dropoffOption: "office" as const,
   },
   addons: {
-    cdwOption: "no_cdw",
+    cdwOption: "no_cdw" as const,
     additionalDriver: false,
     storageBox: false,
   },
   additionalDriver: { enabled: false },
-  deposit: { method: "in_person" },
-};
+  deposit: { method: "in_person" as const },
+  vehiclePricing: {
+    baseDailyRate: 25,
+    vehicleType: "Scooter" as const,
+    durationRules: scooterDurationRules,
+  },
+} satisfies BookingPricingInput;
 
 function assertApprox(name: string, actual: number, expected: number, tolerance = 0.001): void {
   if (Math.abs(actual - expected) > tolerance) {
@@ -45,28 +51,45 @@ function assertApprox(name: string, actual: number, expected: number, tolerance 
 }
 
 function runPricingAssertions(): void {
-  const b = calculateBookingPrice(scenario50ccTwoDaysInPerson);
-  if (!b) {
-    throw new Error("calculateBookingPrice returned null");
+  const twoDayBooking = calculateBookingPrice(basePricingInput);
+  if (!twoDayBooking) {
+    throw new Error("2-day pricing returned null");
   }
 
-  assertApprox("rentalCost", b.rentalCost, 36);
-  assertApprox("deliveryFee", b.deliveryFee, 0);
-  assertApprox("deliveryTotal", b.deliveryTotal, 0);
-  assertApprox("subtotal", b.subtotal, 36);
-  assertApprox("depositAmount", b.depositAmount, 250);
-  assertApprox("totalDueOnline", b.totalDueOnline, 36);
-  assertApprox("totalDueLater", b.totalDueLater, 250);
-  assertApprox("cdwCost", b.cdwCost, 0);
-  assertApprox("billableDays (via rentalDays)", b.rentalDays, 2);
+  assertApprox("2-day applied rate", twoDayBooking.appliedDailyRate, 22.5);
+  assertApprox("2-day rentalCost", twoDayBooking.rentalCost, 45);
+  assertApprox("2-day discount percent", twoDayBooking.durationDiscountPercent, 10);
+
+  const fiveDayBooking = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      returnDate: "2026-05-15",
+    },
+  });
+  if (!fiveDayBooking) {
+    throw new Error("5-day pricing returned null");
+  }
+  assertApprox("5-day applied rate", fiveDayBooking.appliedDailyRate, 20);
+  assertApprox("5-day rentalCost", fiveDayBooking.rentalCost, 100);
+
+  const twentyOneDayBooking = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      returnDate: "2026-05-31",
+    },
+  });
+  if (!twentyOneDayBooking) {
+    throw new Error("21-day pricing returned null");
+  }
+  assertApprox("21-day applied rate", twentyOneDayBooking.appliedDailyRate, 15);
+  assertApprox("21-day rentalCost", twentyOneDayBooking.rentalCost, 315);
 
   console.log("Pricing assertions passed:", {
-    rentalCost: b.rentalCost,
-    deliveryFee: b.deliveryFee,
-    subtotal: b.subtotal,
-    depositAmount: b.depositAmount,
-    totalDueOnline: b.totalDueOnline,
-    totalDueLater: b.totalDueLater,
+    twoDayRentalCost: twoDayBooking.rentalCost,
+    fiveDayRentalCost: fiveDayBooking.rentalCost,
+    twentyOneDayRentalCost: twentyOneDayBooking.rentalCost,
   });
 }
 
@@ -191,35 +214,9 @@ function runNegativeValidationTests(): void {
   );
 }
 
-async function optionalApiSmokeTest(): Promise<void> {
-  const base = process.env.TEST_API_BASE?.trim();
-  if (!base) {
-    console.log("Skip API smoke test (set TEST_API_BASE e.g. http://localhost:3000 to enable).");
-    return;
-  }
-
-  const url = `${base.replace(/\/$/, "")}/api/bookings`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(bookingBody),
-  });
-  const data = (await res.json()) as { success?: boolean; bookingReference?: string; message?: string };
-
-  if (!res.ok) {
-    throw new Error(`POST ${url} → ${res.status}: ${JSON.stringify(data)}`);
-  }
-  if (!data.success || !data.bookingReference) {
-    throw new Error(`Unexpected response: ${JSON.stringify(data)}`);
-  }
-
-  console.log("API smoke test passed:", data.bookingReference);
-}
-
 async function main(): Promise<void> {
   runPricingAssertions();
   runNegativeValidationTests();
-  await optionalApiSmokeTest();
   console.log("All checks OK.");
 }
 

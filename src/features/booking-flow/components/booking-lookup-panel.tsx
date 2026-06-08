@@ -57,6 +57,12 @@ function BookingSummaryCard({
           <p className="mt-1 font-medium text-slate-900">{summary.vehicleName}</p>
         </>
       ) : null}
+      {summary.vehicleLicensePlate ? (
+        <>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("licensePlateLabel")}</p>
+          <p className="mt-1 font-mono font-medium text-slate-900">{summary.vehicleLicensePlate}</p>
+        </>
+      ) : null}
       <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pickupLabel")}</p>
       <p className="mt-1 text-slate-800">{formatIsoDateTime(summary.pickupDateTime, format)}</p>
       <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("returnLabel")}</p>

@@ -59,6 +59,7 @@ function isVehicleListItem(value: unknown): value is VehicleListApiItem {
     (candidate.mainImageUrl === null || typeof candidate.mainImageUrl === "string") &&
     typeof candidate.helmetIncludedCount === "number" &&
     typeof candidate.supportsStorageBox === "boolean" &&
+    typeof candidate.baseDailyRate === "number" &&
     (candidate.rentalWindowStatus === undefined ||
       (typeof candidate.rentalWindowStatus === "string" &&
         isVehicleRentalWindowStatus(candidate.rentalWindowStatus)))

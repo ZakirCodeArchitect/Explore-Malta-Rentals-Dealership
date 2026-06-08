@@ -98,7 +98,7 @@ export function VehicleRelatedSlider({
                 </p>
                 <p className="mt-2.5 text-sm font-bold text-slate-950">
                   {vehicle.pricePerDay > 0 ? (
-                    <>EUR {vehicle.pricePerDay}<span className="text-xs font-normal text-slate-500">/day</span></>
+                    <>From €{vehicle.pricePerDay}<span className="text-xs font-normal text-slate-500">/day</span></>
                   ) : (
                     <span className="text-xs font-medium text-slate-500">Price on request</span>
                   )}

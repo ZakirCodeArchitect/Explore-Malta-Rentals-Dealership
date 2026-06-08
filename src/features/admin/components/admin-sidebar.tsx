@@ -32,7 +32,7 @@ type AdminNavItem = {
 
 const MAIN_NAV: AdminNavItem[] = [
   { href: "", labelKey: "overview", icon: LayoutDashboard },
-  { href: "/vehicles", labelKey: "vehicles", icon: Car, disabled: true },
+  { href: "/vehicles", labelKey: "vehicles", icon: Car },
   { href: "/bookings", labelKey: "bookings", icon: CalendarCheck, disabled: true },
 ];
 

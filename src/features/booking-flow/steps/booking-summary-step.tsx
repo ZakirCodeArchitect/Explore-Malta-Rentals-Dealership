@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   calculateBookingPrice,
   formatEur,
@@ -14,9 +16,22 @@ export function BookingSummaryStep() {
   const t = useTranslations("BookingWizard.bookingSummary");
   const tCommon = useTranslations("Common");
   const { state, updateSection } = useBookingFlow();
+  const { vehicles } = useVehicles();
+  const { rules: durationRules } = useDurationPricingRules();
+  const selectedVehicle = useMemo(() => {
+    if (!state.rental.vehicleId) {
+      return null;
+    }
+    return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
+  }, [state.rental.vehicleId, vehicles]);
+
   const pricing = useMemo(
-    () =>
-      calculateBookingPrice({
+    () => {
+      if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0 || durationRules.length === 0) {
+        return null;
+      }
+
+      return calculateBookingPrice({
         rental: {
           vehicle: {
             id: state.rental.vehicleId ?? undefined,
@@ -48,8 +63,14 @@ export function BookingSummaryStep() {
         deposit: {
           method: state.deposit.depositMethod,
         },
-      }),
-    [state],
+        vehiclePricing: {
+          baseDailyRate: selectedVehicle.baseDailyRate,
+          vehicleType: selectedVehicle.apiVehicleType,
+          durationRules,
+        },
+      });
+    },
+    [durationRules, selectedVehicle, state],
   );
 
   const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
@@ -73,6 +94,11 @@ export function BookingSummaryStep() {
               {t("vehicleSelected")}{" "}
               {state.rental.vehicleName || state.rental.vehicleId || t("categoryOnly")}
             </li>
+            {state.rental.vehicleLicensePlate ? (
+              <li>
+                {t("licensePlate")} {state.rental.vehicleLicensePlate}
+              </li>
+            ) : null}
             <li>
               {t("rentalDates")} {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} {t("to")}{" "}
               {state.rental.returnDate || "-"} {state.rental.returnTime || ""}

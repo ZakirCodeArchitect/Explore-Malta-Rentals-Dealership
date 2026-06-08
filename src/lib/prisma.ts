@@ -1,11 +1,12 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-import { PrismaClient } from "@/generated/prisma/index";
+import { PrismaClient, Prisma } from "@/generated/prisma/index";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
   pgPool?: Pool;
+  prismaSchemaFingerprint?: string;
 };
 
 const connectionString = process.env.DATABASE_URL;
@@ -59,8 +60,15 @@ const hasCurrentPrismaDelegates = (client: PrismaClient | undefined): client is 
   );
 };
 
+function getPrismaSchemaFingerprint(): string {
+  return Object.values(Prisma.VehicleScalarFieldEnum).sort().join(",");
+}
+
+const prismaSchemaFingerprint = getPrismaSchemaFingerprint();
+
 const prismaClient =
-  hasCurrentPrismaDelegates(globalForPrisma.prisma)
+  hasCurrentPrismaDelegates(globalForPrisma.prisma) &&
+  globalForPrisma.prismaSchemaFingerprint === prismaSchemaFingerprint
     ? globalForPrisma.prisma
     : new PrismaClient({
         adapter,
@@ -71,4 +79,5 @@ export const prisma = prismaClient;
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
+  globalForPrisma.prismaSchemaFingerprint = prismaSchemaFingerprint;
 }

@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { Prisma, type VehicleType } from "@/generated/prisma/index";
 import {
   checkVehicleAvailability,
-  checkVehicleTypeAvailability,
   type AvailabilityDbClient,
 } from "@/lib/availability";
 import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
@@ -16,6 +15,8 @@ import {
   type BookingPricingInput,
   type PricingCdwOption,
 } from "@/lib/pricing/calculate-booking-price";
+import { getDurationPricingRules } from "@/lib/pricing/get-duration-pricing-rules";
+import type { DurationPricingRuleDto } from "@/lib/pricing/duration-pricing";
 
 import { validateBookingPayload } from "./validateBookingPayload";
 import type { BookingSubmissionInput, NormalizedBookingPayload, ValidationError } from "./types";
@@ -30,13 +31,18 @@ type PricingComputation = {
   cdwDailyRate: number;
   additionalDriverDailyRate: number;
   resolvedCdwOption: NormalizedBookingPayload["addons"]["cdwOption"];
+  baseDailyRateSnapshot: number;
+  durationDiscountPercentSnapshot: number;
+  appliedDailyRateSnapshot: number;
 };
 
 type ResolvedBookingVehicle = {
-  vehicleId: string | null;
-  vehicleNameSnapshot: string | null;
+  vehicleId: string;
+  vehicleNameSnapshot: string;
+  vehicleLicensePlateSnapshot: string;
   vehicleType: VehicleType;
   vehicleTypeSnapshot: VehicleType;
+  baseDailyRate: number;
 };
 
 type SubmitBookingResponse = {
@@ -134,7 +140,7 @@ function mapCdwOptionFromPricing(option: PricingCdwOption): NormalizedBookingPay
 function toPricingInput(
   payload: NormalizedBookingPayload,
   vehicle: ResolvedBookingVehicle,
-): BookingPricingInput {
+): Omit<BookingPricingInput, "vehiclePricing"> {
   return {
     rental: {
       vehicle: {
@@ -172,8 +178,16 @@ function toPricingInput(
 function computePricing(
   payload: NormalizedBookingPayload,
   vehicle: ResolvedBookingVehicle,
+  durationRules: DurationPricingRuleDto[],
 ): PricingComputation | null {
-  const breakdown = calculateBookingPrice(toPricingInput(payload, vehicle));
+  const breakdown = calculateBookingPrice({
+    ...toPricingInput(payload, vehicle),
+    vehiclePricing: {
+      baseDailyRate: vehicle.baseDailyRate,
+      vehicleType: vehicle.vehicleType,
+      durationRules,
+    },
+  });
   if (!breakdown) {
     return null;
   }
@@ -185,6 +199,9 @@ function computePricing(
       ? pricingConfig.addons.additionalDriverPerDay
       : 0,
     resolvedCdwOption: mapCdwOptionFromPricing(breakdown.cdwOptionApplied),
+    baseDailyRateSnapshot: breakdown.baseDailyRate,
+    durationDiscountPercentSnapshot: breakdown.durationDiscountPercent,
+    appliedDailyRateSnapshot: breakdown.appliedDailyRate,
   };
 }
 
@@ -215,13 +232,12 @@ function transactionConflictBackoffMs(attemptIndex: number): number {
 }
 
 async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise<ResolvedBookingVehicle> {
+  // Bookings must target one physical vehicle (vehicleId). Legacy type-only availability
+  // (checkVehicleTypeAvailability without vehicleId) is intentionally blocked here.
   if (!payload.vehicleId) {
-    return {
-      vehicleId: null,
-      vehicleNameSnapshot: null,
-      vehicleType: payload.vehicleType,
-      vehicleTypeSnapshot: payload.vehicleType,
-    };
+    throw new SubmitBookingValidationError([
+      { path: "rental.vehicleId", message: "A specific vehicle must be selected for booking" },
+    ]);
   }
 
   const vehicle = await prisma.vehicle.findUnique({
@@ -229,7 +245,9 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
     select: {
       id: true,
       name: true,
+      licensePlate: true,
       vehicleType: true,
+      baseDailyRate: true,
       isActive: true,
     },
   });
@@ -252,11 +270,19 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
     ]);
   }
 
+  if (vehicle.baseDailyRate.toNumber() <= 0) {
+    throw new SubmitBookingValidationError([
+      { path: "rental.vehicleId", message: "Selected vehicle does not have a valid base daily rate" },
+    ]);
+  }
+
   return {
     vehicleId: vehicle.id,
     vehicleNameSnapshot: vehicle.name,
+    vehicleLicensePlateSnapshot: vehicle.licensePlate,
     vehicleType: vehicle.vehicleType,
     vehicleTypeSnapshot: vehicle.vehicleType,
+    baseDailyRate: vehicle.baseDailyRate.toNumber(),
   };
 }
 
@@ -276,35 +302,9 @@ async function assertBookingStillAvailable(
   db: AvailabilityDbClient,
   holdContext?: HoldAvailabilityContext,
 ): Promise<void> {
-  if (vehicle.vehicleId) {
-    const availability = await checkVehicleAvailability(
-      {
-        vehicleId: vehicle.vehicleId,
-        vehicleType: vehicle.vehicleType,
-        requestedStart: payload.pickupDateTime,
-        requestedEnd: payload.returnDateTime,
-        excludeHoldReference: holdContext?.excludeHoldReference,
-        excludeSessionKey: holdContext?.excludeSessionKey,
-      },
-      db,
-    );
-
-    if (!availability.isAvailable) {
-      throw new AvailabilityConflictError(
-        "Selected vehicle is not available for the chosen dates",
-        {
-          vehicleId: vehicle.vehicleId,
-          vehicleType: vehicle.vehicleType,
-          requestedStart: payload.pickupDateTime,
-          requestedEnd: payload.returnDateTime,
-        },
-      );
-    }
-    return;
-  }
-
-  const availability = await checkVehicleTypeAvailability(
+  const availability = await checkVehicleAvailability(
     {
+      vehicleId: vehicle.vehicleId,
       vehicleType: vehicle.vehicleType,
       requestedStart: payload.pickupDateTime,
       requestedEnd: payload.returnDateTime,
@@ -316,9 +316,9 @@ async function assertBookingStillAvailable(
 
   if (!availability.isAvailable) {
     throw new AvailabilityConflictError(
-      "No vehicles of this type are available for the chosen dates",
+      "Selected vehicle is not available for the chosen dates",
       {
-        vehicleId: null,
+        vehicleId: vehicle.vehicleId,
         vehicleType: vehicle.vehicleType,
         requestedStart: payload.pickupDateTime,
         requestedEnd: payload.returnDateTime,
@@ -339,6 +339,7 @@ function mapBookingCreateData(
     status: "CONFIRMED",
     vehicleId: vehicle.vehicleId,
     vehicleNameSnapshot: vehicle.vehicleNameSnapshot,
+    vehicleLicensePlateSnapshot: vehicle.vehicleLicensePlateSnapshot,
     vehicleTypeSnapshot: vehicle.vehicleTypeSnapshot,
     termsVersionId,
     vehicleType: vehicle.vehicleType,
@@ -385,6 +386,9 @@ function mapBookingCreateData(
     helmetSize2: payload.addons.helmetSize2,
     storageBoxSelected: payload.addons.storageBoxSelected,
     storageBoxCost: pricing.breakdown.storageBoxCost,
+    baseDailyRateSnapshot: pricing.baseDailyRateSnapshot,
+    durationDiscountPercentSnapshot: pricing.durationDiscountPercentSnapshot,
+    appliedDailyRateSnapshot: pricing.appliedDailyRateSnapshot,
     rentalCost: pricing.breakdown.rentalCost,
     deliveryFee: pricing.breakdown.deliveryFee,
     dropoffFee: pricing.breakdown.dropoffFee,
@@ -617,6 +621,12 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
   }
 
   const resolvedVehicle = await resolveBookingVehicle(validation.data);
+  const durationRules = await getDurationPricingRules();
+  if (durationRules.length === 0) {
+    throw new SubmitBookingValidationError([
+      { path: "pricing", message: "Duration pricing rules are not configured" },
+    ]);
+  }
   const requireHoldReference = Boolean(validation.data.holdReference);
   if (!requireHoldReference) {
     await assertBookingStillAvailable(
@@ -625,7 +635,7 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
       prisma as unknown as AvailabilityDbClient,
     );
   }
-  const pricing = computePricing(validation.data, resolvedVehicle);
+  const pricing = computePricing(validation.data, resolvedVehicle, durationRules);
   if (!pricing) {
     throw new SubmitBookingValidationError([
       { path: "pricing", message: "Unable to calculate booking price" },

@@ -1,4 +1,10 @@
-import { addDays, differenceInMinutes, isSunday, parse, startOfDay } from "date-fns";
+import { differenceInMinutes, parse } from "date-fns";
+
+import type { VehicleType } from "@/generated/prisma/client";
+import {
+  calculateVehicleRentalPricing,
+  type DurationPricingRuleDto,
+} from "@/lib/pricing/duration-pricing";
 
 export type PricingVehicleCategory = "motorbike" | "bicycle" | "atv";
 export type PricingCdwOption =
@@ -42,6 +48,11 @@ export type BookingPricingInput = Readonly<{
   deposit: Readonly<{
     method: "online" | "in_person" | "";
   }>;
+  vehiclePricing: Readonly<{
+    baseDailyRate: number;
+    vehicleType: VehicleType;
+    durationRules: readonly DurationPricingRuleDto[];
+  }>;
 }>;
 
 export type PricingLineItem = Readonly<{
@@ -74,6 +85,9 @@ export type BookingPriceBreakdown = Readonly<{
   actualDurationMinutes: number;
   actualDurationHours: number;
   rentalCost: number;
+  baseDailyRate: number;
+  durationDiscountPercent: number;
+  appliedDailyRate: number;
   sundayDaysCharged: number;
   deliveryFee: number;
   dropoffFee: number;
@@ -203,44 +217,35 @@ export function resolveBaseDailyRate(category: PricingVehicleCategory, rentalDay
 }
 
 export function calculateVehicleRentalCost(
-  category: PricingVehicleCategory,
+  baseDailyRate: number,
+  vehicleType: VehicleType,
   rentalDays: number,
-  pickupDate: string,
-): { rentalCost: number; sundayDaysCharged: number } {
-  const pickup = parse(pickupDate, "yyyy-MM-dd", new Date());
-  if (Number.isNaN(pickup.getTime()) || rentalDays <= 0) {
-    return { rentalCost: 0, sundayDaysCharged: 0 };
-  }
-
-  const baseRate = resolveBaseDailyRate(category, rentalDays);
-  const sundayRate =
-    category === "bicycle"
-      ? pricingConfig.bicycle.sundayRate
-      : category === "atv"
-        ? pricingConfig.atv.sundayRate
-        : null;
-
-  if (!sundayRate) {
+  durationRules: readonly DurationPricingRuleDto[],
+): {
+  rentalCost: number;
+  baseDailyRate: number;
+  durationDiscountPercent: number;
+  appliedDailyRate: number;
+  sundayDaysCharged: number;
+} {
+  const pricing = calculateVehicleRentalPricing(baseDailyRate, vehicleType, rentalDays, durationRules);
+  if (!pricing) {
     return {
-      rentalCost: baseRate * rentalDays,
+      rentalCost: 0,
+      baseDailyRate: 0,
+      durationDiscountPercent: 0,
+      appliedDailyRate: 0,
       sundayDaysCharged: 0,
     };
   }
 
-  let rentalCost = 0;
-  let sundayDaysCharged = 0;
-  const start = startOfDay(pickup);
-  for (let dayIndex = 0; dayIndex < rentalDays; dayIndex += 1) {
-    const rentalDay = addDays(start, dayIndex);
-    if (isSunday(rentalDay)) {
-      rentalCost += sundayRate;
-      sundayDaysCharged += 1;
-      continue;
-    }
-    rentalCost += baseRate;
-  }
-
-  return { rentalCost, sundayDaysCharged };
+  return {
+    rentalCost: pricing.rentalSubtotal,
+    baseDailyRate: pricing.baseDailyRate,
+    durationDiscountPercent: pricing.durationDiscountPercent,
+    appliedDailyRate: pricing.appliedDailyRate,
+    sundayDaysCharged: 0,
+  };
 }
 
 export function calculateDeliveryFees(
@@ -350,7 +355,7 @@ export function getCdwLabel(option: PricingCdwOption): string {
 
 export function calculateBookingPrice(input: BookingPricingInput): BookingPriceBreakdown | null {
   const vehicleCategory = normalizeVehicleCategory(input.rental.vehicle.type);
-  if (!vehicleCategory) {
+  if (!vehicleCategory || !input.vehiclePricing) {
     return null;
   }
 
@@ -364,11 +369,23 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
     return null;
   }
 
-  const { rentalCost, sundayDaysCharged } = calculateVehicleRentalCost(
-    vehicleCategory,
+  const rentalPricing = calculateVehicleRentalCost(
+    input.vehiclePricing.baseDailyRate,
+    input.vehiclePricing.vehicleType,
     duration.billableDays,
-    input.rental.pickupDate,
+    input.vehiclePricing.durationRules,
   );
+  if (rentalPricing.rentalCost <= 0) {
+    return null;
+  }
+
+  const {
+    rentalCost,
+    baseDailyRate,
+    durationDiscountPercent,
+    appliedDailyRate,
+    sundayDaysCharged,
+  } = rentalPricing;
   const deliveryBreakdown = calculateDeliveryFees(
     input.delivery.pickupOption,
     input.delivery.dropoffOption,
@@ -413,6 +430,9 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
     actualDurationMinutes: duration.actualDurationMinutes,
     actualDurationHours: duration.actualDurationHours,
     rentalCost,
+    baseDailyRate,
+    durationDiscountPercent,
+    appliedDailyRate,
     sundayDaysCharged,
     deliveryFee: deliveryBreakdown.deliveryFee,
     dropoffFee: deliveryBreakdown.dropoffFee,

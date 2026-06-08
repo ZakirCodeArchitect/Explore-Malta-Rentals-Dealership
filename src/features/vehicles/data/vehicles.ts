@@ -30,6 +30,7 @@ export type VehicleListApiItem = Readonly<{
   id: string;
   name: string;
   slug: string;
+  licensePlate: string;
   vehicleType: ApiVehicleType;
   brand: string | null;
   model: string | null;
@@ -38,6 +39,7 @@ export type VehicleListApiItem = Readonly<{
   mainImageUrl: string | null;
   helmetIncludedCount: number;
   supportsStorageBox: boolean;
+  baseDailyRate: number;
   rentalWindowStatus?: VehicleRentalWindowStatus;
 }>;
 
@@ -56,6 +58,7 @@ export type Vehicle = Readonly<{
   id: string;
   slug: string;
   name: string;
+  licensePlate: string;
   type: VehicleType;
   apiVehicleType: ApiVehicleType;
   brand: string | null;
@@ -68,6 +71,7 @@ export type Vehicle = Readonly<{
   helmetIncludedCount: number;
   supportsStorageBox: boolean;
   pricePerDay: number;
+  baseDailyRate: number;
   securityDepositEUR?: number;
   seats: number;
   transmission: Transmission;
@@ -132,14 +136,20 @@ function buildDescription(item: VehicleListApiItem): string {
   return `${item.name} is available for booking in Malta.`;
 }
 
+function mapApiPricingToBaseDailyRate(item: VehicleListApiItem): number {
+  return item.baseDailyRate > 0 ? item.baseDailyRate : 0;
+}
+
 export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
   const inferredType = mapApiTypeToListingType(item.vehicleType);
   const supportsStorageBox = item.supportsStorageBox === true;
+  const baseDailyRate = mapApiPricingToBaseDailyRate(item);
 
   return {
     id: item.id,
     slug: item.slug,
     name: item.name,
+    licensePlate: item.licensePlate,
     type: inferredType,
     apiVehicleType: item.vehicleType,
     brand: item.brand,
@@ -151,7 +161,8 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
     images: item.mainImageUrl ? [item.mainImageUrl] : [],
     helmetIncludedCount: item.helmetIncludedCount,
     supportsStorageBox,
-    pricePerDay: 0,
+    pricePerDay: baseDailyRate,
+    baseDailyRate,
     seats: item.vehicleType === "Bicycle" ? 1 : 2,
     transmission: item.vehicleType === "Bicycle" ? "Manual" : "Automatic",
     fuel: item.vehicleType === "Bicycle" ? "Human powered" : "Petrol",

@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   calculateBookingPrice,
   formatEur,
@@ -9,35 +12,56 @@ import {
 
 export function PricingStep() {
   const { state, updateSection } = useBookingFlow();
-  const pricing = calculateBookingPrice({
-    rental: {
-      vehicle: {
-        id: state.rental.vehicleId ?? undefined,
-        slug: state.rental.vehicleSlug,
-        name: state.rental.vehicleName,
-        type: state.rental.vehicleType,
+  const { vehicles } = useVehicles();
+  const { rules: durationRules } = useDurationPricingRules();
+
+  const selectedVehicle = useMemo(() => {
+    if (!state.rental.vehicleId) {
+      return null;
+    }
+    return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
+  }, [state.rental.vehicleId, vehicles]);
+
+  const pricing = useMemo(() => {
+    if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0 || durationRules.length === 0) {
+      return null;
+    }
+
+    return calculateBookingPrice({
+      rental: {
+        vehicle: {
+          id: state.rental.vehicleId ?? undefined,
+          slug: state.rental.vehicleSlug,
+          name: state.rental.vehicleName,
+          type: state.rental.vehicleType,
+        },
+        pickupDate: state.rental.pickupDate,
+        returnDate: state.rental.returnDate,
+        pickupTime: state.rental.pickupTime,
+        returnTime: state.rental.returnTime,
       },
-      pickupDate: state.rental.pickupDate,
-      returnDate: state.rental.returnDate,
-      pickupTime: state.rental.pickupTime,
-      returnTime: state.rental.returnTime,
-    },
-    delivery: {
-      pickupOption: "office",
-      dropoffOption: "office",
-    },
-    addons: {
-      additionalDriver: false,
-      storageBox: false,
-      cdwOption: "no_cdw",
-    },
-    additionalDriver: {
-      enabled: false,
-    },
-    deposit: {
-      method: "",
-    },
-  });
+      delivery: {
+        pickupOption: "office",
+        dropoffOption: "office",
+      },
+      addons: {
+        additionalDriver: false,
+        storageBox: false,
+        cdwOption: "no_cdw",
+      },
+      additionalDriver: {
+        enabled: false,
+      },
+      deposit: {
+        method: "",
+      },
+      vehiclePricing: {
+        baseDailyRate: selectedVehicle.baseDailyRate,
+        vehicleType: selectedVehicle.apiVehicleType,
+        durationRules,
+      },
+    });
+  }, [durationRules, selectedVehicle, state]);
 
   return (
     <StepShell
@@ -56,14 +80,14 @@ export function PricingStep() {
               <li>Duration: {pricing.rentalDays} day(s) billed</li>
               <li>Actual duration: {pricing.actualDurationHours.toFixed(1)} hours</li>
               <li>
-                Sunday override days (bicycle/ATV): {pricing.sundayDaysCharged}
+                Applied rate: {formatEur(pricing.appliedDailyRate)}/day ({pricing.durationDiscountPercent}% discount)
               </li>
               <li>Estimated rental total: {formatEur(pricing.rentalCost)}</li>
             </ul>
           </div>
         ) : (
           <p className="text-xs text-slate-500">
-            Select a vehicle and valid pickup/return date-time to see the pricing summary.
+            Select a vehicle with pricing and valid pickup/return date-time to see the pricing summary.
           </p>
         )}
         <label className="flex items-start gap-2">

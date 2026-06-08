@@ -84,6 +84,7 @@ export function buildAdminBookingNotificationEmail(
     "",
     "RENTAL",
     `Vehicle:  ${vehicleLabel(booking.vehicleType)}${booking.vehicleNameSnapshot ? ` — ${booking.vehicleNameSnapshot}` : ""}`,
+    `Plate:    ${formatOptional(booking.vehicleLicensePlateSnapshot)}`,
     `Pickup:   ${pickupWhen}`,
     `Return:   ${returnWhen}`,
     `Duration: ${booking.billableDays} day(s)`,
@@ -141,6 +142,7 @@ export function buildAdminBookingNotificationEmail(
 
   ${section("Rental", [
     row("Vehicle", vehicleName),
+    row("License plate", escapeHtml(formatOptional(booking.vehicleLicensePlateSnapshot))),
     row("Pickup", escapeHtml(pickupWhen)),
     row("Return", escapeHtml(returnWhen)),
     row("Duration", `${booking.billableDays} day(s)`),

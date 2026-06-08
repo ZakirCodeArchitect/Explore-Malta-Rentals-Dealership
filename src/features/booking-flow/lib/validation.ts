@@ -63,6 +63,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       vehicleId: z.string().nullable(),
       vehicleSlug: z.string(),
       vehicleName: z.string(),
+      vehicleLicensePlate: z.string(),
       vehicleType: requiredText(m.vehicleTypeRequired),
       pickupDate: requiredText(m.pickupDateRequired),
       pickupTime: requiredText(m.pickupTimeRequired),
