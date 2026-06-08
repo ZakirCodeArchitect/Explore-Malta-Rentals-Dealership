@@ -1,6 +1,7 @@
-import { differenceInMilliseconds, parse } from "date-fns";
+import { format, parse } from "date-fns";
 import type { BookingSubmission, NormalizedBookingPayload } from "@/lib/booking/types";
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
+import { calculateRentalDuration } from "@/lib/pricing/rental-duration";
 
 function normalizeText(value: string | null): string | null {
   if (value === null) {
@@ -24,10 +25,17 @@ export function normalizeBookingPayload(payload: BookingSubmission): NormalizedB
     throw new Error("Cannot normalize invalid rental date/time");
   }
 
-  const durationHoursRaw =
-    differenceInMilliseconds(returnDateTime, pickupDateTime) / (60 * 60 * 1000);
-  const actualDurationHours = Number(durationHoursRaw.toFixed(2));
-  const billableDays = Math.max(1, Math.ceil(actualDurationHours / 24));
+  const duration = calculateRentalDuration(
+    format(pickupDateTime, "yyyy-MM-dd"),
+    format(pickupDateTime, "HH:mm"),
+    format(returnDateTime, "yyyy-MM-dd"),
+    format(returnDateTime, "HH:mm"),
+  );
+  if (!duration) {
+    throw new Error("Cannot normalize invalid rental duration");
+  }
+
+  const { actualDurationHours, billableDays } = duration;
 
   return {
     holdReference: payload.holdReference ?? null,

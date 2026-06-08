@@ -1,9 +1,9 @@
-import { differenceInHours, parse } from "date-fns";
 import type { VehicleType } from "@/features/vehicles/data/vehicles";
 import {
   calculateVehicleRentalPricing,
   type DurationPricingRuleDto,
 } from "@/lib/pricing/duration-pricing";
+import { getBillableRentalDays } from "@/lib/pricing/rental-duration";
 
 export type BookingPricingBreakdown = Readonly<{
   billableDays: number;
@@ -13,29 +13,7 @@ export type BookingPricingBreakdown = Readonly<{
   totalEur: number;
 }>;
 
-export function getBillableRentalDays(
-  pickupDate: string,
-  pickupTime: string,
-  returnDate: string,
-  returnTime: string,
-): number {
-  if (!pickupDate || !pickupTime || !returnDate || !returnTime) {
-    return 0;
-  }
-
-  const pickup = parse(`${pickupDate} ${pickupTime}`, "yyyy-MM-dd HH:mm", new Date());
-  const dropoff = parse(`${returnDate} ${returnTime}`, "yyyy-MM-dd HH:mm", new Date());
-  if (Number.isNaN(pickup.getTime()) || Number.isNaN(dropoff.getTime())) {
-    return 0;
-  }
-
-  const hours = differenceInHours(dropoff, pickup);
-  if (hours <= 0) {
-    return 0;
-  }
-
-  return Math.max(1, Math.ceil(hours / 24));
-}
+export { getBillableRentalDays };
 
 export function getBookingPricingBreakdown(
   baseDailyRate: number,

@@ -6,8 +6,14 @@
 import type { z } from "zod";
 
 import { bookingSubmissionSchema } from "../src/lib/booking/bookingSubmissionSchema";
+import { normalizeBookingPayload } from "../src/lib/booking/normalizeBookingPayload";
 import { calculateBookingPrice, type BookingPricingInput } from "../src/lib/pricing/calculate-booking-price";
-import type { DurationPricingRuleDto } from "../src/lib/pricing/duration-pricing";
+import {
+  calculateVehicleRentalPricing,
+  resolveDurationPricingRule,
+  type DurationPricingRuleDto,
+} from "../src/lib/pricing/duration-pricing";
+import { calculateRentalDuration } from "../src/lib/pricing/rental-duration";
 
 type BookingPayload = z.input<typeof bookingSubmissionSchema>;
 
@@ -47,6 +53,76 @@ const basePricingInput = {
 function assertApprox(name: string, actual: number, expected: number, tolerance = 0.001): void {
   if (Math.abs(actual - expected) > tolerance) {
     throw new Error(`${name}: expected ${expected}, got ${actual}`);
+  }
+}
+
+function runDurationRuleAssertions(): void {
+  const fiveDayRule = resolveDurationPricingRule(scooterDurationRules, "Scooter", 5);
+  if (!fiveDayRule || fiveDayRule.minDays !== 3 || fiveDayRule.maxDays !== 20) {
+    throw new Error("5-day booking should match the 3–20 day duration rule");
+  }
+
+  const flatTierPricing = calculateVehicleRentalPricing(25, "Scooter", 5, scooterDurationRules);
+  if (!flatTierPricing) {
+    throw new Error("5-day flat tier pricing returned null");
+  }
+  assertApprox("5-day flat tier applied rate", flatTierPricing.appliedDailyRate, 20);
+  assertApprox("5-day flat tier subtotal", flatTierPricing.rentalSubtotal, 100);
+  assertApprox(
+    "5-day flat tier uses same rate for all days",
+    flatTierPricing.rentalSubtotal,
+    flatTierPricing.appliedDailyRate * 5,
+  );
+
+  const noRule = resolveDurationPricingRule(scooterDurationRules, "Scooter", 0);
+  if (noRule !== null) {
+    throw new Error("0 billable days should not match a duration rule");
+  }
+}
+
+function runBillableDaysConsistencyAssertions(): void {
+  const pickupDate = "2026-05-10";
+  const returnDate = "2026-05-12";
+  const pickupTime = "10:00";
+  const returnTime = "10:01";
+
+  const duration = calculateRentalDuration(pickupDate, pickupTime, returnDate, returnTime);
+  if (!duration || duration.billableDays !== 3) {
+    throw new Error(
+      `48h+1m should bill as 3 days via minute-based duration, got ${duration?.billableDays ?? "null"}`,
+    );
+  }
+
+  const normalized = normalizeBookingPayload(
+    bookingSubmissionSchema.parse({
+      ...bookingBody,
+      rental: {
+        ...bookingBody.rental,
+        pickupDate,
+        returnDate,
+        pickupTime,
+        returnTime,
+      },
+    }),
+  );
+  if (normalized.billableDays !== duration.billableDays) {
+    throw new Error(
+      `normalizeBookingPayload billableDays (${normalized.billableDays}) must match calculateRentalDuration (${duration.billableDays})`,
+    );
+  }
+
+  const priced = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      pickupDate,
+      returnDate,
+      pickupTime,
+      returnTime,
+    },
+  });
+  if (!priced || priced.rentalDays !== duration.billableDays) {
+    throw new Error("calculateBookingPrice rentalDays must match shared duration helper");
   }
 }
 
@@ -215,6 +291,8 @@ function runNegativeValidationTests(): void {
 }
 
 async function main(): Promise<void> {
+  runDurationRuleAssertions();
+  runBillableDaysConsistencyAssertions();
   runPricingAssertions();
   runNegativeValidationTests();
   console.log("All checks OK.");

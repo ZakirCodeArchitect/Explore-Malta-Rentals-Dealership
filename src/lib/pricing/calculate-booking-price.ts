@@ -1,10 +1,11 @@
-import { differenceInMinutes, parse } from "date-fns";
-
 import type { VehicleType } from "@/generated/prisma/client";
 import {
   calculateVehicleRentalPricing,
   type DurationPricingRuleDto,
 } from "@/lib/pricing/duration-pricing";
+import { calculateRentalDuration } from "@/lib/pricing/rental-duration";
+
+export { calculateRentalDuration, type RentalDurationBreakdown } from "@/lib/pricing/rental-duration";
 
 export type PricingVehicleCategory = "motorbike" | "bicycle" | "atv";
 export type PricingCdwOption =
@@ -61,12 +62,6 @@ export type PricingLineItem = Readonly<{
   amount: number;
 }>;
 
-export type RentalDurationBreakdown = Readonly<{
-  actualDurationMinutes: number;
-  actualDurationHours: number;
-  billableDays: number;
-}>;
-
 export type DeliveryFeeBreakdown = Readonly<{
   deliveryFee: number;
   dropoffFee: number;
@@ -105,26 +100,6 @@ export type BookingPriceBreakdown = Readonly<{
 }>;
 
 export const pricingConfig = {
-  motorbike: {
-    day1: 25,
-    day2: 18,
-    day3: 15,
-    day21Plus: 10,
-  },
-  bicycle: {
-    day1: 20,
-    day2: 18,
-    day3: 15,
-    day21Plus: 10,
-    sundayRate: 20,
-  },
-  atv: {
-    day1: 110,
-    day2: 90,
-    day3: 70,
-    day21Plus: 60,
-    sundayRate: 110,
-  },
   delivery: {
     perLeg: 20,
     bothLegsDiscount: 10,
@@ -144,39 +119,6 @@ export const pricingConfig = {
     cdw_atv_reduced_800: 15,
   } as const,
 } as const;
-
-function parseDateTime(date: string, time: string): Date | null {
-  if (!date || !time) {
-    return null;
-  }
-  const parsed = parse(`${date} ${time}`, "yyyy-MM-dd HH:mm", new Date());
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
-export function calculateRentalDuration(
-  pickupDate: string,
-  pickupTime: string,
-  returnDate: string,
-  returnTime: string,
-): RentalDurationBreakdown | null {
-  const pickup = parseDateTime(pickupDate, pickupTime);
-  const dropoff = parseDateTime(returnDate, returnTime);
-  if (!pickup || !dropoff) {
-    return null;
-  }
-
-  const actualDurationMinutes = differenceInMinutes(dropoff, pickup);
-  if (actualDurationMinutes <= 0) {
-    return null;
-  }
-
-  const minutesPerDay = 60 * 24;
-  return {
-    actualDurationMinutes,
-    actualDurationHours: actualDurationMinutes / 60,
-    billableDays: Math.max(1, Math.ceil(actualDurationMinutes / minutesPerDay)),
-  };
-}
 
 export function normalizeVehicleCategory(type: string): PricingVehicleCategory | null {
   const normalized = type.trim().toLowerCase();
@@ -200,20 +142,6 @@ export function normalizeVehicleCategory(type: string): PricingVehicleCategory |
     return "bicycle";
   }
   return null;
-}
-
-export function resolveBaseDailyRate(category: PricingVehicleCategory, rentalDays: number): number {
-  const table = pricingConfig[category];
-  if (rentalDays <= 1) {
-    return table.day1;
-  }
-  if (rentalDays === 2) {
-    return table.day2;
-  }
-  if (rentalDays >= 21) {
-    return table.day21Plus;
-  }
-  return table.day3;
 }
 
 export function calculateVehicleRentalCost(

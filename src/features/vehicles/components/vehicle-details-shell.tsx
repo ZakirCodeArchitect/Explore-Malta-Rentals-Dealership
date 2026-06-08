@@ -30,6 +30,7 @@ import {
   buildDurationPricingPreview,
   calculateVehicleRentalPricing,
 } from "@/lib/pricing/duration-pricing";
+import { getBillableRentalDays } from "@/lib/pricing/rental-duration";
 import { BOOKING_TIME_SLOTS } from "@/features/booking/lib/time-slots";
 import {
   useVehicleAvailabilityCheck,
@@ -46,14 +47,6 @@ function todayISO() {
 
 function isTripCommitted(pd: string, rd: string): boolean {
   return Boolean(pd && rd && rd > pd);
-}
-
-function rentalDays(pickupDate: string, returnDate: string): number {
-  if (!pickupDate || !returnDate) return 0;
-  const a = new Date(`${pickupDate}T12:00:00`);
-  const b = new Date(`${returnDate}T12:00:00`);
-  const diff = Math.round((b.getTime() - a.getTime()) / 86_400_000);
-  return diff > 0 ? diff : 0;
 }
 
 /* ─────────────────────────── sub-components ──────────────────── */
@@ -277,7 +270,7 @@ function BookingSidebar({
   const datesFromUrl = isTripCommitted(initialPickupDate, initialReturnDate);
   const [showDatePicker, setShowDatePicker] = useState(!datesFromUrl);
 
-  const days = rentalDays(pickupDate, returnDate);
+  const days = getBillableRentalDays(pickupDate, pickupTime, returnDate, returnTime);
 
   const tripCommitted = isTripCommitted(pickupDate, returnDate);
 
