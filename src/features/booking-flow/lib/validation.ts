@@ -121,6 +121,13 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       termsAccepted: z.boolean(),
       termsAcceptedAt: z.string(),
     }),
+    hotelCode: z.object({
+      code: z.string(),
+      appliedCode: z.string().nullable(),
+      discountPercent: z.number().nullable(),
+      partnerName: z.string().nullable(),
+      error: z.string().nullable(),
+    }),
   });
 
   return bookingBaseSchema.superRefine((state, context) => {

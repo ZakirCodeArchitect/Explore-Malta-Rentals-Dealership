@@ -68,6 +68,10 @@ export function BookingSummaryStep() {
           vehicleType: selectedVehicle.apiVehicleType,
           durationRules,
         },
+        hotelDiscount:
+          state.hotelCode.appliedCode && state.hotelCode.discountPercent != null
+            ? { discountPercent: state.hotelCode.discountPercent }
+            : undefined,
       });
     },
     [durationRules, selectedVehicle, state],
@@ -134,6 +138,15 @@ export function BookingSummaryStep() {
                 <li>
                   {t("rentalCost")} {formatEur(pricing.rentalCost)}
                 </li>
+                {pricing.hotelDiscountAmount > 0 ? (
+                  <li>
+                    {t("hotelDiscount", {
+                      percent: pricing.hotelDiscountPercent,
+                      amount: formatEur(pricing.hotelDiscountAmount),
+                      partner: state.hotelCode.partnerName ?? "",
+                    })}
+                  </li>
+                ) : null}
                 <li>
                   {t("deliveryLine", {
                     total: formatEur(pricing.deliveryTotal),

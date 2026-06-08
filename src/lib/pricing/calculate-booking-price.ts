@@ -1,4 +1,5 @@
 import type { VehicleType } from "@/generated/prisma/client";
+import { calculateHotelDiscount } from "@/lib/hotel-codes/calculate-hotel-discount";
 import {
   calculateVehicleRentalPricing,
   type DurationPricingRuleDto,
@@ -54,6 +55,9 @@ export type BookingPricingInput = Readonly<{
     vehicleType: VehicleType;
     durationRules: readonly DurationPricingRuleDto[];
   }>;
+  hotelDiscount?: Readonly<{
+    discountPercent: number;
+  }>;
 }>;
 
 export type PricingLineItem = Readonly<{
@@ -92,6 +96,9 @@ export type BookingPriceBreakdown = Readonly<{
   cdwOptionApplied: PricingCdwOption;
   additionalDriverCost: number;
   storageBoxCost: number;
+  hotelDiscountPercent: number;
+  hotelDiscountAmount: number;
+  rentalCostAfterHotelDiscount: number;
   subtotal: number;
   depositAmount: number;
   totalDueOnline: number;
@@ -335,8 +342,15 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
     ? pricingConfig.addons.additionalDriverPerDay * duration.billableDays
     : 0;
   const storageBoxCost = input.addons.storageBox ? pricingConfig.addons.storageBoxOneTime : 0;
+  const hotelDiscount = input.hotelDiscount
+    ? calculateHotelDiscount(rentalCost, input.hotelDiscount.discountPercent)
+    : {
+        discountPercent: 0,
+        discountAmount: 0,
+        rentalCostAfterDiscount: rentalCost,
+      };
   const subtotal =
-    rentalCost +
+    hotelDiscount.rentalCostAfterDiscount +
     deliveryBreakdown.deliveryTotal +
     cdw.total +
     additionalDriverCost +
@@ -347,6 +361,15 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
 
   const lineItems: PricingLineItem[] = [
     { key: "rental_cost", label: "Rental Cost", amount: rentalCost },
+    ...(hotelDiscount.discountAmount > 0
+      ? [
+          {
+            key: "hotel_discount",
+            label: "Hotel / Partner Discount",
+            amount: -hotelDiscount.discountAmount,
+          },
+        ]
+      : []),
     { key: "delivery_dropoff", label: "Delivery / Drop-off", amount: deliveryBreakdown.deliveryTotal },
     { key: "cdw", label: "CDW", amount: cdw.total },
     { key: "additional_driver", label: "Additional Driver", amount: additionalDriverCost },
@@ -370,6 +393,9 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
     cdwOptionApplied: cdw.selectedOption,
     additionalDriverCost,
     storageBoxCost,
+    hotelDiscountPercent: hotelDiscount.discountPercent,
+    hotelDiscountAmount: hotelDiscount.discountAmount,
+    rentalCostAfterHotelDiscount: hotelDiscount.rentalCostAfterDiscount,
     subtotal,
     depositAmount,
     totalDueOnline,

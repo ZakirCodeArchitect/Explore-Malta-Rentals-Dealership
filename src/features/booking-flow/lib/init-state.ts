@@ -20,6 +20,7 @@ function cloneInitialState(): BookingFlowState {
     additionalDriver: { ...INITIAL_BOOKING_FLOW_STATE.additionalDriver },
     deposit: { ...INITIAL_BOOKING_FLOW_STATE.deposit },
     consent: { ...INITIAL_BOOKING_FLOW_STATE.consent },
+    hotelCode: { ...INITIAL_BOOKING_FLOW_STATE.hotelCode },
   };
 }
 

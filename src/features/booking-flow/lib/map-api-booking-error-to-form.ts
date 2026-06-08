@@ -18,6 +18,7 @@ export function mapApiBookingErrorPathToFormPath(apiPath: string): FieldPath<Boo
     "additionalDriver.willPresentIdAtPickup": "additionalDriver.officeIdConfirmed",
     "consent.termsAccepted": "consent.termsAccepted",
     "deposit.depositMethod": "deposit.depositMethod",
+    "hotelCode": "hotelCode.code",
     "addons.helmetSize1": "addons.helmetSize1",
     "addons.helmetSize2": "addons.helmetSize2",
     "addons.cdwOption": "addons.cdwPlan",

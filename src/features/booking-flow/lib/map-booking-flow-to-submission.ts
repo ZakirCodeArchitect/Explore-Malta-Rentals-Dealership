@@ -149,5 +149,6 @@ export function mapBookingFlowStateToSubmission(
       termsAccepted: state.consent.termsAccepted === true,
       termsAcceptedAt: state.consent.termsAcceptedAt.trim().length > 0 ? state.consent.termsAcceptedAt.trim() : null,
     },
+    hotelCode: state.hotelCode.appliedCode ?? undefined,
   };
 }

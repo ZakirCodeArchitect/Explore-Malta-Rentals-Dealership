@@ -73,6 +73,13 @@ export type BookingFlowState = {
     termsAccepted: boolean;
     termsAcceptedAt: string;
   };
+  hotelCode: {
+    code: string;
+    appliedCode: string | null;
+    discountPercent: number | null;
+    partnerName: string | null;
+    error: string | null;
+  };
 };
 
 export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
@@ -133,6 +140,13 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     summaryReviewed: false,
     termsAccepted: false,
     termsAcceptedAt: "",
+  },
+  hotelCode: {
+    code: "",
+    appliedCode: null,
+    discountPercent: null,
+    partnerName: null,
+    error: null,
   },
 };
 

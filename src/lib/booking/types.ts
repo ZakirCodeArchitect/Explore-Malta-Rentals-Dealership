@@ -23,6 +23,7 @@ export type BookingSubmissionInput = z.input<typeof bookingSubmissionSchema>;
 
 export type NormalizedBookingPayload = {
   holdReference: string | null;
+  hotelCode: string | null;
   vehicleId: string | null;
   vehicleType: VehicleType;
   pickupDateTime: Date;

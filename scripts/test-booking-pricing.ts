@@ -8,6 +8,7 @@ import type { z } from "zod";
 import { bookingSubmissionSchema } from "../src/lib/booking/bookingSubmissionSchema";
 import { normalizeBookingPayload } from "../src/lib/booking/normalizeBookingPayload";
 import { calculateBookingPrice, type BookingPricingInput } from "../src/lib/pricing/calculate-booking-price";
+import { calculateHotelDiscount } from "../src/lib/hotel-codes/calculate-hotel-discount";
 import {
   calculateVehicleRentalPricing,
   resolveDurationPricingRule,
@@ -290,10 +291,57 @@ function runNegativeValidationTests(): void {
   );
 }
 
+function runHotelDiscountAssertions(): void {
+  const hotelDiscountOnly = calculateHotelDiscount(100, 10);
+  assertApprox("hotel discount amount", hotelDiscountOnly.discountAmount, 10);
+  assertApprox("rental after hotel discount", hotelDiscountOnly.rentalCostAfterDiscount, 90);
+
+  const fiveDayWithHotel = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      returnDate: "2026-05-15",
+    },
+    hotelDiscount: { discountPercent: 10 },
+  });
+  if (!fiveDayWithHotel) {
+    throw new Error("5-day booking with hotel discount returned null");
+  }
+
+  assertApprox("5-day rental before hotel", fiveDayWithHotel.rentalCost, 100);
+  assertApprox("5-day hotel discount", fiveDayWithHotel.hotelDiscountAmount, 10);
+  assertApprox("5-day rental after hotel", fiveDayWithHotel.rentalCostAfterHotelDiscount, 90);
+  assertApprox("5-day subtotal with hotel only on rental", fiveDayWithHotel.subtotal, 90);
+
+  const fiveDayWithHotelAndDelivery = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      returnDate: "2026-05-15",
+    },
+    delivery: {
+      pickupOption: "delivery",
+      dropoffOption: "dropoff",
+    },
+    hotelDiscount: { discountPercent: 10 },
+  });
+  if (!fiveDayWithHotelAndDelivery) {
+    throw new Error("5-day booking with hotel discount and delivery returned null");
+  }
+
+  assertApprox("delivery unchanged with hotel code", fiveDayWithHotelAndDelivery.deliveryTotal, 30);
+  assertApprox(
+    "subtotal applies hotel discount only to rental",
+    fiveDayWithHotelAndDelivery.subtotal,
+    120,
+  );
+}
+
 async function main(): Promise<void> {
   runDurationRuleAssertions();
   runBillableDaysConsistencyAssertions();
   runPricingAssertions();
+  runHotelDiscountAssertions();
   runNegativeValidationTests();
   console.log("All checks OK.");
 }

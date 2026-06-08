@@ -255,12 +255,55 @@ model AdminSession {
   @@index([expiresAt])
 }
 
+model HotelPartner {
+  id            String   @id @default(cuid())
+  name          String
+  contactPerson String?
+  email         String?
+  phone         String?
+  address       String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  hotelCodes HotelCode[]
+  bookings   Booking[]
+
+  @@index([isActive, name])
+}
+
+model HotelCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  hotelPartnerId  String
+  discountPercent Decimal   @db.Decimal(5, 2)
+  isActive        Boolean   @default(true)
+  validFrom       DateTime?
+  validUntil      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  hotelPartner HotelPartner @relation(fields: [hotelPartnerId], references: [id], onDelete: Restrict)
+  bookings     Booking[]
+
+  @@index([hotelPartnerId, isActive])
+  @@index([isActive, code])
+}
+
 model Booking {
   id               String        @id @default(cuid())
   bookingReference String        @unique
   status           BookingStatus @default(PENDING)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+
+  hotelCodeId                      String?
+  hotelPartnerId                   String?
+  hotelCodeSnapshot                String?
+  hotelPartnerNameSnapshot         String?
+  hotelDiscountPercentSnapshot     Decimal? @db.Decimal(5, 2)
+  hotelDiscountAmountSnapshot      Decimal? @db.Decimal(10, 2)
+  subtotalAfterHotelDiscountSnapshot Decimal? @db.Decimal(10, 2)
 
   vehicleId           String?
   vehicleNameSnapshot         String?
@@ -340,12 +383,16 @@ model Booking {
 
   vehicle              Vehicle?               @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   acceptedTermsVersion TermsVersion?          @relation(fields: [termsVersionId], references: [id], onDelete: SetNull)
+  hotelCode            HotelCode?             @relation(fields: [hotelCodeId], references: [id], onDelete: SetNull)
+  hotelPartner         HotelPartner?          @relation(fields: [hotelPartnerId], references: [id], onDelete: SetNull)
   statusHistory        BookingStatusHistory[]
   emailLogs            EmailLog[]
   documents            BookingDocument[]
   reservationHolds     ReservationHold[]
 
   @@index([status, createdAt])
+  @@index([hotelCodeId])
+  @@index([hotelPartnerId])
   @@index([pickupDateTime, returnDateTime])
   @@index([vehicleType, pickupDateTime])
   @@index([customerEmail, customerPhone])

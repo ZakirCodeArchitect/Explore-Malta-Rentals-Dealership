@@ -845,6 +845,7 @@
       "storageBox": "Storage box:",
       "section2": "Section 2 - Pricing Summary",
       "rentalCost": "Rental Cost:",
+      "hotelDiscount": "Hotel / partner discount ({percent}% via {partner}): -{amount}",
       "deliveryLine": "Delivery / Drop-off: {total} (pickup {pickup} + drop-off {dropoff}{discount})",
       "bundleDiscount": " - {amount} bundle discount",
       "cdwCost": "CDW:",
@@ -949,6 +950,14 @@
       "addDriverIdBody": "Delivery pickup requires photo upload. Office pickup requires in-person ID confirmation.",
       "addDriverOfficeConfirm": "I confirm the additional driver will show ID in person at pickup.",
       "storageBoxLabel": "Storage box (EUR 10 one-time)"
+    },
+    "hotelCode": {
+      "label": "Hotel / Partner Code (optional)",
+      "description": "Enter a valid partner code to receive a rental discount. Delivery, CDW, add-ons, and deposit are not discounted.",
+      "placeholder": "e.g. HOTEL10",
+      "invalidGeneric": "This hotel or partner code is not valid.",
+      "validateFailed": "Unable to validate code right now. Try again.",
+      "applied": "{percent}% partner discount applied via {partner}."
     }
   },
   "TripDate": {
@@ -1204,6 +1213,143 @@
         "save": "Save changes",
         "saving": "Saving…",
         "saveError": "Unable to save vehicle. Check the form and try again."
+      }
+    },
+    "hotels": {
+      "pageTitle": "Hotels & partners",
+      "pageDescription": "Manage partner hotels and referral sources. Deactivated partners are hidden from new code validation but preserved for booking history.",
+      "addPartner": "Add partner",
+      "resultsCount": "{count, plural, one {# partner} other {# partners}}",
+      "createTitle": "Create hotel / partner",
+      "createDescription": "Add a new hotel or partner organization.",
+      "editTitle": "Edit {name}",
+      "editDescription": "Update partner contact details and active status.",
+      "saveError": "Unable to save partner. Check the form and try again.",
+      "deactivateSuccess": "{name} was deactivated. Linked active codes were deactivated too.",
+      "deactivateError": "Unable to deactivate partner. Please try again.",
+      "deleteSuccess": "{name} was permanently deleted.",
+      "deleteError": "Unable to delete partner. Please try again.",
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Search by name, contact, email…",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "apply": "Apply filters",
+        "applying": "Applying…",
+        "clear": "Clear"
+      },
+      "table": {
+        "name": "Partner",
+        "contact": "Contact",
+        "codes": "Codes",
+        "bookings": "Bookings",
+        "status": "Status",
+        "actions": "Actions",
+        "active": "Active",
+        "inactive": "Inactive",
+        "edit": "Edit",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "deleteDisabledTooltip": "This partner has linked codes or bookings and cannot be deleted. Deactivate instead.",
+        "empty": "No partners match your filters."
+      },
+      "deleteDialog": {
+        "title": "Deactivate partner?",
+        "description": "This will deactivate {name} and any active codes linked to it. Existing bookings are kept intact.",
+        "bookingWarning": "This partner has {count, plural, one {# booking} other {# bookings}} linked to it.",
+        "cancel": "Cancel",
+        "confirm": "Deactivate"
+      },
+      "permanentDeleteDialog": {
+        "title": "Delete partner permanently?",
+        "description": "Are you sure you want to permanently delete {name}? This action cannot be undone.",
+        "confirm": "Delete permanently"
+      },
+      "form": {
+        "name": "Partner name",
+        "contactPerson": "Contact person",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "isActive": "Active (available for new codes and bookings)",
+        "create": "Create partner",
+        "save": "Save changes",
+        "cancel": "Cancel"
+      }
+    },
+    "hotelCodes": {
+      "pageTitle": "Hotel codes & discounts",
+      "pageDescription": "Manage partner discount codes applied to rental subtotals after duration pricing.",
+      "addCode": "Add code",
+      "resultsCount": "{count, plural, one {# code} other {# codes}}",
+      "createTitle": "Create hotel code",
+      "createDescription": "Link a unique code to a partner and set the rental discount percentage.",
+      "editTitle": "Edit {code}",
+      "editDescription": "Update code settings, validity window, and active status.",
+      "noPartnersWarning": "Create at least one hotel / partner before adding codes.",
+      "saveError": "Unable to save code. Check the form and try again.",
+      "deactivateSuccess": "Code {code} was deactivated.",
+      "deactivateError": "Unable to deactivate code. Please try again.",
+      "deleteSuccess": "Code {code} was permanently deleted.",
+      "deleteError": "Unable to delete code. Please try again.",
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Search by code or partner…",
+        "code": "Code",
+        "codePlaceholder": "Filter by code",
+        "partner": "Partner",
+        "allPartners": "All partners",
+        "inactivePartner": "inactive",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "apply": "Apply filters",
+        "applying": "Applying…",
+        "clear": "Clear"
+      },
+      "table": {
+        "code": "Code",
+        "partner": "Partner",
+        "discount": "Discount",
+        "bookings": "Bookings",
+        "totalValue": "Total booking value",
+        "status": "Status",
+        "actions": "Actions",
+        "partnerInactive": "partner inactive",
+        "active": "Active",
+        "inactive": "Inactive",
+        "edit": "Edit",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "deleteDisabledTooltip": "This code has booking history and cannot be deleted. Deactivate instead.",
+        "empty": "No codes match your filters."
+      },
+      "deleteDialog": {
+        "title": "Deactivate code?",
+        "description": "Code {code} will no longer apply to new bookings.",
+        "bookingWarning": "This code has {count, plural, one {# booking} other {# bookings}} linked to it.",
+        "cancel": "Cancel",
+        "confirm": "Deactivate"
+      },
+      "permanentDeleteDialog": {
+        "title": "Delete code permanently?",
+        "description": "Are you sure you want to permanently delete code {code}?",
+        "confirm": "Delete permanently"
+      },
+      "form": {
+        "code": "Code",
+        "partner": "Hotel / partner",
+        "inactivePartner": "inactive",
+        "discountPercent": "Discount percentage",
+        "validFrom": "Valid from (optional)",
+        "validUntil": "Valid until (optional)",
+        "isActive": "Active (usable for new bookings)",
+        "create": "Create code",
+        "save": "Save changes",
+        "cancel": "Cancel"
       }
     }
   }

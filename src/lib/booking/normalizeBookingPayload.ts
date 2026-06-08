@@ -1,4 +1,5 @@
 import { format, parse } from "date-fns";
+import { normalizeHotelCode } from "@/lib/hotel-codes/normalize-hotel-code";
 import type { BookingSubmission, NormalizedBookingPayload } from "@/lib/booking/types";
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 import { calculateRentalDuration } from "@/lib/pricing/rental-duration";
@@ -39,6 +40,7 @@ export function normalizeBookingPayload(payload: BookingSubmission): NormalizedB
 
   return {
     holdReference: payload.holdReference ?? null,
+    hotelCode: payload.hotelCode ? normalizeHotelCode(payload.hotelCode) : null,
     vehicleId,
     vehicleType: payload.rental.vehicleType,
     pickupDateTime,

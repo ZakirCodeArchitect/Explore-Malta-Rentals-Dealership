@@ -37,8 +37,8 @@ const MAIN_NAV: AdminNavItem[] = [
 ];
 
 const MANAGEMENT_NAV: AdminNavItem[] = [
-  { href: "/hotels", labelKey: "hotels", icon: Building2, disabled: true },
-  { href: "/hotel-codes", labelKey: "hotelCodes", icon: Percent, disabled: true },
+  { href: "/hotels", labelKey: "hotels", icon: Building2 },
+  { href: "/hotel-codes", labelKey: "hotelCodes", icon: Percent },
   { href: "/payments", labelKey: "payments", icon: Wallet, disabled: true },
   { href: "/reports", labelKey: "reports", icon: BarChart3, disabled: true },
 ];

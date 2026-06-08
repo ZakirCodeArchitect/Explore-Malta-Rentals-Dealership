@@ -17,6 +17,7 @@ import {
 } from "@/lib/pricing/calculate-booking-price";
 import { getDurationPricingRules } from "@/lib/pricing/get-duration-pricing-rules";
 import type { DurationPricingRuleDto } from "@/lib/pricing/duration-pricing";
+import { validateHotelCode, type ValidatedHotelCode } from "@/lib/hotel-codes";
 
 import { validateBookingPayload } from "./validateBookingPayload";
 import type { BookingSubmissionInput, NormalizedBookingPayload, ValidationError } from "./types";
@@ -34,6 +35,7 @@ type PricingComputation = {
   baseDailyRateSnapshot: number;
   durationDiscountPercentSnapshot: number;
   appliedDailyRateSnapshot: number;
+  validatedHotelCode: ValidatedHotelCode | null;
 };
 
 type ResolvedBookingVehicle = {
@@ -179,6 +181,7 @@ function computePricing(
   payload: NormalizedBookingPayload,
   vehicle: ResolvedBookingVehicle,
   durationRules: DurationPricingRuleDto[],
+  validatedHotelCode: ValidatedHotelCode | null,
 ): PricingComputation | null {
   const breakdown = calculateBookingPrice({
     ...toPricingInput(payload, vehicle),
@@ -187,6 +190,9 @@ function computePricing(
       vehicleType: vehicle.vehicleType,
       durationRules,
     },
+    hotelDiscount: validatedHotelCode
+      ? { discountPercent: validatedHotelCode.discountPercent }
+      : undefined,
   });
   if (!breakdown) {
     return null;
@@ -202,6 +208,7 @@ function computePricing(
     baseDailyRateSnapshot: breakdown.baseDailyRate,
     durationDiscountPercentSnapshot: breakdown.durationDiscountPercent,
     appliedDailyRateSnapshot: breakdown.appliedDailyRate,
+    validatedHotelCode,
   };
 }
 
@@ -390,6 +397,16 @@ function mapBookingCreateData(
     durationDiscountPercentSnapshot: pricing.durationDiscountPercentSnapshot,
     appliedDailyRateSnapshot: pricing.appliedDailyRateSnapshot,
     rentalCost: pricing.breakdown.rentalCost,
+    hotelCodeId: pricing.validatedHotelCode?.hotelCodeId ?? null,
+    hotelPartnerId: pricing.validatedHotelCode?.hotelPartnerId ?? null,
+    hotelCodeSnapshot: pricing.validatedHotelCode?.code ?? null,
+    hotelPartnerNameSnapshot: pricing.validatedHotelCode?.partnerName ?? null,
+    hotelDiscountPercentSnapshot: pricing.breakdown.hotelDiscountPercent || null,
+    hotelDiscountAmountSnapshot: pricing.breakdown.hotelDiscountAmount || null,
+    subtotalAfterHotelDiscountSnapshot:
+      pricing.breakdown.hotelDiscountAmount > 0
+        ? pricing.breakdown.rentalCostAfterHotelDiscount
+        : null,
     deliveryFee: pricing.breakdown.deliveryFee,
     dropoffFee: pricing.breakdown.dropoffFee,
     deliveryTotal: pricing.breakdown.deliveryTotal,
@@ -635,7 +652,19 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
       prisma as unknown as AvailabilityDbClient,
     );
   }
-  const pricing = computePricing(validation.data, resolvedVehicle, durationRules);
+
+  let validatedHotelCode: ValidatedHotelCode | null = null;
+  if (validation.data.hotelCode) {
+    const hotelResult = await validateHotelCode(validation.data.hotelCode);
+    if (!hotelResult.valid) {
+      throw new SubmitBookingValidationError([
+        { path: "hotelCode", message: hotelResult.reason },
+      ]);
+    }
+    validatedHotelCode = hotelResult.data;
+  }
+
+  const pricing = computePricing(validation.data, resolvedVehicle, durationRules, validatedHotelCode);
   if (!pricing) {
     throw new SubmitBookingValidationError([
       { path: "pricing", message: "Unable to calculate booking price" },
