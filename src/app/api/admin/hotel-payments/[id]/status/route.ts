@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import {
-  adminHotelPaymentStatusSchema,
+  adminHotelPaymentQuickStatusSchema,
   updateAdminHotelPaymentStatus,
 } from "@/lib/admin/hotel-payments";
 import { AdminUnauthorizedError, requireAdminApi } from "@/lib/admin-auth";
@@ -29,7 +29,7 @@ export async function POST(request: Request, context: RouteContext) {
       return NextResponse.json({ success: false as const, message: "Invalid request body" }, { status: 400 });
     }
 
-    const parsed = adminHotelPaymentStatusSchema.safeParse(body);
+    const parsed = adminHotelPaymentQuickStatusSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { success: false as const, message: formatZodError(parsed.error) },

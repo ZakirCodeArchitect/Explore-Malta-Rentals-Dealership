@@ -6,6 +6,7 @@ export {
 export {
   adminHotelPaymentListQuerySchema,
   adminHotelPaymentPreviewQuerySchema,
+  adminHotelPaymentQuickStatusSchema,
   adminHotelPaymentStatusSchema,
   adminHotelPaymentWriteSchema,
   type AdminHotelPaymentStatusInput,

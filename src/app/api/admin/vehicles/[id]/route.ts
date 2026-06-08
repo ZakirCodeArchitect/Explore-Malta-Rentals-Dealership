@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 import {
   adminVehicleWriteSchema,
-  deactivateAdminVehicle,
   deleteAdminVehicle,
   DuplicateLicensePlateError,
   getAdminVehicleById,

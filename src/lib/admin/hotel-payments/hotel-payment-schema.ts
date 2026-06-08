@@ -95,6 +95,11 @@ export const adminHotelPaymentPreviewQuerySchema = z.object({
   year: z.coerce.number().int().min(2000).max(currentYear + 1),
 });
 
+/** Quick status updates from the table (Mark paid / Mark due) — partial is edit-form only. */
+export const adminHotelPaymentQuickStatusSchema = z.object({
+  status: z.enum(["DUE", "PAID"]),
+});
+
 export const adminHotelPaymentStatusSchema = z.object({
   status: settlementStatusSchema,
 });
