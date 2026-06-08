@@ -33,7 +33,7 @@ export async function validateHotelCode(
 ): Promise<HotelCodeValidationResult> {
   const normalized = normalizeHotelCode(rawCode ?? "");
   if (!normalized) {
-    return { valid: false, reason: "Enter a hotel or partner code" };
+    return { valid: false, reason: "Enter a hotel code" };
   }
 
   const record = await prisma.hotelCode.findUnique({
@@ -56,19 +56,19 @@ export async function validateHotelCode(
   });
 
   if (!record) {
-    return { valid: false, reason: "This hotel or partner code is not recognized" };
+    return { valid: false, reason: "This hotel code is not recognized" };
   }
 
   if (!record.isActive) {
-    return { valid: false, reason: "This hotel or partner code is no longer active" };
+    return { valid: false, reason: "This hotel code is no longer active" };
   }
 
   if (!record.hotelPartner.isActive) {
-    return { valid: false, reason: "This hotel or partner is no longer active" };
+    return { valid: false, reason: "This hotel is no longer active" };
   }
 
   if (!isWithinValidityWindow(record.validFrom, record.validUntil, asOf)) {
-    return { valid: false, reason: "This hotel or partner code is not valid for the current date" };
+    return { valid: false, reason: "This hotel code is not valid for the current date" };
   }
 
   return {

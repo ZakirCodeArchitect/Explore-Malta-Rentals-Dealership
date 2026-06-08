@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { normalizeHotelCode } from "@/lib/hotel-codes/normalize-hotel-code";
 
-const optionalDateTime = z.preprocess((value) => {
+export const adminOptionalDateTimeSchema = z.preprocess((value) => {
   if (value === undefined || value === null || value === "") {
     return null;
   }
@@ -28,14 +28,14 @@ export const adminHotelCodeWriteSchema = z
       .min(2, "Code must be at least 2 characters")
       .max(40, "Code must be at most 40 characters")
       .transform(normalizeHotelCode),
-    hotelPartnerId: z.string().cuid("Select a hotel or partner"),
+    hotelPartnerId: z.string().cuid("Select a hotel"),
     discountPercent: z
       .number({ required_error: "Discount percentage is required" })
       .min(0, "Discount must be at least 0%")
       .max(100, "Discount must be at most 100%"),
     isActive: z.boolean(),
-    validFrom: optionalDateTime,
-    validUntil: optionalDateTime,
+    validFrom: adminOptionalDateTimeSchema,
+    validUntil: adminOptionalDateTimeSchema,
   })
   .superRefine((value, context) => {
     if (value.validFrom && value.validUntil) {

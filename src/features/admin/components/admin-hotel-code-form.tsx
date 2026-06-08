@@ -97,7 +97,7 @@ export function AdminHotelCodeForm({ locale, mode, code, partners }: AdminHotelC
           />
         </label>
         <label>
-          <span className="mb-1 block text-sm font-semibold text-slate-900">{t("form.partner")}</span>
+          <span className="mb-1 block text-sm font-semibold text-slate-900">{t("form.hotel")}</span>
           <select
             value={hotelPartnerId}
             onChange={(e) => setHotelPartnerId(e.target.value)}
@@ -107,7 +107,7 @@ export function AdminHotelCodeForm({ locale, mode, code, partners }: AdminHotelC
             {partners.map((partner) => (
               <option key={partner.id} value={partner.id}>
                 {partner.name}
-                {!partner.isActive ? ` (${t("form.inactivePartner")})` : ""}
+                {!partner.isActive ? ` (${t("form.inactiveHotel")})` : ""}
               </option>
             ))}
           </select>

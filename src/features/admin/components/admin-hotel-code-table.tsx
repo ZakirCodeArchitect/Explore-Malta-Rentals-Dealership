@@ -102,7 +102,7 @@ export function AdminHotelCodeTable({ locale, codes }: AdminHotelCodeTableProps)
             <thead className="border-b border-slate-100 bg-slate-50/80 text-xs uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-4 py-3 font-semibold">{t("table.code")}</th>
-                <th className="px-4 py-3 font-semibold">{t("table.partner")}</th>
+                <th className="px-4 py-3 font-semibold">{t("table.hotel")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.discount")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.bookings")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.totalValue")}</th>
@@ -124,7 +124,7 @@ export function AdminHotelCodeTable({ locale, codes }: AdminHotelCodeTableProps)
                     <td className="px-4 py-3 text-slate-700">
                       {code.hotelPartnerName}
                       {!code.hotelPartnerIsActive ? (
-                        <span className="ml-1 text-xs text-amber-700">({t("table.partnerInactive")})</span>
+                        <span className="ml-1 text-xs text-amber-700">({t("table.hotelInactive")})</span>
                       ) : null}
                     </td>
                     <td className="px-4 py-3 text-slate-700">{code.discountPercent}%</td>

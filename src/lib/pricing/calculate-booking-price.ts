@@ -365,7 +365,7 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
       ? [
           {
             key: "hotel_discount",
-            label: "Hotel / Partner Discount",
+            label: "Hotel Discount",
             amount: -hotelDiscount.discountAmount,
           },
         ]

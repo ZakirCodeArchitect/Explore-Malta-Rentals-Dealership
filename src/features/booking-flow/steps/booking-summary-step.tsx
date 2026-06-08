@@ -143,7 +143,7 @@ export function BookingSummaryStep() {
                     {t("hotelDiscount", {
                       percent: pricing.hotelDiscountPercent,
                       amount: formatEur(pricing.hotelDiscountAmount),
-                      partner: state.hotelCode.partnerName ?? "",
+                      hotel: state.hotelCode.partnerName ?? "",
                     })}
                   </li>
                 ) : null}

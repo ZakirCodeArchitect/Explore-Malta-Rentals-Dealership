@@ -14,7 +14,7 @@ export class DuplicateHotelCodeError extends Error {
 
 export class InactiveHotelPartnerError extends Error {
   constructor() {
-    super("Cannot activate a code while the linked hotel or partner is inactive.");
+    super("Cannot activate a code while the linked hotel is inactive.");
     this.name = "InactiveHotelPartnerError";
   }
 }

@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 
 import {
+  DuplicateHotelCodeError,
+  InactiveHotelPartnerError,
+} from "@/lib/admin/hotel-codes";
+import {
+  adminHotelPartnerCreateSchema,
   adminHotelPartnerListQuerySchema,
-  adminHotelPartnerWriteSchema,
   createAdminHotelPartner,
   listAdminHotelPartners,
 } from "@/lib/admin/hotel-partners";
@@ -53,7 +57,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false as const, message: "Invalid request body" }, { status: 400 });
     }
 
-    const parsed = adminHotelPartnerWriteSchema.safeParse(body);
+    const parsed = adminHotelPartnerCreateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { success: false as const, message: formatZodError(parsed.error) },
@@ -61,11 +65,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const partner = await createAdminHotelPartner(parsed.data);
-    return NextResponse.json({ success: true as const, partner }, { status: 201 });
+    const { partner, initialCode } = await createAdminHotelPartner(parsed.data);
+    return NextResponse.json({ success: true as const, partner, initialCode }, { status: 201 });
   } catch (error) {
     if (error instanceof AdminUnauthorizedError) {
       return NextResponse.json({ success: false as const, message: "Unauthorized" }, { status: 401 });
+    }
+    if (error instanceof DuplicateHotelCodeError) {
+      return NextResponse.json({ success: false as const, message: error.message }, { status: 409 });
+    }
+    if (error instanceof InactiveHotelPartnerError) {
+      return NextResponse.json({ success: false as const, message: error.message }, { status: 400 });
     }
     throw error;
   }

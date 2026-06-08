@@ -21,7 +21,7 @@ export default async function AdminNewHotelCodePage({ params }: AdminNewHotelCod
         <h2 className="text-lg font-bold text-slate-950">{t("createTitle")}</h2>
         <p className="mt-1 text-sm text-slate-600">{t("createDescription")}</p>
         {partners.length === 0 ? (
-          <p className="mt-3 text-sm font-medium text-amber-800">{t("noPartnersWarning")}</p>
+          <p className="mt-3 text-sm font-medium text-amber-800">{t("noHotelsWarning")}</p>
         ) : null}
       </section>
       <AdminHotelCodeForm locale={locale} mode="create" partners={partners} />

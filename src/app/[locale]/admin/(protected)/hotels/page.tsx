@@ -10,7 +10,14 @@ export const dynamic = "force-dynamic";
 
 type AdminHotelsPageProps = Readonly<{
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ search?: string; isActive?: string }>;
+  searchParams: Promise<{
+    search?: string;
+    isActive?: string;
+    created?: string;
+    saved?: string;
+    name?: string;
+    code?: string;
+  }>;
 }>;
 
 function FiltersFallback() {
@@ -31,8 +38,31 @@ export default async function AdminHotelsPage({ params, searchParams }: AdminHot
     isActive,
   });
 
+  const showCreateSuccess = query.created === "1";
+  const showSaveSuccess = query.saved === "1";
+
   return (
     <div className="space-y-5">
+      {showCreateSuccess ? (
+        <div
+          className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900"
+          role="status"
+        >
+          {query.code && query.name
+            ? t("createSuccessWithCode", { name: query.name, code: query.code })
+            : query.name
+              ? t("createSuccess", { name: query.name })
+              : t("createSuccessGeneric")}
+        </div>
+      ) : null}
+      {showSaveSuccess ? (
+        <div
+          className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900"
+          role="status"
+        >
+          {t("saveSuccess")}
+        </div>
+      ) : null}
       <section className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
         <div>
           <h2 className="text-lg font-bold text-slate-950">{t("pageTitle")}</h2>
@@ -43,7 +73,7 @@ export default async function AdminHotelsPage({ params, searchParams }: AdminHot
           className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#3a7ca5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f6688]"
         >
           <Plus className="size-4" aria-hidden />
-          {t("addPartner")}
+          {t("addHotel")}
         </a>
       </section>
 

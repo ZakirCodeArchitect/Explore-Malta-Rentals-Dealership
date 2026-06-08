@@ -14,7 +14,7 @@ export async function POST(_request: Request, context: RouteContext) {
     const result = await deactivateAdminHotelPartner(id);
 
     if (!result.ok) {
-      return NextResponse.json({ success: false as const, message: "Hotel partner not found" }, { status: 404 });
+      return NextResponse.json({ success: false as const, message: "Hotel not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true as const, partner: result.partner });

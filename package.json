@@ -16,6 +16,7 @@
     "audit:i18n": "tsx scripts/run-i18n-audit.ts",
     "test:booking-pricing": "tsx scripts/test-booking-pricing.ts",
     "test:admin-auth": "tsx scripts/test-admin-auth.ts",
+    "test:admin-hotel-partners": "tsx scripts/test-admin-hotel-partners.ts",
     "verify:uploads": "tsx scripts/verify-upload-phase.ts",
     "test:upload-api": "tsx scripts/test-upload-api.ts",
     "seed:vehicles": "node scripts/seed-vehicles.mjs",

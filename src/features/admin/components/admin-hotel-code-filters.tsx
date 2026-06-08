@@ -68,18 +68,18 @@ export function AdminHotelCodeFilters({ locale, partners }: AdminHotelCodeFilter
       </label>
       <label>
         <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {t("partner")}
+          {t("hotel")}
         </span>
         <select
           name="hotelPartnerId"
           defaultValue={searchParams.get("hotelPartnerId") ?? ""}
           className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#3a7ca5]/40 focus:ring-2 focus:ring-[#3a7ca5]/15"
         >
-          <option value="">{t("allPartners")}</option>
+          <option value="">{t("allHotels")}</option>
           {partners.map((partner) => (
             <option key={partner.id} value={partner.id}>
               {partner.name}
-              {!partner.isActive ? ` (${t("inactivePartner")})` : ""}
+              {!partner.isActive ? ` (${t("inactiveHotel")})` : ""}
             </option>
           ))}
         </select>

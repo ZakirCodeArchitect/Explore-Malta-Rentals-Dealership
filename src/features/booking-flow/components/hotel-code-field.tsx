@@ -151,7 +151,7 @@ export function HotelCodeField() {
         <p className="mt-2 text-sm font-medium text-emerald-700" role="status">
           {t("applied", {
             percent: state.hotelCode.discountPercent,
-            partner: state.hotelCode.partnerName ?? "",
+            hotel: state.hotelCode.partnerName ?? "",
           })}
         </p>
       ) : null}

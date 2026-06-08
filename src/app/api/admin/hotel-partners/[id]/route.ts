@@ -26,7 +26,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const partner = await getAdminHotelPartnerById(id);
 
     if (!partner) {
-      return NextResponse.json({ success: false as const, message: "Hotel partner not found" }, { status: 404 });
+      return NextResponse.json({ success: false as const, message: "Hotel not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true as const, partner });
@@ -60,7 +60,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const partner = await updateAdminHotelPartner(id, parsed.data);
     if (!partner) {
-      return NextResponse.json({ success: false as const, message: "Hotel partner not found" }, { status: 404 });
+      return NextResponse.json({ success: false as const, message: "Hotel not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true as const, partner });
@@ -80,12 +80,12 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
     if (!result.ok) {
       if (result.reason === "not_found") {
-        return NextResponse.json({ success: false as const, message: "Hotel partner not found" }, { status: 404 });
+        return NextResponse.json({ success: false as const, message: "Hotel not found" }, { status: 404 });
       }
       return NextResponse.json(
         {
           success: false as const,
-          message: "Cannot delete a hotel partner with linked codes or bookings. Deactivate instead.",
+          message: "Cannot delete a hotel with linked codes or bookings. Deactivate instead.",
         },
         { status: 409 },
       );

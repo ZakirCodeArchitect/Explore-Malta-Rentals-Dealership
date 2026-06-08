@@ -28,6 +28,24 @@ function resolveAdminHeaderTitle(pathname: string, t: (key: string) => string): 
   if (pathname.includes("/admin/vehicles")) {
     return t("vehicles.header");
   }
+  if (pathname.includes("/admin/hotels/new")) {
+    return t("hotels.createHeader");
+  }
+  if (pathname.includes("/admin/hotels/") && pathname.endsWith("/edit")) {
+    return t("hotels.editHeader");
+  }
+  if (pathname.includes("/admin/hotels")) {
+    return t("hotels.header");
+  }
+  if (pathname.includes("/admin/hotel-codes/new")) {
+    return t("hotelCodes.createHeader");
+  }
+  if (pathname.includes("/admin/hotel-codes/") && pathname.endsWith("/edit")) {
+    return t("hotelCodes.editHeader");
+  }
+  if (pathname.includes("/admin/hotel-codes")) {
+    return t("hotelCodes.header");
+  }
   return t("dashboardOverviewTitle");
 }
 
