@@ -1473,6 +1473,153 @@
         "save": "Save changes",
         "cancel": "Cancel"
       }
+    },
+    "reports": {
+      "header": "Reports",
+      "pageTitle": "Reports & insights",
+      "pageDescription": "Operational summaries for bookings, fleet, hotel codes, and monthly hotel settlements. Booking filters apply to booking counts, revenue, and settlement tables; fleet and hotel-code totals are global.",
+      "empty": "No data yet.",
+      "periodLabel": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {Month {month}}} {year}",
+      "filters": {
+        "month": "Month",
+        "year": "Year",
+        "hotel": "Hotel",
+        "allMonths": "All months",
+        "allYears": "All years",
+        "allHotels": "All hotels",
+        "inactiveHotel": "inactive",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "failed": "Failed",
+        "apply": "Apply filters",
+        "applying": "Applying…",
+        "clear": "Clear",
+        "months": {
+          "1": "January",
+          "2": "February",
+          "3": "March",
+          "4": "April",
+          "5": "May",
+          "6": "June",
+          "7": "July",
+          "8": "August",
+          "9": "September",
+          "10": "October",
+          "11": "November",
+          "12": "December"
+        }
+      },
+      "sections": {
+        "booking": {
+          "title": "Booking summary",
+          "description": "Counts and revenue for the selected filters. This month and last month always reflect the current calendar period."
+        },
+        "vehicle": {
+          "title": "Vehicle summary",
+          "description": "Current fleet catalog status and category breakdown."
+        },
+        "hotelCode": {
+          "title": "Hotel code summary",
+          "description": "Hotels, discount codes, and bookings attributed to hotel partnerships."
+        },
+        "payments": {
+          "title": "Hotel payment summary",
+          "description": "Monthly settlement totals and recent settlement records."
+        },
+        "recent": {
+          "title": "Recent bookings",
+          "description": "Latest booking activity across all statuses."
+        }
+      },
+      "booking": {
+        "totalBookings": "Total bookings",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "failed": "Failed",
+        "pending": "Pending",
+        "thisMonth": "Bookings this month",
+        "lastMonth": "Bookings last month",
+        "totalValue": "Total booking value",
+        "totalDiscount": "Total hotel discount",
+        "revenueHint": "Excludes cancelled and failed unless status filter is set"
+      },
+      "vehicle": {
+        "total": "Total vehicles",
+        "active": "Active vehicles",
+        "available": "Available",
+        "booked": "Booked",
+        "underProcess": "Under process",
+        "sold": "Sold",
+        "maintenance": "Maintenance",
+        "inactive": "Inactive (catalog)",
+        "byType": "By category",
+        "byStatus": "By catalog status"
+      },
+      "vehicleTypes": {
+        "Scooter": "Scooter",
+        "Motorcycle": "Motorcycle",
+        "Bicycle": "Bicycle",
+        "ATV": "ATV"
+      },
+      "catalogStatus": {
+        "AVAILABLE": "Available",
+        "BOOKED": "Booked",
+        "UNDER_PROCESS": "Under process",
+        "SOLD": "Sold",
+        "MAINTENANCE": "Maintenance",
+        "INACTIVE": "Inactive"
+      },
+      "hotelCode": {
+        "totalHotels": "Total hotels",
+        "activeHotels": "Active hotels",
+        "totalCodes": "Total hotel codes",
+        "activeCodes": "Active hotel codes",
+        "bookingsViaCodes": "Bookings via hotel codes",
+        "totalDiscount": "Total hotel discount (all time)",
+        "topHotels": "Top hotels by bookings",
+        "topCodes": "Top hotel codes by bookings"
+      },
+      "payments": {
+        "totalDue": "Total settlement amount due",
+        "totalPaid": "Total amount paid",
+        "outstanding": "Total outstanding",
+        "dueCount": "Due settlements",
+        "paidCount": "Paid settlements",
+        "partialCount": "Partially paid settlements",
+        "emptySettlements": "No settlements match the current filters."
+      },
+      "settlementStatus": {
+        "DUE": "Due",
+        "PAID": "Paid",
+        "PARTIALLY_PAID": "Partially paid"
+      },
+      "bookingStatus": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled",
+        "FAILED": "Failed"
+      },
+      "recent": {
+        "empty": "No bookings recorded yet."
+      },
+      "table": {
+        "hotel": "Hotel",
+        "code": "Code",
+        "bookings": "Bookings",
+        "period": "Period",
+        "amountDue": "Amount due",
+        "amountPaid": "Amount paid",
+        "outstanding": "Outstanding",
+        "status": "Status",
+        "customer": "Customer",
+        "vehicle": "Vehicle",
+        "date": "Booking date",
+        "amount": "Total amount",
+        "hotelCode": "Hotel code"
+      }
     }
   }
 }
