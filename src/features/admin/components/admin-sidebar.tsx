@@ -39,7 +39,7 @@ const MAIN_NAV: AdminNavItem[] = [
 const MANAGEMENT_NAV: AdminNavItem[] = [
   { href: "/hotels", labelKey: "hotels", icon: Building2 },
   { href: "/hotel-codes", labelKey: "hotelCodes", icon: Percent },
-  { href: "/payments", labelKey: "payments", icon: Wallet, disabled: true },
+  { href: "/hotel-payments", labelKey: "payments", icon: Wallet },
   { href: "/reports", labelKey: "reports", icon: BarChart3, disabled: true },
 ];
 

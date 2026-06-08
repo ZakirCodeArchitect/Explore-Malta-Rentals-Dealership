@@ -118,6 +118,12 @@ enum AdminRole {
   STAFF
 }
 
+enum HotelSettlementStatus {
+  DUE
+  PAID
+  PARTIALLY_PAID
+}
+
 enum DocumentOwnerType {
   CUSTOMER
   ADDITIONAL_DRIVER
@@ -266,10 +272,34 @@ model HotelPartner {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  hotelCodes HotelCode[]
-  bookings   Booking[]
+  hotelCodes            HotelCode[]
+  bookings              Booking[]
+  monthlySettlements    HotelMonthlySettlement[]
 
   @@index([isActive, name])
+}
+
+model HotelMonthlySettlement {
+  id                         String                @id @default(cuid())
+  hotelPartnerId             String
+  month                      Int
+  year                       Int
+  bookingCountSnapshot       Int
+  totalBookingAmountSnapshot Decimal               @db.Decimal(12, 2)
+  totalHotelDiscountSnapshot Decimal               @db.Decimal(12, 2)
+  settlementAmountDue        Decimal               @db.Decimal(12, 2)
+  amountPaid                 Decimal               @default(0) @db.Decimal(12, 2)
+  status                     HotelSettlementStatus @default(DUE)
+  paidAt                     DateTime?
+  notes                      String?
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
+
+  hotelPartner HotelPartner @relation(fields: [hotelPartnerId], references: [id], onDelete: Restrict)
+
+  @@unique([hotelPartnerId, month, year])
+  @@index([year, month])
+  @@index([status])
 }
 
 model HotelCode {

@@ -46,6 +46,9 @@ function resolveAdminHeaderTitle(pathname: string, t: (key: string) => string): 
   if (pathname.includes("/admin/hotel-codes")) {
     return t("hotelCodes.header");
   }
+  if (pathname.includes("/admin/hotel-payments")) {
+    return t("hotelPayments.header");
+  }
   return t("dashboardOverviewTitle");
 }
 

@@ -1,0 +1,136 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { FormEvent, useTransition } from "react";
+
+import type { AdminHotelPartnerOption } from "@/lib/admin/hotel-partners/types";
+
+type AdminHotelPaymentFiltersProps = Readonly<{
+  locale: string;
+  partners: AdminHotelPartnerOption[];
+}>;
+
+const MONTH_KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] as const;
+
+export function AdminHotelPaymentFilters({ locale, partners }: AdminHotelPaymentFiltersProps) {
+  const t = useTranslations("Admin.hotelPayments.filters");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 6 }, (_, index) => currentYear - index);
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const params = new URLSearchParams();
+
+    for (const key of ["hotelPartnerId", "month", "year", "status"] as const) {
+      const value = String(formData.get(key) ?? "").trim();
+      if (value) params.set(key, value);
+    }
+
+    startTransition(() => {
+      const query = params.toString();
+      router.push(`/${locale}/admin/hotel-payments${query ? `?${query}` : ""}`);
+    });
+  }
+
+  function handleClear() {
+    startTransition(() => {
+      router.push(`/${locale}/admin/hotel-payments`);
+    });
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6"
+    >
+      <label>
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t("month")}
+        </span>
+        <select
+          name="month"
+          defaultValue={searchParams.get("month") ?? ""}
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#3a7ca5]/40 focus:ring-2 focus:ring-[#3a7ca5]/15"
+        >
+          <option value="">{t("allMonths")}</option>
+          {MONTH_KEYS.map((month) => (
+            <option key={month} value={month}>
+              {t(`months.${month}`)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t("year")}
+        </span>
+        <select
+          name="year"
+          defaultValue={searchParams.get("year") ?? ""}
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#3a7ca5]/40 focus:ring-2 focus:ring-[#3a7ca5]/15"
+        >
+          <option value="">{t("allYears")}</option>
+          {years.map((year) => (
+            <option key={year} value={String(year)}>
+              {year}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="md:col-span-2">
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t("hotel")}
+        </span>
+        <select
+          name="hotelPartnerId"
+          defaultValue={searchParams.get("hotelPartnerId") ?? ""}
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#3a7ca5]/40 focus:ring-2 focus:ring-[#3a7ca5]/15"
+        >
+          <option value="">{t("allHotels")}</option>
+          {partners.map((partner) => (
+            <option key={partner.id} value={partner.id}>
+              {partner.name}
+              {!partner.isActive ? ` (${t("inactiveHotel")})` : ""}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t("status")}
+        </span>
+        <select
+          name="status"
+          defaultValue={searchParams.get("status") ?? ""}
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-[#3a7ca5]/40 focus:ring-2 focus:ring-[#3a7ca5]/15"
+        >
+          <option value="">{t("allStatuses")}</option>
+          <option value="DUE">{t("due")}</option>
+          <option value="PAID">{t("paid")}</option>
+          <option value="PARTIALLY_PAID">{t("partiallyPaid")}</option>
+        </select>
+      </label>
+      <div className="flex items-end gap-2">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-xl bg-[#3a7ca5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2f6688] disabled:opacity-60"
+        >
+          {isPending ? t("applying") : t("apply")}
+        </button>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          {t("clear")}
+        </button>
+      </div>
+    </form>
+  );
+}
