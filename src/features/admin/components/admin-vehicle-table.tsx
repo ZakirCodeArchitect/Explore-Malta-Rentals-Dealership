@@ -1,11 +1,13 @@
 "use client";
 
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
+import { AdminRowActionsMenu } from "@/features/admin/components/admin-row-actions-menu";
+import { AdminVehicleTableUnitsExpand } from "@/features/admin/components/admin-vehicle-table-units-expand";
 import { AdminVehicleDeleteDialog } from "@/features/admin/components/admin-vehicle-delete-dialog";
 import type { AdminVehicleListItem } from "@/lib/admin/vehicles/types";
 
@@ -46,7 +48,12 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
   const router = useRouter();
   const [dialogTarget, setDialogTarget] = useState<DialogTarget | null>(null);
   const [actionVehicleId, setActionVehicleId] = useState<string | null>(null);
+  const [expandedVehicleId, setExpandedVehicleId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  function toggleUnitsExpand(vehicleId: string) {
+    setExpandedVehicleId((current) => (current === vehicleId ? null : vehicleId));
+  }
 
   async function handleDialogConfirm() {
     if (!dialogTarget) {
@@ -123,24 +130,29 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
               <tr className="border-b border-slate-100 bg-slate-50/60 text-xs uppercase tracking-wide text-slate-500">
                 <th className="px-4 py-3 font-semibold">{t("table.no")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.vehicle")}</th>
-                <th className="px-4 py-3 font-semibold">{t("table.licensePlate")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.type")}</th>
+                <th className="px-4 py-3 font-semibold">{t("table.baseDailyRate")}</th>
+                <th className="px-4 py-3 font-semibold">{t("table.totalUnits")}</th>
+                <th className="px-4 py-3 font-semibold">{t("table.availableUnits")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.status")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.visibility")}</th>
-                <th className="px-4 py-3 font-semibold">{t("table.order")}</th>
                 <th className="px-4 py-3 font-semibold">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {vehicles.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-12 text-center text-sm text-slate-500">
+                  <td colSpan={9} className="px-4 py-12 text-center text-sm text-slate-500">
                     {t("table.empty")}
                   </td>
                 </tr>
               ) : (
-                vehicles.map((vehicle, index) => (
-                  <tr key={vehicle.id} className="border-b border-slate-50 last:border-0">
+                vehicles.map((vehicle, index) => {
+                  const isUnitsExpanded = expandedVehicleId === vehicle.id;
+
+                  return (
+                  <Fragment key={vehicle.id}>
+                  <tr className="border-b border-slate-50 last:border-0">
                     <td className="px-4 py-3 text-slate-500">{String(index + 1).padStart(2, "0")}</td>
                     <td className="px-4 py-3">
                       <div className="flex min-w-[14rem] items-center gap-3">
@@ -170,8 +182,10 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-mono text-sm font-semibold text-slate-800">{vehicle.licensePlate}</td>
                     <td className="px-4 py-3 text-slate-700">{t(`vehicleTypes.${vehicle.vehicleType}`)}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-800">€{vehicle.baseDailyRate.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-slate-700">{vehicle.totalUnits}</td>
+                    <td className="px-4 py-3 text-slate-700">{vehicle.availableUnits}</td>
                     <td className="px-4 py-3">
                       <span
                         className={[
@@ -192,55 +206,84 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
                         {vehicle.isActive ? t("table.visible") : t("table.hidden")}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{vehicle.displayOrder}</td>
                     <td className="px-4 py-3">
-                      <div className="flex min-w-[12rem] items-center gap-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <a
-                            href={`/${locale}/admin/vehicles/${vehicle.id}`}
-                            className="inline-flex cursor-pointer rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-[#3a7ca5]/30 hover:text-[#3a7ca5]"
-                          >
-                            {t("table.details")}
-                          </a>
-                          <button
-                            type="button"
-                            onClick={() => setDialogTarget({ vehicle, mode: "deactivate" })}
-                            disabled={!vehicle.isActive || actionVehicleId === vehicle.id}
-                            className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            {actionVehicleId === vehicle.id && dialogTarget?.mode === "deactivate" ? (
-                              <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                            ) : null}
-                            {t("table.deactivate")}
-                          </button>
-                          <span title={!vehicle.canDelete ? t("table.deleteDisabledTooltip") : undefined}>
-                            <button
-                              type="button"
-                              onClick={() => setDialogTarget({ vehicle, mode: "delete" })}
-                              disabled={!vehicle.canDelete || actionVehicleId === vehicle.id}
-                              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              {actionVehicleId === vehicle.id && dialogTarget?.mode === "delete" ? (
-                                <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                              ) : (
-                                <Trash2 className="size-3.5" aria-hidden />
-                              )}
-                              {t("table.delete")}
-                            </button>
-                          </span>
-                        </div>
-                        <a
-                          href={`/${locale}/admin/vehicles/${vehicle.id}/edit`}
-                          aria-label={t("table.edit")}
-                          title={t("table.edit")}
-                          className="ml-auto inline-flex cursor-pointer items-center justify-center rounded-lg border border-slate-200 p-1.5 text-slate-700 transition hover:border-[#3a7ca5]/30 hover:text-[#3a7ca5]"
+                      <div className="flex min-w-[9rem] items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleUnitsExpand(vehicle.id)}
+                          aria-expanded={isUnitsExpanded}
+                          aria-label={
+                            isUnitsExpanded
+                              ? t("table.collapseUnits", { name: vehicle.name })
+                              : t("table.expandUnits", { name: vehicle.name })
+                          }
+                          className={[
+                            "inline-flex cursor-pointer items-center justify-center rounded-lg border p-1.5 transition",
+                            isUnitsExpanded
+                              ? "border-[#3a7ca5]/40 bg-[#3a7ca5]/10 text-[#2f6688]"
+                              : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50",
+                          ].join(" ")}
                         >
-                          <Pencil className="size-3.5" aria-hidden />
+                          {isUnitsExpanded ? (
+                            <ChevronUp className="size-4" aria-hidden />
+                          ) : (
+                            <ChevronDown className="size-4" aria-hidden />
+                          )}
+                        </button>
+                        <a
+                          href={`/${locale}/admin/vehicles/${vehicle.id}#vehicle-units`}
+                          className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#3a7ca5]/25 bg-[#3a7ca5]/5 px-3 py-1.5 text-xs font-semibold text-[#2f6688] transition hover:border-[#3a7ca5]/40 hover:bg-[#3a7ca5]/10"
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                          {t("table.addUnit")}
                         </a>
+                        <AdminRowActionsMenu
+                          ariaLabel={t("table.actionsMenu", { name: vehicle.name })}
+                          isBusy={actionVehicleId === vehicle.id}
+                          items={[
+                            {
+                              key: "deactivate",
+                              label: t("table.deactivate"),
+                              disabled: !vehicle.isActive || actionVehicleId === vehicle.id,
+                              tone: "warning",
+                              onClick: () => setDialogTarget({ vehicle, mode: "deactivate" }),
+                            },
+                            {
+                              key: "delete",
+                              label: t("table.delete"),
+                              disabled: !vehicle.canDelete || actionVehicleId === vehicle.id,
+                              tone: "danger",
+                              onClick: () => setDialogTarget({ vehicle, mode: "delete" }),
+                            },
+                            {
+                              key: "edit",
+                              label: t("table.edit"),
+                              href: `/${locale}/admin/vehicles/${vehicle.id}/edit`,
+                            },
+                            {
+                              key: "details",
+                              label: t("table.details"),
+                              href: `/${locale}/admin/vehicles/${vehicle.id}`,
+                            },
+                          ]}
+                        />
                       </div>
                     </td>
                   </tr>
-                ))
+                  {isUnitsExpanded ? (
+                    <tr className="border-b border-slate-50 last:border-0">
+                      <td colSpan={9} className="p-0">
+                        <AdminVehicleTableUnitsExpand
+                          vehicleId={vehicle.id}
+                          locale={locale}
+                          isOpen={isUnitsExpanded}
+                        />
+                      </td>
+                    </tr>
+                  ) : null}
+                  </Fragment>
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -1,15 +1,15 @@
 import "dotenv/config";
 import assert from "node:assert/strict";
 
-import { deleteAdminVehicle, DuplicateLicensePlateError } from "../src/lib/admin/vehicles/mutateAdminVehicle";
+import { createAdminVehicleUnit } from "../src/lib/admin/vehicle-units/mutateAdminVehicleUnit";
+import { deleteAdminVehicle } from "../src/lib/admin/vehicles/mutateAdminVehicle";
 import { getAdminVehicleById } from "../src/lib/admin/vehicles/listAdminVehicles";
 import { adminVehicleWriteSchema } from "../src/lib/admin/vehicles/vehicle-schema";
 import { prisma } from "../src/lib/prisma";
 
 const basePayload = {
-  name: "License Plate Test Vehicle",
-  slug: `license-plate-test-${Date.now()}`,
-  licensePlate: "TST-9001",
+  name: "Vehicle Listing Test",
+  slug: `vehicle-listing-test-${Date.now()}`,
   vehicleType: "Scooter" as const,
   brand: null,
   model: null,
@@ -27,22 +27,12 @@ const basePayload = {
 
 async function run() {
   const parsed = adminVehicleWriteSchema.safeParse(basePayload);
-  assert.equal(parsed.success, true, "valid payload should pass schema");
-
-  const missingPlate = adminVehicleWriteSchema.safeParse({ ...basePayload, licensePlate: "" });
-  assert.equal(missingPlate.success, false, "empty license plate should fail");
-
-  const normalized = adminVehicleWriteSchema.safeParse({ ...basePayload, licensePlate: " abc-123 " });
-  assert.equal(normalized.success, true, "license plate with whitespace should pass");
-  if (normalized.success) {
-    assert.equal(normalized.data.licensePlate, "ABC-123");
-  }
+  assert.equal(parsed.success, true, "valid payload should pass schema without license plate");
 
   const vehicle = await prisma.vehicle.create({
     data: {
       name: basePayload.name,
       slug: basePayload.slug,
-      licensePlate: basePayload.licensePlate,
       vehicleType: basePayload.vehicleType,
       baseDailyRate: 25,
       catalogStatus: basePayload.catalogStatus,
@@ -53,25 +43,30 @@ async function run() {
   try {
     const loaded = await getAdminVehicleById(vehicle.id);
     assert.ok(loaded);
-    assert.equal(loaded.licensePlate, "TST-9001");
+    assert.equal(loaded.totalUnits, 0);
+    assert.equal(loaded.availableUnits, 0);
     assert.equal(loaded.canDelete, true);
 
-    const duplicate = adminVehicleWriteSchema.safeParse({
-      ...basePayload,
-      slug: `${basePayload.slug}-dup`,
+    const unit = await createAdminVehicleUnit(vehicle.id, {
       licensePlate: "TST-9001",
+      status: "AVAILABLE",
+      isActive: true,
+      notes: null,
     });
-    assert.equal(duplicate.success, true);
+    assert.ok(unit);
+    assert.equal(unit.licensePlate, "TST-9001");
+
+    const withUnit = await getAdminVehicleById(vehicle.id);
+    assert.ok(withUnit);
+    assert.equal(withUnit.totalUnits, 1);
+    assert.equal(withUnit.availableUnits, 1);
 
     try {
-      await prisma.vehicle.create({
-        data: {
-          name: "Duplicate Plate Vehicle",
-          slug: `${basePayload.slug}-duplicate`,
-          licensePlate: "TST-9001",
-          vehicleType: "Scooter",
-          baseDailyRate: 25,
-        },
+      await createAdminVehicleUnit(vehicle.id, {
+        licensePlate: "TST-9001",
+        status: "AVAILABLE",
+        isActive: true,
+        notes: null,
       });
       assert.fail("duplicate license plate should throw");
     } catch (error) {
@@ -82,6 +77,7 @@ async function run() {
     assert.equal(deleteResult.ok, true);
     assert.equal(await getAdminVehicleById(vehicle.id), null);
   } finally {
+    await prisma.vehicleUnit.deleteMany({ where: { vehicleId: vehicle.id } }).catch(() => undefined);
     await prisma.vehicle.deleteMany({ where: { slug: { startsWith: basePayload.slug } } }).catch(() => undefined);
   }
 
@@ -89,11 +85,17 @@ async function run() {
     data: {
       name: "Booked Guard Test Vehicle",
       slug: `booked-guard-test-${Date.now()}`,
-      licensePlate: `BKD-${Date.now()}`,
       vehicleType: "Scooter",
       baseDailyRate: 25,
       catalogStatus: "AVAILABLE",
       isActive: true,
+      units: {
+        create: {
+          licensePlate: `BKD-${Date.now()}`,
+          status: "AVAILABLE",
+          isActive: true,
+        },
+      },
       bookings: {
         create: {
           bookingReference: `TEST-${Date.now()}`,
@@ -115,7 +117,7 @@ async function run() {
         },
       },
     },
-    include: { bookings: true },
+    include: { bookings: true, units: true },
   });
 
   try {
@@ -130,12 +132,11 @@ async function run() {
     }
   } finally {
     await prisma.booking.deleteMany({ where: { vehicleId: bookedVehicle.id } });
+    await prisma.vehicleUnit.deleteMany({ where: { vehicleId: bookedVehicle.id } });
     await prisma.vehicle.delete({ where: { id: bookedVehicle.id } });
   }
 
-  assert.ok(DuplicateLicensePlateError);
-
-  console.log("Admin vehicle license plate and safe delete checks passed.");
+  console.log("Admin vehicle listing + unit checks passed.");
 }
 
 run()

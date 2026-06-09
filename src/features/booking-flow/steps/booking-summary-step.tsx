@@ -129,11 +129,6 @@ export function BookingSummaryStep() {
               {t("vehicleSelected")}{" "}
               {state.rental.vehicleName || state.rental.vehicleId || t("categoryOnly")}
             </li>
-            {state.rental.vehicleLicensePlate ? (
-              <li>
-                {t("licensePlate")} {state.rental.vehicleLicensePlate}
-              </li>
-            ) : null}
             <li>
               {t("rentalDates")} {state.rental.pickupDate || "-"} {state.rental.pickupTime || ""} {t("to")}{" "}
               {state.rental.returnDate || "-"} {state.rental.returnTime || ""}

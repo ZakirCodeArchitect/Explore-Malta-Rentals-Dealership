@@ -67,6 +67,7 @@ export async function findConflictingReservationHolds(
       id: true,
       holdReference: true,
       vehicleId: true,
+      vehicleUnitId: true,
       vehicleType: true,
       sessionKey: true,
       status: true,

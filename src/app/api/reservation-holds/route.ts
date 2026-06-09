@@ -5,6 +5,7 @@ import {
   ReservationHoldConflictError,
   ReservationHoldValidationError,
 } from "@/lib/reservation-holds";
+import { NoAvailableVehicleUnitError } from "@/lib/vehicle-units";
 
 export async function POST(request: Request) {
   let payload: unknown;
@@ -43,6 +44,15 @@ export async function POST(request: Request) {
       );
     }
     if (error instanceof ReservationHoldConflictError) {
+      return NextResponse.json(
+        {
+          success: false as const,
+          message: error.message,
+        },
+        { status: 409 },
+      );
+    }
+    if (error instanceof NoAvailableVehicleUnitError) {
       return NextResponse.json(
         {
           success: false as const,

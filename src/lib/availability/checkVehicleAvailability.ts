@@ -1,9 +1,9 @@
-import type { VehicleType } from "@/generated/prisma/client";
+import type { Prisma, VehicleType } from "@/generated/prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { findAvailableVehicleUnits } from "@/lib/vehicle-units";
 
 import { findConflictingBlocks } from "./findConflictingBlocks";
-import { findConflictingBookings } from "./findConflictingBookings";
 import { findConflictingReservationHolds } from "./findConflictingReservationHolds";
 import {
   assertValidAvailabilityWindow,
@@ -39,9 +39,12 @@ async function resolveVehicleType(
   };
 }
 
+type VehicleUnitDbClient = typeof prisma | Prisma.TransactionClient;
+
 export async function checkVehicleAvailability(
   input: CheckVehicleAvailabilityInput,
   db: AvailabilityDbClient = prisma as unknown as AvailabilityDbClient,
+  unitDb: VehicleUnitDbClient = prisma,
 ): Promise<VehicleAvailabilityResult> {
   assertValidAvailabilityWindow(input);
 
@@ -69,14 +72,16 @@ export async function checkVehicleAvailability(
     };
   }
 
-  const [conflictingBookings, conflictingBlocks, conflictingReservationHolds] = await Promise.all([
-    findConflictingBookings(
+  const [availableUnits, conflictingBlocks, conflictingReservationHolds] = await Promise.all([
+    findAvailableVehicleUnits(
       {
+        vehicleId: input.vehicleId,
         requestedStart: input.requestedStart,
         requestedEnd: input.requestedEnd,
-        vehicleId: input.vehicleId,
+        excludeHoldReference: input.excludeHoldReference,
+        excludeSessionKey: input.excludeSessionKey,
       },
-      db,
+      unitDb,
     ),
     findConflictingBlocks(
       {
@@ -99,25 +104,28 @@ export async function checkVehicleAvailability(
     ),
   ]);
 
-  const isAvailable =
-    conflictingBookings.length === 0 &&
-    conflictingBlocks.length === 0 &&
-    conflictingReservationHolds.length === 0;
+  const hasUnitAvailable = availableUnits.length > 0;
+  const hasVehicleWideBlock = conflictingBlocks.some((block) => block.vehicleId === input.vehicleId);
+
+  const isAvailable = hasUnitAvailable && !hasVehicleWideBlock;
 
   const isReservedByActiveHold =
-    conflictingReservationHolds.length > 0 &&
-    conflictingBookings.length === 0 &&
-    conflictingBlocks.length === 0;
+    !isAvailable &&
+    hasUnitAvailable &&
+    !hasVehicleWideBlock &&
+    conflictingReservationHolds.length > 0;
 
   return {
     isAvailable,
-    conflictingBookings,
+    conflictingBookings: [],
     conflictingBlocks,
     conflictingReservationHolds,
     reason: isAvailable
       ? "Available"
       : isReservedByActiveHold
         ? "Selected vehicle is temporarily reserved by another customer"
-        : "Selected vehicle is not available for the chosen dates",
+        : hasUnitAvailable
+          ? "Selected vehicle is not available for the chosen dates"
+          : "No physical units are available for the chosen dates",
   };
 }

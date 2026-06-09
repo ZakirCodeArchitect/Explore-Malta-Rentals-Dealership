@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { AdminVehicleBookingCalendar } from "@/features/admin/components/admin-vehicle-booking-calendar";
+import { AdminVehicleUnitsPanel } from "@/features/admin/components/admin-vehicle-units-panel";
 import type { AdminVehicleDetail } from "@/lib/admin/vehicles/types";
 import type { AdminVehicleBookingCalendarItem } from "@/lib/admin/vehicles/getAdminVehicleBookingsForCalendar";
 import {
@@ -109,7 +110,10 @@ export async function AdminVehicleDetailView({
                 <DetailField label={t("form.name")} value={vehicle.name} className="sm:col-span-2" />
                 <DetailField label={t("form.slug")} value={vehicle.slug} />
                 <DetailField label={t("form.vehicleType")} value={t(`vehicleTypes.${vehicle.vehicleType}`)} />
-                <DetailField label={t("form.licensePlate")} value={vehicle.licensePlate} />
+                <DetailField
+                  label={t("table.totalUnits")}
+                  value={t("units.counts", { total: vehicle.totalUnits, available: vehicle.availableUnits })}
+                />
                 <DetailField label={t("form.brand")} value={vehicle.brand ?? "—"} />
                 <DetailField label={t("form.model")} value={vehicle.model ?? "—"} />
                 <DetailField label={t("form.catalogStatus")} value={t(`catalogStatus.${vehicle.catalogStatus}`)} />
@@ -202,6 +206,8 @@ export async function AdminVehicleDetailView({
           </div>
         </section>
       ) : null}
+
+      <AdminVehicleUnitsPanel vehicleId={vehicle.id} initialUnits={vehicle.units} />
 
       <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
         <h3 className="text-base font-bold text-slate-950">{t("details.metadata")}</h3>

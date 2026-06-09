@@ -4,7 +4,7 @@ import type { ReservationHoldStatus } from "@/features/booking-flow/lib/types";
 
 export type CreateReservationHoldPayload = {
   vehicleId: string;
-  vehicleType: string;
+  vehicleType?: string;
   pickupDate: string;
   pickupTime: string;
   returnDate: string;
@@ -40,8 +40,20 @@ export type GetHoldSuccess = HoldSuccessBase & {
 type HoldFailure = {
   success: false;
   message?: string;
+  errors?: Array<{ path?: string; message?: string }>;
   status?: ReservationHoldStatus;
 };
+
+function extractHoldFailureMessage(body: HoldFailure | null, response: Response, fallback: string): string {
+  if (body?.message && typeof body.message === "string") {
+    return body.message;
+  }
+  const firstValidationError = body?.errors?.find((error) => typeof error.message === "string")?.message;
+  if (firstValidationError) {
+    return firstValidationError;
+  }
+  return fallbackMessage(response, fallback);
+}
 
 async function parseJson(response: Response): Promise<unknown> {
   try {
@@ -72,9 +84,7 @@ export async function createReservationHold(
     return {
       ok: false,
       status: response.status,
-      message:
-        (body && "message" in body && typeof body.message === "string" && body.message) ||
-        fallbackMessage(response, "Unable to reserve this vehicle right now."),
+      message: extractHoldFailureMessage(body as HoldFailure | null, response, "Unable to reserve this vehicle right now."),
     };
   }
 

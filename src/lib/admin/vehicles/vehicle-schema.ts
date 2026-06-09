@@ -38,12 +38,6 @@ export const adminVehicleWriteSchema = z.object({
   catalogStatus: z.enum(VEHICLE_CATALOG_STATUSES as [string, ...string[]]),
   isActive: z.boolean(),
   displayOrder: z.number().int().min(0).max(9999).default(0),
-  licensePlate: z
-    .string()
-    .trim()
-    .min(1, "License plate number is required")
-    .max(20, "License plate must be at most 20 characters")
-    .transform(normalizeLicensePlate),
   helmetIncludedCount: z.number().int().min(0).max(10).default(2),
   supportsStorageBox: z.boolean().default(false),
   images: z.array(vehicleImageSchema).max(20).default([]),

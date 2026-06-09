@@ -109,6 +109,7 @@ export function BookNowButton({
         expiresAt: result.data.expiresAt,
         status: result.data.status,
         vehicleId: vehicle.id,
+        vehicleSlug: vehicle.slug,
         vehicleType: vehicle.apiVehicleType,
         pickupDate: pickupDate!.trim(),
         pickupTime: pickupTime!.trim(),

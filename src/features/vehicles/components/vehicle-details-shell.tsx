@@ -667,9 +667,6 @@ export function VehicleDetailsShell({
               {brandModel ? (
                 <p className="mt-1.5 text-base font-medium text-slate-600">{brandModel}</p>
               ) : null}
-              <p className="mt-1 text-sm font-semibold text-slate-800">
-                {t("licensePlateLabel", { plate: vehicle.licensePlate })}
-              </p>
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1 text-sm text-slate-600">
                   <MapPin className="h-3.5 w-3.5 text-[var(--brand-orange)]" aria-hidden />
@@ -740,7 +737,6 @@ export function VehicleDetailsShell({
                 <dl className="mt-4 grid gap-3 sm:grid-cols-2">
                   {[
                     { label: "Vehicle type", value: typeLabel },
-                    { label: t("specLicensePlate"), value: vehicle.licensePlate },
                     { label: "Brand / Model", value: brandModel ?? "Not specified" },
                     { label: "Engine", value: vehicle.engine || "—" },
                     { label: "Transmission", value: vehicle.transmission },

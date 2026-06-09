@@ -30,7 +30,6 @@ export type VehicleListApiItem = Readonly<{
   id: string;
   name: string;
   slug: string;
-  licensePlate: string;
   vehicleType: ApiVehicleType;
   brand: string | null;
   model: string | null;
@@ -58,7 +57,6 @@ export type Vehicle = Readonly<{
   id: string;
   slug: string;
   name: string;
-  licensePlate: string;
   type: VehicleType;
   apiVehicleType: ApiVehicleType;
   brand: string | null;
@@ -149,7 +147,6 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
     id: item.id,
     slug: item.slug,
     name: item.name,
-    licensePlate: item.licensePlate,
     type: inferredType,
     apiVehicleType: item.vehicleType,
     brand: item.brand,

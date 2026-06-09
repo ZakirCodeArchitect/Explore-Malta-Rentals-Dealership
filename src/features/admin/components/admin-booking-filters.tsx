@@ -101,7 +101,6 @@ export function AdminBookingFilters({ locale, vehicles, partners }: AdminBooking
           {vehicles.map((vehicle) => (
             <option key={vehicle.id} value={vehicle.id}>
               {vehicle.name}
-              {vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ""}
             </option>
           ))}
         </select>

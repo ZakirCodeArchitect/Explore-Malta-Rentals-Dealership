@@ -7,6 +7,7 @@ export type ReservationHoldState = {
   expiresAt: string | null;
   status: ReservationHoldStatus | null;
   vehicleId: string | null;
+  vehicleSlug: string | null;
   vehicleType: string | null;
   pickupDate: string | null;
   pickupTime: string | null;
@@ -156,6 +157,7 @@ export const INITIAL_RESERVATION_HOLD_STATE: ReservationHoldState = {
   expiresAt: null,
   status: null,
   vehicleId: null,
+  vehicleSlug: null,
   vehicleType: null,
   pickupDate: null,
   pickupTime: null,

@@ -89,8 +89,8 @@ function BookingFlowBody({
     Boolean(reservationHold.expiresAt);
   const holdMatchesCurrentRental =
     reservationHold.holdReference !== null &&
+    reservationHold.vehicleId !== null &&
     reservationHold.vehicleId === state.rental.vehicleId &&
-    reservationHold.vehicleType === state.rental.vehicleType &&
     reservationHold.pickupDate === state.rental.pickupDate &&
     reservationHold.pickupTime === state.rental.pickupTime &&
     reservationHold.returnDate === state.rental.returnDate &&

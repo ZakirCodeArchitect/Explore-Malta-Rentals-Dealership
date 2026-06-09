@@ -59,6 +59,7 @@ export type ConflictingReservationHold = {
   id: string;
   holdReference: string;
   vehicleId: string;
+  vehicleUnitId: string | null;
   vehicleType: VehicleType;
   sessionKey: string;
   status: ReservationHoldStatus;

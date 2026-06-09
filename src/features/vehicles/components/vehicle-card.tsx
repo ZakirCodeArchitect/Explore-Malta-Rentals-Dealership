@@ -79,9 +79,6 @@ export function VehicleCard({
           <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-950">{vehicle.name}</h3>
           <p className="mt-1 text-sm text-slate-600">{vehicle.shortDescription ?? vehicle.tagline}</p>
           {brandModel ? <p className="mt-1 text-xs text-slate-500">{brandModel}</p> : null}
-          <p className="mt-1 text-xs font-medium text-slate-600">
-            {t("licensePlateInline", { plate: vehicle.licensePlate })}
-          </p>
           {status === "reserved_you" ? (
             <p className="mt-2 text-xs font-medium text-emerald-800">{t("holdNotice")}</p>
           ) : null}

@@ -20,13 +20,24 @@ type HoldActionResult = {
 function holdMatchesRental(hold: ReservationHoldState, booking: BookingFlowState["rental"]): boolean {
   return (
     hold.holdReference !== null &&
+    hold.vehicleId !== null &&
     hold.vehicleId === booking.vehicleId &&
-    hold.vehicleType === booking.vehicleType &&
     hold.pickupDate === booking.pickupDate &&
     hold.pickupTime === booking.pickupTime &&
     hold.returnDate === booking.returnDate &&
     hold.returnTime === booking.returnTime
   );
+}
+
+function optionalValidEmail(value: string): string | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
 }
 
 export function useReservationHold({
@@ -57,18 +68,23 @@ export function useReservationHold({
 
     if (reservationHold.holdReference && reservationHold.status === "ACTIVE") {
       await releaseReservationHold(reservationHold.holdReference);
-      clearHold();
+      setHold({
+        holdReference: null,
+        status: null,
+        expiresAt: null,
+      });
     }
 
+    const resolvedVehicleType = rental.vehicleType || reservationHold.vehicleType || undefined;
     const result = await createReservationHoldWithRetry({
       vehicleId: rental.vehicleId,
-      vehicleType: rental.vehicleType,
+      ...(resolvedVehicleType ? { vehicleType: resolvedVehicleType } : {}),
       pickupDate: rental.pickupDate,
       pickupTime: rental.pickupTime,
       returnDate: rental.returnDate,
       returnTime: rental.returnTime,
-      sessionKey: reservationHold.sessionKey ?? undefined,
-      customerEmail: customer.email.trim() || undefined,
+      sessionKey: reservationHold.sessionKey?.trim() || undefined,
+      customerEmail: optionalValidEmail(customer.email),
       customerName: customer.fullName.trim() || undefined,
     });
 
@@ -79,13 +95,15 @@ export function useReservationHold({
       };
     }
 
+    const holdVehicleType = resolvedVehicleType ?? rental.vehicleType;
     setHold({
       holdReference: result.data.holdReference,
       sessionKey: result.data.sessionKey,
       expiresAt: result.data.expiresAt,
       status: result.data.status,
       vehicleId: rental.vehicleId,
-      vehicleType: rental.vehicleType,
+      vehicleSlug: rental.vehicleSlug || null,
+      vehicleType: holdVehicleType,
       pickupDate: rental.pickupDate,
       pickupTime: rental.pickupTime,
       returnDate: rental.returnDate,

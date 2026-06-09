@@ -182,13 +182,12 @@ export async function listAdminBookingVehicleOptions(): Promise<AdminBookingVehi
     select: {
       id: true,
       name: true,
-      licensePlate: true,
     },
   });
 
   return vehicles.map((vehicle) => ({
     id: vehicle.id,
     name: vehicle.name,
-    licensePlate: vehicle.licensePlate,
+    licensePlate: null,
   }));
 }

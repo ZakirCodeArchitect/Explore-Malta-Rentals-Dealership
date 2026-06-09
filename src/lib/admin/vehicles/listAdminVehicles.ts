@@ -1,5 +1,6 @@
 import type { Prisma } from "@/generated/prisma/index";
 
+import { getAdminVehicleUnitCountsByVehicleIds, listAdminVehicleUnits } from "@/lib/admin/vehicle-units";
 import type {
   AdminVehicleDetail,
   AdminVehicleListFilters,
@@ -34,9 +35,9 @@ export async function listAdminVehicles(filters: AdminVehicleListFilters = {}): 
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
       { slug: { contains: search, mode: "insensitive" } },
-      { licensePlate: { contains: search, mode: "insensitive" } },
       { brand: { contains: search, mode: "insensitive" } },
       { model: { contains: search, mode: "insensitive" } },
+      { units: { some: { licensePlate: { contains: search, mode: "insensitive" } } } },
     ];
   }
 
@@ -63,7 +64,7 @@ export async function listAdminVehicles(filters: AdminVehicleListFilters = {}): 
         catalogStatus: true,
         isActive: true,
         displayOrder: true,
-        licensePlate: true,
+        baseDailyRate: true,
         images: {
           orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
           take: 1,
@@ -77,23 +78,30 @@ export async function listAdminVehicles(filters: AdminVehicleListFilters = {}): 
     prisma.vehicle.count({ where }),
   ]);
 
+  const unitCounts = await getAdminVehicleUnitCountsByVehicleIds(vehicles.map((vehicle) => vehicle.id));
+
   return {
     total,
-    vehicles: vehicles.map((vehicle) => ({
-      id: vehicle.id,
-      name: vehicle.name,
-      slug: vehicle.slug,
-      vehicleType: vehicle.vehicleType,
-      brand: vehicle.brand,
-      model: vehicle.model,
-      mainImageUrl: vehicle.mainImageUrl ?? vehicle.images[0]?.imageUrl ?? null,
-      catalogStatus: vehicle.catalogStatus,
-      isActive: vehicle.isActive,
-      displayOrder: vehicle.displayOrder,
-      licensePlate: vehicle.licensePlate,
-      bookingCount: vehicle._count.bookings,
-      canDelete: canDeleteVehicle(vehicle._count),
-    })),
+    vehicles: vehicles.map((vehicle) => {
+      const counts = unitCounts.get(vehicle.id) ?? { totalUnits: 0, availableUnits: 0 };
+      return {
+        id: vehicle.id,
+        name: vehicle.name,
+        slug: vehicle.slug,
+        vehicleType: vehicle.vehicleType,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        mainImageUrl: vehicle.mainImageUrl ?? vehicle.images[0]?.imageUrl ?? null,
+        catalogStatus: vehicle.catalogStatus,
+        isActive: vehicle.isActive,
+        displayOrder: vehicle.displayOrder,
+        baseDailyRate: vehicle.baseDailyRate.toNumber(),
+        totalUnits: counts.totalUnits,
+        availableUnits: counts.availableUnits,
+        bookingCount: vehicle._count.bookings,
+        canDelete: canDeleteVehicle(vehicle._count),
+      };
+    }),
   };
 }
 
@@ -113,7 +121,6 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetai
       catalogStatus: true,
       isActive: true,
       displayOrder: true,
-      licensePlate: true,
       baseDailyRate: true,
       helmetIncludedCount: true,
       supportsStorageBox: true,
@@ -139,6 +146,12 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetai
     return null;
   }
 
+  const [units, unitCounts] = await Promise.all([
+    listAdminVehicleUnits(id),
+    getAdminVehicleUnitCountsByVehicleIds([id]),
+  ]);
+  const counts = unitCounts.get(id) ?? { totalUnits: 0, availableUnits: 0 };
+
   return {
     id: vehicle.id,
     name: vehicle.name,
@@ -152,10 +165,11 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetai
     catalogStatus: vehicle.catalogStatus,
     isActive: vehicle.isActive,
     displayOrder: vehicle.displayOrder,
-    licensePlate: vehicle.licensePlate,
+    baseDailyRate: vehicle.baseDailyRate.toNumber(),
+    totalUnits: counts.totalUnits,
+    availableUnits: counts.availableUnits,
     helmetIncludedCount: vehicle.helmetIncludedCount,
     supportsStorageBox: vehicle.supportsStorageBox,
-    baseDailyRate: vehicle.baseDailyRate.toNumber(),
     bookingCount: vehicle._count.bookings,
     canDelete: canDeleteVehicle(vehicle._count),
     images: vehicle.images.map((image) => ({
@@ -165,6 +179,7 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetai
       sortOrder: image.sortOrder,
       isPrimary: image.isPrimary,
     })),
+    units,
     createdAt: vehicle.createdAt.toISOString(),
     updatedAt: vehicle.updatedAt.toISOString(),
   };

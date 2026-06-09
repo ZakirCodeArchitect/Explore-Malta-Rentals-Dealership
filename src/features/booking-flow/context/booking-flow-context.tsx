@@ -99,6 +99,7 @@ function loadStoredReservationHold(): ReservationHoldState {
       expiresAt: parsed.expiresAt ?? null,
       status: parsed.status ?? null,
       vehicleId: parsed.vehicleId ?? null,
+      vehicleSlug: parsed.vehicleSlug ?? null,
       vehicleType: parsed.vehicleType ?? null,
       pickupDate: parsed.pickupDate ?? null,
       pickupTime: parsed.pickupTime ?? null,
@@ -269,12 +270,73 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       const restored = loadStoredReservationHold();
-      if (restored.holdReference) {
-        setReservationHold(restored);
+      if (!restored.holdReference) {
+        return;
+      }
+
+      setReservationHold(restored);
+
+      const rental = form.getValues("rental");
+      const rentalPatch: Partial<BookingFlowState["rental"]> = {};
+      const holdStillActive =
+        restored.status === "ACTIVE" &&
+        restored.expiresAt !== null &&
+        new Date(restored.expiresAt).getTime() > Date.now();
+      const holdMatchesVehicle =
+        !restored.vehicleId || !rental.vehicleId || restored.vehicleId === rental.vehicleId;
+
+      if (restored.vehicleId && !rental.vehicleId) {
+        rentalPatch.vehicleId = restored.vehicleId;
+      }
+      if (restored.vehicleSlug && !rental.vehicleSlug) {
+        rentalPatch.vehicleSlug = restored.vehicleSlug;
+      }
+      if (restored.vehicleType && !rental.vehicleType) {
+        rentalPatch.vehicleType = restored.vehicleType;
+      }
+      if (restored.pickupDate && !rental.pickupDate) {
+        rentalPatch.pickupDate = restored.pickupDate;
+      }
+      if (restored.pickupTime && !rental.pickupTime) {
+        rentalPatch.pickupTime = restored.pickupTime;
+      }
+      if (restored.returnDate && !rental.returnDate) {
+        rentalPatch.returnDate = restored.returnDate;
+      }
+      if (restored.returnTime && !rental.returnTime) {
+        rentalPatch.returnTime = restored.returnTime;
+      }
+
+      if (holdStillActive && holdMatchesVehicle) {
+        if (restored.vehicleId) {
+          rentalPatch.vehicleId = restored.vehicleId;
+        }
+        if (restored.vehicleSlug) {
+          rentalPatch.vehicleSlug = restored.vehicleSlug;
+        }
+        if (restored.vehicleType) {
+          rentalPatch.vehicleType = restored.vehicleType;
+        }
+        if (restored.pickupDate) {
+          rentalPatch.pickupDate = restored.pickupDate;
+        }
+        if (restored.pickupTime) {
+          rentalPatch.pickupTime = restored.pickupTime;
+        }
+        if (restored.returnDate) {
+          rentalPatch.returnDate = restored.returnDate;
+        }
+        if (restored.returnTime) {
+          rentalPatch.returnTime = restored.returnTime;
+        }
+      }
+
+      if (Object.keys(rentalPatch).length > 0) {
+        form.setValue("rental", { ...rental, ...rentalPatch }, { shouldDirty: false, shouldValidate: false });
       }
     }, 0);
     return () => window.clearTimeout(timeoutId);
-  }, []);
+  }, [form]);
 
   useEffect(() => {
     if (!shouldScrollToErrorRef.current) {
@@ -441,7 +503,9 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
     setIsCreatingHold(true);
     const result = await createOrRefreshHold();
     setIsCreatingHold(false);
-    if (!result.ok && result.message) {
+    if (result.ok) {
+      setReservationHoldError(null);
+    } else if (result.message) {
       setReservationHoldError(result.message);
     }
     return result;

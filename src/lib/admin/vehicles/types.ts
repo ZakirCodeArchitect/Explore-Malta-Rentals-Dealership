@@ -1,5 +1,7 @@
 import type { VehicleCatalogStatus, VehicleType } from "@/generated/prisma/client";
 
+import type { AdminVehicleUnitDto } from "@/lib/admin/vehicle-units/types";
+
 export type AdminVehicleImageDto = {
   id?: string;
   imageUrl: string;
@@ -19,7 +21,9 @@ export type AdminVehicleListItem = {
   catalogStatus: VehicleCatalogStatus;
   isActive: boolean;
   displayOrder: number;
-  licensePlate: string;
+  baseDailyRate: number;
+  totalUnits: number;
+  availableUnits: number;
   bookingCount: number;
   canDelete: boolean;
 };
@@ -29,8 +33,8 @@ export type AdminVehicleDetail = AdminVehicleListItem & {
   description: string | null;
   helmetIncludedCount: number;
   supportsStorageBox: boolean;
-  baseDailyRate: number;
   images: AdminVehicleImageDto[];
+  units: AdminVehicleUnitDto[];
   createdAt: string;
   updatedAt: string;
 };

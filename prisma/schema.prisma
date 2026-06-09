@@ -35,6 +35,14 @@ enum VehicleCatalogStatus {
   INACTIVE
 }
 
+enum VehicleUnitStatus {
+  AVAILABLE
+  BOOKED
+  MAINTENANCE
+  SOLD
+  INACTIVE
+}
+
 enum PickupOption {
   OFFICE
   DELIVERY
@@ -147,7 +155,7 @@ model Vehicle {
   catalogStatus       VehicleCatalogStatus @default(AVAILABLE)
   isActive            Boolean     @default(true)
   displayOrder        Int         @default(0)
-  licensePlate        String      @unique
+  licensePlate        String?     @unique
   baseDailyRate       Decimal     @db.Decimal(10, 2)
   helmetIncludedCount Int         @default(2)
   supportsStorageBox  Boolean     @default(false)
@@ -155,6 +163,7 @@ model Vehicle {
   updatedAt           DateTime    @updatedAt
 
   images             VehicleImage[]
+  units              VehicleUnit[]
   pricingRules       VehiclePricingRule[]
   bookings           Booking[]
   availabilityBlocks AvailabilityBlock[]
@@ -163,6 +172,24 @@ model Vehicle {
   @@index([isActive, displayOrder])
   @@index([vehicleType, isActive])
   @@index([catalogStatus, isActive])
+}
+
+model VehicleUnit {
+  id           String           @id @default(cuid())
+  vehicleId    String
+  licensePlate String           @unique
+  status       VehicleUnitStatus @default(AVAILABLE)
+  isActive     Boolean          @default(true)
+  notes        String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  vehicle          Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  bookings         Booking[]
+  reservationHolds ReservationHold[]
+
+  @@index([vehicleId, isActive, status])
+  @@index([vehicleId, createdAt])
 }
 
 model VehicleImage {
@@ -352,6 +379,7 @@ model Booking {
   subtotalAfterHotelDiscountSnapshot Decimal? @db.Decimal(10, 2)
 
   vehicleId           String?
+  vehicleUnitId               String?
   vehicleNameSnapshot         String?
   vehicleLicensePlateSnapshot String?
   vehicleTypeSnapshot         VehicleType?
@@ -428,6 +456,7 @@ model Booking {
   confirmationEmailStatus ConfirmationEmailStatus @default(NOT_SENT)
 
   vehicle              Vehicle?               @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  vehicleUnit          VehicleUnit?           @relation(fields: [vehicleUnitId], references: [id], onDelete: SetNull)
   acceptedTermsVersion TermsVersion?          @relation(fields: [termsVersionId], references: [id], onDelete: SetNull)
   hotelCode            HotelCode?             @relation(fields: [hotelCodeId], references: [id], onDelete: SetNull)
   hotelPartner         HotelPartner?          @relation(fields: [hotelPartnerId], references: [id], onDelete: SetNull)
@@ -443,6 +472,7 @@ model Booking {
   @@index([vehicleType, pickupDateTime])
   @@index([customerEmail, customerPhone])
   @@index([vehicleId])
+  @@index([vehicleUnitId])
   @@index([termsVersionId])
 }
 
@@ -503,6 +533,7 @@ model ReservationHold {
   id              String                @id @default(cuid())
   holdReference   String                @unique
   vehicleId       String
+  vehicleUnitId   String?
   vehicleType     VehicleType
   sessionKey      String
   customerEmail   String?
@@ -517,10 +548,12 @@ model ReservationHold {
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
-  vehicle Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  vehicle     Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicleUnit VehicleUnit? @relation(fields: [vehicleUnitId], references: [id], onDelete: SetNull)
+  booking     Booking?     @relation(fields: [bookingId], references: [id], onDelete: SetNull)
 
   @@index([vehicleId, status, expiresAt])
+  @@index([vehicleUnitId, status, expiresAt])
   @@index([sessionKey, status])
   @@index([expiresAt])
   @@index([pickupDateTime, returnDateTime])

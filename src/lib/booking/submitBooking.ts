@@ -6,6 +6,10 @@ import {
   checkVehicleAvailability,
   type AvailabilityDbClient,
 } from "@/lib/availability";
+import {
+  assignAvailableVehicleUnit,
+  NoAvailableVehicleUnitError,
+} from "@/lib/vehicle-units";
 import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
 import { prisma } from "@/lib/prisma";
 import {
@@ -41,6 +45,7 @@ type PricingComputation = {
 
 type ResolvedBookingVehicle = {
   vehicleId: string;
+  vehicleUnitId?: string;
   vehicleNameSnapshot: string;
   vehicleLicensePlateSnapshot: string;
   vehicleType: VehicleType;
@@ -255,7 +260,6 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
     select: {
       id: true,
       name: true,
-      licensePlate: true,
       vehicleType: true,
       baseDailyRate: true,
       isActive: true,
@@ -290,7 +294,7 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
   return {
     vehicleId: vehicle.id,
     vehicleNameSnapshot: vehicle.name,
-    vehicleLicensePlateSnapshot: vehicle.licensePlate,
+    vehicleLicensePlateSnapshot: "",
     vehicleType: vehicle.vehicleType,
     vehicleTypeSnapshot: vehicle.vehicleType,
     baseDailyRate: vehicle.baseDailyRate.toNumber(),
@@ -324,6 +328,7 @@ async function assertBookingStillAvailable(
       excludeSessionKey: holdContext?.excludeSessionKey,
     },
     db,
+    db as unknown as typeof prisma,
   );
 
   if (!availability.isAvailable) {
@@ -350,6 +355,7 @@ function mapBookingCreateData(
     bookingReference,
     status: "CONFIRMED",
     vehicleId: vehicle.vehicleId,
+    vehicleUnitId: vehicle.vehicleUnitId ?? null,
     vehicleNameSnapshot: vehicle.vehicleNameSnapshot,
     vehicleLicensePlateSnapshot: vehicle.vehicleLicensePlateSnapshot,
     vehicleTypeSnapshot: vehicle.vehicleTypeSnapshot,
@@ -566,8 +572,49 @@ async function createBookingWithUniqueReference(
                 : undefined,
             );
 
+            let assignedUnitId = holdForFinalization
+              ? (
+                  await tx.reservationHold.findUnique({
+                    where: { id: holdForFinalization.id },
+                    select: { vehicleUnitId: true },
+                  })
+                )?.vehicleUnitId
+              : null;
+
+            let assignedLicensePlate = "";
+            if (assignedUnitId) {
+              const heldUnit = await tx.vehicleUnit.findUnique({
+                where: { id: assignedUnitId },
+                select: { licensePlate: true, vehicleId: true, isActive: true, status: true },
+              });
+              if (!heldUnit || heldUnit.vehicleId !== vehicle.vehicleId) {
+                assignedUnitId = null;
+              } else {
+                assignedLicensePlate = heldUnit.licensePlate;
+              }
+            }
+
+            if (!assignedUnitId) {
+              const assigned = await assignAvailableVehicleUnit(
+                {
+                  vehicleId: vehicle.vehicleId,
+                  requestedStart: payload.pickupDateTime,
+                  requestedEnd: payload.returnDateTime,
+                  excludeHoldReference: holdForFinalization?.holdReference,
+                  excludeSessionKey: holdForFinalization?.sessionKey,
+                },
+                tx,
+              );
+              assignedUnitId = assigned.vehicleUnitId;
+              assignedLicensePlate = assigned.licensePlate;
+            }
+
             const booking = await tx.booking.create({
-              data: bookingCreateData,
+              data: {
+                ...bookingCreateData,
+                vehicleUnitId: assignedUnitId,
+                vehicleLicensePlateSnapshot: assignedLicensePlate,
+              },
             });
 
             if (holdForFinalization) {
@@ -589,7 +636,15 @@ async function createBookingWithUniqueReference(
           },
         );
       } catch (error) {
-        if (error instanceof AvailabilityConflictError) {
+        if (error instanceof AvailabilityConflictError || error instanceof NoAvailableVehicleUnitError) {
+          if (error instanceof NoAvailableVehicleUnitError) {
+            throw new AvailabilityConflictError(error.message, {
+              vehicleId: vehicle.vehicleId,
+              vehicleType: vehicle.vehicleType,
+              requestedStart: payload.pickupDateTime,
+              requestedEnd: payload.returnDateTime,
+            });
+          }
           throw error;
         }
         if (isTransactionWriteConflictError(error)) {

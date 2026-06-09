@@ -80,7 +80,6 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
   );
   const [isActive, setIsActive] = useState(vehicle?.isActive ?? true);
   const [displayOrder, setDisplayOrder] = useState(String(vehicle?.displayOrder ?? 0));
-  const [licensePlate, setLicensePlate] = useState(vehicle?.licensePlate ?? "");
   const [helmetIncludedCount, setHelmetIncludedCount] = useState(String(vehicle?.helmetIncludedCount ?? 2));
   const [supportsStorageBox, setSupportsStorageBox] = useState(vehicle?.supportsStorageBox ?? false);
   const [images, setImages] = useState<GalleryImage[]>(
@@ -131,7 +130,6 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
       catalogStatus,
       isActive,
       displayOrder: Number(displayOrder) || 0,
-      licensePlate: licensePlate.trim().toUpperCase(),
       helmetIncludedCount: Number(helmetIncludedCount) || 0,
       supportsStorageBox,
       images: images.filter((image) => image.imageUrl.trim().length > 0),
@@ -142,7 +140,6 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
       catalogStatus,
       description,
       displayOrder,
-      licensePlate,
       helmetIncludedCount,
       images,
       isActive,
@@ -315,17 +312,6 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
                 </option>
               ))}
             </select>
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.licensePlate")}</span>
-            <input
-              type="text"
-              required
-              value={licensePlate}
-              onChange={(event) => setLicensePlate(event.target.value)}
-              placeholder={t("form.licensePlatePlaceholder")}
-              className={inputClassName()}
-            />
           </label>
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.brand")}</span>

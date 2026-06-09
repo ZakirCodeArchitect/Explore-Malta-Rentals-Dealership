@@ -64,7 +64,6 @@ export async function createAdminVehicle(input: AdminVehicleWriteInput): Promise
       data: {
         name: input.name.trim(),
         slug,
-        licensePlate: input.licensePlate,
         vehicleType: input.vehicleType as VehicleType,
         baseDailyRate: input.baseDailyRate,
         brand: input.brand?.trim() || null,
@@ -125,7 +124,6 @@ export async function updateAdminVehicle(
         data: {
           name: input.name.trim(),
           slug,
-          licensePlate: input.licensePlate,
           vehicleType: input.vehicleType as VehicleType,
           baseDailyRate: input.baseDailyRate,
           brand: input.brand?.trim() || null,

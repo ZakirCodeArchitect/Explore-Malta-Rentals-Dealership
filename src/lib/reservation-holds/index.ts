@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { Prisma, VehicleType, type ReservationHoldStatus } from "@/generated/prisma/index";
 import { checkVehicleAvailability } from "@/lib/availability";
+import { assignAvailableVehicleUnit } from "@/lib/vehicle-units";
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 import { prisma } from "@/lib/prisma";
 
@@ -20,6 +21,7 @@ type ReservationHoldRecord = {
   id: string;
   holdReference: string;
   vehicleId: string;
+  vehicleUnitId: string | null;
   vehicleType: VehicleType;
   sessionKey: string;
   customerEmail: string | null;
@@ -36,13 +38,18 @@ type ReservationHoldRecord = {
 const createReservationHoldSchema = z
   .object({
     vehicleId: z.string().trim().min(1, "vehicleId is required"),
-    vehicleType: z.nativeEnum(VehicleType),
+    vehicleType: z.nativeEnum(VehicleType).optional(),
     pickupDate: z.string().trim().min(1, "pickupDate is required"),
     pickupTime: z.string().trim().min(1, "pickupTime is required"),
     returnDate: z.string().trim().min(1, "returnDate is required"),
     returnTime: z.string().trim().min(1, "returnTime is required"),
     sessionKey: z.string().trim().min(1).max(120).optional(),
-    customerEmail: z.string().trim().email().optional(),
+    customerEmail: z
+      .string()
+      .trim()
+      .optional()
+      .transform((value) => (value && value.length > 0 ? value : undefined))
+      .pipe(z.string().email().optional()),
     customerName: z.string().trim().min(1).max(160).optional(),
   })
   .strict();
@@ -164,6 +171,7 @@ const holdSelect = {
   id: true,
   holdReference: true,
   vehicleId: true,
+  vehicleUnitId: true,
   vehicleType: true,
   sessionKey: true,
   customerEmail: true,
@@ -180,6 +188,8 @@ const holdSelect = {
 async function createHoldWithUniqueReference(
   input: CreateReservationHoldInput,
   sessionKey: string,
+  vehicleUnitId: string,
+  vehicleType: VehicleType,
   db: Prisma.TransactionClient,
 ): Promise<ReservationHoldRecord> {
   let lastError: unknown = null;
@@ -191,7 +201,8 @@ async function createHoldWithUniqueReference(
         data: {
           holdReference,
           vehicleId: input.vehicleId,
-          vehicleType: input.vehicleType,
+          vehicleUnitId,
+          vehicleType,
           sessionKey,
           customerEmail: input.customerEmail ?? null,
           customerName: input.customerName ?? null,
@@ -214,11 +225,24 @@ async function createHoldWithUniqueReference(
   throw lastError ?? new Error("Failed to generate hold reference");
 }
 
-export async function createReservationHold(payload: unknown) {
-  const input = normalizeCreateInput(payload);
-  const sessionKey = input.sessionKey ?? generateSessionKey();
+const HOLD_TRANSACTION_RETRY_LIMIT = 3;
+const HOLD_TRANSACTION_RETRY_DELAYS_MS = [150, 400, 900];
 
-  const hold = await prisma.$transaction(
+function isTransactionStartTimeout(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2028";
+}
+
+async function waitForHoldRetry(ms: number): Promise<void> {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function runCreateReservationHoldTransaction(
+  input: CreateReservationHoldInput,
+  sessionKey: string,
+): Promise<ReservationHoldRecord> {
+  return prisma.$transaction(
     async (tx) => {
       const vehicle = await tx.vehicle.findUnique({
         where: { id: input.vehicleId },
@@ -232,11 +256,8 @@ export async function createReservationHold(payload: unknown) {
           { path: "vehicleId", message: "Selected vehicle is not active" },
         ]);
       }
-      if (vehicle.vehicleType !== input.vehicleType) {
-        throw new ReservationHoldValidationError([
-          { path: "vehicleType", message: "Vehicle type does not match selected vehicle" },
-        ]);
-      }
+
+      const resolvedVehicleType = vehicle.vehicleType;
 
       const reusableHold = await tx.reservationHold.findFirst({
         where: {
@@ -266,11 +287,12 @@ export async function createReservationHold(payload: unknown) {
       const availability = await checkVehicleAvailability(
         {
           vehicleId: input.vehicleId,
-          vehicleType: input.vehicleType,
+          vehicleType: resolvedVehicleType,
           requestedStart: input.pickupDateTime,
           requestedEnd: input.returnDateTime,
           excludeSessionKey: sessionKey,
         },
+        tx,
         tx,
       );
       if (!availability.isAvailable) {
@@ -279,15 +301,54 @@ export async function createReservationHold(payload: unknown) {
         );
       }
 
-      return createHoldWithUniqueReference(input, sessionKey, tx);
+      const assignedUnit = await assignAvailableVehicleUnit(
+        {
+          vehicleId: input.vehicleId,
+          requestedStart: input.pickupDateTime,
+          requestedEnd: input.returnDateTime,
+          excludeSessionKey: sessionKey,
+        },
+        tx,
+      );
+
+      return createHoldWithUniqueReference(
+        input,
+        sessionKey,
+        assignedUnit.vehicleUnitId,
+        resolvedVehicleType,
+        tx,
+      );
     },
     {
-      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
       timeout: 30_000,
     },
   );
+}
 
-  return toReservationHoldResponse(hold);
+export async function createReservationHold(payload: unknown) {
+  const input = normalizeCreateInput(payload);
+  const sessionKey = input.sessionKey ?? generateSessionKey();
+
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < HOLD_TRANSACTION_RETRY_LIMIT; attempt += 1) {
+    if (attempt > 0) {
+      await waitForHoldRetry(HOLD_TRANSACTION_RETRY_DELAYS_MS[attempt - 1] ?? 1200);
+    }
+
+    try {
+      const hold = await runCreateReservationHoldTransaction(input, sessionKey);
+      return toReservationHoldResponse(hold);
+    } catch (error) {
+      if (isTransactionStartTimeout(error)) {
+        lastError = error;
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw lastError ?? new Error("Unable to create reservation hold");
 }
 
 export async function getReservationHoldByReference(holdReference: string) {
