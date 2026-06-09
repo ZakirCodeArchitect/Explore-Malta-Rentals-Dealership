@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronDown, LogOut } from "lucide-react";
+import { Bell, ChevronDown, ChevronLeft, LogOut } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -158,22 +158,47 @@ export function AdminHeader({ locale, user, title }: AdminHeaderProps) {
   );
 }
 
-export function AdminSidebarBrand() {
+type AdminSidebarBrandProps = Readonly<{
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
+}>;
+
+export function AdminSidebarBrand({ collapsed = false, onToggleCollapsed }: AdminSidebarBrandProps) {
   const t = useTranslations("Admin");
 
   return (
-    <div className="flex items-center gap-3 px-5 py-5">
-      <Image
-        src={LOGO_PATH}
-        alt={t("loginLogoAlt")}
-        width={36}
-        height={36}
-        className="size-9 rounded-lg object-contain"
-      />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-bold text-slate-900">{t("brandShort")}</p>
-        <p className="truncate text-xs text-slate-500">{t("panelLabel")}</p>
+    <div
+      className={[
+        "flex items-center py-5",
+        collapsed ? "justify-center px-2 lg:px-2" : "justify-between gap-2 px-5",
+      ].join(" ")}
+    >
+      <div className={["flex min-w-0 items-center", collapsed ? "justify-center" : "gap-3"].join(" ")}>
+        <Image
+          src={LOGO_PATH}
+          alt={t("loginLogoAlt")}
+          width={36}
+          height={36}
+          className="size-9 shrink-0 rounded-lg object-contain"
+        />
+        <div className={["min-w-0", collapsed ? "sr-only lg:sr-only" : ""].join(" ")}>
+          <p className="truncate text-sm font-bold text-slate-900">{t("brandShort")}</p>
+          <p className="truncate text-xs text-slate-500">{t("panelLabel")}</p>
+        </div>
       </div>
+
+      {onToggleCollapsed && !collapsed ? (
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          aria-expanded
+          title={t("sidebarCollapse")}
+          className="hidden size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-slate-200/80 bg-white text-slate-500 shadow-sm transition duration-200 hover:border-[#3a7ca5]/25 hover:bg-slate-50 hover:text-[#3a7ca5] hover:shadow-md active:scale-95 lg:inline-flex"
+        >
+          <ChevronLeft className="size-4" aria-hidden />
+          <span className="sr-only">{t("sidebarCollapse")}</span>
+        </button>
+      ) : null}
     </div>
   );
 }

@@ -985,6 +985,8 @@
     "dashboardOverviewTitle": "Dashboard Overview",
     "panelLabel": "Internal admin",
     "navLabel": "Admin navigation",
+    "sidebarCollapse": "Collapse sidebar",
+    "sidebarExpand": "Expand sidebar",
     "navSectionManagement": "Management",
     "settings": "Settings",
     "notificationsLabel": "Notifications",
