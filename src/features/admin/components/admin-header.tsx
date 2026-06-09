@@ -28,6 +28,12 @@ function resolveAdminHeaderTitle(pathname: string, t: (key: string) => string): 
   if (pathname.includes("/admin/vehicles")) {
     return t("vehicles.header");
   }
+  if (/\/admin\/bookings\/[^/]+$/.test(pathname)) {
+    return t("bookings.detailsHeader");
+  }
+  if (pathname.includes("/admin/bookings")) {
+    return t("bookings.header");
+  }
   if (pathname.includes("/admin/hotels/new")) {
     return t("hotels.createHeader");
   }
