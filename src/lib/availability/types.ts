@@ -6,7 +6,11 @@ import type {
   VehicleType,
 } from "@/generated/prisma/index";
 
-export const BLOCKING_BOOKING_STATUSES = ["PENDING", "CONFIRMED"] as const;
+export const BLOCKING_BOOKING_STATUSES = [
+  "CONFIRMED",
+  "VEHICLE_HANDED_OVER",
+  "RETURNED",
+] as const;
 
 export type BlockingBookingStatus = (typeof BLOCKING_BOOKING_STATUSES)[number];
 

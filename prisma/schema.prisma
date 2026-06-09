@@ -13,10 +13,32 @@ datasource db {
 }
 
 enum BookingStatus {
-  PENDING
   CONFIRMED
+  VEHICLE_HANDED_OVER
+  RETURNED
+  COMPLETED
   CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
   FAILED
+}
+
+enum SecurityDepositStatus {
+  PENDING
+  COLLECTED
+  REFUNDED
+  DEDUCTED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK
+  OTHER
 }
 
 enum VehicleType {
@@ -37,10 +59,10 @@ enum VehicleCatalogStatus {
 
 enum VehicleUnitStatus {
   AVAILABLE
-  BOOKED
+  RESERVED
+  OUT_WITH_CUSTOMER
   MAINTENANCE
-  SOLD
-  INACTIVE
+  NOT_AVAILABLE
 }
 
 enum PickupOption {
@@ -366,7 +388,9 @@ model HotelCode {
 model Booking {
   id               String        @id @default(cuid())
   bookingReference String        @unique
-  status           BookingStatus @default(PENDING)
+  status           BookingStatus @default(CONFIRMED)
+  paymentStatus    PaymentStatus @default(PENDING)
+  securityDepositStatus SecurityDepositStatus @default(PENDING)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
@@ -455,6 +479,18 @@ model Booking {
   confirmationEmailSentAt DateTime?
   confirmationEmailStatus ConfirmationEmailStatus @default(NOT_SENT)
 
+  paymentReceivedAmount            Decimal?       @db.Decimal(10, 2)
+  paymentMethod                    PaymentMethod?
+  securityDepositCollectedAmount   Decimal?       @db.Decimal(10, 2)
+  handoverDateTime                 DateTime?
+  handoverNotes                    String?
+  returnRecordedAt                 DateTime?
+  returnNotes                      String?
+  depositRefundAmount              Decimal?       @db.Decimal(10, 2)
+  depositDeductionAmount           Decimal?       @db.Decimal(10, 2)
+  depositDeductionReason           String?
+  completionNotes                  String?
+
   vehicle              Vehicle?               @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   vehicleUnit          VehicleUnit?           @relation(fields: [vehicleUnitId], references: [id], onDelete: SetNull)
   acceptedTermsVersion TermsVersion?          @relation(fields: [termsVersionId], references: [id], onDelete: SetNull)
@@ -466,6 +502,8 @@ model Booking {
   reservationHolds     ReservationHold[]
 
   @@index([status, createdAt])
+  @@index([paymentStatus])
+  @@index([securityDepositStatus])
   @@index([hotelCodeId])
   @@index([hotelPartnerId])
   @@index([pickupDateTime, returnDateTime])

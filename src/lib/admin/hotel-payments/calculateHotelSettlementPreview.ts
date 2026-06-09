@@ -3,7 +3,7 @@ import type { Prisma } from "@/generated/prisma/index";
 import type { AdminHotelSettlementPreview } from "@/lib/admin/hotel-payments/types";
 import { prisma } from "@/lib/prisma";
 
-const EXCLUDED_BOOKING_STATUSES = ["CANCELLED", "FAILED"] as const;
+const EXCLUDED_BOOKING_STATUSES = ["CANCELLED"] as const;
 
 function monthRangeUtc(month: number, year: number): { start: Date; end: Date } {
   return {

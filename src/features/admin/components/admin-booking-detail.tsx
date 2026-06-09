@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BadgeCheck, CheckCircle2, KeyRound, RotateCcw, XCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { AdminBookingPriceBuildup } from "@/features/admin/components/admin-booking-price-buildup";
@@ -57,9 +57,33 @@ function formatUploadPath(path: string | null): string {
 
 function statusBadgeClass(status: string): string {
   if (status === "CONFIRMED") return "bg-emerald-50 text-emerald-700";
-  if (status === "PENDING") return "bg-amber-50 text-amber-800";
+  if (status === "VEHICLE_HANDED_OVER") return "bg-blue-50 text-blue-700";
+  if (status === "RETURNED") return "bg-sky-50 text-sky-700";
+  if (status === "COMPLETED") return "bg-slate-100 text-slate-700";
   if (status === "CANCELLED") return "bg-slate-100 text-slate-600";
-  return "bg-red-50 text-red-700";
+  return "bg-amber-50 text-amber-800";
+}
+
+function paymentStatusBadgeClass(status: string): string {
+  if (status === "PAID") return "bg-emerald-50 text-emerald-700";
+  if (status === "REFUNDED") return "bg-blue-50 text-blue-700";
+  if (status === "FAILED") return "bg-red-50 text-red-700";
+  return "bg-amber-50 text-amber-800";
+}
+
+function depositStatusBadgeClass(status: string): string {
+  if (status === "COLLECTED") return "bg-emerald-50 text-emerald-700";
+  if (status === "REFUNDED") return "bg-blue-50 text-blue-700";
+  if (status === "DEDUCTED") return "bg-orange-50 text-orange-700";
+  return "bg-amber-50 text-amber-800";
+}
+
+function unitStatusBadgeClass(status: string): string {
+  if (status === "AVAILABLE") return "bg-emerald-50 text-emerald-700";
+  if (status === "RESERVED") return "bg-blue-50 text-blue-700";
+  if (status === "OUT_WITH_CUSTOMER") return "bg-violet-50 text-violet-700";
+  if (status === "MAINTENANCE") return "bg-orange-50 text-orange-700";
+  return "bg-slate-100 text-slate-600";
 }
 
 function DetailSection({
@@ -86,6 +110,61 @@ function DetailRow({
   );
 }
 
+function BookingStatusIcon({ status }: Readonly<{ status: string }>) {
+  const className = "size-3.5 shrink-0";
+
+  switch (status) {
+    case "CONFIRMED":
+      return <CheckCircle2 className={className} aria-hidden />;
+    case "VEHICLE_HANDED_OVER":
+      return <KeyRound className={className} aria-hidden />;
+    case "RETURNED":
+      return <RotateCcw className={className} aria-hidden />;
+    case "COMPLETED":
+      return <BadgeCheck className={className} aria-hidden />;
+    case "CANCELLED":
+      return <XCircle className={className} aria-hidden />;
+    default:
+      return null;
+  }
+}
+
+export async function AdminBookingDetailHeader({
+  locale,
+  booking,
+}: Readonly<{
+  locale: string;
+  booking: AdminBookingDetail;
+}>) {
+  const t = await getTranslations({ locale, namespace: "Admin.bookings" });
+
+  return (
+    <section className="space-y-4">
+      <a
+        href={`/${locale}/admin/bookings`}
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 transition hover:text-[#3a7ca5]"
+      >
+        <ArrowLeft className="size-4" aria-hidden />
+        {t("details.backToList")}
+      </a>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="min-w-0 text-lg font-bold text-slate-950">
+          {t("details.title", { reference: booking.bookingReference })}
+        </h2>
+        <span
+          className={[
+            "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold",
+            statusBadgeClass(booking.status),
+          ].join(" ")}
+        >
+          <BookingStatusIcon status={booking.status} />
+          {t(`status.${booking.status}` as "status.CONFIRMED")}
+        </span>
+      </div>
+    </section>
+  );
+}
+
 export async function AdminBookingDetailView({ locale, booking }: AdminBookingDetailViewProps) {
   const t = await getTranslations({ locale, namespace: "Admin.bookings" });
 
@@ -93,35 +172,28 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
 
   return (
     <div className="space-y-5">
-      <section className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <a
-            href={`/${locale}/admin/bookings`}
-            className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 transition hover:text-[#3a7ca5]"
-          >
-            <ArrowLeft className="size-4" aria-hidden />
-            {t("details.backToList")}
-          </a>
-          <h2 className="border-t border-slate-200/80 pt-4 text-lg font-bold text-slate-950">
-            {t("details.title", { reference: booking.bookingReference })}
-          </h2>
-        </div>
-        <span
-          className={[
-            "inline-flex rounded-full px-3 py-1 text-sm font-semibold",
-            statusBadgeClass(booking.status),
-          ].join(" ")}
-        >
-          {t(`status.${booking.status}` as "status.CONFIRMED")}
-        </span>
-      </section>
-
       <DetailSection title={t("details.sections.summary")}>
         <dl>
           <DetailRow label={t("details.fields.reference")} value={booking.bookingReference} />
           <DetailRow
             label={t("details.fields.status")}
             value={t(`status.${booking.status}` as "status.CONFIRMED")}
+          />
+          <DetailRow
+            label={t("details.fields.paymentStatus")}
+            value={
+              <span className={["inline-flex rounded-full px-2 py-0.5 text-xs font-semibold", paymentStatusBadgeClass(booking.paymentStatus)].join(" ")}>
+                {t(`paymentStatus.${booking.paymentStatus}` as "paymentStatus.PENDING")}
+              </span>
+            }
+          />
+          <DetailRow
+            label={t("details.fields.securityDepositStatus")}
+            value={
+              <span className={["inline-flex rounded-full px-2 py-0.5 text-xs font-semibold", depositStatusBadgeClass(booking.securityDepositStatus)].join(" ")}>
+                {t(`depositStatus.${booking.securityDepositStatus}` as "depositStatus.PENDING")}
+              </span>
+            }
           />
           <DetailRow label={t("details.fields.createdAt")} value={formatDateTime(booking.createdAt)} />
           <DetailRow label={t("details.fields.updatedAt")} value={formatDateTime(booking.updatedAt)} />
@@ -178,6 +250,23 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
           <dl>
             <DetailRow label={t("details.fields.vehicleName")} value={booking.vehicleName} />
             <DetailRow label={t("details.fields.licensePlate")} value={booking.vehicleLicensePlate ?? "—"} />
+            <DetailRow
+              label={t("details.fields.vehicleUnitStatus")}
+              value={
+                booking.vehicleUnitStatus ? (
+                  <span
+                    className={[
+                      "inline-flex rounded-full px-2 py-0.5 text-xs font-semibold",
+                      unitStatusBadgeClass(booking.vehicleUnitStatus),
+                    ].join(" ")}
+                  >
+                    {t(`unitStatus.${booking.vehicleUnitStatus}` as "unitStatus.AVAILABLE")}
+                  </span>
+                ) : (
+                  "—"
+                )
+              }
+            />
             <DetailRow label={t("details.fields.vehicleType")} value={booking.vehicleType} />
             <DetailRow
               label={t("details.fields.vehicleTypeSnapshot")}
@@ -300,6 +389,57 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
           />
         </dl>
       </DetailSection>
+
+      {(booking.handoverDateTime ||
+        booking.returnRecordedAt ||
+        booking.paymentReceivedAmount !== null ||
+        booking.securityDepositCollectedAmount !== null ||
+        booking.depositRefundAmount !== null ||
+        booking.depositDeductionAmount !== null) ? (
+        <DetailSection title={t("details.sections.lifecycle")}>
+          <dl>
+            {booking.handoverDateTime ? (
+              <DetailRow label={t("details.fields.handoverDateTime")} value={formatDateTime(booking.handoverDateTime)} />
+            ) : null}
+            {booking.paymentReceivedAmount !== null ? (
+              <DetailRow label={t("details.fields.paymentReceivedAmount")} value={formatEur(booking.paymentReceivedAmount)} />
+            ) : null}
+            {booking.paymentMethod ? (
+              <DetailRow
+                label={t("details.fields.paymentMethod")}
+                value={t(`paymentMethod.${booking.paymentMethod}` as "paymentMethod.CASH")}
+              />
+            ) : null}
+            {booking.securityDepositCollectedAmount !== null ? (
+              <DetailRow
+                label={t("details.fields.securityDepositCollectedAmount")}
+                value={formatEur(booking.securityDepositCollectedAmount)}
+              />
+            ) : null}
+            {booking.handoverNotes?.trim() ? (
+              <DetailRow label={t("details.fields.handoverNotes")} value={booking.handoverNotes} />
+            ) : null}
+            {booking.returnRecordedAt ? (
+              <DetailRow label={t("details.fields.returnRecordedAt")} value={formatDateTime(booking.returnRecordedAt)} />
+            ) : null}
+            {booking.returnNotes?.trim() ? (
+              <DetailRow label={t("details.fields.returnNotes")} value={booking.returnNotes} />
+            ) : null}
+            {booking.depositRefundAmount !== null ? (
+              <DetailRow label={t("details.fields.depositRefundAmount")} value={formatEur(booking.depositRefundAmount)} />
+            ) : null}
+            {booking.depositDeductionAmount !== null ? (
+              <DetailRow label={t("details.fields.depositDeductionAmount")} value={formatEur(booking.depositDeductionAmount)} />
+            ) : null}
+            {booking.depositDeductionReason?.trim() ? (
+              <DetailRow label={t("details.fields.depositDeductionReason")} value={booking.depositDeductionReason} />
+            ) : null}
+            {booking.completionNotes?.trim() ? (
+              <DetailRow label={t("details.fields.completionNotes")} value={booking.completionNotes} />
+            ) : null}
+          </dl>
+        </DetailSection>
+      ) : null}
 
       <AdminBookingPriceBuildup locale={locale} booking={booking} />
 

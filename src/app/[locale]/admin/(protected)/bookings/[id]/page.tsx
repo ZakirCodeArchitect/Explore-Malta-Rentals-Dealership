@@ -1,8 +1,10 @@
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { AdminBookingDetailView } from "@/features/admin/components/admin-booking-detail";
+import { AdminBookingDetailHeader, AdminBookingDetailView } from "@/features/admin/components/admin-booking-detail";
+import { AdminBookingLifecycleActions } from "@/features/admin/components/admin-booking-lifecycle-actions";
 import { getAdminBookingById } from "@/lib/admin/bookings";
+import { listAdminVehicleUnits } from "@/lib/admin/vehicle-units/listAdminVehicleUnits";
 
 export const dynamic = "force-dynamic";
 
@@ -19,5 +21,13 @@ export default async function AdminBookingDetailPage({ params }: AdminBookingDet
     notFound();
   }
 
-  return <AdminBookingDetailView locale={locale} booking={booking} />;
+  const vehicleUnits = booking.vehicleId ? await listAdminVehicleUnits(booking.vehicleId) : [];
+
+  return (
+    <div className="space-y-5">
+      <AdminBookingDetailHeader locale={locale} booking={booking} />
+      <AdminBookingLifecycleActions booking={booking} vehicleUnits={vehicleUnits} />
+      <AdminBookingDetailView locale={locale} booking={booking} />
+    </div>
+  );
 }

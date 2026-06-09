@@ -239,7 +239,7 @@ async function run() {
     await prisma.booking.create({
       data: {
         bookingReference: bookingRef,
-        status: "PENDING",
+        status: "CONFIRMED",
         vehicleType: "Scooter",
         pickupDateTime: new Date("2026-07-01T10:00:00.000Z"),
         returnDateTime: new Date("2026-07-02T10:00:00.000Z"),
@@ -291,7 +291,7 @@ async function run() {
     await prisma.booking.create({
       data: {
         bookingReference: `TEST-${testPrefix}-HIST`,
-        status: "PENDING",
+        status: "CONFIRMED",
         vehicleType: "Scooter",
         pickupDateTime: new Date("2026-07-03T10:00:00.000Z"),
         returnDateTime: new Date("2026-07-04T10:00:00.000Z"),

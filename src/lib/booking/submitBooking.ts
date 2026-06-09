@@ -354,6 +354,8 @@ function mapBookingCreateData(
   return {
     bookingReference,
     status: "CONFIRMED",
+    paymentStatus: "PENDING",
+    securityDepositStatus: "PENDING",
     vehicleId: vehicle.vehicleId,
     vehicleUnitId: vehicle.vehicleUnitId ?? null,
     vehicleNameSnapshot: vehicle.vehicleNameSnapshot,
@@ -615,6 +617,11 @@ async function createBookingWithUniqueReference(
                 vehicleUnitId: assignedUnitId,
                 vehicleLicensePlateSnapshot: assignedLicensePlate,
               },
+            });
+
+            await tx.vehicleUnit.update({
+              where: { id: assignedUnitId },
+              data: { status: "RESERVED" },
             });
 
             if (holdForFinalization) {

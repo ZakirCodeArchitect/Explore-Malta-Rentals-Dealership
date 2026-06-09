@@ -4,10 +4,10 @@ import { normalizeLicensePlate } from "@/lib/admin/vehicles/vehicle-schema";
 
 export const VEHICLE_UNIT_STATUSES = [
   "AVAILABLE",
-  "BOOKED",
+  "RESERVED",
+  "OUT_WITH_CUSTOMER",
   "MAINTENANCE",
-  "SOLD",
-  "INACTIVE",
+  "NOT_AVAILABLE",
 ] as const;
 
 export const adminVehicleUnitWriteSchema = z.object({

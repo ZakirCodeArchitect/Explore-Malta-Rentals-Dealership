@@ -21,14 +21,16 @@ function formatIsoDateTime(iso: string, format: ReturnType<typeof useFormatter>)
 
 function bookingStatusLabel(status: PublicBookingSummary["status"], t: (key: string) => string): string {
   switch (status) {
-    case "PENDING":
-      return t("status.PENDING");
     case "CONFIRMED":
       return t("status.CONFIRMED");
+    case "VEHICLE_HANDED_OVER":
+      return t("status.VEHICLE_HANDED_OVER");
+    case "RETURNED":
+      return t("status.RETURNED");
+    case "COMPLETED":
+      return t("status.COMPLETED");
     case "CANCELLED":
       return t("status.CANCELLED");
-    case "FAILED":
-      return t("status.FAILED");
     default:
       return status;
   }

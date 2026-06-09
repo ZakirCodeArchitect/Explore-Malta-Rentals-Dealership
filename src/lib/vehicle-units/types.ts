@@ -2,6 +2,13 @@ import type { VehicleUnitStatus } from "@/generated/prisma/client";
 
 export const ASSIGNABLE_VEHICLE_UNIT_STATUSES: readonly VehicleUnitStatus[] = ["AVAILABLE"];
 
+export const NON_BOOKABLE_VEHICLE_UNIT_STATUSES: readonly VehicleUnitStatus[] = [
+  "RESERVED",
+  "OUT_WITH_CUSTOMER",
+  "MAINTENANCE",
+  "NOT_AVAILABLE",
+];
+
 export type VehicleUnitRecord = {
   id: string;
   vehicleId: string;

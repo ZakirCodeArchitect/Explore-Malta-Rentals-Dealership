@@ -349,10 +349,11 @@
       "pickupLabel": "Pickup",
       "returnLabel": "Return",
       "status": {
-        "PENDING": "Pending review",
         "CONFIRMED": "Confirmed",
-        "CANCELLED": "Cancelled",
-        "FAILED": "Failed"
+        "VEHICLE_HANDED_OVER": "Vehicle handed over",
+        "RETURNED": "Returned",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled"
       }
     },
     "ratesHeading": "Rates at a glance",
@@ -1276,10 +1277,10 @@
         "deleteConfirm": "Delete this unit permanently?",
         "statuses": {
           "AVAILABLE": "Available",
-          "BOOKED": "Booked",
+          "RESERVED": "Reserved",
+          "OUT_WITH_CUSTOMER": "Out with customer",
           "MAINTENANCE": "Maintenance",
-          "SOLD": "Sold",
-          "INACTIVE": "Inactive"
+          "NOT_AVAILABLE": "Not available"
         },
         "table": {
           "licensePlate": "License plate",
@@ -1305,10 +1306,36 @@
       "statusUpdateSuccess": "Booking status was updated.",
       "statusUpdateError": "Unable to update booking status. Please try again.",
       "status": {
-        "PENDING": "Pending",
         "CONFIRMED": "Confirmed",
-        "CANCELLED": "Cancelled",
+        "VEHICLE_HANDED_OVER": "Vehicle Handed Over",
+        "RETURNED": "Returned",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled"
+      },
+      "paymentStatus": {
+        "PENDING": "Pending",
+        "PAID": "Paid",
+        "REFUNDED": "Refunded",
         "FAILED": "Failed"
+      },
+      "depositStatus": {
+        "PENDING": "Pending",
+        "COLLECTED": "Collected",
+        "REFUNDED": "Refunded",
+        "DEDUCTED": "Deducted"
+      },
+      "unitStatus": {
+        "AVAILABLE": "Available",
+        "RESERVED": "Reserved",
+        "OUT_WITH_CUSTOMER": "Out with customer",
+        "MAINTENANCE": "Maintenance",
+        "NOT_AVAILABLE": "Not available"
+      },
+      "paymentMethod": {
+        "CASH": "Cash",
+        "CARD": "Card",
+        "BANK": "Bank transfer",
+        "OTHER": "Other"
       },
       "depositMethod": {
         "ONLINE": "Pay security deposit online",
@@ -1319,10 +1346,11 @@
         "searchPlaceholder": "Name, email, phone, or reference…",
         "status": "Status",
         "allStatuses": "All statuses",
-        "pending": "Pending",
         "confirmed": "Confirmed",
+        "vehicleHandedOver": "Vehicle handed over",
+        "returned": "Returned",
+        "completed": "Completed",
         "cancelled": "Cancelled",
-        "failed": "Failed",
         "vehicle": "Vehicle",
         "allVehicles": "All vehicles",
         "hotel": "Hotel",
@@ -1385,10 +1413,11 @@
         "destructiveTitle": "Confirm status change",
         "destructiveDescription": "You are about to change booking {reference} from {from} to {to}. This may affect availability and customer expectations.",
         "statusLabel": {
-          "PENDING": "Pending",
           "CONFIRMED": "Confirmed",
-          "CANCELLED": "Cancelled",
-          "FAILED": "Failed"
+          "VEHICLE_HANDED_OVER": "Vehicle Handed Over",
+          "RETURNED": "Returned",
+          "COMPLETED": "Completed",
+          "CANCELLED": "Cancelled"
         },
         "noteLabel": "Note (optional)",
         "notePlaceholder": "Reason for this change…",
@@ -1411,11 +1440,15 @@
           "pricing": "Pricing breakdown",
           "priceBuildup": "Price build-up",
           "audit": "Notes / audit details",
-          "history": "Status history"
+          "history": "Status history",
+          "lifecycle": "Lifecycle operations"
         },
         "fields": {
           "reference": "Booking reference",
           "status": "Booking status",
+          "paymentStatus": "Payment status",
+          "securityDepositStatus": "Security deposit status",
+          "vehicleUnitStatus": "Vehicle unit status",
           "createdAt": "Created",
           "updatedAt": "Last updated",
           "name": "Full name",
@@ -1483,7 +1516,18 @@
           "termsVersion": "Terms version",
           "consentSource": "Consent source",
           "confirmationEmailStatus": "Confirmation email status",
-          "confirmationEmailSentAt": "Confirmation email sent at"
+          "confirmationEmailSentAt": "Confirmation email sent at",
+          "handoverDateTime": "Handover date/time",
+          "handoverNotes": "Handover notes",
+          "returnRecordedAt": "Return recorded at",
+          "returnNotes": "Return notes",
+          "paymentReceivedAmount": "Payment received",
+          "paymentMethod": "Payment method",
+          "securityDepositCollectedAmount": "Security deposit collected",
+          "depositRefundAmount": "Deposit refund amount",
+          "depositDeductionAmount": "Deposit deduction amount",
+          "depositDeductionReason": "Deposit deduction reason",
+          "completionNotes": "Completion notes"
         },
         "history": {
           "date": "Date",
@@ -1524,6 +1568,131 @@
           "depositTitle": "Deposit & payment",
           "depositDueOnlineNote": "Deposit is included in the total due online.",
           "depositDueLaterNote": "Deposit is payable at pickup and shown in total due later."
+        }
+      },
+      "lifecycle": {
+        "title": "Booking process",
+        "genericError": "Unable to complete this action. Please try again.",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "readOnlyCompleted": "This booking is completed. No further lifecycle actions are available.",
+        "readOnlyCancelled": "This booking was cancelled. No lifecycle actions are available.",
+        "guidelines": {
+          "currentStage": "Current Stage",
+          "whatToDoNext": "What to do next",
+          "availableActions": "To continue with process",
+          "progress": {
+            "confirmed": "Confirmed",
+            "handedOver": "Handed over",
+            "returned": "Returned",
+            "completed": "Completed"
+          },
+          "steps": {
+            "CONFIRMED": {
+              "title": "Confirmed: reservation active",
+              "description": "The booking is accepted and a physical unit is reserved internally. Payment and security deposit are still pending, confirmed does not mean the customer has paid or collected the vehicle.",
+              "nextStep": "When the customer arrives for pickup or the vehicle is delivered, record the handover. If the booking will not go ahead, cancel it to release the unit."
+            },
+            "VEHICLE_HANDED_OVER": {
+              "title": "Vehicle handed over — rental in progress",
+              "description": "The customer has the vehicle. Payment and deposit should be recorded as collected if received at handover. The assigned unit is marked out with the customer.",
+              "nextStep": "When the customer returns the vehicle, mark it returned. Do not refund the deposit at this stage — inspection may still be needed."
+            },
+            "RETURNED": {
+              "title": "Vehicle returned — awaiting closure",
+              "description": "The vehicle is back. The unit may be available or sent to maintenance depending on what you recorded at return. The security deposit is not settled yet.",
+              "nextStep": "After inspecting the vehicle and settling the deposit (refund or deduction), complete the booking to close it out."
+            },
+            "COMPLETED": {
+              "title": "Completed — booking closed",
+              "description": "This rental is fully closed. Payment, deposit, and vehicle unit status have been finalised. No further lifecycle changes are needed."
+            },
+            "CANCELLED": {
+              "title": "Cancelled — booking voided",
+              "description": "This booking was cancelled. The assigned unit was released for future bookings. Payment and deposit statuses reflect what was recorded at cancellation."
+            }
+          },
+          "actions": {
+            "handOver": {
+              "summary": "Record that the customer collected or received the vehicle.",
+              "effects": "Sets booking to Vehicle Handed Over. Marks payment as paid and deposit as collected when confirmed. Unit becomes Out with customer."
+            },
+            "markReturned": {
+              "summary": "Record that the vehicle has been returned by the customer.",
+              "effects": "Sets booking to Returned. Unit becomes Available or Maintenance based on condition. Deposit is not refunded automatically."
+            },
+            "complete": {
+              "summary": "Close the booking after return inspection and deposit handling.",
+              "effects": "Sets booking to Completed. Deposit is marked Refunded or Deducted. Unit status is finalised for fleet use."
+            },
+            "cancel": {
+              "summary": "Cancel a confirmed booking that will not proceed.",
+              "effects": "Sets booking to Cancelled and releases the reserved unit back to Available. Payment stays Pending unless already paid/refunded."
+            }
+          },
+          "effectsLabel": "Result"
+        },
+        "actions": {
+          "handOver": "Hand over the vehicle",
+          "markReturned": "Mark vehicle returned",
+          "complete": "Complete booking",
+          "cancel": "Cancel booking"
+        },
+        "handOver": {
+          "title": "Hand over vehicle",
+          "description": "Record vehicle handover for booking {reference}.",
+          "vehicleUnit": "Assigned vehicle unit",
+          "paymentAmount": "Payment received (EUR)",
+          "paymentMethod": "Payment method",
+          "paymentConfirmed": "Physical payment confirmed",
+          "depositAmount": "Security deposit collected (EUR)",
+          "depositConfirmed": "Security deposit collected",
+          "handoverDateTime": "Handover date/time",
+          "notes": "Handover notes"
+        },
+        "markReturned": {
+          "title": "Mark vehicle returned",
+          "returnDateTime": "Return date/time",
+          "unitStatus": "Vehicle unit status after return",
+          "notes": "Return condition / notes"
+        },
+        "complete": {
+          "title": "Complete booking",
+          "depositOutcome": "Security deposit outcome",
+          "refundAmount": "Deposit refund amount (EUR)",
+          "deductionAmount": "Deposit deduction amount (EUR)",
+          "deductionReason": "Deduction reason",
+          "unitStatus": "Vehicle unit status after completion",
+          "notes": "Completion notes"
+        },
+        "cancelDialog": {
+          "title": "Cancel booking",
+          "description": "Cancel booking {reference} and release the assigned vehicle unit.",
+          "refundPayment": "Mark payment as refunded",
+          "depositOutcome": "Security deposit outcome",
+          "depositUnchanged": "Leave deposit status unchanged",
+          "note": "Cancellation note",
+          "dismiss": "Keep booking",
+          "confirm": "Cancel booking"
+        },
+        "paymentMethod": {
+          "CASH": "Cash",
+          "CARD": "Card",
+          "BANK": "Bank transfer",
+          "OTHER": "Other"
+        },
+        "depositStatus": {
+          "PENDING": "Pending",
+          "COLLECTED": "Collected",
+          "REFUNDED": "Refunded",
+          "DEDUCTED": "Deducted"
+        },
+        "unitStatus": {
+          "AVAILABLE": "Available",
+          "RESERVED": "Reserved",
+          "OUT_WITH_CUSTOMER": "Out with customer",
+          "MAINTENANCE": "Maintenance",
+          "NOT_AVAILABLE": "Not available"
         }
       },
       "confirmationEmailStatus": {
@@ -1808,10 +1977,11 @@
         "inactiveHotel": "inactive",
         "status": "Status",
         "allStatuses": "All statuses",
-        "pending": "Pending",
         "confirmed": "Confirmed",
+        "vehicleHandedOver": "Vehicle handed over",
+        "returned": "Returned",
+        "completed": "Completed",
         "cancelled": "Cancelled",
-        "failed": "Failed",
         "apply": "Apply filters",
         "applying": "Applying…",
         "clear": "Clear",
@@ -1855,14 +2025,15 @@
       "booking": {
         "totalBookings": "Total bookings",
         "confirmed": "Confirmed",
+        "handedOver": "Vehicle handed over",
+        "returned": "Returned",
+        "completed": "Completed",
         "cancelled": "Cancelled",
-        "failed": "Failed",
-        "pending": "Pending",
         "thisMonth": "Bookings this month",
         "lastMonth": "Bookings last month",
         "totalValue": "Total booking value",
         "totalDiscount": "Total hotel discount",
-        "revenueHint": "Excludes cancelled and failed unless status filter is set"
+        "revenueHint": "Excludes cancelled bookings unless status filter is set"
       },
       "vehicle": {
         "total": "Total vehicles",

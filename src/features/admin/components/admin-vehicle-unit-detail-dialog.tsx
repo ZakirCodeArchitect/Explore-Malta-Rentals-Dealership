@@ -16,18 +16,18 @@ type AdminVehicleUnitDetailDialogProps = Readonly<{
 }>;
 
 function unitStatusBadgeClass(status: VehicleUnitStatus, isActive: boolean): string {
-  if (!isActive || status === "INACTIVE") {
+  if (!isActive || status === "NOT_AVAILABLE") {
     return "bg-slate-100 text-slate-600";
   }
   switch (status) {
     case "AVAILABLE":
       return "bg-emerald-50 text-emerald-700";
-    case "BOOKED":
+    case "RESERVED":
       return "bg-blue-50 text-blue-700";
+    case "OUT_WITH_CUSTOMER":
+      return "bg-violet-50 text-violet-700";
     case "MAINTENANCE":
       return "bg-orange-50 text-orange-700";
-    case "SOLD":
-      return "bg-violet-50 text-violet-700";
     default:
       return "bg-slate-100 text-slate-600";
   }
@@ -35,9 +35,11 @@ function unitStatusBadgeClass(status: VehicleUnitStatus, isActive: boolean): str
 
 function bookingStatusBadgeClass(status: string): string {
   if (status === "CONFIRMED") return "bg-emerald-50 text-emerald-700";
-  if (status === "PENDING") return "bg-amber-50 text-amber-800";
+  if (status === "VEHICLE_HANDED_OVER") return "bg-blue-50 text-blue-700";
+  if (status === "RETURNED") return "bg-violet-50 text-violet-700";
+  if (status === "COMPLETED") return "bg-slate-100 text-slate-700";
   if (status === "CANCELLED") return "bg-slate-100 text-slate-600";
-  return "bg-red-50 text-red-700";
+  return "bg-amber-50 text-amber-800";
 }
 
 function formatDateTime(value: string): string {

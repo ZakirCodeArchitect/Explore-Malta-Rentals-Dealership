@@ -42,9 +42,11 @@ function formatDate(iso: string): string {
 
 function statusBadgeClass(status: string): string {
   if (status === "CONFIRMED") return "bg-emerald-50 text-emerald-700";
-  if (status === "PENDING") return "bg-amber-50 text-amber-800";
+  if (status === "VEHICLE_HANDED_OVER") return "bg-blue-50 text-blue-700";
+  if (status === "RETURNED") return "bg-violet-50 text-violet-700";
+  if (status === "COMPLETED") return "bg-slate-100 text-slate-700";
   if (status === "CANCELLED") return "bg-slate-100 text-slate-600";
-  return "bg-red-50 text-red-700";
+  return "bg-amber-50 text-amber-800";
 }
 
 function buildPageUrl(

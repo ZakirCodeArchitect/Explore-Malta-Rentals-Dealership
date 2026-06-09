@@ -36,7 +36,13 @@ function parseOptionalInt(value: string | undefined): number | undefined {
 }
 
 function parseBookingStatus(value: string | undefined): BookingStatus | undefined {
-  if (value === "PENDING" || value === "CONFIRMED" || value === "CANCELLED" || value === "FAILED") {
+  if (
+    value === "CONFIRMED" ||
+    value === "VEHICLE_HANDED_OVER" ||
+    value === "RETURNED" ||
+    value === "COMPLETED" ||
+    value === "CANCELLED"
+  ) {
     return value;
   }
   return undefined;

@@ -5,7 +5,6 @@ export type PublicBookingSummary = {
   bookingReference: string;
   status: BookingStatus;
   vehicleName: string | null;
-  vehicleLicensePlate: string | null;
   pickupDateTime: string;
   returnDateTime: string;
   createdAt: string;
@@ -40,7 +39,6 @@ export async function lookupPublicBookingByReferenceAndEmail(
       bookingReference: true,
       status: true,
       vehicleNameSnapshot: true,
-      vehicleLicensePlateSnapshot: true,
       pickupDateTime: true,
       returnDateTime: true,
       createdAt: true,
@@ -59,7 +57,6 @@ export async function lookupPublicBookingByReferenceAndEmail(
     bookingReference: booking.bookingReference,
     status: booking.status,
     vehicleName: booking.vehicleNameSnapshot,
-    vehicleLicensePlate: booking.vehicleLicensePlateSnapshot,
     pickupDateTime: booking.pickupDateTime.toISOString(),
     returnDateTime: booking.returnDateTime.toISOString(),
     createdAt: booking.createdAt.toISOString(),

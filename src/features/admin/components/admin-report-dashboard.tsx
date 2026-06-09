@@ -76,8 +76,11 @@ function HorizontalBars({
 
 function statusBadgeClass(status: string): string {
   if (status === "CONFIRMED" || status === "PAID") return "bg-emerald-50 text-emerald-700";
-  if (status === "PENDING" || status === "PARTIALLY_PAID") return "bg-amber-50 text-amber-800";
-  if (status === "CANCELLED" || status === "FAILED" || status === "DUE") return "bg-slate-100 text-slate-700";
+  if (status === "VEHICLE_HANDED_OVER") return "bg-blue-50 text-blue-700";
+  if (status === "RETURNED") return "bg-violet-50 text-violet-700";
+  if (status === "COMPLETED") return "bg-slate-100 text-slate-700";
+  if (status === "PARTIALLY_PAID") return "bg-amber-50 text-amber-800";
+  if (status === "CANCELLED" || status === "DUE") return "bg-slate-100 text-slate-700";
   return "bg-slate-100 text-slate-700";
 }
 
@@ -116,9 +119,10 @@ export async function AdminReportDashboard({ summary }: AdminReportDashboardProp
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label={t("booking.totalBookings")} value={String(bookingSummary.totalBookings)} />
           <StatCard label={t("booking.confirmed")} value={String(bookingSummary.confirmedBookings)} />
+          <StatCard label={t("booking.handedOver")} value={String(bookingSummary.handedOverBookings)} />
+          <StatCard label={t("booking.returned")} value={String(bookingSummary.returnedBookings)} />
+          <StatCard label={t("booking.completed")} value={String(bookingSummary.completedBookings)} />
           <StatCard label={t("booking.cancelled")} value={String(bookingSummary.cancelledBookings)} />
-          <StatCard label={t("booking.failed")} value={String(bookingSummary.failedBookings)} />
-          <StatCard label={t("booking.pending")} value={String(bookingSummary.pendingBookings)} />
           <StatCard label={t("booking.thisMonth")} value={String(bookingSummary.bookingsThisMonth)} />
           <StatCard label={t("booking.lastMonth")} value={String(bookingSummary.bookingsLastMonth)} />
           <StatCard

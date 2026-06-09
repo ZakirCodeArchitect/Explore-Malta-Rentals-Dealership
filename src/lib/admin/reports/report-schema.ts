@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-const bookingStatusSchema = z.enum(["PENDING", "CONFIRMED", "CANCELLED", "FAILED"]);
+const bookingStatusSchema = z.enum([
+  "CONFIRMED",
+  "VEHICLE_HANDED_OVER",
+  "RETURNED",
+  "COMPLETED",
+  "CANCELLED",
+]);
 
 const currentYear = new Date().getFullYear();
 

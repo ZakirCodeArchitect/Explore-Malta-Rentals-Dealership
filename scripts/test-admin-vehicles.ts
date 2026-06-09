@@ -99,7 +99,7 @@ async function run() {
       bookings: {
         create: {
           bookingReference: `TEST-${Date.now()}`,
-          status: "PENDING",
+          status: "CONFIRMED",
           vehicleType: "Scooter",
           pickupDateTime: new Date("2026-07-01T10:00:00.000Z"),
           returnDateTime: new Date("2026-07-02T10:00:00.000Z"),

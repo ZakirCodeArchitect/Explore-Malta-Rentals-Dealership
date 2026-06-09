@@ -30,18 +30,18 @@ const emptyForm = (): UnitFormState => ({
 });
 
 function statusBadgeClass(status: VehicleUnitStatus, isActive: boolean): string {
-  if (!isActive || status === "INACTIVE") {
+  if (!isActive || status === "NOT_AVAILABLE") {
     return "bg-slate-100 text-slate-600";
   }
   switch (status) {
     case "AVAILABLE":
       return "bg-emerald-50 text-emerald-700";
-    case "BOOKED":
+    case "RESERVED":
       return "bg-blue-50 text-blue-700";
+    case "OUT_WITH_CUSTOMER":
+      return "bg-violet-50 text-violet-700";
     case "MAINTENANCE":
       return "bg-orange-50 text-orange-700";
-    case "SOLD":
-      return "bg-violet-50 text-violet-700";
     default:
       return "bg-slate-100 text-slate-600";
   }

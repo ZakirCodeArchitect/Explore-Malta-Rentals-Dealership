@@ -15,7 +15,7 @@ type AdminBookingStatusDialogProps = Readonly<{
   onConfirm: (note: string) => void;
 }>;
 
-const DESTRUCTIVE_STATUSES: BookingStatus[] = ["CANCELLED", "FAILED"];
+const DESTRUCTIVE_STATUSES: BookingStatus[] = ["CANCELLED"];
 
 export function AdminBookingStatusDialog({
   bookingReference,

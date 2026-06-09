@@ -10,9 +10,10 @@ export type AdminReportFilters = {
 export type AdminReportBookingSummary = {
   totalBookings: number;
   confirmedBookings: number;
+  handedOverBookings: number;
+  returnedBookings: number;
+  completedBookings: number;
   cancelledBookings: number;
-  failedBookings: number;
-  pendingBookings: number;
   bookingsThisMonth: number;
   bookingsLastMonth: number;
   totalBookingValue: number;

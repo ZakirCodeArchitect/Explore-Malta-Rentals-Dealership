@@ -7,7 +7,7 @@ import type {
 import { prisma } from "@/lib/prisma";
 
 const MALTA_TIME_ZONE = "Europe/Malta";
-const REVENUE_EXCLUDED_STATUSES = ["CANCELLED", "FAILED"] as const;
+const REVENUE_EXCLUDED_STATUSES = ["CANCELLED"] as const;
 const TOP_HOTELS_LIMIT = 5;
 const TOP_HOTEL_CODES_LIMIT = 5;
 const RECENT_BOOKINGS_LIMIT = 15;
@@ -158,9 +158,10 @@ async function getBookingSummary(filters: AdminReportFilters) {
   return {
     totalBookings: statusGroups.reduce((sum, row) => sum + row._count._all, 0),
     confirmedBookings: statusCounts.CONFIRMED ?? 0,
+    handedOverBookings: statusCounts.VEHICLE_HANDED_OVER ?? 0,
+    returnedBookings: statusCounts.RETURNED ?? 0,
+    completedBookings: statusCounts.COMPLETED ?? 0,
     cancelledBookings: statusCounts.CANCELLED ?? 0,
-    failedBookings: statusCounts.FAILED ?? 0,
-    pendingBookings: statusCounts.PENDING ?? 0,
     bookingsThisMonth: periodCounts.thisMonth,
     bookingsLastMonth: periodCounts.lastMonth,
     totalBookingValue: revenueAggregate._sum.subtotal?.toNumber() ?? 0,

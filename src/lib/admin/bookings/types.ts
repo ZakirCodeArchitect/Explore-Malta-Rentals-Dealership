@@ -1,4 +1,12 @@
-import type { BookingStatus, ConfirmationEmailStatus, DepositMethod } from "@/generated/prisma/index";
+import type {
+  BookingStatus,
+  ConfirmationEmailStatus,
+  DepositMethod,
+  PaymentMethod,
+  PaymentStatus,
+  SecurityDepositStatus,
+  VehicleUnitStatus,
+} from "@/generated/prisma/index";
 
 export type AdminBookingListFilters = {
   search?: string;
@@ -56,6 +64,8 @@ export type AdminBookingDetail = {
   id: string;
   bookingReference: string;
   status: BookingStatus;
+  paymentStatus: PaymentStatus;
+  securityDepositStatus: SecurityDepositStatus;
   createdAt: string;
   updatedAt: string;
 
@@ -72,6 +82,8 @@ export type AdminBookingDetail = {
   customerWillPresentIdAtPickup: boolean;
 
   vehicleId: string | null;
+  vehicleUnitId: string | null;
+  vehicleUnitStatus: VehicleUnitStatus | null;
   vehicleName: string;
   vehicleLicensePlate: string | null;
   vehicleType: string;
@@ -138,6 +150,18 @@ export type AdminBookingDetail = {
 
   confirmationEmailStatus: ConfirmationEmailStatus;
   confirmationEmailSentAt: string | null;
+
+  paymentReceivedAmount: number | null;
+  paymentMethod: PaymentMethod | null;
+  securityDepositCollectedAmount: number | null;
+  handoverDateTime: string | null;
+  handoverNotes: string | null;
+  returnRecordedAt: string | null;
+  returnNotes: string | null;
+  depositRefundAmount: number | null;
+  depositDeductionAmount: number | null;
+  depositDeductionReason: string | null;
+  completionNotes: string | null;
 
   statusHistory: AdminBookingStatusHistoryItem[];
 };
