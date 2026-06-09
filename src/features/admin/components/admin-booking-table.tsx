@@ -3,6 +3,8 @@
 import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-summary";
+import { isOnlinePaymentEnabled } from "@/lib/booking/online-payment-config";
 import type { AdminBookingListItem, AdminBookingListResult } from "@/lib/admin/bookings/types";
 
 type AdminBookingTableProps = Readonly<{
@@ -66,6 +68,26 @@ function buildPageUrl(
 export function AdminBookingTable({ locale, result, searchParams }: AdminBookingTableProps) {
   const t = useTranslations("Admin.bookings");
   const { items, total, page, totalPages } = result;
+  const onlinePaymentEnabled = isOnlinePaymentEnabled();
+  const paymentColumnLabel = onlinePaymentEnabled
+    ? t("table.amountPayableOnline")
+    : t("table.amountDueAtPickupLater");
+
+  function formatPaymentSummaryAmount(booking: AdminBookingListItem): string {
+    const summary = buildBookingPaymentSummary({
+      subtotal: booking.subtotal,
+      depositAmount: booking.depositAmount,
+      depositMethod: booking.depositMethod,
+      totalDueOnline: booking.totalDueOnline,
+      totalDueLater: booking.totalDueLater,
+    });
+
+    if (summary.amountPayableOnline === null) {
+      return formatEur(summary.amountDueAtPickupLater);
+    }
+
+    return formatEur(summary.amountPayableOnline);
+  }
 
   return (
     <div className="space-y-4">
@@ -79,8 +101,8 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
               <th className="px-3 py-2.5 font-semibold">{t("table.pickup")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.return")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.status")}</th>
-              <th className="px-3 py-2.5 font-semibold">{t("table.deposit")}</th>
-              <th className="px-3 py-2.5 font-semibold">{t("table.totalOnline")}</th>
+              <th className="px-3 py-2.5 font-semibold">{t("table.securityDepositMethod")}</th>
+              <th className="px-3 py-2.5 font-semibold">{paymentColumnLabel}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.hotelCode")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.created")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.actions")}</th>
@@ -130,7 +152,7 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
                     {t(`depositMethod.${booking.depositMethod}` as "depositMethod.ONLINE")}
                   </td>
                   <td className="px-3 py-2.5 font-medium text-slate-800">
-                    {formatEur(booking.totalDueOnline)}
+                    {formatPaymentSummaryAmount(booking)}
                   </td>
                   <td className="px-3 py-2.5 font-mono text-xs text-slate-600">
                     {booking.hotelCode ?? "—"}

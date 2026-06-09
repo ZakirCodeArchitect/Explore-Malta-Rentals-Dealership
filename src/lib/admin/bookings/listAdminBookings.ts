@@ -95,7 +95,9 @@ const listSelect = {
   returnDateTime: true,
   status: true,
   depositMethod: true,
+  depositAmount: true,
   totalDueOnline: true,
+  totalDueLater: true,
   subtotal: true,
   hotelCodeSnapshot: true,
   hotelPartnerNameSnapshot: true,
@@ -114,7 +116,9 @@ function mapListItem(booking: {
   returnDateTime: Date;
   status: AdminBookingListItem["status"];
   depositMethod: AdminBookingListItem["depositMethod"];
+  depositAmount: { toNumber: () => number };
   totalDueOnline: { toNumber: () => number };
+  totalDueLater: { toNumber: () => number };
   subtotal: { toNumber: () => number };
   hotelCodeSnapshot: string | null;
   hotelPartnerNameSnapshot: string | null;
@@ -132,7 +136,9 @@ function mapListItem(booking: {
     returnDateTime: booking.returnDateTime.toISOString(),
     status: booking.status,
     depositMethod: booking.depositMethod,
+    depositAmount: booking.depositAmount.toNumber(),
     totalDueOnline: booking.totalDueOnline.toNumber(),
+    totalDueLater: booking.totalDueLater.toNumber(),
     subtotal: booking.subtotal.toNumber(),
     hotelCode: booking.hotelCodeSnapshot,
     hotelName: booking.hotelPartnerNameSnapshot,

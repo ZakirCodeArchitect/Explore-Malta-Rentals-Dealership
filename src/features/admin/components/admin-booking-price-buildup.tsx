@@ -267,32 +267,67 @@ export async function AdminBookingPriceBuildup({ locale, booking }: AdminBooking
           />
           <BuildupRow
             emphasis
-            label={t("details.fields.subtotal")}
+            label={
+              <FormulaLabel
+                label={t("details.fields.bookingChargesTotal")}
+                formula={t("details.priceBuildup.bookingChargesExcludesDepositNote")}
+              />
+            }
             value={formatEur(buildup.subtotal.subtotal)}
           />
         </BuildupSubsection>
 
-        <BuildupSubsection title={t("details.priceBuildup.depositTitle")}>
-          <BuildupRow label={t("details.fields.depositAmount")} value={formatEur(buildup.deposit.amount)} />
+        <BuildupSubsection title={t("details.priceBuildup.paymentSummaryTitle")}>
           <BuildupRow
-            label={t("details.fields.depositMethod")}
+            label={t("details.fields.bookingChargesTotal")}
+            value={formatEur(buildup.paymentSummary.bookingChargesTotal)}
+          />
+          <BuildupRow
+            label={
+              buildup.paymentSummary.securityDepositDueAtPickup
+                ? t("details.fields.securityDepositDueAtPickup")
+                : t("details.fields.securityDeposit")
+            }
+            value={formatEur(buildup.paymentSummary.securityDeposit)}
+          />
+          <BuildupRow
+            label={t("details.fields.securityDepositMethod")}
             value={t(`depositMethod.${buildup.deposit.method}` as "depositMethod.ONLINE")}
           />
-          <div className="border-b border-slate-200/70 py-2 text-sm text-slate-600">
-            {buildup.deposit.depositIncludedInOnlineTotal
-              ? t("details.priceBuildup.depositDueOnlineNote")
-              : t("details.priceBuildup.depositDueLaterNote")}
+          <BuildupRow
+            label={t("details.fields.amountPayableOnline")}
+            value={
+              buildup.paymentSummary.amountPayableOnline === null
+                ? t("details.priceBuildup.notApplicable")
+                : formatEur(buildup.paymentSummary.amountPayableOnline)
+            }
+          />
+          <BuildupRow
+            label={
+              buildup.paymentSummary.securityDepositDueAtPickup ||
+              !buildup.paymentSummary.onlinePaymentEnabled
+                ? t("details.fields.amountDueAtPickupLater")
+                : t("details.fields.amountDueLater")
+            }
+            value={formatEur(buildup.paymentSummary.amountDueAtPickupLater)}
+          />
+          <BuildupRow
+            emphasis
+            label={t("details.fields.totalCustomerLiability")}
+            value={formatEur(buildup.paymentSummary.totalCustomerLiability)}
+          />
+          <div className="space-y-2 border-b border-slate-200/70 py-3 text-xs text-slate-500 last:border-0">
+            <p>{t("details.priceBuildup.securityDepositHelperText")}</p>
+            <p>{t("details.priceBuildup.onlineAmountHelperText")}</p>
+            {buildup.paymentSummary.securityDepositDueAtPickup ? (
+              <p>{t("details.priceBuildup.securityDepositAtPickupNote")}</p>
+            ) : buildup.deposit.depositIncludedInOnlineTotal ? (
+              <p>{t("details.priceBuildup.securityDepositIncludedOnlineNote")}</p>
+            ) : null}
+            {!buildup.paymentSummary.onlinePaymentEnabled ? (
+              <p>{t("details.priceBuildup.onlinePaymentUnavailableNote")}</p>
+            ) : null}
           </div>
-          <BuildupRow
-            emphasis
-            label={t("details.fields.totalDueOnline")}
-            value={formatEur(buildup.deposit.totalDueOnline)}
-          />
-          <BuildupRow
-            emphasis
-            label={t("details.fields.totalDueLater")}
-            value={formatEur(buildup.deposit.totalDueLater)}
-          />
         </BuildupSubsection>
       </div>
     </section>

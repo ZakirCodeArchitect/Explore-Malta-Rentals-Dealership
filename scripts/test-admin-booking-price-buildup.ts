@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 import { buildAdminBookingPriceBuildup } from "@/lib/admin/bookings/build-admin-booking-price-buildup";
 import type { AdminBookingDetail } from "@/lib/admin/bookings/types";
+import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-summary";
 
 function baseBooking(overrides: Partial<AdminBookingDetail> = {}): AdminBookingDetail {
   return {
@@ -101,6 +102,13 @@ function runTests() {
   assert.equal(example.hotel.used, false);
   assert.equal(example.hotel.rentalAfterHotelDiscount, 720);
 
+  assert.equal(example.paymentSummary.bookingChargesTotal, 822);
+  assert.equal(example.paymentSummary.securityDeposit, 250);
+  assert.equal(example.paymentSummary.amountPayableOnline, null);
+  assert.equal(example.paymentSummary.amountDueAtPickupLater, 1072);
+  assert.equal(example.paymentSummary.totalCustomerLiability, 1072);
+  assert.equal(example.paymentSummary.onlinePaymentEnabled, false);
+
   const withHotel = buildAdminBookingPriceBuildup(
     baseBooking({
       hotelCode: "HOTEL10",
@@ -116,6 +124,17 @@ function runTests() {
   assert.equal(withHotel.hotel.used, true);
   assert.equal(withHotel.hotel.rentalAfterHotelDiscount, 648);
   assert.equal(withHotel.subtotal.rentalAfterHotelDiscount, 648);
+
+  const sharedSummary = buildBookingPaymentSummary({
+    subtotal: 822,
+    depositAmount: 250,
+    depositMethod: "IN_PERSON",
+    totalDueOnline: 822,
+    totalDueLater: 250,
+  });
+  assert.equal(sharedSummary.amountPayableOnline, null);
+  assert.equal(sharedSummary.amountDueAtPickupLater, 1072);
+  assert.equal(sharedSummary.totalCustomerLiability, 1072);
 
   console.log("admin booking price buildup tests passed");
 }

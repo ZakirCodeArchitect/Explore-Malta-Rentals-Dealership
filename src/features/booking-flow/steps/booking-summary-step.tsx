@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
@@ -11,11 +11,14 @@ import {
   formatEur,
   getCdwLabel,
 } from "@/lib/pricing/calculate-booking-price";
+import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-summary";
+import { isOnlinePaymentEnabled } from "@/lib/booking/online-payment-config";
 
 export function BookingSummaryStep() {
   const t = useTranslations("BookingWizard.bookingSummary");
   const tCommon = useTranslations("Common");
   const { state, updateSection } = useBookingFlow();
+  const onlinePaymentEnabled = isOnlinePaymentEnabled();
   const { vehicles } = useVehicles();
   const { rules: durationRules } = useDurationPricingRules();
   const selectedVehicle = useMemo(() => {
@@ -77,6 +80,29 @@ export function BookingSummaryStep() {
     },
     [durationRules, selectedVehicle, state],
   );
+
+  const effectiveDepositMethod =
+    onlinePaymentEnabled && state.deposit.depositMethod === "online" ? "online" : "in_person";
+
+  useEffect(() => {
+    if (!onlinePaymentEnabled && state.deposit.depositMethod !== "in_person") {
+      updateSection("deposit", { depositMethod: "in_person" });
+    }
+  }, [onlinePaymentEnabled, state.deposit.depositMethod, updateSection]);
+
+  const paymentSummary = useMemo(() => {
+    if (!pricing) {
+      return null;
+    }
+
+    return buildBookingPaymentSummary({
+      subtotal: pricing.subtotal,
+      depositAmount: pricing.depositAmount,
+      depositMethod: effectiveDepositMethod,
+      totalDueOnline: pricing.totalDueOnline,
+      totalDueLater: pricing.totalDueLater,
+    });
+  }, [pricing, effectiveDepositMethod]);
 
   const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
   const addOnList = [
@@ -174,8 +200,9 @@ export function BookingSummaryStep() {
                 </li>
               </ul>
               <p className="mt-3 font-semibold text-slate-900">
-                {t("subtotal")} {formatEur(pricing.subtotal)}
+                {t("bookingChargesTotal")} {formatEur(pricing.subtotal)}
               </p>
+              <p className="mt-1 text-xs text-slate-500">{t("bookingChargesExcludesDepositNote")}</p>
             </>
           ) : (
             <p className="mt-2 text-xs text-slate-500">{t("pricingPending")}</p>
@@ -184,23 +211,37 @@ export function BookingSummaryStep() {
 
         <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 text-sm text-slate-700">
           <p className="text-sm font-semibold text-slate-900">{t("section3")}</p>
-          <p className="mt-2 font-semibold">
-            {t("securityDeposit")} {formatEur(pricing?.depositAmount ?? 250)}
-          </p>
 
           <div className="mt-3">
-            <p className="font-semibold text-slate-900">{t("depositMethod")}</p>
+            <p className="font-semibold text-slate-900">{t("securityDepositMethod")}</p>
             <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-              <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                <input
-                  type="radio"
-                  name="summaryDepositMethod"
-                  value="online"
-                  checked={state.deposit.depositMethod === "online"}
-                  onChange={() => updateSection("deposit", { depositMethod: "online" })}
-                />
-                {t("payOnlineNow")}
-              </label>
+              {onlinePaymentEnabled ? (
+                <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
+                  <input
+                    type="radio"
+                    name="summaryDepositMethod"
+                    value="online"
+                    checked={state.deposit.depositMethod === "online"}
+                    onChange={() => updateSection("deposit", { depositMethod: "online" })}
+                  />
+                  {t("paySecurityDepositOnline")}
+                </label>
+              ) : (
+                <label
+                  aria-disabled="true"
+                  className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-400"
+                >
+                  <input
+                    type="radio"
+                    name="summaryDepositMethod"
+                    value="online"
+                    disabled
+                    checked={false}
+                    readOnly
+                  />
+                  {t("paySecurityDepositOnlineUnavailable")}
+                </label>
+              )}
               <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
                 <input
                   type="radio"
@@ -209,30 +250,70 @@ export function BookingSummaryStep() {
                   checked={state.deposit.depositMethod === "in_person"}
                   onChange={() => updateSection("deposit", { depositMethod: "in_person" })}
                 />
-                {t("payInPersonPickup")}
+                {t("paySecurityDepositAtPickup")}
               </label>
             </div>
-            {pricing ? (
-              <div className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-3">
-                <p className="font-semibold text-slate-900">
-                  {t("totalDueOnline")} {formatEur(pricing.totalDueOnline)}
-                </p>
-                <p className="mt-1 text-sm text-slate-700">
-                  {t("dueLater")} {formatEur(pricing.totalDueLater)}
-                </p>
-              </div>
-            ) : null}
-            {state.deposit.depositMethod === "in_person" ? (
-              <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-                {t("depositAtPickupNote")}
-              </p>
-            ) : null}
-            {state.deposit.depositMethod === "online" ? (
-              <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-                {t("depositOnlineNote")}
-              </p>
-            ) : null}
           </div>
+
+          {paymentSummary ? (
+            <div className="mt-4 space-y-2 rounded-lg border border-slate-200 bg-white px-3 py-3">
+              <p className="font-semibold text-slate-900">{t("paymentSummaryTitle")}</p>
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                <span>{t("bookingChargesTotal")}</span>
+                <span className="font-medium tabular-nums text-slate-900">
+                  {formatEur(paymentSummary.bookingChargesTotal)}
+                </span>
+              </div>
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                <span>
+                  {paymentSummary.securityDepositDueAtPickup
+                    ? t("securityDepositDueAtPickup")
+                    : t("securityDeposit")}
+                </span>
+                <span className="font-medium tabular-nums text-slate-900">
+                  {formatEur(paymentSummary.securityDeposit)}
+                </span>
+              </div>
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                <span>{t("amountPayableOnline")}</span>
+                <span className="font-medium tabular-nums text-slate-900">
+                  {paymentSummary.amountPayableOnline === null
+                    ? t("notApplicable")
+                    : formatEur(paymentSummary.amountPayableOnline)}
+                </span>
+              </div>
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                <span>
+                  {paymentSummary.securityDepositDueAtPickup ||
+                  !paymentSummary.onlinePaymentEnabled
+                    ? t("amountDueAtPickupLater")
+                    : t("dueLater")}
+                </span>
+                <span className="font-medium tabular-nums text-slate-900">
+                  {formatEur(paymentSummary.amountDueAtPickupLater)}
+                </span>
+              </div>
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 border-t border-slate-200 pt-2 font-semibold text-slate-900">
+                <span>{t("totalCustomerLiability")}</span>
+                <span className="tabular-nums">{formatEur(paymentSummary.totalCustomerLiability)}</span>
+              </div>
+            </div>
+          ) : null}
+
+          <p className="mt-3 text-xs text-slate-600">{t("securityDepositHelperText")}</p>
+          {!paymentSummary?.onlinePaymentEnabled ? (
+            <p className="mt-2 text-xs text-slate-600">{t("onlinePaymentUnavailableNote")}</p>
+          ) : null}
+          {state.deposit.depositMethod === "in_person" ? (
+            <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+              {t("depositAtPickupNote")}
+            </p>
+          ) : null}
+          {state.deposit.depositMethod === "online" && paymentSummary?.onlinePaymentEnabled ? (
+            <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+              {t("depositOnlineNote")}
+            </p>
+          ) : null}
         </div>
       </div>
 

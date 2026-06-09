@@ -26,7 +26,9 @@ export type AdminBookingListItem = {
   returnDateTime: string;
   status: BookingStatus;
   depositMethod: DepositMethod;
+  depositAmount: number;
   totalDueOnline: number;
+  totalDueLater: number;
   subtotal: number;
   hotelCode: string | null;
   hotelName: string | null;

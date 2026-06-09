@@ -16,9 +16,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import {
-  buildBookedDateKeySet,
+  buildBookingColorIndexById,
+  getBookingCalendarColor,
   getBookingsOnDate,
-  isDateBooked,
+  getDayCellBackgroundStyle,
   isToday,
 } from "@/lib/admin/vehicles/booking-calendar-utils";
 import type { AdminVehicleBookingCalendarItem } from "@/lib/admin/vehicles/getAdminVehicleBookingsForCalendar";
@@ -83,7 +84,7 @@ export function AdminVehicleBookingCalendar({ bookings }: AdminVehicleBookingCal
   const [anchorDate, setAnchorDate] = useState(() => startOfMonth(new Date()));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const bookedDateKeys = useMemo(() => buildBookedDateKeySet(bookings), [bookings]);
+  const bookingColorIndexById = useMemo(() => buildBookingColorIndexById(bookings), [bookings]);
 
   const visibleWeeks = useMemo(
     () => (view === "month" ? buildMonthGrid(anchorDate) : [buildWeekRow(anchorDate)]),
@@ -173,22 +174,33 @@ export function AdminVehicleBookingCalendar({ bookings }: AdminVehicleBookingCal
 
           {visibleWeeks.flatMap((week) =>
             week.map((day) => {
-              const booked = isDateBooked(day, bookedDateKeys);
+              const dayBookings = getBookingsOnDate(bookings, day);
+              const booked = dayBookings.length > 0;
               const inCurrentMonth = view === "week" || isSameMonth(day, anchorDate);
               const selected = selectedDate != null && format(selectedDate, "yyyy-MM-dd") === format(day, "yyyy-MM-dd");
               const today = isToday(day);
+              const primaryColor = booked
+                ? getBookingCalendarColor(bookingColorIndexById.get(dayBookings[0]!.id) ?? 0)
+                : null;
+              const dayStyle = booked
+                ? getDayCellBackgroundStyle(dayBookings, bookingColorIndexById)
+                : undefined;
 
               return (
                 <button
                   key={format(day, "yyyy-MM-dd")}
                   type="button"
                   onClick={() => setSelectedDate(day)}
+                  style={{
+                    ...dayStyle,
+                    ...(selected && booked && primaryColor
+                      ? { boxShadow: `0 0 0 2px white, 0 0 0 4px ${primaryColor.accent}66` }
+                      : {}),
+                  }}
                   className={[
-                    "mx-auto flex size-9 cursor-pointer items-center justify-center rounded-full text-sm font-medium transition",
-                    booked
-                      ? "bg-[#3a7ca5] text-white hover:bg-[#2f6688]"
-                      : "text-slate-600 hover:bg-slate-100",
-                    !inCurrentMonth && view === "month" ? "text-slate-300" : "",
+                    "mx-auto flex size-9 cursor-pointer items-center justify-center rounded-full text-sm font-semibold transition",
+                    booked ? "text-slate-700 hover:brightness-95" : "text-slate-600 hover:bg-slate-100",
+                    !inCurrentMonth && view === "month" ? (booked ? "opacity-70" : "text-slate-300") : "",
                     selected && !booked ? "ring-2 ring-[#3a7ca5]/40" : "",
                     today && !booked ? "font-bold text-slate-900" : "",
                   ].join(" ")}
@@ -202,12 +214,21 @@ export function AdminVehicleBookingCalendar({ bookings }: AdminVehicleBookingCal
           )}
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4 text-xs text-slate-600">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="inline-flex size-3 rounded-full bg-[#3a7ca5]" aria-hidden />
-            {t("bookedLegend")}
-          </span>
-          <span>{t("bookingCount", { count: bookings.length })}</span>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 pt-4 text-xs text-slate-600">
+          {bookings.map((booking) => {
+            const color = getBookingCalendarColor(bookingColorIndexById.get(booking.id) ?? 0);
+            return (
+              <span key={booking.id} className="inline-flex min-w-0 max-w-full items-center gap-1.5">
+                <span
+                  className="inline-flex size-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: color.bg }}
+                  aria-hidden
+                />
+                <span className="truncate font-medium text-slate-700">{booking.bookingReference}</span>
+              </span>
+            );
+          })}
+          <span className="text-slate-500">{t("bookingCount", { count: bookings.length })}</span>
         </div>
       </div>
 
@@ -227,19 +248,23 @@ export function AdminVehicleBookingCalendar({ bookings }: AdminVehicleBookingCal
             <p className="mt-2 text-sm text-slate-500">{t("noBookingsOnDay")}</p>
           ) : (
             <ul className="mt-3 space-y-2">
-              {selectedDayBookings.map((booking) => (
-                <li
-                  key={booking.id}
-                  className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5 text-sm"
-                >
-                  <p className="font-semibold text-slate-900">{booking.bookingReference}</p>
-                  <p className="mt-0.5 text-slate-700">{booking.customerFullName}</p>
-                  <p className="mt-1 text-xs text-slate-500">{formatBookingRange(booking, locale)}</p>
-                  <p className="mt-1 text-xs font-medium text-[#3a7ca5]">
-                    {t(`status.${booking.status}`)}
-                  </p>
-                </li>
-              ))}
+              {selectedDayBookings.map((booking) => {
+                const color = getBookingCalendarColor(bookingColorIndexById.get(booking.id) ?? 0);
+                return (
+                  <li
+                    key={booking.id}
+                    className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5 text-sm"
+                    style={{ borderLeftWidth: "3px", borderLeftColor: color.accent }}
+                  >
+                    <p className="font-semibold text-slate-900">{booking.bookingReference}</p>
+                    <p className="mt-0.5 text-slate-700">{booking.customerFullName}</p>
+                    <p className="mt-1 text-xs text-slate-500">{formatBookingRange(booking, locale)}</p>
+                    <p className="mt-1 text-xs font-medium" style={{ color: color.accent }}>
+                      {t(`status.${booking.status}`)}
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
@@ -251,17 +276,33 @@ export function AdminVehicleBookingCalendar({ bookings }: AdminVehicleBookingCal
         <div className="mt-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
           <h4 className="text-sm font-bold text-slate-950">{t("upcomingTitle")}</h4>
           <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto">
-            {bookings.slice(0, 8).map((booking) => (
-              <li key={booking.id} className="flex items-start justify-between gap-3 text-xs">
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-slate-800">{booking.bookingReference}</p>
-                  <p className="truncate text-slate-500">{formatBookingRange(booking, locale)}</p>
-                </div>
-                <span className="shrink-0 rounded-full bg-[#3a7ca5]/10 px-2 py-0.5 font-semibold text-[#3a7ca5]">
-                  {t(`status.${booking.status}`)}
-                </span>
-              </li>
-            ))}
+            {bookings.slice(0, 8).map((booking) => {
+              const color = getBookingCalendarColor(bookingColorIndexById.get(booking.id) ?? 0);
+              return (
+                <li key={booking.id} className="flex items-start justify-between gap-3 text-xs">
+                  <div className="flex min-w-0 items-start gap-2">
+                    <span
+                      className="mt-0.5 inline-flex size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: color.bg }}
+                      aria-hidden
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-slate-800">{booking.bookingReference}</p>
+                      <p className="truncate text-slate-500">{formatBookingRange(booking, locale)}</p>
+                    </div>
+                  </div>
+                  <span
+                    className="shrink-0 rounded-full px-2 py-0.5 font-semibold"
+                    style={{
+                      backgroundColor: color.bg,
+                      color: color.accent,
+                    }}
+                  >
+                    {t(`status.${booking.status}`)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : (

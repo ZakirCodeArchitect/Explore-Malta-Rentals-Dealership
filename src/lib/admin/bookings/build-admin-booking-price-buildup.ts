@@ -2,6 +2,10 @@ import type { DepositMethod } from "@/generated/prisma/index";
 
 import type { AdminBookingDetail } from "@/lib/admin/bookings/types";
 import { formatStoredCdwOptionLabel } from "@/lib/admin/bookings/format-stored-cdw-option";
+import {
+  buildBookingPaymentSummary,
+  type BookingPaymentSummary,
+} from "@/lib/booking/build-booking-payment-summary";
 
 function roundMoney(amount: number): number {
   return Math.round(amount * 100) / 100;
@@ -62,6 +66,7 @@ export type AdminBookingPriceBuildup = {
     depositIncludedInOnlineTotal: boolean;
     depositDueAtPickup: boolean;
   };
+  paymentSummary: BookingPaymentSummary;
 };
 
 /** Display-only breakdown from stored booking snapshots. Does not recalculate pricing rules. */
@@ -143,5 +148,12 @@ export function buildAdminBookingPriceBuildup(booking: AdminBookingDetail): Admi
       depositIncludedInOnlineTotal: booking.depositMethod === "ONLINE",
       depositDueAtPickup: booking.depositMethod === "IN_PERSON",
     },
+    paymentSummary: buildBookingPaymentSummary({
+      subtotal: booking.subtotal,
+      depositAmount: booking.depositAmount,
+      depositMethod: booking.depositMethod,
+      totalDueOnline: booking.totalDueOnline,
+      totalDueLater: booking.totalDueLater,
+    }),
   };
 }

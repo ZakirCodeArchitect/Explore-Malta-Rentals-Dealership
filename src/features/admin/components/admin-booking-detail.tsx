@@ -126,7 +126,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
           <DetailRow label={t("details.fields.createdAt")} value={formatDateTime(booking.createdAt)} />
           <DetailRow label={t("details.fields.updatedAt")} value={formatDateTime(booking.updatedAt)} />
           <DetailRow
-            label={t("details.fields.depositMethod")}
+            label={t("details.fields.securityDepositMethod")}
             value={t(`depositMethod.${booking.depositMethod}` as "depositMethod.ONLINE")}
           />
           <DetailRow
