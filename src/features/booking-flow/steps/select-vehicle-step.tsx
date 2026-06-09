@@ -11,7 +11,7 @@ import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 
 export function SelectVehicleStep() {
   const t = useTranslations("BookingSteps.selectVehicle");
-  const { state, reservationHold, updateSection, getFieldError } = useBookingFlow();
+  const { state, reservationHold, updateSection, getFieldError, getBookingValues } = useBookingFlow();
   const { vehicles, isLoading, error } = useVehicles();
   const vehicleError = getFieldError("rental.vehicleType");
 
@@ -52,7 +52,10 @@ export function SelectVehicleStep() {
       vehicleLicensePlate: preselectedBySlug.licensePlate,
       vehicleType: preselectedBySlug.apiVehicleType,
     });
-  }, [state.rental.vehicleSlug, state.rental.vehicleId, updateSection, vehicles]);
+    if (!preselectedBySlug.supportsStorageBox && getBookingValues().addons.storageBox) {
+      updateSection("addons", { storageBox: false });
+    }
+  }, [getBookingValues, state.rental.vehicleSlug, state.rental.vehicleId, updateSection, vehicles]);
 
   const slugNotFound =
     !isLoading &&

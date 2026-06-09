@@ -54,6 +54,7 @@ export type BookingPricingInput = Readonly<{
     baseDailyRate: number;
     vehicleType: VehicleType;
     durationRules: readonly DurationPricingRuleDto[];
+    supportsStorageBox?: boolean;
   }>;
   hotelDiscount?: Readonly<{
     discountPercent: number;
@@ -341,7 +342,9 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
   const additionalDriverCost = additionalDriverEnabled
     ? pricingConfig.addons.additionalDriverPerDay * duration.billableDays
     : 0;
-  const storageBoxCost = input.addons.storageBox ? pricingConfig.addons.storageBoxOneTime : 0;
+  const storageBoxAvailable = input.vehiclePricing.supportsStorageBox === true;
+  const storageBoxCost =
+    storageBoxAvailable && input.addons.storageBox ? pricingConfig.addons.storageBoxOneTime : 0;
   const hotelDiscount = input.hotelDiscount
     ? calculateHotelDiscount(rentalCost, input.hotelDiscount.discountPercent)
     : {

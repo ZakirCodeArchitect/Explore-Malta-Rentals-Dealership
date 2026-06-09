@@ -20,6 +20,7 @@ import type { DurationPricingRuleDto } from "@/lib/pricing/duration-pricing";
 import { validateHotelCode, type ValidatedHotelCode } from "@/lib/hotel-codes";
 
 import { validateBookingPayload } from "./validateBookingPayload";
+import { validateStorageBoxSelection } from "./validateStorageBoxSelection";
 import type { BookingSubmissionInput, NormalizedBookingPayload, ValidationError } from "./types";
 
 const BOOKING_REFERENCE_PREFIX = "EMR";
@@ -45,6 +46,7 @@ type ResolvedBookingVehicle = {
   vehicleType: VehicleType;
   vehicleTypeSnapshot: VehicleType;
   baseDailyRate: number;
+  supportsStorageBox: boolean;
 };
 
 type SubmitBookingResponse = {
@@ -189,6 +191,7 @@ function computePricing(
       baseDailyRate: vehicle.baseDailyRate,
       vehicleType: vehicle.vehicleType,
       durationRules,
+      supportsStorageBox: vehicle.supportsStorageBox,
     },
     hotelDiscount: validatedHotelCode
       ? { discountPercent: validatedHotelCode.discountPercent }
@@ -256,6 +259,7 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
       vehicleType: true,
       baseDailyRate: true,
       isActive: true,
+      supportsStorageBox: true,
     },
   });
 
@@ -290,6 +294,7 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
     vehicleType: vehicle.vehicleType,
     vehicleTypeSnapshot: vehicle.vehicleType,
     baseDailyRate: vehicle.baseDailyRate.toNumber(),
+    supportsStorageBox: vehicle.supportsStorageBox,
   };
 }
 
@@ -391,7 +396,7 @@ function mapBookingCreateData(
     additionalDriverTotal: pricing.breakdown.additionalDriverCost,
     helmetSize1: payload.addons.helmetSize1,
     helmetSize2: payload.addons.helmetSize2,
-    storageBoxSelected: payload.addons.storageBoxSelected,
+    storageBoxSelected: vehicle.supportsStorageBox && payload.addons.storageBoxSelected,
     storageBoxCost: pricing.breakdown.storageBoxCost,
     baseDailyRateSnapshot: pricing.baseDailyRateSnapshot,
     durationDiscountPercentSnapshot: pricing.durationDiscountPercentSnapshot,
@@ -638,6 +643,13 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
   }
 
   const resolvedVehicle = await resolveBookingVehicle(validation.data);
+  const storageBoxError = validateStorageBoxSelection(
+    resolvedVehicle.supportsStorageBox,
+    validation.data.addons.storageBoxSelected,
+  );
+  if (storageBoxError) {
+    throw new SubmitBookingValidationError([storageBoxError]);
+  }
   const durationRules = await getDurationPricingRules();
   if (durationRules.length === 0) {
     throw new SubmitBookingValidationError([

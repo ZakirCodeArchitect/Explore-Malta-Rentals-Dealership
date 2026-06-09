@@ -67,6 +67,7 @@ export function BookingSummaryStep() {
           baseDailyRate: selectedVehicle.baseDailyRate,
           vehicleType: selectedVehicle.apiVehicleType,
           durationRules,
+          supportsStorageBox: selectedVehicle.supportsStorageBox,
         },
         hotelDiscount:
           state.hotelCode.appliedCode && state.hotelCode.discountPercent != null
@@ -85,7 +86,11 @@ export function BookingSummaryStep() {
     }),
     `${t("helmet1")} ${state.addons.helmetSize1 || "-"}`,
     `${t("helmet2")} ${state.addons.helmetSize2 || "-"}`,
-    `${t("storageBox")} ${state.addons.storageBox ? tCommon("yes") : tCommon("no")}`,
+    `${t("storageBox")} ${
+      selectedVehicle?.supportsStorageBox && state.addons.storageBox
+        ? tCommon("yes")
+        : tCommon("no")
+    }`,
   ];
 
   return (

@@ -220,7 +220,10 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
             label={t("details.fields.storageBoxSelected")}
             value={formatYesNo(booking.storageBoxSelected)}
           />
-          <DetailRow label={t("details.fields.storageBoxCost")} value={formatEur(booking.storageBoxCost)} />
+          <DetailRow
+            label={t("details.fields.storageBoxCost")}
+            value={booking.storageBoxSelected ? formatEur(booking.storageBoxCost) : "—"}
+          />
           <DetailRow
             label={t("details.fields.additionalDriverEnabled")}
             value={formatYesNo(booking.additionalDriverEnabled)}
@@ -329,7 +332,10 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
             label={t("details.fields.additionalDriverTotal")}
             value={formatEur(booking.additionalDriverTotal)}
           />
-          <DetailRow label={t("details.fields.storageBoxCost")} value={formatEur(booking.storageBoxCost)} />
+          <DetailRow
+            label={t("details.fields.storageBoxCost")}
+            value={booking.storageBoxSelected ? formatEur(booking.storageBoxCost) : "—"}
+          />
           <DetailRow label={t("details.fields.subtotal")} value={formatEur(booking.subtotal)} />
           <DetailRow label={t("details.fields.depositAmount")} value={formatEur(booking.depositAmount)} />
           <DetailRow

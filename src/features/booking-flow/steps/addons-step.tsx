@@ -8,6 +8,7 @@ import { DocumentUploadField } from "@/features/booking-flow/components/document
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-rental";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   getAllowedLicenseCategories,
   getLicenseCategoryHint,
@@ -56,6 +57,14 @@ export function AddonsStep() {
   );
 
   const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
+  const { vehicles } = useVehicles();
+  const selectedVehicle = useMemo(() => {
+    if (!state.rental.vehicleId) {
+      return null;
+    }
+    return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
+  }, [state.rental.vehicleId, vehicles]);
+  const supportsStorageBox = selectedVehicle?.supportsStorageBox === true;
   const [cdwMenuOpen, setCdwMenuOpen] = useState(false);
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const [helmetSize1MenuOpen, setHelmetSize1MenuOpen] = useState(false);
@@ -151,6 +160,12 @@ export function AddonsStep() {
       updateSection("additionalDriver", { passportIdUpload: "" });
     }
   }, [state.delivery.pickupOption, state.additionalDriver.passportIdUpload, updateSection]);
+
+  useEffect(() => {
+    if (!supportsStorageBox && state.addons.storageBox) {
+      updateSection("addons", { storageBox: false });
+    }
+  }, [supportsStorageBox, state.addons.storageBox, updateSection]);
 
   return (
     <StepShell title={tSteps("title")} description={tSteps("description")}>
@@ -583,17 +598,19 @@ export function AddonsStep() {
         </ul>
       </div>
 
-      <div className="mt-4 rounded-lg border border-slate-200 p-4">
-        <p className="text-sm font-semibold text-slate-900">{t("extraEquipment")}</p>
-        <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            checked={state.addons.storageBox}
-            onChange={(event) => updateSection("addons", { storageBox: event.target.checked })}
-          />
-          {t("storageBoxLabel")}
-        </label>
-      </div>
+      {supportsStorageBox ? (
+        <div className="mt-4 rounded-lg border border-slate-200 p-4">
+          <p className="text-sm font-semibold text-slate-900">{t("extraEquipment")}</p>
+          <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={state.addons.storageBox}
+              onChange={(event) => updateSection("addons", { storageBox: event.target.checked })}
+            />
+            {t("storageBoxLabel")}
+          </label>
+        </div>
+      ) : null}
     </StepShell>
   );
 }

@@ -59,6 +59,7 @@ export function PricingStep() {
         baseDailyRate: selectedVehicle.baseDailyRate,
         vehicleType: selectedVehicle.apiVehicleType,
         durationRules,
+        supportsStorageBox: selectedVehicle.supportsStorageBox,
       },
     });
   }, [durationRules, selectedVehicle, state]);

@@ -15,6 +15,7 @@ import {
   type DurationPricingRuleDto,
 } from "../src/lib/pricing/duration-pricing";
 import { calculateRentalDuration } from "../src/lib/pricing/rental-duration";
+import { validateStorageBoxSelection } from "../src/lib/booking/validateStorageBoxSelection";
 
 type BookingPayload = z.input<typeof bookingSubmissionSchema>;
 
@@ -291,6 +292,69 @@ function runNegativeValidationTests(): void {
   );
 }
 
+function runStorageBoxAssertions(): void {
+  const withStorageBoxSelected = calculateBookingPrice({
+    ...basePricingInput,
+    vehiclePricing: {
+      ...basePricingInput.vehiclePricing,
+      supportsStorageBox: true,
+    },
+    addons: {
+      ...basePricingInput.addons,
+      storageBox: true,
+    },
+  });
+  if (!withStorageBoxSelected) {
+    throw new Error("pricing with storage box selected returned null");
+  }
+  assertApprox("storage box fee when available and selected", withStorageBoxSelected.storageBoxCost, 10);
+  assertApprox(
+    "subtotal includes storage box fee",
+    withStorageBoxSelected.subtotal,
+    withStorageBoxSelected.rentalCost + withStorageBoxSelected.storageBoxCost,
+  );
+
+  const unavailableWithManipulatedSelection = calculateBookingPrice({
+    ...basePricingInput,
+    vehiclePricing: {
+      ...basePricingInput.vehiclePricing,
+      supportsStorageBox: false,
+    },
+    addons: {
+      ...basePricingInput.addons,
+      storageBox: true,
+    },
+  });
+  if (!unavailableWithManipulatedSelection) {
+    throw new Error("pricing with unavailable storage box returned null");
+  }
+  assertApprox(
+    "no storage box fee when vehicle does not support it",
+    unavailableWithManipulatedSelection.storageBoxCost,
+    0,
+  );
+  assertApprox(
+    "subtotal excludes storage box fee when unavailable",
+    unavailableWithManipulatedSelection.subtotal,
+    unavailableWithManipulatedSelection.rentalCost,
+  );
+
+  const validationError = validateStorageBoxSelection(false, true);
+  if (!validationError || validationError.path !== "addons.storageBoxSelected") {
+    throw new Error("expected storage box validation error for unavailable vehicle");
+  }
+
+  if (validateStorageBoxSelection(true, true) !== null) {
+    throw new Error("storage box should be allowed when vehicle supports it");
+  }
+
+  if (validateStorageBoxSelection(false, false) !== null) {
+    throw new Error("storage box should be allowed when not selected");
+  }
+
+  console.log("Storage box assertions passed");
+}
+
 function runHotelDiscountAssertions(): void {
   const hotelDiscountOnly = calculateHotelDiscount(100, 10);
   assertApprox("hotel discount amount", hotelDiscountOnly.discountAmount, 10);
@@ -341,6 +405,7 @@ async function main(): Promise<void> {
   runDurationRuleAssertions();
   runBillableDaysConsistencyAssertions();
   runPricingAssertions();
+  runStorageBoxAssertions();
   runHotelDiscountAssertions();
   runNegativeValidationTests();
   console.log("All checks OK.");
