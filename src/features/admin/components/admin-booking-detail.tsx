@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { AdminBookingPriceBuildup } from "@/features/admin/components/admin-booking-price-buildup";
 import type { AdminBookingDetail } from "@/lib/admin/bookings/types";
 
 type AdminBookingDetailViewProps = Readonly<{
@@ -300,52 +301,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
         </dl>
       </DetailSection>
 
-      <DetailSection title={t("details.sections.pricing")}>
-        <dl>
-          <DetailRow
-            label={t("details.fields.baseDailyRateSnapshot")}
-            value={formatEur(booking.baseDailyRateSnapshot)}
-          />
-          <DetailRow
-            label={t("details.fields.durationDiscountPercentSnapshot")}
-            value={formatPercent(booking.durationDiscountPercentSnapshot)}
-          />
-          <DetailRow
-            label={t("details.fields.appliedDailyRateSnapshot")}
-            value={formatEur(booking.appliedDailyRateSnapshot)}
-          />
-          <DetailRow label={t("details.fields.billableDays")} value={booking.billableDays} />
-          <DetailRow label={t("details.fields.rentalCost")} value={formatEur(booking.rentalCost)} />
-          <DetailRow
-            label={t("details.fields.hotelDiscountAmount")}
-            value={formatEur(booking.hotelDiscountAmountSnapshot)}
-          />
-          <DetailRow
-            label={t("details.fields.subtotalAfterHotelDiscountSnapshot")}
-            value={formatEur(booking.subtotalAfterHotelDiscountSnapshot)}
-          />
-          <DetailRow label={t("details.fields.deliveryFee")} value={formatEur(booking.deliveryFee)} />
-          <DetailRow label={t("details.fields.dropoffFee")} value={formatEur(booking.dropoffFee)} />
-          <DetailRow label={t("details.fields.deliveryTotal")} value={formatEur(booking.deliveryTotal)} />
-          <DetailRow label={t("details.fields.cdwTotal")} value={formatEur(booking.cdwTotal)} />
-          <DetailRow
-            label={t("details.fields.additionalDriverTotal")}
-            value={formatEur(booking.additionalDriverTotal)}
-          />
-          <DetailRow
-            label={t("details.fields.storageBoxCost")}
-            value={booking.storageBoxSelected ? formatEur(booking.storageBoxCost) : "—"}
-          />
-          <DetailRow label={t("details.fields.subtotal")} value={formatEur(booking.subtotal)} />
-          <DetailRow label={t("details.fields.depositAmount")} value={formatEur(booking.depositAmount)} />
-          <DetailRow
-            label={t("details.fields.depositMethod")}
-            value={t(`depositMethod.${booking.depositMethod}` as "depositMethod.ONLINE")}
-          />
-          <DetailRow label={t("details.fields.totalDueOnline")} value={formatEur(booking.totalDueOnline)} />
-          <DetailRow label={t("details.fields.totalDueLater")} value={formatEur(booking.totalDueLater)} />
-        </dl>
-      </DetailSection>
+      <AdminBookingPriceBuildup locale={locale} booking={booking} />
 
       <DetailSection title={t("details.sections.audit")}>
         <dl>

@@ -1325,6 +1325,7 @@
           "additionalDriver": "Additional driver",
           "hotel": "Hotel code & discount",
           "pricing": "Pricing breakdown",
+          "priceBuildup": "Price build-up",
           "audit": "Notes / audit details",
           "history": "Status history"
         },
@@ -1398,6 +1399,31 @@
           "to": "To",
           "admin": "Changed by",
           "note": "Note"
+        },
+        "priceBuildup": {
+          "snapshotNote": "Calculated from stored booking snapshots at submission time. Amounts are not recalculated.",
+          "rentalTitle": "Rental calculation",
+          "originalRental": "Original rental before duration discount",
+          "originalRentalFormula": "{rate} × {days} days",
+          "durationDiscountLine": "Duration discount ({percent})",
+          "rentalSubtotalFormula": "{rate} × {days} days",
+          "hotelTitle": "Hotel discount",
+          "hotelDiscountLine": "Hotel discount ({percent})",
+          "deliveryTitle": "Delivery & drop-off",
+          "combinedSubtotal": "Combined delivery subtotal",
+          "bundleDiscount": "Combined delivery bundle discount",
+          "cdwTitle": "CDW calculation",
+          "cdwTotalFormula": "{rate} × {days} days",
+          "addonsTitle": "Add-ons",
+          "subtotalTitle": "Subtotal calculation",
+          "rentalLineForSubtotal": "Rental subtotal",
+          "plusDeliveryTotal": "+ Delivery total",
+          "plusCdwTotal": "+ CDW total",
+          "plusAdditionalDriver": "+ Additional driver",
+          "plusStorageBox": "+ Storage box",
+          "depositTitle": "Deposit & payment",
+          "depositDueOnlineNote": "Deposit is included in the total due online.",
+          "depositDueLaterNote": "Deposit is payable at pickup and shown in total due later."
         }
       },
       "confirmationEmailStatus": {
