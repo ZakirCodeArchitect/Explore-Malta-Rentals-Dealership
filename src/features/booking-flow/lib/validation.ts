@@ -5,8 +5,6 @@ import { BOOKING_FLOW_STEPS, type BookingFlowStepId } from "@/features/booking-f
 import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-rental";
 import { isLicenseAllowedForVehicle } from "@/features/booking-flow/lib/license-categories";
 import type { BookingFlowState } from "@/features/booking-flow/lib/types";
-import { isOnlinePaymentEnabled } from "@/lib/booking/online-payment-config";
-
 export type BookingValidationMessages = Readonly<{
   vehicleTypeRequired: string;
   pickupOptionRequired: string;
@@ -297,7 +295,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
         message: m.depositMethodRequired,
         path: ["deposit", "depositMethod"],
       });
-    } else if (state.deposit.depositMethod === "online" && !isOnlinePaymentEnabled()) {
+    } else if (state.deposit.depositMethod === "online") {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: m.depositMethodRequired,

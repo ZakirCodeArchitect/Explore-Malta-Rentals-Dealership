@@ -295,20 +295,7 @@ export async function AdminBookingPriceBuildup({ locale, booking }: AdminBooking
             value={t(`depositMethod.${buildup.deposit.method}` as "depositMethod.ONLINE")}
           />
           <BuildupRow
-            label={t("details.fields.amountPayableOnline")}
-            value={
-              buildup.paymentSummary.amountPayableOnline === null
-                ? t("details.priceBuildup.notApplicable")
-                : formatEur(buildup.paymentSummary.amountPayableOnline)
-            }
-          />
-          <BuildupRow
-            label={
-              buildup.paymentSummary.securityDepositDueAtPickup ||
-              !buildup.paymentSummary.onlinePaymentEnabled
-                ? t("details.fields.amountDueAtPickupLater")
-                : t("details.fields.amountDueLater")
-            }
+            label={t("details.fields.amountDueAtPickupLater")}
             value={formatEur(buildup.paymentSummary.amountDueAtPickupLater)}
           />
           <BuildupRow
@@ -318,14 +305,8 @@ export async function AdminBookingPriceBuildup({ locale, booking }: AdminBooking
           />
           <div className="space-y-2 border-b border-slate-200/70 py-3 text-xs text-slate-500 last:border-0">
             <p>{t("details.priceBuildup.securityDepositHelperText")}</p>
-            <p>{t("details.priceBuildup.onlineAmountHelperText")}</p>
             {buildup.paymentSummary.securityDepositDueAtPickup ? (
               <p>{t("details.priceBuildup.securityDepositAtPickupNote")}</p>
-            ) : buildup.deposit.depositIncludedInOnlineTotal ? (
-              <p>{t("details.priceBuildup.securityDepositIncludedOnlineNote")}</p>
-            ) : null}
-            {!buildup.paymentSummary.onlinePaymentEnabled ? (
-              <p>{t("details.priceBuildup.onlinePaymentUnavailableNote")}</p>
             ) : null}
           </div>
         </BuildupSubsection>

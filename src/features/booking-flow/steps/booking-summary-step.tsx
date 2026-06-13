@@ -12,13 +12,11 @@ import {
   getCdwLabel,
 } from "@/lib/pricing/calculate-booking-price";
 import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-summary";
-import { isOnlinePaymentEnabled } from "@/lib/booking/online-payment-config";
 
 export function BookingSummaryStep() {
   const t = useTranslations("BookingWizard.bookingSummary");
   const tCommon = useTranslations("Common");
   const { state, updateSection } = useBookingFlow();
-  const onlinePaymentEnabled = isOnlinePaymentEnabled();
   const { vehicles } = useVehicles();
   const { rules: durationRules } = useDurationPricingRules();
   const selectedVehicle = useMemo(() => {
@@ -81,14 +79,11 @@ export function BookingSummaryStep() {
     [durationRules, selectedVehicle, state],
   );
 
-  const effectiveDepositMethod =
-    onlinePaymentEnabled && state.deposit.depositMethod === "online" ? "online" : "in_person";
-
   useEffect(() => {
-    if (!onlinePaymentEnabled && state.deposit.depositMethod !== "in_person") {
+    if (state.deposit.depositMethod !== "in_person") {
       updateSection("deposit", { depositMethod: "in_person" });
     }
-  }, [onlinePaymentEnabled, state.deposit.depositMethod, updateSection]);
+  }, [state.deposit.depositMethod, updateSection]);
 
   const paymentSummary = useMemo(() => {
     if (!pricing) {
@@ -98,11 +93,11 @@ export function BookingSummaryStep() {
     return buildBookingPaymentSummary({
       subtotal: pricing.subtotal,
       depositAmount: pricing.depositAmount,
-      depositMethod: effectiveDepositMethod,
+      depositMethod: "in_person",
       totalDueOnline: pricing.totalDueOnline,
       totalDueLater: pricing.totalDueLater,
     });
-  }, [pricing, effectiveDepositMethod]);
+  }, [pricing]);
 
   const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
   const addOnList = [
@@ -209,45 +204,9 @@ export function BookingSummaryStep() {
 
           <div className="mt-3">
             <p className="font-semibold text-slate-900">{t("securityDepositMethod")}</p>
-            <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-              {onlinePaymentEnabled ? (
-                <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                  <input
-                    type="radio"
-                    name="summaryDepositMethod"
-                    value="online"
-                    checked={state.deposit.depositMethod === "online"}
-                    onChange={() => updateSection("deposit", { depositMethod: "online" })}
-                  />
-                  {t("paySecurityDepositOnline")}
-                </label>
-              ) : (
-                <label
-                  aria-disabled="true"
-                  className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-400"
-                >
-                  <input
-                    type="radio"
-                    name="summaryDepositMethod"
-                    value="online"
-                    disabled
-                    checked={false}
-                    readOnly
-                  />
-                  {t("paySecurityDepositOnlineUnavailable")}
-                </label>
-              )}
-              <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                <input
-                  type="radio"
-                  name="summaryDepositMethod"
-                  value="in_person"
-                  checked={state.deposit.depositMethod === "in_person"}
-                  onChange={() => updateSection("deposit", { depositMethod: "in_person" })}
-                />
-                {t("paySecurityDepositAtPickup")}
-              </label>
-            </div>
+            <p className="mt-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+              {t("paySecurityDepositAtPickup")}
+            </p>
           </div>
 
           {paymentSummary ? (
@@ -270,20 +229,7 @@ export function BookingSummaryStep() {
                 </span>
               </div>
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-                <span>{t("amountPayableOnline")}</span>
-                <span className="font-medium tabular-nums text-slate-900">
-                  {paymentSummary.amountPayableOnline === null
-                    ? t("notApplicable")
-                    : formatEur(paymentSummary.amountPayableOnline)}
-                </span>
-              </div>
-              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-                <span>
-                  {paymentSummary.securityDepositDueAtPickup ||
-                  !paymentSummary.onlinePaymentEnabled
-                    ? t("amountDueAtPickupLater")
-                    : t("dueLater")}
-                </span>
+                <span>{t("amountDueAtPickupLater")}</span>
                 <span className="font-medium tabular-nums text-slate-900">
                   {formatEur(paymentSummary.amountDueAtPickupLater)}
                 </span>
@@ -296,19 +242,9 @@ export function BookingSummaryStep() {
           ) : null}
 
           <p className="mt-3 text-xs text-slate-600">{t("securityDepositHelperText")}</p>
-          {!paymentSummary?.onlinePaymentEnabled ? (
-            <p className="mt-2 text-xs text-slate-600">{t("onlinePaymentUnavailableNote")}</p>
-          ) : null}
-          {state.deposit.depositMethod === "in_person" ? (
-            <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-              {t("depositAtPickupNote")}
-            </p>
-          ) : null}
-          {state.deposit.depositMethod === "online" && paymentSummary?.onlinePaymentEnabled ? (
-            <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-              {t("depositOnlineNote")}
-            </p>
-          ) : null}
+          <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+            {t("depositAtPickupNote")}
+          </p>
         </div>
       </div>
 

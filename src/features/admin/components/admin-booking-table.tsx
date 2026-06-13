@@ -4,7 +4,6 @@ import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-summary";
-import { isOnlinePaymentEnabled } from "@/lib/booking/online-payment-config";
 import type { AdminBookingListItem, AdminBookingListResult } from "@/lib/admin/bookings/types";
 
 type AdminBookingTableProps = Readonly<{
@@ -70,10 +69,6 @@ function buildPageUrl(
 export function AdminBookingTable({ locale, result, searchParams }: AdminBookingTableProps) {
   const t = useTranslations("Admin.bookings");
   const { items, total, page, totalPages } = result;
-  const onlinePaymentEnabled = isOnlinePaymentEnabled();
-  const paymentColumnLabel = onlinePaymentEnabled
-    ? t("table.amountPayableOnline")
-    : t("table.amountDueAtPickupLater");
 
   function formatPaymentSummaryAmount(booking: AdminBookingListItem): string {
     const summary = buildBookingPaymentSummary({
@@ -84,11 +79,7 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
       totalDueLater: booking.totalDueLater,
     });
 
-    if (summary.amountPayableOnline === null) {
-      return formatEur(summary.amountDueAtPickupLater);
-    }
-
-    return formatEur(summary.amountPayableOnline);
+    return formatEur(summary.amountDueAtPickupLater);
   }
 
   return (
@@ -104,7 +95,7 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
               <th className="px-3 py-2.5 font-semibold">{t("table.return")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.status")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.securityDepositMethod")}</th>
-              <th className="px-3 py-2.5 font-semibold">{paymentColumnLabel}</th>
+              <th className="px-3 py-2.5 font-semibold">{t("table.amountDueAtPickupLater")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.hotelCode")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.created")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.actions")}</th>

@@ -1,5 +1,3 @@
-import { isOnlinePaymentEnabled } from "@/lib/booking/online-payment-config";
-
 export type BookingPaymentSummaryDepositMethod = "ONLINE" | "IN_PERSON" | "online" | "in_person";
 
 export type BookingPaymentSummaryInput = {
@@ -14,7 +12,7 @@ export type BookingPaymentSummary = {
   bookingChargesTotal: number;
   securityDeposit: number;
   securityDepositDueAtPickup: boolean;
-  /** Null when online payment is not active for this booking. */
+  /** Null until online checkout is implemented. */
   amountPayableOnline: number | null;
   amountDueAtPickupLater: number;
   totalCustomerLiability: number;
@@ -38,39 +36,14 @@ export function buildBookingPaymentSummary(
   const totalCustomerLiability = roundMoney(bookingChargesTotal + securityDeposit);
   const depositMethod = normalizeDepositMethod(input.depositMethod);
   const securityDepositDueAtPickup = depositMethod === "IN_PERSON";
-  const onlinePaymentEnabled = isOnlinePaymentEnabled();
-
-  if (!onlinePaymentEnabled) {
-    return {
-      bookingChargesTotal,
-      securityDeposit,
-      securityDepositDueAtPickup,
-      amountPayableOnline: null,
-      amountDueAtPickupLater: totalCustomerLiability,
-      totalCustomerLiability,
-      onlinePaymentEnabled: false,
-    };
-  }
-
-  if (depositMethod === "ONLINE") {
-    return {
-      bookingChargesTotal,
-      securityDeposit,
-      securityDepositDueAtPickup: false,
-      amountPayableOnline: input.totalDueOnline,
-      amountDueAtPickupLater: input.totalDueLater,
-      totalCustomerLiability,
-      onlinePaymentEnabled: true,
-    };
-  }
 
   return {
     bookingChargesTotal,
     securityDeposit,
-    securityDepositDueAtPickup: true,
-    amountPayableOnline: input.totalDueOnline,
-    amountDueAtPickupLater: input.totalDueLater,
+    securityDepositDueAtPickup,
+    amountPayableOnline: null,
+    amountDueAtPickupLater: totalCustomerLiability,
     totalCustomerLiability,
-    onlinePaymentEnabled: true,
+    onlinePaymentEnabled: false,
   };
 }
