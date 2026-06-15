@@ -44,10 +44,18 @@ const textareaClass =
   "mt-2 w-full min-h-[5rem] rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
 
 const quickFilterGroupClass =
-  "inline-flex max-w-full flex-wrap items-center gap-1 rounded-full border border-white/80 bg-white/90 p-1 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.55)] ring-1 ring-white/45 backdrop-blur-md";
+  "inline-flex max-w-full flex-wrap items-center gap-2 rounded-md border-[3px] border-[var(--brand-orange-strong)] bg-white/95 p-2 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.55)] backdrop-blur-md";
+
+const quickFilterCcIconByCc = {
+  "50": "/landing page/50cc.png",
+  "125": "/landing page/125cc.png",
+} as const;
 
 const quickFilterChipClass =
-  "inline-flex h-8 items-center justify-center rounded-full border border-transparent px-3.5 text-xs font-semibold tracking-[-0.01em] text-slate-800 transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-slate-200 hover:bg-slate-100 hover:text-slate-950 hover:shadow-[0_12px_24px_-18px_rgba(15,23,42,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:translate-y-0";
+  "group inline-flex h-12 items-center justify-center gap-2.5 rounded-md border border-transparent px-5 text-base font-semibold tracking-[-0.01em] text-slate-800 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
+
+const quickFilterChipLabelClass =
+  "transition-colors duration-200 group-hover:text-[var(--brand-orange)]";
 
 const formShellGlowClass =
   "pointer-events-none absolute -inset-3 z-0 rounded-2xl opacity-80 blur-2xl bg-[radial-gradient(ellipse_75%_60%_at_0%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_0%_100%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_100%,rgba(255,169,57,0.42),transparent)] sm:-inset-4";
@@ -218,8 +226,6 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     : "";
 
   const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
-  const quickFilterLabelClass =
-    "whitespace-nowrap text-sm font-semibold tracking-normal text-[var(--brand-orange)]";
 
   const vehicleTypeCards = useMemo(
     (): VehicleTypeCard[] => [
@@ -233,26 +239,36 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     [],
   );
 
-  const quickFilterRowClass =
-    "grid w-fit max-w-full grid-cols-[auto_auto] items-center gap-3";
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <div className={quickFilterRowClass}>
-        <div className={quickFilterGroupClass}>
-          <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
-            <span className="tabular-nums">{tSearch("chip50")}</span>
-          </Link>
-          <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
-            <span className="tabular-nums">{tSearch("chip125")}</span>
-          </Link>
-          <Link href="/#services" className={quickFilterChipClass}>
-            {tSearch("chipServices")}
-          </Link>
-        </div>
-        <p className={quickFilterLabelClass}>
-          {tSearch("quickFilterTitle")}
-        </p>
+      <div className={`${quickFilterGroupClass} mx-auto`}>
+        <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
+          <Image
+            src={quickFilterCcIconByCc["50"]}
+            alt=""
+            width={56}
+            height={48}
+            unoptimized
+            className="h-12 w-14 shrink-0 object-contain"
+            aria-hidden
+          />
+          <span className={`tabular-nums ${quickFilterChipLabelClass}`}>{tSearch("chip50")}</span>
+        </Link>
+        <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
+          <Image
+            src={quickFilterCcIconByCc["125"]}
+            alt=""
+            width={36}
+            height={36}
+            unoptimized
+            className="h-9 w-9 shrink-0 object-contain"
+            aria-hidden
+          />
+          <span className={`tabular-nums ${quickFilterChipLabelClass}`}>{tSearch("chip125")}</span>
+        </Link>
+        <Link href="/#services" className={quickFilterChipClass}>
+          <span className={quickFilterChipLabelClass}>{tSearch("chipServices")}</span>
+        </Link>
       </div>
 
       <div className="relative isolate">
