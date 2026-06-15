@@ -2,12 +2,20 @@ import { Prisma } from "@/generated/prisma/client";
 
 import type { AdminVehicleUnitDto } from "@/lib/admin/vehicle-units/types";
 import type { AdminVehicleUnitWriteInput } from "@/lib/admin/vehicle-units/vehicle-unit-schema";
+import { BLOCKING_BOOKING_STATUSES } from "@/lib/availability/types";
 import { prisma } from "@/lib/prisma";
 
 export class DuplicateVehicleUnitLicensePlateError extends Error {
   constructor() {
     super("A vehicle unit with this license plate already exists.");
     this.name = "DuplicateVehicleUnitLicensePlateError";
+  }
+}
+
+export class VehicleUnitHasActiveBookingError extends Error {
+  constructor() {
+    super("This unit is assigned to an active booking and cannot be deactivated or marked unavailable.");
+    this.name = "VehicleUnitHasActiveBookingError";
   }
 }
 
@@ -45,6 +53,32 @@ async function ensureVehicleExists(vehicleId: string): Promise<boolean> {
     select: { id: true },
   });
   return Boolean(vehicle);
+}
+
+async function assertUnitNotBlockingStatusChange(
+  unitId: string,
+  input: AdminVehicleUnitWriteInput,
+): Promise<void> {
+  const becomingUnavailable =
+    !input.isActive ||
+    input.status === "MAINTENANCE" ||
+    input.status === "NOT_AVAILABLE";
+
+  if (!becomingUnavailable) {
+    return;
+  }
+
+  const activeBooking = await prisma.booking.findFirst({
+    where: {
+      vehicleUnitId: unitId,
+      status: { in: [...BLOCKING_BOOKING_STATUSES] },
+    },
+    select: { bookingReference: true },
+  });
+
+  if (activeBooking) {
+    throw new VehicleUnitHasActiveBookingError();
+  }
 }
 
 export async function createAdminVehicleUnit(
@@ -93,6 +127,8 @@ export async function updateAdminVehicleUnit(
   if (!existing) {
     return null;
   }
+
+  await assertUnitNotBlockingStatusChange(unitId, input);
 
   try {
     const unit = await prisma.vehicleUnit.update({

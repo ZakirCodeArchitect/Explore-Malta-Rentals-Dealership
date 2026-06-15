@@ -4,6 +4,7 @@ import {
   adminVehicleUnitWriteSchema,
   deleteAdminVehicleUnit,
   DuplicateVehicleUnitLicensePlateError,
+  VehicleUnitHasActiveBookingError,
   getAdminVehicleUnitDetail,
   updateAdminVehicleUnit,
 } from "@/lib/admin/vehicle-units";
@@ -70,6 +71,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       return NextResponse.json({ success: false as const, message: "Unauthorized" }, { status: 401 });
     }
     if (error instanceof DuplicateVehicleUnitLicensePlateError) {
+      return NextResponse.json({ success: false as const, message: error.message }, { status: 409 });
+    }
+    if (error instanceof VehicleUnitHasActiveBookingError) {
       return NextResponse.json({ success: false as const, message: error.message }, { status: 409 });
     }
     throw error;

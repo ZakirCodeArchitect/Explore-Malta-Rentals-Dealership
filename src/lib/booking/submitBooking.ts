@@ -10,6 +10,11 @@ import {
   assignAvailableVehicleUnit,
   NoAvailableVehicleUnitError,
 } from "@/lib/vehicle-units";
+import {
+  convertHoldOccupancyToBooking,
+  insertBookingOccupancy,
+  isVehicleUnitOccupancyExclusionError,
+} from "@/lib/vehicle-unit-occupancy";
 import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
 import { prisma } from "@/lib/prisma";
 import {
@@ -237,6 +242,23 @@ function isBookingReferenceUniqueConstraintError(error: unknown): boolean {
   return false;
 }
 
+function isIdempotencyKeyUniqueConstraintError(error: unknown): boolean {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") {
+    return false;
+  }
+
+  const target = error.meta?.target;
+  if (Array.isArray(target)) {
+    return target.includes("idempotencyKey");
+  }
+
+  if (typeof target === "string") {
+    return target.includes("idempotencyKey");
+  }
+
+  return false;
+}
+
 function isTransactionWriteConflictError(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034";
 }
@@ -430,6 +452,7 @@ function mapBookingCreateData(
     totalDueLater: pricing.breakdown.totalDueLater,
     termsAccepted: payload.consent.termsAccepted,
     termsAcceptedAt: payload.consent.termsAcceptedAt,
+    idempotencyKey: payload.idempotencyKey,
   };
 }
 
@@ -619,10 +642,43 @@ async function createBookingWithUniqueReference(
               },
             });
 
-            await tx.vehicleUnit.update({
-              where: { id: assignedUnitId },
-              data: { status: "RESERVED" },
-            });
+            try {
+              if (holdForFinalization) {
+                const converted = await convertHoldOccupancyToBooking(
+                  tx,
+                  holdForFinalization.id,
+                  booking.id,
+                );
+                if (!converted) {
+                  await insertBookingOccupancy(tx, {
+                    vehicleUnitId: assignedUnitId,
+                    pickupAt: payload.pickupDateTime,
+                    returnAt: payload.returnDateTime,
+                    bookingId: booking.id,
+                  });
+                }
+              } else {
+                await insertBookingOccupancy(tx, {
+                  vehicleUnitId: assignedUnitId,
+                  pickupAt: payload.pickupDateTime,
+                  returnAt: payload.returnDateTime,
+                  bookingId: booking.id,
+                });
+              }
+            } catch (occupancyError) {
+              if (isVehicleUnitOccupancyExclusionError(occupancyError)) {
+                throw new AvailabilityConflictError(
+                  "Selected vehicle is not available for the chosen dates",
+                  {
+                    vehicleId: vehicle.vehicleId,
+                    vehicleType: vehicle.vehicleType,
+                    requestedStart: payload.pickupDateTime,
+                    requestedEnd: payload.returnDateTime,
+                  },
+                );
+              }
+              throw occupancyError;
+            }
 
             if (holdForFinalization) {
               await tx.reservationHold.update({
@@ -654,6 +710,17 @@ async function createBookingWithUniqueReference(
           }
           throw error;
         }
+        if (isVehicleUnitOccupancyExclusionError(error)) {
+          throw new AvailabilityConflictError(
+            "Selected vehicle is not available for the chosen dates",
+            {
+              vehicleId: vehicle.vehicleId,
+              vehicleType: vehicle.vehicleType,
+              requestedStart: payload.pickupDateTime,
+              requestedEnd: payload.returnDateTime,
+            },
+          );
+        }
         if (isTransactionWriteConflictError(error)) {
           if (conflictAttempt + 1 >= TRANSACTION_WRITE_CONFLICT_RETRY_LIMIT) {
             throw error;
@@ -662,6 +729,14 @@ async function createBookingWithUniqueReference(
             setTimeout(resolve, transactionConflictBackoffMs(conflictAttempt));
           });
           continue;
+        }
+        if (isIdempotencyKeyUniqueConstraintError(error) && payload.idempotencyKey) {
+          const existing = await prisma.booking.findUnique({
+            where: { idempotencyKey: payload.idempotencyKey },
+          });
+          if (existing) {
+            return existing;
+          }
         }
         if (!isBookingReferenceUniqueConstraintError(error)) {
           throw error;
@@ -673,6 +748,39 @@ async function createBookingWithUniqueReference(
   }
 
   throw lastError ?? new Error("Failed to generate a unique booking reference");
+}
+
+async function resolveIdempotentBooking(
+  idempotencyKey: string | null,
+  holdReference: string | null,
+): Promise<SubmitBookingResponse | null> {
+  if (idempotencyKey) {
+    const existing = await prisma.booking.findUnique({
+      where: { idempotencyKey },
+      select: { bookingReference: true },
+    });
+    if (existing) {
+      return { bookingReference: existing.bookingReference };
+    }
+  }
+
+  if (holdReference) {
+    const hold = await prisma.reservationHold.findUnique({
+      where: { holdReference },
+      select: { status: true, bookingId: true },
+    });
+    if (hold?.status === "CONVERTED" && hold.bookingId) {
+      const booking = await prisma.booking.findUnique({
+        where: { id: hold.bookingId },
+        select: { bookingReference: true },
+      });
+      if (booking) {
+        return { bookingReference: booking.bookingReference };
+      }
+    }
+  }
+
+  return null;
 }
 
 async function updateEmailStatus(bookingId: string, wasSent: boolean) {
@@ -712,6 +820,15 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
   if (storageBoxError) {
     throw new SubmitBookingValidationError([storageBoxError]);
   }
+
+  const idempotentResult = await resolveIdempotentBooking(
+    validation.data.idempotencyKey,
+    validation.data.holdReference,
+  );
+  if (idempotentResult) {
+    return idempotentResult;
+  }
+
   const durationRules = await getDurationPricingRules();
   if (durationRules.length === 0) {
     throw new SubmitBookingValidationError([

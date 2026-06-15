@@ -61,6 +61,20 @@ const OPTIONAL_HOLD_REFERENCE = z.preprocess(
   z.string().min(1, "Hold reference must not be empty").max(80).optional(),
 );
 
+const OPTIONAL_IDEMPOTENCY_KEY = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    if (typeof value !== "string") {
+      return value;
+    }
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  },
+  z.string().min(8, "Idempotency key must be at least 8 characters").max(128).optional(),
+);
+
 const OPTIONAL_HOTEL_CODE = z.preprocess(
   (value) => {
     if (value === undefined || value === null) {
@@ -201,6 +215,7 @@ export const bookingSubmissionSchema = z
       .strict(),
     vehicleId: OPTIONAL_VEHICLE_ID,
     holdReference: OPTIONAL_HOLD_REFERENCE,
+    idempotencyKey: OPTIONAL_IDEMPOTENCY_KEY,
     hotelCode: OPTIONAL_HOTEL_CODE,
     delivery: z
       .object({

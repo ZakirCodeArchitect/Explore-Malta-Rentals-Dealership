@@ -2,6 +2,7 @@ import type { AdminBookingDetail } from "@/lib/admin/bookings/types";
 import { getAdminBookingById } from "@/lib/admin/bookings/getAdminBookingById";
 import type { CancelBookingInput } from "@/lib/admin/bookings/lifecycle/booking-lifecycle-schema";
 import { recordBookingStatusChange } from "@/lib/admin/bookings/lifecycle/recordBookingStatusChange";
+import { deleteOccupancyForBooking } from "@/lib/vehicle-unit-occupancy";
 import { prisma } from "@/lib/prisma";
 
 export type CancelBookingResult =
@@ -69,6 +70,8 @@ export async function cancelBooking(
         data: { status: "AVAILABLE" },
       });
     }
+
+    await deleteOccupancyForBooking(tx, bookingId);
 
     await recordBookingStatusChange(tx, {
       bookingId,
