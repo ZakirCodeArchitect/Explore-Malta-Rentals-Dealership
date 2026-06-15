@@ -134,13 +134,15 @@
         "title": "Biciclette da 50 cc",
         "description": "Facile da guidare, perfetto per girare in tutta sicurezza lungo la costa e le strade cittadine di Malta.",
         "bullet1": "Gestione adatta ai principianti",
-        "bullet2": "Configurazione incentrata sul comfort"
+        "bullet2": "Configurazione incentrata sul comfort",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "Biciclette da 125 cc",
         "description": "Per i ciclisti che desiderano un po' più di potenza e prestazioni fluide sui percorsi più lunghi.",
         "bullet1": "Ottimo per gite di un giorno",
-        "bullet2": "Comfort + controllo bilanciati"
+        "bullet2": "Comfort + controllo bilanciati",
+        "subtitle": "Motocicletta"
       }
     },
     "testimonials": {

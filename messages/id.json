@@ -134,13 +134,15 @@
         "title": "Sepeda 50cc",
         "description": "Mudah dikendarai, cocok untuk menjelajahi pantai dan jalanan kota Malta dengan percaya diri.",
         "bullet1": "Penanganan yang ramah bagi pemula",
-        "bullet2": "Pengaturan yang berfokus pada kenyamanan"
+        "bullet2": "Pengaturan yang berfokus pada kenyamanan",
+        "subtitle": "Skuter"
       },
       "125cc": {
         "title": "Sepeda 125cc",
         "description": "Untuk pengendara yang menginginkan tenaga lebih besar dan performa mulus di rute yang lebih jauh.",
         "bullet1": "Cocok untuk perjalanan sehari",
-        "bullet2": "Kenyamanan + kontrol yang seimbang"
+        "bullet2": "Kenyamanan + kontrol yang seimbang",
+        "subtitle": "Sepeda motor"
       }
     },
     "testimonials": {

@@ -134,13 +134,15 @@
         "title": "Motos 50cc",
         "description": "Facile à conduire, parfait pour se balader sur la côte et les rues de la ville de Malta en toute confiance.",
         "bullet1": "Maniabilité adaptée aux débutants",
-        "bullet2": "Configuration axée sur le confort"
+        "bullet2": "Configuration axée sur le confort",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "Motos 125cc",
         "description": "Pour les motards qui veulent un peu plus de puissance et des performances fluides sur les trajets plus longs.",
         "bullet1": "Idéal pour les excursions d'une journée",
-        "bullet2": "Confort + contrôle équilibrés"
+        "bullet2": "Confort + contrôle équilibrés",
+        "subtitle": "Moto"
       }
     },
     "testimonials": {

@@ -134,13 +134,15 @@
         "title": "50cc Bisikletler",
         "description": "Sürüşü kolay, Malta kıyılarında ve şehir sokaklarında güvenle gezinmek için mükemmel.",
         "bullet1": "Başlangıç ​​dostu kullanım",
-        "bullet2": "Konfor odaklı kurulum"
+        "bullet2": "Konfor odaklı kurulum",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "125cc Bisikletler",
         "description": "Daha uzun rotalarda biraz daha fazla güç ve akıcı performans isteyen sürücüler için.",
         "bullet1": "Günlük geziler için harika",
-        "bullet2": "Dengeli konfor + kontrol"
+        "bullet2": "Dengeli konfor + kontrol",
+        "subtitle": "Motosiklet"
       }
     },
     "testimonials": {

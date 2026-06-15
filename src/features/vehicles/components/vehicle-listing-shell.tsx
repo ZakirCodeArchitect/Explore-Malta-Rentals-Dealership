@@ -7,7 +7,6 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
-import Image from "next/image";
 import { addDays } from "date-fns";
 import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
 import { useSearchParams } from "next/navigation";
@@ -16,7 +15,6 @@ import { useTranslations } from "next-intl";
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
-import { LOGO_PATH } from "@/lib/site-brand-copy";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
@@ -604,31 +602,16 @@ export function VehicleListingShell({
     const heroSection = (
       <section
         aria-labelledby="vehicles-heading"
-        className="relative isolate overflow-hidden pb-12 pt-28 sm:pb-14 sm:pt-32"
+        className="relative isolate overflow-hidden border-b border-slate-200/70 bg-white pb-12 pt-28 sm:pb-14 sm:pt-32"
       >
-        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-          <div className="absolute inset-0 flex items-start justify-center bg-[#0b1624] pt-28 sm:pt-32">
-            <Image
-              src={LOGO_PATH}
-              alt=""
-              width={480}
-              height={96}
-              className="h-auto w-[min(88%,26rem)] max-w-full object-contain opacity-[0.38]"
-              style={{ height: "auto" }}
-              priority={false}
-            />
-          </div>
-          <div className="absolute inset-0 bg-slate-950/35" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.72)_0%,rgba(15,23,42,0.38)_55%,rgba(15,23,42,0.12)_100%)]" />
-        </div>
         <Container className="relative z-10">
           <h1
             id="vehicles-heading"
-            className="text-4xl font-semibold tracking-[-0.04em] text-white drop-shadow-[0_1px_24px_rgba(15,23,42,0.35)] sm:text-5xl"
+            className="text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl"
           >
             {heroIntro.title}
           </h1>
-          <p className="mt-4 max-w-3xl text-base leading-relaxed text-white/90 sm:text-lg">
+          <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
             {heroIntro.description}
           </p>
           <div className="mt-8">{searchPanel ?? filters}</div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ButtonLink } from "@/components/ui/button-link";
 import {
@@ -20,6 +21,7 @@ export function BikeCategoryCard({ cat }: BikeCategoryCardProps) {
   const tDynamic = t as unknown as (key: string) => string;
   const tHome = useTranslations("Home");
   const title = tDynamic(`${cat.id}.title`);
+  const subtitle = tDynamic(`${cat.id}.subtitle`);
   const description = tDynamic(`${cat.id}.description`);
   const bullet1 = tDynamic(`${cat.id}.bullet1`);
   const bullet2 = tDynamic(`${cat.id}.bullet2`);
@@ -49,29 +51,41 @@ export function BikeCategoryCard({ cat }: BikeCategoryCardProps) {
 
       <div className="relative flex min-w-0 flex-col-reverse gap-5 md:flex-row md:items-start md:gap-5 lg:gap-6">
         <div className="relative z-10 min-w-0 flex-1 basis-0">
-          <h3 className="text-xl font-bold tracking-[-0.03em] text-slate-950 sm:text-2xl">
-            {title}
-          </h3>
+          <div>
+            <h3 className="text-lg font-bold tracking-[-0.03em] text-slate-950 sm:text-xl">
+              {title}
+            </h3>
+            <p className="mt-0.5 text-[10px] font-medium tracking-wide text-slate-400 sm:text-[11px]">
+              {subtitle}
+            </p>
+          </div>
 
-          <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:mt-4 sm:text-base">
-            {description}
-          </p>
+          <div className="mt-6 sm:mt-8">
+            <p className="text-xs leading-relaxed text-slate-600 sm:text-sm">
+              {description}
+            </p>
 
-          <ul className="mt-4 space-y-2">
-            {[bullet1, bullet2].map((b) => (
-              <li key={b} className="flex items-start gap-2 text-sm text-slate-700">
-                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-slate-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-orange)]" aria-hidden />
-                </span>
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
+            <ul className="mt-3 space-y-1.5">
+              {[bullet1, bullet2].map((b) => (
+                <li key={b} className="flex items-start gap-2 text-xs text-slate-700 sm:text-sm">
+                  <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-slate-200">
+                    <span className="h-1 w-1 rounded-full bg-[var(--brand-orange)]" aria-hidden />
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
 
-          <div className="mt-5">
-            <ButtonLink href="/vehicles" variant="primary" className="inline-flex min-h-10 px-4 py-2 text-sm">
-              {tHome("heroViewFleet")}
-            </ButtonLink>
+            <div className="mt-4">
+              <ButtonLink
+                href="/vehicles"
+                variant="primary"
+                className="!min-h-7 !gap-1 !rounded !px-2.5 !py-0.5 !text-[11px] !font-medium !leading-tight !text-white sm:!min-h-7 sm:!px-2.5 sm:!py-0.5 sm:!text-[11px]"
+              >
+                <span>{tHome("heroViewFleet")}</span>
+                <ArrowRight className="size-3 shrink-0" aria-hidden />
+              </ButtonLink>
+            </div>
           </div>
         </div>
 

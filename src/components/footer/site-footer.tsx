@@ -151,13 +151,13 @@ export async function SiteFooter() {
 
         <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-4">
-            <Link href="/" className="inline-block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d18]">
+            <Link href="/" className="inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d18]">
               <Image
                 src={logoSrc}
                 alt={brandName}
                 width={300}
                 height={52}
-                className="h-11 w-auto max-w-full rounded-md object-contain object-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
+                className="h-11 w-auto max-w-full object-contain object-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]"
                 style={{ width: "auto" }}
               />
             </Link>

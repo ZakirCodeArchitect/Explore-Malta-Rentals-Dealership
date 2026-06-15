@@ -134,13 +134,15 @@
         "title": "50cc 摩托车",
         "description": "易于驾驶，非常适合自信地漫游 Malta 的海岸和城市街道。",
         "bullet1": "适合初学者操控",
-        "bullet2": "注重舒适的设置"
+        "bullet2": "注重舒适的设置",
+        "subtitle": "踏板车"
       },
       "125cc": {
         "title": "125cc 摩托车",
         "description": "适合需要更多动力和在较长路线上平稳行驶的骑手。",
         "bullet1": "非常适合一日游",
-        "bullet2": "平衡舒适与操控"
+        "bullet2": "平衡舒适与操控",
+        "subtitle": "摩托车"
       }
     },
     "testimonials": {

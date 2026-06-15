@@ -97,8 +97,8 @@
     "aboutParagraph1": "We rent motorcycles, ATVs, and bikes from Pietà, Malta, so exploring the island feels straightforward, not stressful.",
     "aboutParagraph2": "We help you pick the right vehicle and plan; our team is safety-minded, service-focused, and built for visitors.",
     "quickCtaKicker": "Your next chapter",
-    "quickCtaTitle": "Malta is waiting — make it yours.",
-    "quickCtaDescription": "Explore Malta Rentals — your go-to choice to experience Malta your way. From affordable self-drive options to guided tours, we are passionate about helping locals and visitors experience the beauty of Malta in the most free, flexible, and affordable way possible. It starts with one booking.",
+    "quickCtaTitle": "Malta is waiting, Make it yours.",
+    "quickCtaDescription": "Explore Malta Rentals, your go-to choice to experience Malta your way. From affordable self-drive options to guided tours, we are passionate about helping locals and visitors experience the beauty of Malta in the most free, flexible, and affordable way possible. It starts with one booking.",
     "quickCtaPrimary": "Start your journey",
     "quickCtaSecondary": "Contact us",
     "sectionFleetTitle": "Our fleet & categories",
@@ -134,13 +134,15 @@
         "title": "50cc Bikes",
         "description": "Easy to ride, perfect for cruising Malta's coast and city streets with confidence.",
         "bullet1": "Beginner-friendly handling",
-        "bullet2": "Comfort-focused setup"
+        "bullet2": "Comfort-focused setup",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "125cc Bikes",
         "description": "For riders who want a bit more power and smooth performance on longer routes.",
         "bullet1": "Great for day trips",
-        "bullet2": "Balanced comfort + control"
+        "bullet2": "Balanced comfort + control",
+        "subtitle": "Motorcycle"
       }
     },
     "testimonials": {
@@ -231,7 +233,7 @@
   },
   "Contact": {
     "title": "Contact us",
-    "description": "Call, message, or visit — we're here to help you choose the right ride. Your mobile number and map location are below.",
+    "description": "Call, message, or visit, we're here to help you choose the right ride. Your mobile number and map location are below.",
     "whatsappTitle": "Send a WhatsApp message",
     "whatsappBody": "We'll help you pick the right ride and answer availability questions.",
     "envWhatsappHint": "Set NEXT_PUBLIC_WHATSAPP_NUMBER to enable the WhatsApp button."

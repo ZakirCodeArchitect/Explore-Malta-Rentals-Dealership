@@ -11,14 +11,9 @@ export async function BikeCategoriesSection() {
     <section
       id="fleet-preview"
       aria-labelledby="bike-categories-title"
-      className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-0"
+      className="scroll-mt-28 border-t border-slate-200/70 bg-white py-0"
     >
       <div className="relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(58,124,165,0.08),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(255,169,57,0.08),transparent_45%)]"
-        />
-
         <Container className="relative z-10 py-6 sm:py-8">
           <SectionHeader
             titleId="bike-categories-title"

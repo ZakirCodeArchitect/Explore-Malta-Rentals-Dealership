@@ -179,7 +179,7 @@ export function AdminSidebarBrand({ collapsed = false, onToggleCollapsed }: Admi
           alt={t("loginLogoAlt")}
           width={36}
           height={36}
-          className="size-9 shrink-0 rounded-lg object-contain"
+          className="size-9 shrink-0 object-contain"
         />
         <div className={["min-w-0", collapsed ? "sr-only lg:sr-only" : ""].join(" ")}>
           <p className="truncate text-sm font-bold text-slate-900">{t("brandShort")}</p>

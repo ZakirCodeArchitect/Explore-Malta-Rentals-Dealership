@@ -49,6 +49,12 @@ const quickFilterGroupClass =
 const quickFilterChipClass =
   "inline-flex h-8 items-center justify-center rounded-full border border-transparent px-3.5 text-xs font-semibold tracking-[-0.01em] text-slate-800 transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-slate-200 hover:bg-slate-100 hover:text-slate-950 hover:shadow-[0_12px_24px_-18px_rgba(15,23,42,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:translate-y-0";
 
+const formShellGlowClass =
+  "pointer-events-none absolute -inset-3 z-0 rounded-2xl opacity-80 blur-2xl bg-[radial-gradient(ellipse_75%_60%_at_0%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_0%_100%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_100%,rgba(255,169,57,0.42),transparent)] sm:-inset-4";
+
+const formShellClass =
+  "relative z-10 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] sm:p-5 lg:p-6";
+
 const vehicleTypeIconByType: Record<
   (typeof VEHICLE_TYPES)[number],
   Readonly<{ src: string; className?: string }>
@@ -213,9 +219,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
 
   const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
   const quickFilterLabelClass =
-    quickFilterTone === "hero"
-      ? "whitespace-nowrap text-sm font-semibold tracking-normal text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.95)]"
-      : "whitespace-nowrap text-sm font-semibold tracking-normal text-[var(--brand-orange)]";
+    "whitespace-nowrap text-sm font-semibold tracking-normal text-[var(--brand-orange)]";
 
   const vehicleTypeCards = useMemo(
     (): VehicleTypeCard[] => [
@@ -229,9 +233,12 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     [],
   );
 
+  const quickFilterRowClass =
+    "grid w-fit max-w-full grid-cols-[auto_auto] items-center gap-3";
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <div className="grid w-fit max-w-full grid-cols-[auto_auto] items-center gap-3">
+      <div className={quickFilterRowClass}>
         <div className={quickFilterGroupClass}>
           <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
             <span className="tabular-nums">{tSearch("chip50")}</span>
@@ -248,9 +255,11 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
         </p>
       </div>
 
-      <div className="rounded-xl border border-slate-200/80 bg-[color-mix(in_srgb,var(--surface-card)_96%,white)] p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:p-5 lg:p-6">
+      <div className="relative isolate">
+        <div className={formShellGlowClass} aria-hidden />
+        <div className={formShellClass}>
         <div className="flex flex-col gap-5">
-          <div className="flex items-center gap-4 rounded-lg border border-slate-100 bg-[var(--surface-soft)]/60 px-4 py-3">
+          <div className="flex items-center gap-4 rounded-lg border border-slate-100 bg-white px-4 py-3">
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-500">{tSearch("pickupLocationTitle")}</p>
               <p className="mt-1 flex items-start gap-2 text-sm font-semibold text-slate-900">
@@ -602,6 +611,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
             </>
             )}
           </button>
+        </div>
         </div>
       </div>
     </form>

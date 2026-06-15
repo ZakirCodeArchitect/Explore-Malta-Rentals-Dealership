@@ -41,17 +41,13 @@ export async function HighlightedServicesSection() {
     <section
       id="services"
       aria-labelledby="services-title"
-      className="relative scroll-mt-28 overflow-hidden border-t border-slate-200/80 bg-gradient-to-b from-[var(--surface-soft)] via-[var(--surface-elevated)] to-[var(--background)] py-16 sm:py-20 lg:py-24"
+      className="relative scroll-mt-28 overflow-hidden border-t border-slate-200/80 bg-gradient-to-b from-[color-mix(in_srgb,var(--brand-orange)_10%,white)] via-white to-white py-16 sm:py-20 lg:py-24"
     >
-      <div
-        className="pointer-events-none absolute left-[max(-8rem,calc(50%-38rem))] top-0 h-72 w-72 rounded-full bg-[var(--brand-blue)]/[0.12] blur-[100px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 right-[max(-6rem,calc(50%-36rem))] h-64 w-64 rounded-full bg-[var(--brand-orange)]/[0.08] blur-[90px]"
-        aria-hidden
-      />
-
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-[var(--brand-orange)]/25 blur-3xl" />
+        <div className="absolute -right-16 bottom-1/4 h-72 w-72 rounded-full bg-[var(--brand-orange-strong)]/20 blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--brand-orange)]/10 blur-3xl" />
+      </div>
       <Container className="relative">
         <SectionHeader
           kicker={t("highlightedServicesKicker")}
