@@ -1,9 +1,9 @@
 import type { VehicleUnitStatus } from "@/generated/prisma/client";
 
-export const ASSIGNABLE_VEHICLE_UNIT_STATUSES: readonly VehicleUnitStatus[] = ["AVAILABLE"];
+/** Physical/operational statuses that allow unit assignment when active. Date locks use VehicleUnitOccupancy. */
+export const ASSIGNABLE_VEHICLE_UNIT_STATUSES: readonly VehicleUnitStatus[] = ["AVAILABLE", "RESERVED"];
 
 export const NON_BOOKABLE_VEHICLE_UNIT_STATUSES: readonly VehicleUnitStatus[] = [
-  "RESERVED",
   "OUT_WITH_CUSTOMER",
   "MAINTENANCE",
   "NOT_AVAILABLE",

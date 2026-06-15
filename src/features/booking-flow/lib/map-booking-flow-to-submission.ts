@@ -74,6 +74,7 @@ function pathOrNull(value: string): string | null {
 export function mapBookingFlowStateToSubmission(
   state: BookingFlowState,
   holdReference: string | null,
+  idempotencyKey?: string,
 ): BookingSubmissionInput {
   const apiVehicle = mapVehicleTypeToApiVehicleType(state.rental.vehicleType, state.rental.vehicleSlug);
   const helmetRequired = isHelmetRequiredForApiVehicle(apiVehicle);
@@ -90,6 +91,7 @@ export function mapBookingFlowStateToSubmission(
 
   return {
     holdReference: holdReference ?? undefined,
+    idempotencyKey,
     rental: {
       vehicleId: state.rental.vehicleId ?? undefined,
       vehicleType: apiVehicle,

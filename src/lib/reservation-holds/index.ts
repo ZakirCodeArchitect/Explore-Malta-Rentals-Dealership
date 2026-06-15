@@ -5,6 +5,11 @@ import { z } from "zod";
 import { Prisma, VehicleType, type ReservationHoldStatus } from "@/generated/prisma/index";
 import { checkVehicleAvailability } from "@/lib/availability";
 import { assignAvailableVehicleUnit } from "@/lib/vehicle-units";
+import {
+  deleteOccupancyForHold,
+  insertHoldOccupancy,
+  isVehicleUnitOccupancyExclusionError,
+} from "@/lib/vehicle-unit-occupancy";
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 import { prisma } from "@/lib/prisma";
 
@@ -165,6 +170,7 @@ async function expireHoldWhenStale(holdId: string, db: Prisma.TransactionClient 
       status: "EXPIRED",
     },
   });
+  await deleteOccupancyForHold(db, holdId);
 }
 
 const holdSelect = {
@@ -317,7 +323,24 @@ async function runCreateReservationHoldTransaction(
         assignedUnit.vehicleUnitId,
         resolvedVehicleType,
         tx,
-      );
+      ).then(async (hold) => {
+        try {
+          await insertHoldOccupancy(tx, {
+            vehicleUnitId: assignedUnit.vehicleUnitId,
+            pickupAt: input.pickupDateTime,
+            returnAt: input.returnDateTime,
+            reservationHoldId: hold.id,
+          });
+        } catch (occupancyError) {
+          if (isVehicleUnitOccupancyExclusionError(occupancyError)) {
+            throw new ReservationHoldConflictError(
+              "Selected vehicle is not available for the chosen dates",
+            );
+          }
+          throw occupancyError;
+        }
+        return hold;
+      });
     },
     {
       isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
@@ -404,6 +427,7 @@ export async function releaseReservationHold(holdReference: string) {
     data: { status: "RELEASED" },
     select: holdSelect,
   });
+  await deleteOccupancyForHold(prisma, hold.id);
 
   return {
     released: true,
@@ -414,3 +438,6 @@ export async function releaseReservationHold(holdReference: string) {
 export function toReservationHoldStatusResponse(hold: ReservationHoldRecord) {
   return toReservationHoldResponse(hold);
 }
+
+export { cleanupExpiredHolds, type CleanupExpiredHoldsResult } from "@/lib/reservation-holds/cleanupExpiredHolds";
+export { releaseStaleHoldOccupancy } from "@/lib/reservation-holds/releaseStaleHoldOccupancy";

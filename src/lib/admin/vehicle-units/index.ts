@@ -8,6 +8,7 @@ export {
   createAdminVehicleUnit,
   deleteAdminVehicleUnit,
   DuplicateVehicleUnitLicensePlateError,
+  VehicleUnitHasActiveBookingError,
   updateAdminVehicleUnit,
   type DeleteAdminVehicleUnitResult,
 } from "@/lib/admin/vehicle-units/mutateAdminVehicleUnit";

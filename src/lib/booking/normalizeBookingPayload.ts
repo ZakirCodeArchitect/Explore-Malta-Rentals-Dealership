@@ -40,6 +40,7 @@ export function normalizeBookingPayload(payload: BookingSubmission): NormalizedB
 
   return {
     holdReference: payload.holdReference ?? null,
+    idempotencyKey: payload.idempotencyKey ?? null,
     hotelCode: payload.hotelCode ? normalizeHotelCode(payload.hotelCode) : null,
     vehicleId,
     vehicleType: payload.rental.vehicleType,
