@@ -281,6 +281,43 @@ function BookingFlowBody({
         setTermsModalOpen(false);
         clearPendingBookingSessionUploads(bookingSessionId);
         clearReservationHold();
+
+        // If online payment is due, redirect to Stripe Checkout
+        if (result.totalDueOnline > 0) {
+          try {
+            const checkoutRes = await fetch("/api/stripe/checkout", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingReference: result.bookingReference,
+                locale: "en",
+              }),
+            });
+            const checkoutData = (await checkoutRes.json()) as { ok: boolean; checkoutUrl?: string; error?: string };
+
+            if (checkoutData.ok && checkoutData.checkoutUrl) {
+              // Hard redirect — Stripe Checkout runs on Stripe's domain
+              window.location.href = checkoutData.checkoutUrl;
+              return;
+            }
+
+            // Checkout session creation failed — show error but booking already exists
+            setSubmitError(
+              checkoutData.error ??
+              `Booking ${result.bookingReference} created but could not start payment. Please contact support.`,
+            );
+            resetBookingForm();
+            return;
+          } catch {
+            setSubmitError(
+              `Booking ${result.bookingReference} created but could not start payment. Please contact support.`,
+            );
+            resetBookingForm();
+            return;
+          }
+        }
+
+        // No online payment required (legacy pay-at-pickup flow)
         resetBookingForm();
         resetSubmitAttempt();
         router.push(
@@ -289,89 +326,25 @@ function BookingFlowBody({
         return;
       }
 
-      if (pendingUpload.category === "customer_license") {
-        payload.customer.licenseUploadPath = uploaded.relativePath;
-      } else if (pendingUpload.category === "customer_passport") {
-        payload.customer.passportUploadPath = uploaded.relativePath;
-      } else if (pendingUpload.category === "additional_driver_passport") {
-        payload.additionalDriver.passportUploadPath = uploaded.relativePath;
-      } else if (pendingUpload.category === "additional_driver_license") {
-        payload.additionalDriver.licenseUploadPath = uploaded.relativePath;
-      }
-    }
-
-    const result = await submitBooking(payload);
-
-    if (result.ok) {
       setTermsModalOpen(false);
-      clearPendingBookingSessionUploads(bookingSessionId);
-      clearReservationHold();
+      updateSection("consent", { termsAccepted: false, termsAcceptedAt: "" });
 
-      // If online payment is due, redirect to Stripe Checkout
-      if (result.totalDueOnline > 0) {
-        try {
-          const checkoutRes = await fetch("/api/stripe/checkout", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              bookingReference: result.bookingReference,
-              locale: "en",
-            }),
-          });
-          const checkoutData = (await checkoutRes.json()) as { ok: boolean; checkoutUrl?: string; error?: string };
-
-          if (checkoutData.ok && checkoutData.checkoutUrl) {
-            // Hard redirect — Stripe Checkout runs on Stripe's domain
-            window.location.href = checkoutData.checkoutUrl;
-            return;
-          }
-
-          // Checkout session creation failed — show error but booking already exists
-          setSubmitting(false);
-          setSubmitError(
-            checkoutData.error ??
-            `Booking ${result.bookingReference} created but could not start payment. Please contact support.`,
-          );
-          resetBookingForm();
-          return;
-        } catch {
-          setSubmitting(false);
-          setSubmitError(
-            `Booking ${result.bookingReference} created but could not start payment. Please contact support.`,
-          );
-          resetBookingForm();
-          return;
+      if (result.errors?.length) {
+        applyApiValidationErrors(result.errors);
+        const mapped = result.errors.filter((err) => mapApiBookingErrorPathToFormPath(err.path));
+        const unmapped = result.errors.filter((err) => !mapApiBookingErrorPathToFormPath(err.path));
+        const parts = [
+          result.message,
+          unmapped.length ? summarizeApiBookingErrors(unmapped) : "",
+          mapped.length ? t("issuesHighlighted") : "",
+        ].filter(Boolean);
+        setSubmitError(parts.join(" "));
+        const holdConflict = result.errors.some((err) => err.path === "holdReference");
+        if (holdConflict || result.status === 409) {
+          markReservationHoldExpired(t("holdExpiredDefault"));
         }
+        return;
       }
-
-      // No online payment required (legacy pay-at-pickup flow)
-      setSubmitting(false);
-      resetBookingForm();
-      router.push(
-        `/booking?ref=${encodeURIComponent(result.bookingReference)}&submitted=1&email=${encodeURIComponent(payload.customer.email)}&vehicle=${encodeURIComponent(state.rental.vehicleSlug || state.rental.vehicleType)}`,
-      );
-      return;
-    }
-
-    setTermsModalOpen(false);
-    updateSection("consent", { termsAccepted: false, termsAcceptedAt: "" });
-
-    if (result.errors?.length) {
-      applyApiValidationErrors(result.errors);
-      const mapped = result.errors.filter((err) => mapApiBookingErrorPathToFormPath(err.path));
-      const unmapped = result.errors.filter((err) => !mapApiBookingErrorPathToFormPath(err.path));
-      const parts = [
-        result.message,
-        unmapped.length ? summarizeApiBookingErrors(unmapped) : "",
-        mapped.length ? t("issuesHighlighted") : "",
-      ].filter(Boolean);
-      setSubmitError(parts.join(" "));
-      const holdConflict = result.errors.some((err) => err.path === "holdReference");
-      if (holdConflict || result.status === 409) {
-        markReservationHoldExpired(t("holdExpiredDefault"));
-      }
-      return;
-    }
 
       if (result.status === 409) {
         markReservationHoldExpired(t("holdExpiredDefault"));
