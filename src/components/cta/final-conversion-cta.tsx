@@ -152,12 +152,6 @@ export function FinalConversionCta({
           </p>
         </div>
       </div>
-
-      {/* Bottom edge blend into footer */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-t from-[var(--background)] to-transparent"
-        aria-hidden
-      />
     </section>
   );
 }

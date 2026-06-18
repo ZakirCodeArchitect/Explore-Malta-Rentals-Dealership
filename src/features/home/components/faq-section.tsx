@@ -3,7 +3,6 @@
 import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/container";
-import { WhatsAppIcon } from "@/features/home/components/whatsapp-action-link";
 import { faqItems } from "@/features/home/data/faq-content";
 
 function FaqIcon() {
@@ -41,23 +40,9 @@ export function FaqSection() {
     <section
       id="faq"
       aria-labelledby={`${baseId}-faq-heading`}
-      className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-elevated)] py-16 sm:py-20"
+      className="scroll-mt-28 border-t border-slate-200/70 bg-white py-16 sm:py-20"
     >
       <div className="relative">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-56 sm:h-64"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at center, rgb(226 232 240) 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
-            maskImage:
-              "linear-gradient(to bottom, black 0%, black 35%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black 0%, black 35%, transparent 100%)",
-          }}
-        />
-
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
             <FaqIcon />
@@ -69,8 +54,7 @@ export function FaqSection() {
             </h2>
             <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
               {t("subtitleLead")}
-              <span className="inline-flex items-center gap-1.5 align-middle font-medium text-slate-800">
-                <WhatsAppIcon className="h-[1.1em] w-[1.1em] shrink-0 text-[#25D366]" />
+              <span className="font-medium text-slate-800">
                 {tWhatsApp("faqLabel")}
               </span>
               {t("subtitleTail")}
@@ -97,13 +81,13 @@ export function FaqSection() {
                     }
                   >
                     {isOpen ? (
-                      <div className="rounded-xl bg-[#f1f5f9] px-5 py-5 shadow-[0_1px_0_rgba(15,23,42,0.04)] transition-[box-shadow,background-color] duration-200 ease-out hover:bg-slate-100 hover:shadow-[0_8px_28px_-14px_rgba(15,23,42,0.12)] sm:px-6 sm:py-6">
+                      <div className="rounded-xl border border-slate-200/90 bg-white px-5 py-5 shadow-[0_1px_0_rgba(15,23,42,0.04)] transition-[box-shadow,background-color] duration-200 ease-out hover:shadow-[0_8px_28px_-14px_rgba(15,23,42,0.12)] sm:px-6 sm:py-6">
                         <button
                           id={buttonId}
                           type="button"
                           aria-expanded
                           aria-controls={panelId}
-                          className="group flex w-full items-start justify-between gap-4 rounded-lg text-left transition-colors duration-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f1f5f9]"
+                          className="group flex w-full items-start justify-between gap-4 rounded-lg text-left transition-colors duration-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                           onClick={() =>
                             setOpenId((prev) =>
                               prev === item.id ? null : item.id,

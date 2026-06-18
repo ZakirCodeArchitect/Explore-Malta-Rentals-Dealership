@@ -6,6 +6,7 @@ export {
   AvailabilityConflictError,
 } from "@/lib/booking/submitBooking";
 export { validateBookingPayload } from "@/lib/booking/validateBookingPayload";
+export { validateStorageBoxSelection } from "@/lib/booking/validateStorageBoxSelection";
 export type {
   BookingSubmission,
   BookingSubmissionInput,

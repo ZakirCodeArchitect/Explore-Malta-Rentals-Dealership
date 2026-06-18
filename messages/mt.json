@@ -134,13 +134,15 @@
         "title": "Muturi 50cc",
         "description": "Faċli biex tirrikkeb, perfett biex tikkrewża l-kosta u t-toroq tal-belt ta' Malta b'kunfidenza.",
         "bullet1": "Imħaddem għall-bidu",
-        "bullet2": "Setup ibbażat fuq il-kumdità"
+        "bullet2": "Setup ibbażat fuq il-kumdità",
+        "subtitle": "Skuter"
       },
       "125cc": {
         "title": "Muturi 125cc",
         "description": "Għar-rikkieba li jridu ftit aktar qawwa u prestazzjoni bixkutata fuq rotot itwal.",
         "bullet1": "Ideali għall-jiem ta' vjaġġi",
-        "bullet2": "Kumdità bilanċjata + kontroll"
+        "bullet2": "Kumdità bilanċjata + kontroll",
+        "subtitle": "Mutur"
       }
     },
     "testimonials": {

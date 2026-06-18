@@ -134,13 +134,15 @@
         "title": "Motos 50 cc",
         "description": "Fáciles de conducir, ideales para recorrer la costa y la ciudad con confianza.",
         "bullet1": "Manejo apto para principiantes",
-        "bullet2": "Puesta a punto orientada al confort"
+        "bullet2": "Puesta a punto orientada al confort",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "Motos 125 cc",
         "description": "Para quien quiere más potencia y buen comportamiento en rutas más largas.",
         "bullet1": "Geniales para excursiones de un día",
-        "bullet2": "Equilibrio entre confort y control"
+        "bullet2": "Equilibrio entre confort y control",
+        "subtitle": "Motocicleta"
       }
     },
     "testimonials": {

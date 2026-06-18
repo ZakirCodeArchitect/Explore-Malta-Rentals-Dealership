@@ -2,6 +2,7 @@ import type { AdminBookingDetail } from "@/lib/admin/bookings/types";
 import { getAdminBookingById } from "@/lib/admin/bookings/getAdminBookingById";
 import type { CompleteBookingInput } from "@/lib/admin/bookings/lifecycle/booking-lifecycle-schema";
 import { recordBookingStatusChange } from "@/lib/admin/bookings/lifecycle/recordBookingStatusChange";
+import { deleteOccupancyForBooking } from "@/lib/vehicle-unit-occupancy";
 import { prisma } from "@/lib/prisma";
 
 export type CompleteBookingResult =
@@ -57,6 +58,8 @@ export async function completeBooking(
       where: { id: existing.vehicleUnitId! },
       data: { status: input.unitStatusAfterCompletion },
     });
+
+    await deleteOccupancyForBooking(tx, bookingId);
 
     await recordBookingStatusChange(tx, {
       bookingId,

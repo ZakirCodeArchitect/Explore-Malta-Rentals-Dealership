@@ -158,7 +158,7 @@ export function HeroBookingPanel() {
   ]);
 
   const panelShellClass = [
-    "overflow-hidden border border-slate-200/70 bg-[var(--surface-card)] p-5 text-slate-950 shadow-[0_28px_70px_-48px_rgba(15,34,53,0.45)] sm:p-6 lg:p-8",
+    "overflow-hidden border border-slate-200/70 bg-white p-5 text-slate-950 shadow-[0_28px_70px_-48px_rgba(15,34,53,0.45)] sm:p-6 lg:p-8",
     SITE_SURFACE_RADIUS,
   ].join(" ");
 

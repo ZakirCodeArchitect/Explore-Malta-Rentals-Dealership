@@ -134,13 +134,15 @@
         "title": "Rowery 50 cm3",
         "description": "Łatwy w prowadzeniu, idealny do pewnego poruszania się po wybrzeżu Malty i ulicach miast.",
         "bullet1": "Obsługa przyjazna dla początkujących",
-        "bullet2": "Konfiguracja zorientowana na komfort"
+        "bullet2": "Konfiguracja zorientowana na komfort",
+        "subtitle": "Skuter"
       },
       "125cc": {
         "title": "Rowery 125 cm3",
         "description": "Dla rowerzystów, którzy chcą nieco większej mocy i płynnej jazdy na dłuższych trasach.",
         "bullet1": "Świetne na jednodniowe wycieczki",
-        "bullet2": "Zrównoważony komfort + kontrola"
+        "bullet2": "Zrównoważony komfort + kontrola",
+        "subtitle": "Motocykl"
       }
     },
     "testimonials": {

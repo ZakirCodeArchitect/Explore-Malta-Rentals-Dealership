@@ -134,13 +134,15 @@
         "title": "Xe đạp 50cc",
         "description": "Dễ lái, hoàn hảo để tự tin dạo quanh bờ biển và đường phố trong thành phố Malta.",
         "bullet1": "Xử lý thân thiện với người mới bắt đầu",
-        "bullet2": "Thiết lập tập trung vào sự thoải mái"
+        "bullet2": "Thiết lập tập trung vào sự thoải mái",
+        "subtitle": "Xe tay ga"
       },
       "125cc": {
         "title": "Xe đạp 125cc",
         "description": "Dành cho những tay đua muốn mạnh mẽ hơn một chút và vận hành êm ái trên những tuyến đường dài hơn.",
         "bullet1": "Tuyệt vời cho chuyến đi trong ngày",
-        "bullet2": "Cân bằng thoải mái + kiểm soát"
+        "bullet2": "Cân bằng thoải mái + kiểm soát",
+        "subtitle": "Xe máy"
       }
     },
     "testimonials": {

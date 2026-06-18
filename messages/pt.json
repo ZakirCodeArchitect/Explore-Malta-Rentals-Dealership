@@ -134,13 +134,15 @@
         "title": "Motas 50cc",
         "description": "Fáceis de conduzir, perfeitas para percorrer a costa e as ruas da cidade de Malta com confiança.",
         "bullet1": "Manuseamento adequado para iniciantes",
-        "bullet2": "Configuração focada no conforto"
+        "bullet2": "Configuração focada no conforto",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "Motas 125cc",
         "description": "Para motociclistas que querem mais potência e desempenho suave em percursos mais longos.",
         "bullet1": "Ótimas para excursões de dia",
-        "bullet2": "Conforto + controlo equilibrados"
+        "bullet2": "Conforto + controlo equilibrados",
+        "subtitle": "Motocicleta"
       }
     },
     "testimonials": {

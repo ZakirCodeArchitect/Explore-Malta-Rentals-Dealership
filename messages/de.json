@@ -134,13 +134,15 @@
         "title": "50-cc-Bikes",
         "description": "Leicht zu fahren — ideal für Küste und Stadt mit gutem Gefühl.",
         "bullet1": "Handling auch für Einsteiger",
-        "bullet2": "Komfortabler Aufbau"
+        "bullet2": "Komfortabler Aufbau",
+        "subtitle": "Roller"
       },
       "125cc": {
         "title": "125-cc-Bikes",
         "description": "Für alle, die auf längeren Strecken etwas mehr Leistung und Laufruhe möchten.",
         "bullet1": "Gut für Tagestouren",
-        "bullet2": "Ausgewogenes Verhältnis Komfort und Kontrolle"
+        "bullet2": "Ausgewogenes Verhältnis Komfort und Kontrolle",
+        "subtitle": "Motorrad"
       }
     },
     "testimonials": {

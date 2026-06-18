@@ -14,6 +14,7 @@ import { useHoldHeartbeat } from "@/features/booking-flow/hooks/use-hold-heartbe
 import { useHoldCountdown } from "@/features/booking-flow/hooks/use-hold-countdown";
 import { BOOKING_FLOW_STEPS } from "@/features/booking-flow/lib/steps";
 import { mapBookingFlowStateToSubmission } from "@/features/booking-flow/lib/map-booking-flow-to-submission";
+import { createBookingIdempotencyKey } from "@/features/booking-flow/lib/booking-idempotency-key";
 import {
   clearPendingBookingSessionUploads,
   collectPendingBookingUploads,
@@ -52,6 +53,8 @@ function BookingFlowBody({
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const flowContainerRef = useRef<HTMLDivElement>(null);
   const hasMountedRef = useRef(false);
+  const submitIdempotencyKeyRef = useRef<string | null>(null);
+  const submitInFlightRef = useRef(false);
   const {
     bookingFlowSchema,
     state,
@@ -117,6 +120,21 @@ function BookingFlowBody({
       setHeartbeatWarning(message);
     },
   });
+
+  useEffect(() => {
+    submitIdempotencyKeyRef.current = null;
+  }, [
+    state.rental.vehicleId,
+    state.rental.pickupDate,
+    state.rental.pickupTime,
+    state.rental.returnDate,
+    state.rental.returnTime,
+  ]);
+
+  const resetSubmitAttempt = useCallback(() => {
+    submitIdempotencyKeyRef.current = null;
+    submitInFlightRef.current = false;
+  }, []);
 
   useEffect(() => {
     if (!holdIsExpired || reservationHold.status !== "ACTIVE") {
@@ -199,6 +217,10 @@ function BookingFlowBody({
   ]);
 
   const handleTermsAgree = useCallback(async () => {
+    if (submitInFlightRef.current) {
+      return;
+    }
+
     if (!reservationHold.holdReference || !holdIsActive || !holdMatchesCurrentRental) {
       setTermsModalOpen(false);
       setSubmitError(t("holdExpiredDefault"));
@@ -215,23 +237,55 @@ function BookingFlowBody({
       return;
     }
 
+    const idempotencyKey = submitIdempotencyKeyRef.current ?? createBookingIdempotencyKey();
+    submitIdempotencyKeyRef.current = idempotencyKey;
+    submitInFlightRef.current = true;
     setSubmitting(true);
     setSubmitError(null);
     clearServerFieldErrors();
 
-    const payload = mapBookingFlowStateToSubmission(stateAfterConsent, reservationHold.holdReference);
-    const pendingUploads = collectPendingBookingUploads(bookingSessionId);
-    for (const pendingUpload of pendingUploads) {
-      const uploaded = await uploadBookingDocument(
-        pendingUpload.file,
-        pendingUpload.category,
-        bookingSessionId,
+    try {
+      const payload = mapBookingFlowStateToSubmission(
+        stateAfterConsent,
+        reservationHold.holdReference,
+        idempotencyKey,
       );
-      if (!uploaded.ok) {
-        setSubmitting(false);
+      const pendingUploads = collectPendingBookingUploads(bookingSessionId);
+      for (const pendingUpload of pendingUploads) {
+        const uploaded = await uploadBookingDocument(
+          pendingUpload.file,
+          pendingUpload.category,
+          bookingSessionId,
+        );
+        if (!uploaded.ok) {
+          setTermsModalOpen(false);
+          updateSection("consent", { termsAccepted: false, termsAcceptedAt: "" });
+          setSubmitError(uploaded.message);
+          return;
+        }
+
+        if (pendingUpload.category === "customer_license") {
+          payload.customer.licenseUploadPath = uploaded.relativePath;
+        } else if (pendingUpload.category === "customer_passport") {
+          payload.customer.passportUploadPath = uploaded.relativePath;
+        } else if (pendingUpload.category === "additional_driver_passport") {
+          payload.additionalDriver.passportUploadPath = uploaded.relativePath;
+        } else if (pendingUpload.category === "additional_driver_license") {
+          payload.additionalDriver.licenseUploadPath = uploaded.relativePath;
+        }
+      }
+
+      const result = await submitBooking(payload);
+
+      if (result.ok) {
         setTermsModalOpen(false);
-        updateSection("consent", { termsAccepted: false, termsAcceptedAt: "" });
-        setSubmitError(uploaded.message);
+        clearPendingBookingSessionUploads(bookingSessionId);
+        clearReservationHold();
+        resetBookingForm();
+        resetSubmitAttempt();
+        router.push(
+          `/booking?ref=${encodeURIComponent(result.bookingReference)}&submitted=1&email=${encodeURIComponent(payload.customer.email)}&vehicle=${encodeURIComponent(state.rental.vehicleSlug || state.rental.vehicleType)}`,
+        );
         return;
       }
 
@@ -299,8 +353,6 @@ function BookingFlowBody({
       return;
     }
 
-    setSubmitting(false);
-
     setTermsModalOpen(false);
     updateSection("consent", { termsAccepted: false, termsAcceptedAt: "" });
 
@@ -321,13 +373,18 @@ function BookingFlowBody({
       return;
     }
 
-    if (result.status === 409) {
-      markReservationHoldExpired(t("holdExpiredDefault"));
+      if (result.status === 409) {
+        markReservationHoldExpired(t("holdExpiredDefault"));
+      }
+      setSubmitError(result.message);
+    } finally {
+      submitInFlightRef.current = false;
+      setSubmitting(false);
     }
-    setSubmitError(result.message);
   }, [
     applyApiValidationErrors,
     applyConsentFromTermsModal,
+    bookingSessionId,
     clearServerFieldErrors,
     clearReservationHold,
     getBookingValues,
@@ -336,8 +393,10 @@ function BookingFlowBody({
     markReservationHoldExpired,
     reservationHold.holdReference,
     resetBookingForm,
+    resetSubmitAttempt,
     router,
-    bookingSessionId,
+    state.rental.vehicleSlug,
+    state.rental.vehicleType,
     t,
     updateSection,
   ]);
@@ -345,9 +404,10 @@ function BookingFlowBody({
   const handleCancelBooking = useCallback(async () => {
     await releaseReservationHold();
     clearPendingBookingSessionUploads(bookingSessionId);
+    resetSubmitAttempt();
     resetBookingForm();
     router.push("/vehicles");
-  }, [bookingSessionId, releaseReservationHold, resetBookingForm, router]);
+  }, [bookingSessionId, releaseReservationHold, resetBookingForm, resetSubmitAttempt, router]);
 
   return (
     <div ref={flowContainerRef} className="space-y-5">

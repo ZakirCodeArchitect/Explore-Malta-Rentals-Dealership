@@ -34,14 +34,13 @@ export async function VideoHero() {
   return (
     <section
       aria-labelledby="home-hero-title"
-      className="relative isolate overflow-hidden bg-[var(--background)] text-white"
+      className="relative isolate overflow-hidden bg-white text-white"
     >
       {/* ── BACKGROUND LAYER ──────────────────────────────────────
           Stacking order (bottom → top):
             0. dark slate base       — visible while video loads
             1. HeroVideoBackground   — client island, fades in once playing
             2. radial vignette       — subtle darkening at corners
-            3. bottom gradient       — fades hero into the page background
       ──────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="sticky top-[var(--site-header-offset)] h-[calc(100svh-var(--site-header-offset))] overflow-hidden">
@@ -67,24 +66,6 @@ export async function VideoHero() {
             }}
           />
 
-          {/* ── 3. Bottom fade-out gradient ───────────────────────
-              Transitions the background image / video into the page colour
-              so the booking panel below reads as part of the same surface.
-          ──────────────────────────────────────────────────────── */}
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(58vh,34rem)] sm:h-[min(54vh,36rem)]"
-            style={{
-              background: `linear-gradient(
-                to top,
-                color-mix(in srgb, var(--background) 90%, transparent) 0%,
-                color-mix(in srgb, var(--background) 72%, transparent) 20%,
-                color-mix(in srgb, var(--background) 48%, transparent) 42%,
-                color-mix(in srgb, var(--background) 24%, transparent) 62%,
-                color-mix(in srgb, var(--background) 8%, transparent) 80%,
-                transparent 100%
-              )`,
-            }}
-          />
         </div>
       </div>
 

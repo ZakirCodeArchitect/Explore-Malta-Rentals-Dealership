@@ -134,13 +134,15 @@
         "title": "50cc fietsen",
         "description": "Makkelijk te berijden, perfect om met vertrouwen langs de kust en de straten van Malta te varen.",
         "bullet1": "Beginnersvriendelijke bediening",
-        "bullet2": "Op comfort gerichte opstelling"
+        "bullet2": "Op comfort gerichte opstelling",
+        "subtitle": "Scooter"
       },
       "125cc": {
         "title": "125cc fietsen",
         "description": "Voor rijders die wat meer kracht en soepele prestaties willen op langere routes.",
         "bullet1": "Ideaal voor dagtochten",
-        "bullet2": "Evenwichtig comfort + controle"
+        "bullet2": "Evenwichtig comfort + controle",
+        "subtitle": "Motorfiets"
       }
     },
     "testimonials": {

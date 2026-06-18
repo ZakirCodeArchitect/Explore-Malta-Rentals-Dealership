@@ -121,7 +121,7 @@ export function SiteNavbar() {
                   alt={t("logoAlt")}
                   width={320}
                   height={56}
-                  className="h-10 w-auto max-w-full rounded-md object-contain object-left sm:h-11"
+                  className="h-10 w-auto max-w-full object-contain object-left sm:h-11"
                   style={{ width: "auto" }}
                   priority
                 />

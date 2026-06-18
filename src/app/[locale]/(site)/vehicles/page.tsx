@@ -57,7 +57,7 @@ export default async function VehiclesPage({ params, searchParams }: VehiclesPag
   }
 
   return (
-    <main className="flex flex-1 flex-col bg-[var(--background)]">
+    <main className="flex flex-1 flex-col bg-white">
       <Suspense
         fallback={
           <Container className="pb-16 pt-28 sm:pt-32">

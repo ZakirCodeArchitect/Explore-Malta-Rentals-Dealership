@@ -21,21 +21,28 @@ const smoothMove =
   "duration-[700ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:duration-180 motion-reduce:ease-linear";
 
 const baseCard = joinClasses(
-  "group relative flex h-full flex-col rounded-2xl border border-slate-200/90 bg-[color-mix(in_srgb,var(--surface-card)_92%,var(--brand-blue)_8%)] text-left backdrop-blur-sm",
-  /* Single static depth — depth does not morph on hover (avoids shadow interpolation jank). */
-  "shadow-[0_18px_46px_-26px_rgba(15,23,42,0.28)]",
+  "group relative flex h-full flex-col rounded-lg border border-white/60 bg-white/30 text-left",
+  "shadow-[0_8px_32px_rgba(255,169,57,0.14),inset_0_1px_0_rgba(255,255,255,0.72)]",
+  "backdrop-blur-xl backdrop-saturate-150",
   "transform-gpu transition-transform",
   smoothMove,
   "motion-safe:hover:-translate-y-[6px]",
-  "focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/35 focus-within:ring-offset-2",
+  "focus-within:ring-2 focus-within:ring-[var(--brand-orange)]/35 focus-within:ring-offset-2",
+);
+
+const iconGlass = joinClasses(
+  "border border-white/65 bg-white/40 text-slate-700 backdrop-blur-md",
+  "shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] ring-1 ring-white/35",
 );
 
 const iconWrapFeatured = joinClasses(
-  "flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--surface-soft)] to-[var(--surface-card)] text-slate-700 shadow-inner ring-1 ring-slate-200/60",
+  "flex h-14 w-14 items-center justify-center rounded-lg",
+  iconGlass,
 );
 
 const iconWrapCompact = joinClasses(
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--surface-soft)] to-[var(--surface-card)] text-slate-700 shadow-inner ring-1 ring-slate-200/60",
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
+  iconGlass,
 );
 
 export function ServiceBenefitCard({
@@ -51,11 +58,11 @@ export function ServiceBenefitCard({
         className={joinClasses(
           baseCard,
           "overflow-hidden p-8 sm:p-9 lg:p-10",
-          "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-[var(--brand-blue)]/[0.06] before:via-transparent before:to-[var(--brand-orange)]/[0.05]",
+          "before:pointer-events-none before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-white/45 before:via-white/10 before:to-[var(--brand-orange)]/[0.08]",
         )}
       >
         <div
-          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[var(--brand-blue)]/[0.07] blur-3xl"
+          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[var(--brand-orange)]/[0.18] blur-3xl"
           aria-hidden
         />
         <div className="relative flex flex-1 flex-col">
@@ -83,7 +90,7 @@ export function ServiceBenefitCard({
       className={joinClasses(
         baseCard,
         "p-6 sm:p-7",
-        "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white before:to-[var(--surface-soft)]/50",
+        "before:pointer-events-none before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-white/40 before:via-transparent before:to-[var(--brand-orange)]/[0.06]",
       )}
     >
       <div className="relative flex gap-4">
