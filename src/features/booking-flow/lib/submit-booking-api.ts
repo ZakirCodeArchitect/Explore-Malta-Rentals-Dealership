@@ -8,6 +8,8 @@ export type BookingApiValidationError = {
 export type SubmitBookingOk = {
   ok: true;
   bookingReference: string;
+  bookingId: string;
+  totalDueOnline: number;
   message: string;
 };
 
@@ -23,6 +25,8 @@ export type SubmitBookingResult = SubmitBookingOk | SubmitBookingErr;
 type BookingsSuccessJson = {
   success: true;
   bookingReference: string;
+  bookingId: string;
+  totalDueOnline: number;
   message?: string;
 };
 
@@ -75,6 +79,8 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     return {
       ok: true,
       bookingReference: data.bookingReference,
+      bookingId: data.bookingId,
+      totalDueOnline: data.totalDueOnline ?? 0,
       message: data.message ?? "Booking submitted successfully",
     };
   }

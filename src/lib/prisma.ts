@@ -39,7 +39,28 @@ function explicitPgSslMode(urlString: string): string {
 }
 
 const pool =
-  globalForPrisma.pgPool ?? new Pool({ connectionString: explicitPgSslMode(connectionString) });
+  globalForPrisma.pgPool ??
+  new Pool({
+    connectionString: explicitPgSslMode(connectionString),
+    /**
+     * Neon serverless Postgres can cold-start or be slow under load.
+     * These limits ensure queries fail fast instead of hanging indefinitely.
+     *
+     * connectionTimeoutMillis: max time to wait for a free slot in the pool
+     * idleTimeoutMillis:       close idle client connections after this time
+     * max:                     cap total connections (Neon free tier = 20 max,
+     *                          keep headroom for other processes)
+     * statement_timeout:       Postgres server-side kill for runaway queries (ms)
+     * query_timeout:           node-postgres client-side timeout per query
+     */
+    connectionTimeoutMillis: 15_000,
+    idleTimeoutMillis: 30_000,
+    max: 8,
+    // query_timeout is enforced by node-postgres on the client side.
+    // It does NOT go through startup parameters so it works with Neon's PgBouncer pooler.
+    // (Neon blocks `options: --statement_timeout` on pooled connections.)
+    query_timeout: 30_000,
+  });
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.pgPool = pool;
 }

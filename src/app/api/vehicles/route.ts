@@ -69,17 +69,34 @@ export async function GET(request: Request) {
       returnDate.length > 0 &&
       returnTime.length > 0;
 
-    const vehicles = hasFullRentalWindow
-      ? (
-          await enrichVehicleListWithRentalWindow(result.vehicles, {
-            pickupDate,
-            pickupTime,
-            returnDate,
-            returnTime,
-            viewerSessionKey: sessionKey || undefined,
-          })
-        ).filter((v) => v.rentalWindowStatus !== "unavailable")
-      : result.vehicles;
+    let vehicles = result.vehicles;
+
+    if (hasFullRentalWindow) {
+      // Race the availability enrichment against a 12-second client-side timeout.
+      // The pg pool's statement_timeout (30 s) and connectionTimeoutMillis (15 s)
+      // are the primary guards, but this ensures the route never hangs beyond 12 s.
+      const enrichPromise = enrichVehicleListWithRentalWindow(result.vehicles, {
+        pickupDate,
+        pickupTime,
+        returnDate,
+        returnTime,
+        viewerSessionKey: sessionKey || undefined,
+      });
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Availability check timed out")), 12_000),
+      );
+
+      try {
+        const enriched = await Promise.race([enrichPromise, timeoutPromise]);
+        vehicles = enriched.filter((v) => v.rentalWindowStatus !== "unavailable");
+      } catch (enrichError) {
+        // Availability enrichment timed out or failed — fall back to returning all vehicles
+        // without rental-window status so the UI is still usable.
+        console.warn("[vehicles] Availability enrichment failed, returning unenriched list", enrichError);
+        vehicles = result.vehicles;
+      }
+    }
 
     return NextResponse.json({
       success: true as const,

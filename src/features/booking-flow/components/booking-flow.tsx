@@ -247,18 +247,59 @@ function BookingFlowBody({
     }
 
     const result = await submitBooking(payload);
-    setSubmitting(false);
 
     if (result.ok) {
       setTermsModalOpen(false);
       clearPendingBookingSessionUploads(bookingSessionId);
       clearReservationHold();
+
+      // If online payment is due, redirect to Stripe Checkout
+      if (result.totalDueOnline > 0) {
+        try {
+          const checkoutRes = await fetch("/api/stripe/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              bookingReference: result.bookingReference,
+              locale: "en",
+            }),
+          });
+          const checkoutData = (await checkoutRes.json()) as { ok: boolean; checkoutUrl?: string; error?: string };
+
+          if (checkoutData.ok && checkoutData.checkoutUrl) {
+            // Hard redirect — Stripe Checkout runs on Stripe's domain
+            window.location.href = checkoutData.checkoutUrl;
+            return;
+          }
+
+          // Checkout session creation failed — show error but booking already exists
+          setSubmitting(false);
+          setSubmitError(
+            checkoutData.error ??
+            `Booking ${result.bookingReference} created but could not start payment. Please contact support.`,
+          );
+          resetBookingForm();
+          return;
+        } catch {
+          setSubmitting(false);
+          setSubmitError(
+            `Booking ${result.bookingReference} created but could not start payment. Please contact support.`,
+          );
+          resetBookingForm();
+          return;
+        }
+      }
+
+      // No online payment required (legacy pay-at-pickup flow)
+      setSubmitting(false);
       resetBookingForm();
       router.push(
         `/booking?ref=${encodeURIComponent(result.bookingReference)}&submitted=1&email=${encodeURIComponent(payload.customer.email)}&vehicle=${encodeURIComponent(state.rental.vehicleSlug || state.rental.vehicleType)}`,
       );
       return;
     }
+
+    setSubmitting(false);
 
     setTermsModalOpen(false);
     updateSection("consent", { termsAccepted: false, termsAcceptedAt: "" });

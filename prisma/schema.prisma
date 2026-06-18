@@ -27,6 +27,35 @@ enum PaymentStatus {
   FAILED
 }
 
+enum StripePaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+  EXPIRED
+}
+
+enum RefundStatus {
+  NONE
+  PENDING
+  PARTIAL
+  FULL
+  FAILED
+}
+
+enum RefundReason {
+  DUPLICATE
+  FRAUDULENT
+  REQUESTED_BY_CUSTOMER
+  ADMIN_INITIATED
+  BOOKING_CANCELLED
+  FAILED_BOOKING
+}
+
 enum SecurityDepositStatus {
   PENDING
   COLLECTED
@@ -500,6 +529,7 @@ model Booking {
   emailLogs            EmailLog[]
   documents            BookingDocument[]
   reservationHolds     ReservationHold[]
+  stripePayment        StripePayment?
 
   @@index([status, createdAt])
   @@index([paymentStatus])
@@ -627,4 +657,92 @@ model BookingDocument {
 
   @@index([bookingId, documentOwnerType, documentType])
   @@index([uploadedAt])
+}
+
+// ─── Stripe Payment Infrastructure ────────────────────────────────────────────
+
+model StripePayment {
+  id                      String              @id @default(cuid())
+  bookingId               String              @unique
+  stripePaymentIntentId   String?             @unique
+  stripeCheckoutSessionId String?             @unique
+  amountCents             Int
+  currency                String              @default("eur")
+  stripeStatus            StripePaymentStatus @default(PENDING)
+  refundStatus            RefundStatus        @default(NONE)
+  refundedAmountCents     Int                 @default(0)
+  metadata                Json?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  booking      Booking             @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  transactions StripeTransaction[]
+  refunds      StripeRefund[]
+
+  @@index([stripeStatus])
+  @@index([createdAt])
+}
+
+model StripeTransaction {
+  id                  String   @id @default(cuid())
+  stripePaymentId     String
+  transactionType     String
+  stripeTransactionId String   @unique
+  amountCents         Int
+  currency            String   @default("eur")
+  status              String
+  metadata            Json?
+  createdAt           DateTime @default(now())
+
+  stripePayment StripePayment @relation(fields: [stripePaymentId], references: [id], onDelete: Cascade)
+
+  @@index([stripePaymentId])
+}
+
+model StripeRefund {
+  id              String       @id @default(cuid())
+  stripePaymentId String
+  stripeRefundId  String       @unique
+  amountCents     Int
+  reason          RefundReason
+  status          String
+  initiatedBy     String?
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  stripePayment StripePayment @relation(fields: [stripePaymentId], references: [id], onDelete: Cascade)
+
+  @@index([stripePaymentId])
+}
+
+model WebhookEvent {
+  id            String    @id @default(cuid())
+  stripeEventId String    @unique
+  eventType     String
+  processed     Boolean   @default(false)
+  processedAt   DateTime?
+  payload       Json
+  error         String?
+  createdAt     DateTime  @default(now())
+
+  @@index([stripeEventId])
+  @@index([eventType, processed])
+  @@index([createdAt])
+}
+
+model PaymentAuditLog {
+  id              String   @id @default(cuid())
+  bookingId       String?
+  stripePaymentId String?
+  action          String
+  actor           String
+  oldValue        Json?
+  newValue        Json?
+  ipAddress       String?
+  createdAt       DateTime @default(now())
+
+  @@index([bookingId, createdAt])
+  @@index([stripePaymentId, createdAt])
+  @@index([createdAt])
 }

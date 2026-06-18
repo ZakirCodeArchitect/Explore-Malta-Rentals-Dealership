@@ -110,6 +110,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true as const,
       bookingReference: result.bookingReference,
+      bookingId: result.bookingId,
+      totalDueOnline: result.totalDueOnline,
       message: "Booking submitted successfully",
     });
   } catch (error) {
