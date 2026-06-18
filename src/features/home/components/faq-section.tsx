@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import { faqItems } from "@/features/home/data/faq-content";
 
 function FaqIcon() {
@@ -44,7 +45,7 @@ export function FaqSection() {
     >
       <div className="relative">
         <Container className="relative">
-          <div className="mx-auto max-w-3xl text-center">
+          <Reveal className="mx-auto max-w-3xl text-center">
             <FaqIcon />
             <h2
               id={`${baseId}-faq-heading`}
@@ -59,7 +60,7 @@ export function FaqSection() {
               </span>
               {t("subtitleTail")}
             </p>
-          </div>
+          </Reveal>
 
           <div className="mx-auto mt-12 max-w-3xl">
             <ul className="flex flex-col">

@@ -79,6 +79,7 @@
     "heroDescription": "Motosiklet, ATV ve bisiklet kiralama. Rehberli turlar."
   },
   "Home": {
+    "heroWatchVideo": "Videoyu izle",
     "heroBookRide": "Yolculuk Rezervasyonunuzu Yapın",
     "heroViewFleet": "Filoyu Görüntüle",
     "heroTrust1": "Rehberli turlar mevcut",
@@ -182,7 +183,67 @@
     "testimonialsTrustLine": "Güven pilotu",
     "testimonialsExcellent": "Harika",
     "testimonialsMarqueeAria": "Müşteri referansları, kaydırma",
-    "ratingStarsAria": "{rating} 5 üzerinden"
+    "ratingStarsAria": "{rating} 5 üzerinden",
+    "heroExploreFleet": "Explore Fleet",
+    "heroBackdropWord": "Ride Malta",
+    "heroBikeAlt": "Premium rental motorcycle",
+    "heroLabelFleet": "Premium Fleet",
+    "heroLabelBooking": "Instant Booking",
+    "heroLabelHelmet": "Helmet Included",
+    "heroLabelTerrain": "City / Coast / Adventure",
+    "heroStatusPill": "Bugünün kiralamaları için açık",
+    "heroScrollCue": "Keşfetmek için kaydırın",
+    "heroMetaCategory": "Premium motosiklet kiralama",
+    "heroMetaRental": "Günlük ve haftalık kiralama",
+    "heroTrustVerified": "Doğrulanmış filo",
+    "heroConsoleTitle": "Uygunluğu kontrol et",
+    "heroConsoleNote": "Gizli ücret yok. Esnek teslim alma seçenekleri.",
+    "fleetMarquee": {
+      "aria": "Vehicle categories",
+      "explore": "Explore",
+      "premiumBikes": "Premium Bikes",
+      "scooters": "Scooters",
+      "cityRides": "City Rides",
+      "adventureRides": "Adventure Rides",
+      "longRental": "Long Rental"
+    },
+    "howItWorks": {
+      "kicker": "How it works",
+      "title": "Three steps to the open road",
+      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "steps": {
+        "choose": {
+          "title": "Choose your bike",
+          "description": "Browse the fleet and pick the scooter, motorcycle, or ATV that fits your licence and plans."
+        },
+        "schedule": {
+          "title": "Select pickup & return",
+          "description": "Set your dates and times, add hotel delivery if you need it, and confirm in minutes."
+        },
+        "ride": {
+          "title": "Ride and explore",
+          "description": "Collect your keys and helmet, then discover Malta's coast, city, and countryside your way."
+        }
+      }
+    },
+    "stats": {
+      "support": {
+        "title": "24/7 Support",
+        "sub": "Help whenever you need it"
+      },
+      "pickup": {
+        "title": "Fast Pickup",
+        "sub": "On the road in minutes"
+      },
+      "helmets": {
+        "title": "Premium Helmets",
+        "sub": "Safety kit included"
+      },
+      "duration": {
+        "title": "Flexible Duration",
+        "sub": "Short stays or long trips"
+      }
+    }
   },
   "Faq": {
     "title": "Sıkça Sorulan Sorular (SSS)",

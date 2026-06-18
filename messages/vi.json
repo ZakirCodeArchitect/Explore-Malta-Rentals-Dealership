@@ -79,6 +79,7 @@
     "heroDescription": "Cho thuê xe máy, ATV và xe đạp. Hướng dẫn du lịch."
   },
   "Home": {
+    "heroWatchVideo": "Xem video",
     "heroBookRide": "Đặt chuyến đi của bạn",
     "heroViewFleet": "Xem Hạm đội",
     "heroTrust1": "Có sẵn các chuyến tham quan có hướng dẫn",
@@ -182,7 +183,67 @@
     "testimonialsTrustLine": "phi công đáng tin cậy",
     "testimonialsExcellent": "Xuất sắc",
     "testimonialsMarqueeAria": "Lời chứng thực của khách hàng, cuộn",
-    "ratingStarsAria": "{rating} trên 5"
+    "ratingStarsAria": "{rating} trên 5",
+    "heroExploreFleet": "Explore Fleet",
+    "heroBackdropWord": "Ride Malta",
+    "heroBikeAlt": "Premium rental motorcycle",
+    "heroLabelFleet": "Premium Fleet",
+    "heroLabelBooking": "Instant Booking",
+    "heroLabelHelmet": "Helmet Included",
+    "heroLabelTerrain": "City / Coast / Adventure",
+    "heroStatusPill": "Mở cho thuê hôm nay",
+    "heroScrollCue": "Cuộn để khám phá",
+    "heroMetaCategory": "Cho thuê xe cao cấp",
+    "heroMetaRental": "Cho thuê theo ngày & tuần",
+    "heroTrustVerified": "Đội xe đã kiểm định",
+    "heroConsoleTitle": "Kiểm tra tình trạng còn xe",
+    "heroConsoleNote": "Không phí ẩn. Tùy chọn nhận xe linh hoạt.",
+    "fleetMarquee": {
+      "aria": "Vehicle categories",
+      "explore": "Explore",
+      "premiumBikes": "Premium Bikes",
+      "scooters": "Scooters",
+      "cityRides": "City Rides",
+      "adventureRides": "Adventure Rides",
+      "longRental": "Long Rental"
+    },
+    "howItWorks": {
+      "kicker": "How it works",
+      "title": "Three steps to the open road",
+      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "steps": {
+        "choose": {
+          "title": "Choose your bike",
+          "description": "Browse the fleet and pick the scooter, motorcycle, or ATV that fits your licence and plans."
+        },
+        "schedule": {
+          "title": "Select pickup & return",
+          "description": "Set your dates and times, add hotel delivery if you need it, and confirm in minutes."
+        },
+        "ride": {
+          "title": "Ride and explore",
+          "description": "Collect your keys and helmet, then discover Malta's coast, city, and countryside your way."
+        }
+      }
+    },
+    "stats": {
+      "support": {
+        "title": "24/7 Support",
+        "sub": "Help whenever you need it"
+      },
+      "pickup": {
+        "title": "Fast Pickup",
+        "sub": "On the road in minutes"
+      },
+      "helmets": {
+        "title": "Premium Helmets",
+        "sub": "Safety kit included"
+      },
+      "duration": {
+        "title": "Flexible Duration",
+        "sub": "Short stays or long trips"
+      }
+    }
   },
   "Faq": {
     "title": "Câu hỏi thường gặp (FAQ)",

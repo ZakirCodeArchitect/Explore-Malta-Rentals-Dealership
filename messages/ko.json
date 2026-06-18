@@ -79,6 +79,7 @@
     "heroDescription": "오토바이, ATV, 자전거 대여. 가이드 투어."
   },
   "Home": {
+    "heroWatchVideo": "비디오 보기",
     "heroBookRide": "차량 예약",
     "heroViewFleet": "함대 보기",
     "heroTrust1": "가이드 투어 가능",
@@ -182,7 +183,67 @@
     "testimonialsTrustLine": "신뢰 조종사",
     "testimonialsExcellent": "훌륭한",
     "testimonialsMarqueeAria": "고객 사용후기, 스크롤",
-    "ratingStarsAria": "5점 만점에 {rating}"
+    "ratingStarsAria": "5점 만점에 {rating}",
+    "heroExploreFleet": "Explore Fleet",
+    "heroBackdropWord": "Ride Malta",
+    "heroBikeAlt": "Premium rental motorcycle",
+    "heroLabelFleet": "Premium Fleet",
+    "heroLabelBooking": "Instant Booking",
+    "heroLabelHelmet": "Helmet Included",
+    "heroLabelTerrain": "City / Coast / Adventure",
+    "heroStatusPill": "오늘 대여 가능",
+    "heroScrollCue": "스크롤하여 둘러보기",
+    "heroMetaCategory": "프리미엄 바이크 대여",
+    "heroMetaRental": "일간 및 주간 대여",
+    "heroTrustVerified": "검증된 차량",
+    "heroConsoleTitle": "예약 가능 여부 확인",
+    "heroConsoleNote": "숨은 비용 없음. 유연한 픽업 옵션.",
+    "fleetMarquee": {
+      "aria": "Vehicle categories",
+      "explore": "Explore",
+      "premiumBikes": "Premium Bikes",
+      "scooters": "Scooters",
+      "cityRides": "City Rides",
+      "adventureRides": "Adventure Rides",
+      "longRental": "Long Rental"
+    },
+    "howItWorks": {
+      "kicker": "How it works",
+      "title": "Three steps to the open road",
+      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "steps": {
+        "choose": {
+          "title": "Choose your bike",
+          "description": "Browse the fleet and pick the scooter, motorcycle, or ATV that fits your licence and plans."
+        },
+        "schedule": {
+          "title": "Select pickup & return",
+          "description": "Set your dates and times, add hotel delivery if you need it, and confirm in minutes."
+        },
+        "ride": {
+          "title": "Ride and explore",
+          "description": "Collect your keys and helmet, then discover Malta's coast, city, and countryside your way."
+        }
+      }
+    },
+    "stats": {
+      "support": {
+        "title": "24/7 Support",
+        "sub": "Help whenever you need it"
+      },
+      "pickup": {
+        "title": "Fast Pickup",
+        "sub": "On the road in minutes"
+      },
+      "helmets": {
+        "title": "Premium Helmets",
+        "sub": "Safety kit included"
+      },
+      "duration": {
+        "title": "Flexible Duration",
+        "sub": "Short stays or long trips"
+      }
+    }
   },
   "Faq": {
     "title": "자주 묻는 질문(FAQ)",

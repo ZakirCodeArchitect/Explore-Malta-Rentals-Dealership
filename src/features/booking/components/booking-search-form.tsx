@@ -38,7 +38,7 @@ import { pricingService } from "@/lib/pricing/service";
 import { SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 
 const inputShell =
-  "flex w-full min-h-[3rem] items-center gap-2 rounded-lg border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
+  "flex w-full min-h-[3rem] items-center gap-2 rounded-xl border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition duration-200 hover:border-slate-300 hover:shadow-[0_14px_34px_-22px_rgba(15,23,42,0.45)] focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
 
 const textareaClass =
   "mt-2 w-full min-h-[5rem] rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
@@ -61,7 +61,7 @@ const formShellGlowClass =
   "pointer-events-none absolute -inset-3 z-0 rounded-2xl opacity-80 blur-2xl bg-[radial-gradient(ellipse_75%_60%_at_0%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_0%_100%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_100%,rgba(255,169,57,0.42),transparent)] sm:-inset-4";
 
 const formShellClass =
-  "relative z-10 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] sm:p-5 lg:p-6";
+  "relative z-10 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-[0_40px_90px_-50px_rgba(15,23,42,0.6)] ring-1 ring-slate-900/5 backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_48px_100px_-48px_rgba(15,23,42,0.65)] sm:p-5 lg:p-6";
 
 const vehicleTypeIconByType: Record<
   (typeof VEHICLE_TYPES)[number],
@@ -226,6 +226,23 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     : "";
 
   const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
+  const isHeroTone = quickFilterTone === "hero";
+  const resolvedInputShell = isHeroTone ? `${inputShell} hero-booking-form-input` : inputShell;
+  const resolvedTextareaClass = isHeroTone ? `${textareaClass} hero-booking-form-input` : textareaClass;
+  const resolvedFormShellClass = isHeroTone
+    ? "hero-booking-form-shell relative z-10 rounded-2xl p-4 sm:p-5 lg:p-6"
+    : formShellClass;
+  const resolvedFormGlowClass = isHeroTone ? "hero-booking-form-glow" : formShellGlowClass;
+  const resolvedQuickFilterClass = isHeroTone
+    ? `${quickFilterGroupClass} hero-booking-quick-filters mx-auto`
+    : `${quickFilterGroupClass} mx-auto`;
+  const panelClass = isHeroTone
+    ? "hero-booking-form-panel"
+    : "border-slate-100 bg-white";
+  const panelClassStrong = isHeroTone
+    ? "hero-booking-form-panel border-slate-200"
+    : "border-slate-200 bg-white";
+  const resolvedTimeSlotClass = isHeroTone ? "hero-booking-form-input" : undefined;
 
   const vehicleTypeCards = useMemo(
     (): VehicleTypeCard[] => [
@@ -241,7 +258,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <div className={`${quickFilterGroupClass} mx-auto`}>
+      <div className={resolvedQuickFilterClass}>
         <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
           <Image
             src={quickFilterCcIconByCc["50"]}
@@ -272,10 +289,10 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
       </div>
 
       <div className="relative isolate">
-        <div className={formShellGlowClass} aria-hidden />
-        <div className={formShellClass}>
+        <div className={resolvedFormGlowClass} aria-hidden />
+        <div className={resolvedFormShellClass}>
         <div className="flex flex-col gap-5">
-          <div className="flex items-center gap-4 rounded-lg border border-slate-100 bg-white px-4 py-3">
+          <div className={`flex items-center gap-4 rounded-lg border px-4 py-3 ${panelClass}`}>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-500">{tSearch("pickupLocationTitle")}</p>
               <p className="mt-1 flex items-start gap-2 text-sm font-semibold text-slate-900">
@@ -298,7 +315,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-left">
+            <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left ${panelClassStrong}`}>
               <input
                 type="checkbox"
                 className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)]"
@@ -316,7 +333,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               name="differentDropoff"
               control={control}
               render={({ field }) => (
-                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-left">
+                <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left ${panelClassStrong}`}>
                   <input
                     type="checkbox"
                     className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)]"
@@ -342,7 +359,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               <textarea
                 id="alternate-pickup-address"
                 placeholder={tSearch("addressPlaceholder")}
-                className={textareaClass}
+                className={resolvedTextareaClass}
                 {...register("alternatePickupAddress")}
               />
               {errors.alternatePickupAddress ? (
@@ -366,7 +383,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               <textarea
                 id="dropoff-address"
                 placeholder={tSearch("addressPlaceholder")}
-                className={textareaClass}
+                className={resolvedTextareaClass}
                 {...register("dropoffAddress")}
               />
               {errors.dropoffAddress ? (
@@ -408,7 +425,14 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                     role="radiogroup"
                     aria-label={tSearch("vehicleTypeLabel")}
                   >
-                    <div className="grid overflow-hidden rounded-lg border border-slate-200/90 bg-white shadow-[0_14px_32px_-26px_rgba(15,23,42,0.55)] sm:grid-cols-2 lg:flex lg:w-[min(100%,52rem)]">
+                    <div
+                      className={[
+                        "grid overflow-hidden rounded-lg border shadow-[0_14px_32px_-26px_rgba(15,23,42,0.55)] sm:grid-cols-2 lg:flex lg:w-[min(100%,52rem)]",
+                        isHeroTone
+                          ? "hero-booking-form-panel border-slate-200/90"
+                          : "border-slate-200/90 bg-white",
+                      ].join(" ")}
+                    >
                       {vehicleTypeCards.map((option, index) => {
                         const selected = (field.value ?? "all") === option.value;
                         const isLast = index === vehicleTypeCards.length - 1;
@@ -432,7 +456,9 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                               separatorClass,
                               selected
                                 ? "bg-[var(--brand-orange)] text-white"
-                                : "bg-white text-slate-900 hover:bg-orange-50/70",
+                                : isHeroTone
+                                  ? "bg-white/88 text-slate-950 hover:bg-white"
+                                  : "bg-white text-slate-900 hover:bg-orange-50/70",
                             ].join(" ")}
                           >
                             <span
@@ -485,7 +511,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               <label className="mb-1.5 block text-xs font-semibold text-slate-500">{tSearch("tripDatesLabel")}</label>
               <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
                 <Popover.Trigger asChild>
-                  <button type="button" className={`${inputShell} justify-between`}>
+                  <button type="button" className={`${resolvedInputShell} justify-between`}>
                     <span className="flex min-w-0 items-center gap-2">
                       <CalendarDays className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
                       <span className="truncate">{dateSummary}</span>
@@ -557,6 +583,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                       onBlur={field.onBlur}
                       aria-labelledby="booking-pickup-time-label"
                       slots={BOOKING_TIME_SLOTS}
+                      triggerClassName={resolvedTimeSlotClass}
                     />
                   )}
                 />
@@ -580,6 +607,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                       onBlur={field.onBlur}
                       aria-labelledby="booking-dropoff-time-label"
                       slots={BOOKING_TIME_SLOTS}
+                      triggerClassName={resolvedTimeSlotClass}
                     />
                   )}
                 />
@@ -588,7 +616,12 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-4 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          className={[
+            "mt-5 flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between",
+            isHeroTone ? "hero-booking-form-divider" : "border-slate-200/80",
+          ].join(" ")}
+        >
           <div>
             <p className="text-sm font-semibold text-slate-900">
               {tSearch("summaryLine", {
@@ -613,7 +646,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--brand-orange)] px-7 text-sm font-semibold text-white shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:opacity-70"
+            className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--brand-orange)] px-7 text-sm font-semibold text-white shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition-[transform,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[var(--brand-orange-strong)] hover:shadow-[0_20px_46px_-18px_rgba(255,147,15,0.95)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 active:translate-y-0 disabled:opacity-70 motion-reduce:hover:translate-y-0"
           >
             {isSubmitting ? (
               <>

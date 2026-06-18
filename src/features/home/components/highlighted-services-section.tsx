@@ -1,16 +1,19 @@
 import {
   CalendarRange,
+  Clock,
   Hotel,
   MessagesSquare,
   PackageCheck,
   ShieldCheck,
+  Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { ServiceBenefitCard } from "@/features/home/components/services/service-benefit-card";
-import { servicesHighlights } from "@/features/home/data/home-sections";
+import { homeStats, servicesHighlights } from "@/features/home/data/home-sections";
 import { getTranslations } from "next-intl/server";
 
 const SERVICE_ICONS = {
@@ -20,6 +23,13 @@ const SERVICE_ICONS = {
   support: MessagesSquare,
   "hotel-delivery": Hotel,
 } satisfies Record<(typeof servicesHighlights)[number]["id"], LucideIcon>;
+
+const STAT_ICONS: Record<(typeof homeStats)[number], LucideIcon> = {
+  support: Clock,
+  pickup: Zap,
+  helmets: ShieldCheck,
+  duration: CalendarRange,
+};
 
 const SERVICE_MESSAGE_KEY: Record<(typeof servicesHighlights)[number]["id"], string> = {
   "easy-pickup": "easyPickup",
@@ -58,8 +68,31 @@ export async function HighlightedServicesSection() {
           align="center"
         />
 
+        <ul className="mt-10 grid list-none grid-cols-2 gap-3 p-0 sm:mt-12 lg:grid-cols-4 lg:gap-4">
+          {homeStats.map((stat, index) => {
+            const Icon = STAT_ICONS[stat];
+            return (
+              <Reveal as="li" key={stat} delay={index * 90}>
+                <div className="group flex h-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/85 px-4 py-4 shadow-[0_18px_50px_-40px_rgba(2,6,23,0.4)] backdrop-blur-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_60px_-36px_rgba(2,6,23,0.45)]">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-orange)]/12 text-[var(--brand-orange-strong)]">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold tracking-[-0.01em] text-slate-950 sm:text-base">
+                      {tDynamic(`stats.${stat}.title`)}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-slate-500">
+                      {tDynamic(`stats.${stat}.sub`)}
+                    </span>
+                  </span>
+                </div>
+              </Reveal>
+            );
+          })}
+        </ul>
+
         <div className="mt-12 flex flex-col gap-5 lg:mt-14 lg:grid lg:grid-cols-12 lg:items-stretch lg:gap-5">
-          <div className="lg:col-span-5">
+          <Reveal className="lg:col-span-5">
             <ServiceBenefitCard
               variant="featured"
               title={featuredTitle}
@@ -67,23 +100,23 @@ export async function HighlightedServicesSection() {
               icon={SERVICE_ICONS[featured.id]}
               featuredFootnote={t("highlightedFeaturedFootnote")}
             />
-          </div>
+          </Reveal>
 
           <ul
             className="grid list-none gap-4 p-0 sm:grid-cols-2 lg:col-span-7 lg:grid-rows-2 lg:gap-5"
             role="list"
           >
-            {rest.map((item) => {
+            {rest.map((item, index) => {
               const key = SERVICE_MESSAGE_KEY[item.id];
               return (
-                <li key={item.id} className="min-h-0">
+                <Reveal as="li" key={item.id} delay={index * 90} className="min-h-0">
                   <ServiceBenefitCard
                     variant="compact"
                     title={tDynamic(`services.${key}.title`)}
                     description={tDynamic(`services.${key}.description`)}
                     icon={SERVICE_ICONS[item.id]}
                   />
-                </li>
+                </Reveal>
               );
             })}
           </ul>

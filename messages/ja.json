@@ -79,6 +79,7 @@
     "heroDescription": "バイク・ATV・自転車レンタル。ガイド付きツアー。"
   },
   "Home": {
+    "heroWatchVideo": "動画を見る",
     "heroBookRide": "ライドを予約する",
     "heroViewFleet": "フリートを見る",
     "heroTrust1": "ガイド付きツアーあり",
@@ -182,7 +183,67 @@
     "testimonialsTrustLine": "Trustpilot",
     "testimonialsExcellent": "優秀",
     "testimonialsMarqueeAria": "お客様の声、スクロール中",
-    "ratingStarsAria": "5点満点中{rating}点"
+    "ratingStarsAria": "5点満点中{rating}点",
+    "heroExploreFleet": "Explore Fleet",
+    "heroBackdropWord": "Ride Malta",
+    "heroBikeAlt": "Premium rental motorcycle",
+    "heroLabelFleet": "Premium Fleet",
+    "heroLabelBooking": "Instant Booking",
+    "heroLabelHelmet": "Helmet Included",
+    "heroLabelTerrain": "City / Coast / Adventure",
+    "heroStatusPill": "本日のレンタル受付中",
+    "heroScrollCue": "スクロールして探索",
+    "heroMetaCategory": "プレミアムバイクレンタル",
+    "heroMetaRental": "日単位・週単位レンタル",
+    "heroTrustVerified": "認証済み車両",
+    "heroConsoleTitle": "空き状況を確認",
+    "heroConsoleNote": "隠れた料金なし。柔軟な受け取りオプション。",
+    "fleetMarquee": {
+      "aria": "Vehicle categories",
+      "explore": "Explore",
+      "premiumBikes": "Premium Bikes",
+      "scooters": "Scooters",
+      "cityRides": "City Rides",
+      "adventureRides": "Adventure Rides",
+      "longRental": "Long Rental"
+    },
+    "howItWorks": {
+      "kicker": "How it works",
+      "title": "Three steps to the open road",
+      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "steps": {
+        "choose": {
+          "title": "Choose your bike",
+          "description": "Browse the fleet and pick the scooter, motorcycle, or ATV that fits your licence and plans."
+        },
+        "schedule": {
+          "title": "Select pickup & return",
+          "description": "Set your dates and times, add hotel delivery if you need it, and confirm in minutes."
+        },
+        "ride": {
+          "title": "Ride and explore",
+          "description": "Collect your keys and helmet, then discover Malta's coast, city, and countryside your way."
+        }
+      }
+    },
+    "stats": {
+      "support": {
+        "title": "24/7 Support",
+        "sub": "Help whenever you need it"
+      },
+      "pickup": {
+        "title": "Fast Pickup",
+        "sub": "On the road in minutes"
+      },
+      "helmets": {
+        "title": "Premium Helmets",
+        "sub": "Safety kit included"
+      },
+      "duration": {
+        "title": "Flexible Duration",
+        "sub": "Short stays or long trips"
+      }
+    }
   },
   "Faq": {
     "title": "よくあるご質問（FAQ）",

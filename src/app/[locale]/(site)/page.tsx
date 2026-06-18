@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { VideoHero } from "@/features/home/components/video-hero";
+import { PremiumLandingHero } from "@/features/home/components/premium-landing-hero";
+import { HeroBookingSection } from "@/features/home/components/hero-booking-section";
+import { FleetMarquee } from "@/features/home/components/fleet-marquee";
 import { BikeCategoriesSection } from "@/features/home/components/bike-categories-section";
+import { HowItWorksSection } from "@/features/home/components/how-it-works-section";
 import { HighlightedServicesSection } from "@/features/home/components/highlighted-services-section";
 import { QuickBookingCtaSection } from "@/features/home/components/quick-booking-cta-section";
 import { ContactSection } from "@/features/home/components/contact-section";
@@ -28,9 +31,12 @@ export default async function Home({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   return (
-    <main className="flex flex-1 flex-col">
-      <VideoHero />
+    <main className="flex flex-1 flex-col pt-[var(--site-header-offset)]">
+      <PremiumLandingHero />
+      <HeroBookingSection />
+      <FleetMarquee />
       <BikeCategoriesSection />
+      <HowItWorksSection />
       <HighlightedServicesSection />
       <FaqSection />
       <QuickBookingCtaSection />

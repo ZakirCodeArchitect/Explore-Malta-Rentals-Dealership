@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import { bikeCategories } from "@/features/home/data/home-sections";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { BikeCategoryCard } from "@/features/home/components/bike-category-card";
@@ -23,8 +24,10 @@ export async function BikeCategoriesSection() {
           />
 
           <div className="mt-6 grid min-w-0 gap-5 sm:mt-8 md:grid-cols-2">
-            {bikeCategories.map((cat) => (
-              <BikeCategoryCard key={cat.id} cat={cat} />
+            {bikeCategories.map((cat, index) => (
+              <Reveal key={cat.id} delay={index * 120}>
+                <BikeCategoryCard cat={cat} />
+              </Reveal>
             ))}
           </div>
         </Container>

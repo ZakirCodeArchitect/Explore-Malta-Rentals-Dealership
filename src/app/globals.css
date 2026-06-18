@@ -19,9 +19,11 @@
    * Fixed `SiteNavbar` stack height: safe-area + red bar + logo row + booking notice banner.
    * Use for spacing page columns so content does not sit under the header.
    */
+  /* Red accent + logo/nav row + orange booking notice banner */
+  --site-nav-height: 3.25rem;
   --site-banner-height: 2.625rem;
   --site-header-offset: calc(
-    env(safe-area-inset-top, 0px) + 3.125rem + var(--site-banner-height)
+    env(safe-area-inset-top, 0px) + var(--site-nav-height) + var(--site-banner-height)
   );
 }
 
@@ -149,6 +151,619 @@ body {
   .final-cta-fade-up {
     animation: none;
     opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─── Premium landing motion utilities ──────────────────────────
+   Scroll reveal, floating product, and fleet marquee.
+   All keyframes are gated behind prefers-reduced-motion further down. */
+
+@keyframes reveal-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Reveal-on-scroll: hidden until [data-revealed="true"] is toggled by the
+   IntersectionObserver in <Reveal>. Stagger via inline --reveal-delay. */
+.reveal {
+  opacity: 0;
+}
+
+.reveal[data-revealed="true"] {
+  animation: reveal-fade-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* Floating product object — slow, subtle vertical drift */
+@keyframes bike-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -1.25rem, 0);
+  }
+}
+
+.bike-float {
+  animation: bike-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Soft ground shadow under the floating product — breathes with the float */
+@keyframes bike-shadow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateX(-50%) scaleX(1);
+  }
+  50% {
+    opacity: 0.32;
+    transform: translateX(-50%) scaleX(0.86);
+  }
+}
+
+.bike-shadow-pulse {
+  animation: bike-shadow-pulse 7s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+/* ─── Premium hero entrance + ambient motion ────────────────────
+   Above-the-fold entrance plays on load (no IntersectionObserver needed).
+   Stagger each element via inline --hero-delay. All gated for reduced motion. */
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+@keyframes hero-bike-in {
+  from {
+    opacity: 0;
+    transform: translate3d(1.5rem, 0.75rem, 0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.hero-bike-in {
+  animation: hero-bike-in 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* Status pill — slow breathing dot */
+@keyframes hero-status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.65);
+  }
+}
+
+.hero-status-dot {
+  animation: hero-status-pulse 2.2s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+/* Scroll cue — gentle vertical bob */
+@keyframes hero-scroll-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(0, 0.45rem, 0);
+    opacity: 1;
+  }
+}
+
+.hero-scroll-bob {
+  animation: hero-scroll-bob 1.9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Ambient glow behind the product — slow breathe */
+@keyframes hero-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+.hero-glow-breathe {
+  animation: hero-glow-breathe 9s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-bike-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .hero-status-dot,
+  .hero-scroll-bob,
+  .hero-glow-breathe {
+    animation: none;
+  }
+}
+
+/* ─── Cinematic hero (background image) ───────────────────────── */
+
+@font-face {
+  font-family: "Aquatico";
+  src:
+    url("/fonts/Aquatico-Regular.woff2") format("woff2"),
+    url("/fonts/Aquatico-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.hero-cinematic__background-image {
+  object-position: center center;
+}
+
+.hero-cinematic {
+  font-family: "Aquatico", "Avenir Next", "Helvetica Neue", sans-serif;
+  font-weight: 300;
+  font-synthesis: weight;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+.hero-cinematic__location {
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
+}
+
+.hero-cinematic__description {
+  max-width: 28rem;
+  font-size: clamp(0.5625rem, 1.35vw, 0.75rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  line-height: 1.65;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.42);
+}
+
+@media (min-width: 640px) {
+  .hero-cinematic__description {
+    font-size: clamp(0.625rem, 1.15vw, 0.8125rem);
+    letter-spacing: 0.085em;
+    line-height: 1.7;
+  }
+}
+
+.hero-aquatico-heading {
+  font-weight: 300;
+  font-synthesis: weight;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.05;
+  font-size: clamp(1.5rem, 5.5vw, 2.25rem);
+}
+
+.hero-aquatico-heading__line {
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 1px 22px rgba(0, 0, 0, 0.38);
+}
+
+@media (min-width: 768px) {
+  .hero-aquatico-heading {
+    letter-spacing: 0.14em;
+    line-height: 1;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-aquatico-heading {
+    letter-spacing: 0.16em;
+    line-height: 0.95;
+    font-size: clamp(2.25rem, 4.5vw, 4.25rem);
+  }
+}
+
+.hero-display-accent {
+  color: color-mix(in srgb, var(--brand-orange) 88%, white);
+  font-weight: 300;
+  font-synthesis: weight;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.32);
+}
+
+.hero-cta-book {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.125rem;
+  padding: 0.375rem 1.125rem;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, #a84f06 38%, white);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(255, 250, 244, 0.94) 48%,
+    rgba(255, 236, 210, 0.92) 100%
+  );
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  color: #a84f06;
+  font-family: inherit;
+  font-size: 0.5625rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 169, 57, 0.1),
+    0 8px 24px -8px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 169, 57, 0.14);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease,
+    background 0.4s ease,
+    color 0.4s ease;
+  animation: hero-cta-breathe 3.5s ease-in-out infinite;
+}
+
+.hero-cta-book::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 169, 57, 0.14) 0%,
+    rgba(255, 169, 57, 0.06) 45%,
+    rgba(255, 147, 15, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-cta-book::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 200, 120, 0.35), rgba(255, 169, 57, 0.2));
+  opacity: 0.5;
+  filter: blur(16px);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+  pointer-events: none;
+}
+
+.hero-cta-book__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 62%
+  );
+  transform: translate3d(-130%, 0, 0);
+  pointer-events: none;
+}
+
+.hero-cta-book:hover .hero-cta-book__shine {
+  animation: hero-cta-shine 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-cta-book__label,
+.hero-cta-book__arrow {
+  position: relative;
+  z-index: 2;
+  color: inherit;
+}
+
+.hero-cta-book__arrow {
+  display: inline-flex;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-cta-book__arrow svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
+
+.hero-cta-book:hover {
+  transform: translate3d(0, -3px, 0);
+  border-color: color-mix(in srgb, #a84f06 48%, white);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 248, 238, 0.96) 48%,
+    rgba(255, 228, 195, 0.94) 100%
+  );
+  color: #8f4205;
+  animation-play-state: paused;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 169, 57, 0.14),
+    0 12px 28px -10px rgba(0, 0, 0, 0.24),
+    0 0 20px -4px rgba(255, 147, 15, 0.28);
+}
+
+.hero-cta-book:hover::after {
+  opacity: 0.7;
+  filter: blur(20px);
+}
+
+.hero-cta-book:hover .hero-cta-book__arrow {
+  transform: translate3d(5px, 0, 0);
+}
+
+.hero-cta-book:active {
+  transform: translate3d(0, -1px, 0) scale(0.985);
+  transition-duration: 0.12s;
+}
+
+.hero-cta-book:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--brand-orange) 85%, white);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 0 0 2px color-mix(in srgb, var(--brand-orange) 70%, transparent),
+    0 0 0 4px rgba(15, 23, 42, 0.92),
+    0 12px 28px -10px rgba(255, 147, 15, 0.28);
+}
+
+@keyframes hero-cta-shine {
+  from {
+    transform: translate3d(-130%, 0, 0);
+  }
+  to {
+    transform: translate3d(130%, 0, 0);
+  }
+}
+
+@keyframes hero-cta-breathe {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(255, 169, 57, 0.1),
+      0 8px 24px -8px rgba(0, 0, 0, 0.22),
+      0 0 0 1px rgba(255, 169, 57, 0.14);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(255, 169, 57, 0.12),
+      0 10px 26px -8px rgba(0, 0, 0, 0.24),
+      0 0 18px -6px rgba(255, 147, 15, 0.18);
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-cta-book {
+    min-height: 2.25rem;
+    padding-inline: 1.25rem;
+    font-size: 0.625rem;
+  }
+
+  .hero-cta-book__arrow svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta-book {
+    animation: none;
+  }
+
+  .hero-cta-book:hover .hero-cta-book__shine {
+    animation: none;
+  }
+
+  .hero-cta-book,
+  .hero-cta-book__arrow,
+  .hero-cta-book::after {
+    transition: none;
+  }
+
+  .hero-cta-book:hover {
+    transform: none;
+  }
+
+  .hero-cta-book:hover .hero-cta-book__arrow {
+    transform: none;
+  }
+}
+
+.hero-category-bar__chip--active {
+  background: linear-gradient(135deg, rgba(155, 27, 48, 0.92) 0%, rgba(120, 18, 31, 0.95) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 8px 24px -6px rgba(193, 18, 31, 0.55);
+}
+
+/* ─── Hero booking form — frosted white glass ─────────────────── */
+
+.hero-booking-form-shell {
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.58) 50%,
+    rgba(255, 252, 248, 0.52) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.12);
+  -webkit-backdrop-filter: blur(20px) saturate(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 28px 70px -36px rgba(0, 0, 0, 0.48);
+  color: #0f172a;
+}
+
+.hero-booking-form-shell label,
+.hero-booking-form-shell legend {
+  color: #0f172a;
+}
+
+.hero-booking-form-shell .text-slate-500 {
+  color: #1e293b;
+}
+
+.hero-booking-form-shell .text-slate-400 {
+  color: #64748b;
+}
+
+.hero-booking-form-shell .text-slate-600 {
+  color: #334155;
+}
+
+.hero-booking-form-shell .text-slate-700 {
+  color: #1e293b;
+}
+
+.hero-booking-form-shell .text-slate-800 {
+  color: #0f172a;
+}
+
+.hero-booking-form-shell .text-slate-900,
+.hero-booking-form-shell .text-slate-950 {
+  color: #020617;
+}
+
+.hero-booking-form-shell .hero-booking-form-panel {
+  border-color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.hero-booking-form-shell .hero-booking-form-input {
+  border-color: rgba(148, 163, 184, 0.45);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #0f172a;
+}
+
+.hero-booking-form-shell .hero-booking-form-input span {
+  color: #0f172a;
+}
+
+.hero-booking-form-shell .hero-booking-form-divider {
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.hero-booking-quick-filters {
+  border-color: color-mix(in srgb, var(--brand-orange-strong) 55%, rgba(255, 255, 255, 0.45));
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 16px 40px -28px rgba(0, 0, 0, 0.35);
+}
+
+.hero-booking-quick-filters .text-slate-800,
+.hero-booking-quick-filters .tabular-nums {
+  color: #0f172a;
+}
+
+.hero-booking-form-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: -0.75rem;
+  z-index: 0;
+  border-radius: 1rem;
+  opacity: 0.55;
+  filter: blur(2rem);
+  background: radial-gradient(
+    ellipse 85% 65% at 50% 0%,
+    rgba(255, 255, 255, 0.28),
+    transparent 68%
+  );
+}
+
+@media (min-width: 640px) {
+  .hero-booking-form-glow {
+    inset: -1rem;
+  }
+}
+
+/* Fleet marquee — seamless horizontal loop (track is two identical halves) */
+@keyframes fleet-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.fleet-marquee-track {
+  animation: fleet-marquee var(--fleet-marquee-duration, 38s) linear infinite;
+  will-change: transform;
+}
+
+.fleet-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+  }
+  .reveal[data-revealed="true"] {
+    animation: none;
+  }
+  .bike-float,
+  .bike-shadow-pulse,
+  .fleet-marquee-track {
+    animation: none;
     transform: none;
   }
 }

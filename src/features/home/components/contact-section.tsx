@@ -1,5 +1,6 @@
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { getEnvValue } from "@/components/footer/footer-utils";
 import { SITE_CONTACT, SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
@@ -34,7 +35,7 @@ export async function ContactSection() {
         </div>
 
         <div className="mt-10">
-          <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
+          <Reveal className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
             <div className="rounded-md border border-slate-200/90 bg-white p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)]">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
@@ -86,12 +87,12 @@ export async function ContactSection() {
                 query={address}
               />
             </div>
-          </div>
+          </Reveal>
 
-          <div className="mt-6 rounded-md border border-slate-200/90 bg-white p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.08)]">
+          <Reveal as="div" delay={120} className="mt-6 rounded-md border border-slate-200/90 bg-white p-6 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.08)]">
             <p className="text-sm font-semibold text-slate-950">{tCommon("responseTimeTitle")}</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">{tCommon("responseTimeBody")}</p>
-          </div>
+          </Reveal>
         </div>
       </Container>
     </section>

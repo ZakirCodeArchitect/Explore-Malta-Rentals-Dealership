@@ -79,6 +79,7 @@
     "heroDescription": "موٹرسائیکل، اے ٹی وی، اور سائیکل کرایہ پر۔ گائیڈڈ ٹور۔"
   },
   "Home": {
+    "heroWatchVideo": "ویڈیو دیکھیں",
     "heroBookRide": "اپنی سواری بک کرو",
     "heroViewFleet": "فلیٹ دیکھیں",
     "heroTrust1": "گائیڈڈ ٹور دستیاب ہیں۔",
@@ -182,7 +183,67 @@
     "testimonialsTrustLine": "ٹرسٹ پائلٹ",
     "testimonialsExcellent": "بہترین",
     "testimonialsMarqueeAria": "کسٹمر کی تعریف، سکرولنگ",
-    "ratingStarsAria": "5 میں سے {rating}"
+    "ratingStarsAria": "5 میں سے {rating}",
+    "heroExploreFleet": "Explore Fleet",
+    "heroBackdropWord": "Ride Malta",
+    "heroBikeAlt": "Premium rental motorcycle",
+    "heroLabelFleet": "Premium Fleet",
+    "heroLabelBooking": "Instant Booking",
+    "heroLabelHelmet": "Helmet Included",
+    "heroLabelTerrain": "City / Coast / Adventure",
+    "heroStatusPill": "آج کے کرایے کے لیے دستیاب",
+    "heroScrollCue": "دریافت کرنے کے لیے سکرول کریں",
+    "heroMetaCategory": "پریمیم بائیک کرایہ",
+    "heroMetaRental": "روزانہ اور ہفتہ وار کرایہ",
+    "heroTrustVerified": "تصدیق شدہ فلیٹ",
+    "heroConsoleTitle": "دستیابی چیک کریں",
+    "heroConsoleNote": "کوئی پوشیدہ چارجز نہیں۔ لچکدار پک اپ آپشنز۔",
+    "fleetMarquee": {
+      "aria": "Vehicle categories",
+      "explore": "Explore",
+      "premiumBikes": "Premium Bikes",
+      "scooters": "Scooters",
+      "cityRides": "City Rides",
+      "adventureRides": "Adventure Rides",
+      "longRental": "Long Rental"
+    },
+    "howItWorks": {
+      "kicker": "How it works",
+      "title": "Three steps to the open road",
+      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "steps": {
+        "choose": {
+          "title": "Choose your bike",
+          "description": "Browse the fleet and pick the scooter, motorcycle, or ATV that fits your licence and plans."
+        },
+        "schedule": {
+          "title": "Select pickup & return",
+          "description": "Set your dates and times, add hotel delivery if you need it, and confirm in minutes."
+        },
+        "ride": {
+          "title": "Ride and explore",
+          "description": "Collect your keys and helmet, then discover Malta's coast, city, and countryside your way."
+        }
+      }
+    },
+    "stats": {
+      "support": {
+        "title": "24/7 Support",
+        "sub": "Help whenever you need it"
+      },
+      "pickup": {
+        "title": "Fast Pickup",
+        "sub": "On the road in minutes"
+      },
+      "helmets": {
+        "title": "Premium Helmets",
+        "sub": "Safety kit included"
+      },
+      "duration": {
+        "title": "Flexible Duration",
+        "sub": "Short stays or long trips"
+      }
+    }
   },
   "Faq": {
     "title": "اکثر پوچھے گئے سوالات (FAQs)",

@@ -148,3 +148,26 @@ export const contactSection = {
     "Call, message, or visit — we’re here to help you choose the right ride. Your mobile number and map location are below.",
 } as const;
 
+/**
+ * Fleet marquee categories (home strip). `id` maps to the i18n key under
+ * `Home.fleetMarquee.<id>`; `image` reuses existing public assets.
+ */
+export const fleetMarqueeItems = [
+  { id: "premiumBikes", image: "/product-images/lexmoto-aura-125cc.png" },
+  { id: "scooters", image: "/product-images/neco-one-50cc.png" },
+  { id: "cityRides", image: "/product-images/giant-escape-city-bike.png" },
+  { id: "adventureRides", image: "/product-images/cfmoto-cforce-atv.png" },
+  { id: "longRental", image: "/vehicle-types/motorcycle.png" },
+] as const;
+
+/** "How it works" steps. `id` maps to `Home.howItWorks.steps.<id>`. */
+export const howItWorksSteps = ["choose", "schedule", "ride"] as const;
+
+/** Compact stat cards in the services section. `id` maps to `Home.stats.<id>`. */
+export const homeStats = [
+  "support",
+  "pickup",
+  "helmets",
+  "duration",
+] as const;
+

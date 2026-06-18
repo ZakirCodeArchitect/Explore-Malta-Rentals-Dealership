@@ -79,6 +79,7 @@
     "heroDescription": "মোটরসাইকেল, ATV, এবং সাইকেল ভাড়া। নির্দেশিত ট্যুর।"
   },
   "Home": {
+    "heroWatchVideo": "ভিডিও দেখুন",
     "heroBookRide": "আপনার রাইড বুক",
     "heroViewFleet": "ফ্লিট দেখুন",
     "heroTrust1": "গাইডেড ট্যুর উপলব্ধ",
@@ -182,7 +183,67 @@
     "testimonialsTrustLine": "ট্রাস্টপাইলট",
     "testimonialsExcellent": "চমৎকার",
     "testimonialsMarqueeAria": "গ্রাহক প্রশংসাপত্র, স্ক্রোলিং",
-    "ratingStarsAria": "৫টির মধ্যে {rating}"
+    "ratingStarsAria": "৫টির মধ্যে {rating}",
+    "heroExploreFleet": "Explore Fleet",
+    "heroBackdropWord": "Ride Malta",
+    "heroBikeAlt": "Premium rental motorcycle",
+    "heroLabelFleet": "Premium Fleet",
+    "heroLabelBooking": "Instant Booking",
+    "heroLabelHelmet": "Helmet Included",
+    "heroLabelTerrain": "City / Coast / Adventure",
+    "heroStatusPill": "আজকের ভাড়ার জন্য খোলা",
+    "heroScrollCue": "অন্বেষণ করতে স্ক্রোল করুন",
+    "heroMetaCategory": "প্রিমিয়াম বাইক ভাড়া",
+    "heroMetaRental": "দৈনিক ও সাপ্তাহিক ভাড়া",
+    "heroTrustVerified": "যাচাইকৃত ফ্লিট",
+    "heroConsoleTitle": "উপলব্ধতা যাচাই করুন",
+    "heroConsoleNote": "কোনো লুকানো খরচ নেই। নমনীয় পিকআপ অপশন।",
+    "fleetMarquee": {
+      "aria": "Vehicle categories",
+      "explore": "Explore",
+      "premiumBikes": "Premium Bikes",
+      "scooters": "Scooters",
+      "cityRides": "City Rides",
+      "adventureRides": "Adventure Rides",
+      "longRental": "Long Rental"
+    },
+    "howItWorks": {
+      "kicker": "How it works",
+      "title": "Three steps to the open road",
+      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "steps": {
+        "choose": {
+          "title": "Choose your bike",
+          "description": "Browse the fleet and pick the scooter, motorcycle, or ATV that fits your licence and plans."
+        },
+        "schedule": {
+          "title": "Select pickup & return",
+          "description": "Set your dates and times, add hotel delivery if you need it, and confirm in minutes."
+        },
+        "ride": {
+          "title": "Ride and explore",
+          "description": "Collect your keys and helmet, then discover Malta's coast, city, and countryside your way."
+        }
+      }
+    },
+    "stats": {
+      "support": {
+        "title": "24/7 Support",
+        "sub": "Help whenever you need it"
+      },
+      "pickup": {
+        "title": "Fast Pickup",
+        "sub": "On the road in minutes"
+      },
+      "helmets": {
+        "title": "Premium Helmets",
+        "sub": "Safety kit included"
+      },
+      "duration": {
+        "title": "Flexible Duration",
+        "sub": "Short stays or long trips"
+      }
+    }
   },
   "Faq": {
     "title": "প্রায়শই জিজ্ঞাসিত প্রশ্ন (FAQs)",
