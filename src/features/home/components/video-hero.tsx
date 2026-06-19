@@ -79,12 +79,14 @@ export async function VideoHero() {
 
             {/* hero text */}
             <div className="flex min-h-0 flex-1 flex-col justify-start pb-4 sm:pb-6 lg:pb-8">
-              <div className="max-w-3xl">
+              <div className="flex w-full justify-end">
                 <div className="inline-flex items-center gap-2 text-sm font-medium text-white/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.85)]">
                   <PinIcon />
                   <span>{tBrand("locationKicker")}</span>
                 </div>
+              </div>
 
+              <div className="max-w-3xl">
                 <div className="mt-6 sm:mt-7">
                   <Image
                     src={LOGO_PATH}
