@@ -128,6 +128,26 @@
       "hotel": {
         "title": "হোটেল ডেলিভারি/রিটার্ন",
         "description": "যেখানে এটি প্রযোজ্য, আমরা সুবিধাজনক ড্রপ-অফ এবং সংগ্রহে সাহায্য করতে পারি।"
+      },
+      "onlineBooking": {
+        "title": "Easy online booking",
+        "description": "Reserve your ride in minutes with a clear, simple booking flow."
+      },
+      "affordableRates": {
+        "title": "Affordable daily rates",
+        "description": "Straightforward pricing on scooters and bikes — great value for exploring Malta."
+      },
+      "routeTips": {
+        "title": "Local route tips",
+        "description": "Get practical suggestions for coastal roads, parking, and must-see stops."
+      },
+      "transparentPricing": {
+        "title": "Transparent pricing",
+        "description": "Clear rates and rental details up front — no guesswork at pickup."
+      },
+      "qualityFleet": {
+        "title": "Well-maintained fleet",
+        "description": "Clean, cared-for vehicles so every ride feels reliable from day one."
       }
     },
     "bikeCategories": {
@@ -144,7 +164,8 @@
         "bullet1": "দিনের ভ্রমণের জন্য দুর্দান্ত",
         "bullet2": "সুষম আরাম + নিয়ন্ত্রণ",
         "subtitle": "মোটরসাইকেল"
-      }
+      },
+      "includesLabel": "অন্তর্ভুক্ত:"
     },
     "testimonials": {
       "t1": {
@@ -210,7 +231,7 @@
     "howItWorks": {
       "kicker": "How it works",
       "title": "Three steps to the open road",
-      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "description": "From picking your ride to exploring the island, renting with us is quick, clear, and built for visitors.",
       "steps": {
         "choose": {
           "title": "Choose your bike",
@@ -243,10 +264,15 @@
         "title": "Flexible Duration",
         "sub": "Short stays or long trips"
       }
-    }
+    },
+    "sectionBikePickerKicker": "ফ্লিট বিভাগ",
+    "sectionServicesTitleLine1": "সেবা ও",
+    "sectionServicesTitleLine2": "সুবিধা",
+    "highlightedServicesHowWeWork": "আমরা কীভাবে কাজ করি দেখুন",
+    "highlightedServicesInfoLabel": "তথ্য"
   },
   "Faq": {
-    "title": "প্রায়শই জিজ্ঞাসিত প্রশ্ন (FAQs)",
+    "title": "প্রায়শই জিজ্ঞাসিত প্রশ্ন",
     "subtitleLead": "আপনি যা খুঁজছেন তা খুঁজে পাচ্ছেন না? নাগাল আউট",
     "subtitleTail": "অথবা নীচের যোগাযোগ বিভাগ ব্যবহার করুন.",
     "items": {
@@ -297,7 +323,12 @@
     "description": "কল করুন, মেসেজ করুন বা ভিজিট করুন — আমরা আপনাকে সঠিক রাইড বেছে নিতে সাহায্য করতে এখানে আছি। আপনার মোবাইল নম্বর এবং মানচিত্র অবস্থান নীচে.",
     "whatsappTitle": "একটি হোয়াটসঅ্যাপ বার্তা পাঠান",
     "whatsappBody": "আমরা আপনাকে সঠিক রাইড বাছাই করতে এবং উপলব্ধতার প্রশ্নের উত্তর দিতে সাহায্য করব।",
-    "envWhatsappHint": "WhatsApp বোতামটি সক্ষম করতে NEXT_PUBLIC_WHATSAPP_NUMBER সেট করুন৷"
+    "envWhatsappHint": "WhatsApp বোতামটি সক্ষম করতে NEXT_PUBLIC_WHATSAPP_NUMBER সেট করুন৷",
+    "heroTitle": "Need a ride to explore Malta? This is where to start.",
+    "heroDescription": "Explore Malta Rentals is an excellent choice for visitors discovering the island — friendly local advice, quick pickup in Pietà, and a well-kept fleet for every plan.",
+    "ctaButton": "Contact us",
+    "contactDetailsTitle": "Contact details",
+    "locationImageAlt": "Explore Malta Rentals — Pietà pickup location"
   },
   "Footer": {
     "exploreHome": "বাড়ি",

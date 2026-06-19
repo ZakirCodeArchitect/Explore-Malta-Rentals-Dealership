@@ -128,6 +128,26 @@
       "hotel": {
         "title": "Pengiriman / pengembalian hotel",
         "description": "Jika berlaku, kami dapat membantu pengantaran dan pengambilan dengan mudah."
+      },
+      "onlineBooking": {
+        "title": "Easy online booking",
+        "description": "Reserve your ride in minutes with a clear, simple booking flow."
+      },
+      "affordableRates": {
+        "title": "Affordable daily rates",
+        "description": "Straightforward pricing on scooters and bikes — great value for exploring Malta."
+      },
+      "routeTips": {
+        "title": "Local route tips",
+        "description": "Get practical suggestions for coastal roads, parking, and must-see stops."
+      },
+      "transparentPricing": {
+        "title": "Transparent pricing",
+        "description": "Clear rates and rental details up front — no guesswork at pickup."
+      },
+      "qualityFleet": {
+        "title": "Well-maintained fleet",
+        "description": "Clean, cared-for vehicles so every ride feels reliable from day one."
       }
     },
     "bikeCategories": {
@@ -144,7 +164,8 @@
         "bullet1": "Cocok untuk perjalanan sehari",
         "bullet2": "Kenyamanan + kontrol yang seimbang",
         "subtitle": "Sepeda motor"
-      }
+      },
+      "includesLabel": "Termasuk:"
     },
     "testimonials": {
       "t1": {
@@ -210,7 +231,7 @@
     "howItWorks": {
       "kicker": "How it works",
       "title": "Three steps to the open road",
-      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "description": "From picking your ride to exploring the island, renting with us is quick, clear, and built for visitors.",
       "steps": {
         "choose": {
           "title": "Choose your bike",
@@ -243,10 +264,15 @@
         "title": "Flexible Duration",
         "sub": "Short stays or long trips"
       }
-    }
+    },
+    "sectionBikePickerKicker": "Kategori armada",
+    "sectionServicesTitleLine1": "Layanan &",
+    "sectionServicesTitleLine2": "manfaat",
+    "highlightedServicesHowWeWork": "Lihat cara kami bekerja",
+    "highlightedServicesInfoLabel": "Info"
   },
   "Faq": {
-    "title": "Pertanyaan yang Sering Diajukan (FAQ)",
+    "title": "Pertanyaan yang Sering Diajukan",
     "subtitleLead": "Tidak dapat menemukan apa yang Anda cari? Hubungi kami",
     "subtitleTail": "atau gunakan bagian kontak di bawah ini.",
     "items": {
@@ -297,7 +323,12 @@
     "description": "Telepon, kirim pesan, atau kunjungi — kami siap membantu Anda memilih transportasi yang tepat. Nomor ponsel dan lokasi peta Anda ada di bawah.",
     "whatsappTitle": "Kirim pesan WhatsApp",
     "whatsappBody": "Kami akan membantu Anda memilih perjalanan yang tepat dan menjawab pertanyaan ketersediaan.",
-    "envWhatsappHint": "Setel NEXT_PUBLIC_WHATSAPP_NUMBER untuk mengaktifkan tombol WhatsApp."
+    "envWhatsappHint": "Setel NEXT_PUBLIC_WHATSAPP_NUMBER untuk mengaktifkan tombol WhatsApp.",
+    "heroTitle": "Need a ride to explore Malta? This is where to start.",
+    "heroDescription": "Explore Malta Rentals is an excellent choice for visitors discovering the island — friendly local advice, quick pickup in Pietà, and a well-kept fleet for every plan.",
+    "ctaButton": "Contact us",
+    "contactDetailsTitle": "Contact details",
+    "locationImageAlt": "Explore Malta Rentals — Pietà pickup location"
   },
   "Footer": {
     "exploreHome": "Rumah",

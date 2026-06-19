@@ -128,6 +128,26 @@
       "hotel": {
         "title": "Konsenja / ritorn tal-lukanda",
         "description": "Fejn tapplika, nistgħu ngħinu b'drop-off u ġbir konvenjenti."
+      },
+      "onlineBooking": {
+        "title": "Easy online booking",
+        "description": "Reserve your ride in minutes with a clear, simple booking flow."
+      },
+      "affordableRates": {
+        "title": "Affordable daily rates",
+        "description": "Straightforward pricing on scooters and bikes — great value for exploring Malta."
+      },
+      "routeTips": {
+        "title": "Local route tips",
+        "description": "Get practical suggestions for coastal roads, parking, and must-see stops."
+      },
+      "transparentPricing": {
+        "title": "Transparent pricing",
+        "description": "Clear rates and rental details up front — no guesswork at pickup."
+      },
+      "qualityFleet": {
+        "title": "Well-maintained fleet",
+        "description": "Clean, cared-for vehicles so every ride feels reliable from day one."
       }
     },
     "bikeCategories": {
@@ -144,7 +164,8 @@
         "bullet1": "Ideali għall-jiem ta' vjaġġi",
         "bullet2": "Kumdità bilanċjata + kontroll",
         "subtitle": "Mutur"
-      }
+      },
+      "includesLabel": "Jinkludi:"
     },
     "testimonials": {
       "t1": {
@@ -210,7 +231,7 @@
     "howItWorks": {
       "kicker": "How it works",
       "title": "Three steps to the open road",
-      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "description": "From picking your ride to exploring the island, renting with us is quick, clear, and built for visitors.",
       "steps": {
         "choose": {
           "title": "Choose your bike",
@@ -243,10 +264,15 @@
         "title": "Flexible Duration",
         "sub": "Short stays or long trips"
       }
-    }
+    },
+    "sectionBikePickerKicker": "Kategoriji tal-flotta",
+    "sectionServicesTitleLine1": "Servizzi &",
+    "sectionServicesTitleLine2": "benefiċċji",
+    "highlightedServicesHowWeWork": "Ara kif naħdmu",
+    "highlightedServicesInfoLabel": "Info"
   },
   "Faq": {
-    "title": "Mistoqsijiet Frekwenti (FAQs)",
+    "title": "Mistoqsijiet Frekwenti",
     "subtitleLead": "Ma ssibx dak li qed tfittex? Ikkuntattjana fuq ",
     "subtitleTail": " jew uża s-sezzjoni ta' kuntatt hawn taħt.",
     "items": {
@@ -297,7 +323,12 @@
     "description": "Ċempel, ibgħat messaġġ, jew żurna — aħna hawn biex ngħinuk tagħżel il-vjaġġ it-tajjeb. In-numru tal-mowbajl u l-post fuq il-mappa huma hawn taħt.",
     "whatsappTitle": "Ibgħat messaġġ WhatsApp",
     "whatsappBody": "Ngħinuk tagħżel il-vjaġġ it-tajjeb u nwieġbu mistoqsijiet ta' disponibilità.",
-    "envWhatsappHint": "Issettja NEXT_PUBLIC_WHATSAPP_NUMBER biex tħaddem il-buttuna WhatsApp."
+    "envWhatsappHint": "Issettja NEXT_PUBLIC_WHATSAPP_NUMBER biex tħaddem il-buttuna WhatsApp.",
+    "heroTitle": "Trid rot biex tesplora Malta? Hawn huwa fejn tibda.",
+    "heroDescription": "Explore Malta Rentals huwa għażla eċċellenti għal viżitaturi li jiskopru l-gżira — pariri lokali, pickup malajr f'Pietà, u flotta f'ordni għal kull pjan.",
+    "ctaButton": "Ikkuntattjana",
+    "contactDetailsTitle": "Dettalji ta' kuntatt",
+    "locationImageAlt": "Explore Malta Rentals — post tal-pickup f'Pietà"
   },
   "Footer": {
     "exploreHome": "Id-Dar",

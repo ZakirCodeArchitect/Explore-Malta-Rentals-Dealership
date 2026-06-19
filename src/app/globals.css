@@ -25,6 +25,23 @@
   --site-header-offset: calc(
     env(safe-area-inset-top, 0px) + var(--site-nav-height) + var(--site-banner-height)
   );
+  --footer-wordmark-height: clamp(6.5rem, 15vw, 11.5rem);
+}
+
+html.booking-banner-hidden {
+  --site-banner-height: 0px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --footer-wordmark-height: clamp(7.5rem, 16vw, 12.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --footer-wordmark-height: clamp(8rem, 17vw, 13.5rem);
+  }
 }
 
 @theme inline {
@@ -155,6 +172,139 @@ body {
   }
 }
 
+/* Final conversion CTA — editorial dark layout */
+.final-cta-editorial {
+  color: #fff;
+}
+
+.final-cta-editorial__background-image {
+  object-position: 62% center;
+}
+
+@media (min-width: 768px) {
+  .final-cta-editorial__background-image {
+    object-position: 78% center;
+  }
+}
+
+@media (min-width: 1280px) {
+  .final-cta-editorial__background-image {
+    object-position: right center;
+  }
+}
+
+.final-cta-editorial__background-overlay {
+  background: linear-gradient(
+    105deg,
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.62) 26%,
+    rgb(0 0 0 / 0.28) 48%,
+    rgb(0 0 0 / 0.08) 68%,
+    transparent 82%
+  );
+}
+
+.final-cta-editorial__headline {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Helvetica Neue", sans-serif;
+  font-size: clamp(2.85rem, 7.25vw, 6.25rem);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  color: #fff;
+  text-align: left;
+  text-shadow: 0 2px 28px rgb(0 0 0 / 0.42);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.final-cta-editorial__headline-line {
+  display: block;
+}
+
+.final-cta-editorial__headline-line + .final-cta-editorial__headline-line {
+  margin-top: -0.02em;
+  padding-left: clamp(2.5rem, 6vw, 5.5rem);
+}
+
+.final-cta-editorial__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .final-cta-editorial__grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.52fr);
+    column-gap: clamp(3rem, 8vw, 9rem);
+    row-gap: 0;
+  }
+}
+
+.final-cta-editorial__main {
+  max-width: 42rem;
+}
+
+.final-cta-editorial__body {
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  letter-spacing: -0.012em;
+}
+
+@media (min-width: 768px) {
+  .final-cta-editorial__body {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+}
+
+.final-cta-editorial__aside {
+  max-width: 22rem;
+}
+
+@media (min-width: 1024px) {
+  .final-cta-editorial__aside {
+    justify-self: end;
+    padding-top: 0.15rem;
+  }
+}
+
+.final-cta-editorial__aside-text {
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  letter-spacing: -0.012em;
+  color: rgb(212 212 212);
+  text-shadow: 0 1px 16px rgb(0 0 0 / 0.35);
+}
+
+@media (min-width: 768px) {
+  .final-cta-editorial__aside-text {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+}
+
+/* Landing contact — desaturated full-bleed map with floating card */
+.landing-contact-map {
+  cursor: grab;
+}
+
+.landing-contact-map:active {
+  cursor: grabbing;
+}
+
+.landing-contact-map iframe {
+  cursor: grab;
+}
+
+.landing-contact-map iframe:active {
+  cursor: grabbing;
+}
+
 /* ─── Premium landing motion utilities ──────────────────────────
    Scroll reveal, floating product, and fleet marquee.
    All keyframes are gated behind prefers-reduced-motion further down. */
@@ -179,6 +329,235 @@ body {
 .reveal[data-revealed="true"] {
   animation: reveal-fade-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* How it works — scroll-scrubbed vertical timeline (GSAP ScrollTrigger) */
+.how-it-works-timeline__step {
+  opacity: 0;
+}
+
+.how-it-works-timeline__line-fill {
+  transform: scaleY(0);
+  transform-origin: top center;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--brand-orange) 0%,
+    rgb(255 147 15 / 0.42) 72%,
+    rgb(255 147 15 / 0.18) 100%
+  );
+  box-shadow: 0 0 24px rgb(255 147 15 / 0.28);
+}
+
+.how-it-works-timeline__dot {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 999px;
+  border: 2px solid rgb(255 147 15 / 0.55);
+  background: #0a0a0a;
+  box-shadow:
+    0 0 0 4px rgb(0 0 0 / 0.65),
+    0 0 18px rgb(255 147 15 / 0.28);
+}
+
+.how-it-works-step-card {
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.how-it-works-step-card:hover {
+  transform: translate3d(0, -0.45rem, 0);
+  border-color: rgb(255 147 15 / 0.22);
+  box-shadow:
+    0 28px 64px -34px rgb(0 0 0 / 0.65),
+    0 0 40px -18px rgb(255 147 15 / 0.28);
+}
+
+.how-it-works-step-card__sheen {
+  background:
+    radial-gradient(
+      circle at 18% 0%,
+      rgb(255 147 15 / 0.14) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      135deg,
+      rgb(255 255 255 / 0.04) 0%,
+      transparent 42%,
+      rgb(255 147 15 / 0.05) 100%
+    );
+}
+
+/* How it works — animated glassmorphic red background */
+@keyframes how-it-works-orb-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, -10%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-4%, -4%, 0) scale(0.94);
+  }
+}
+
+@keyframes how-it-works-orb-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  40% {
+    transform: translate3d(-7%, 6%, 0) scale(1.06);
+  }
+  70% {
+    transform: translate3d(5%, -4%, 0) scale(0.92);
+  }
+}
+
+@keyframes how-it-works-orb-drift-c {
+  0%,
+  100% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-46%, 8%, 0) scale(1.1);
+  }
+}
+
+@keyframes how-it-works-glass-shimmer {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+.how-it-works-bg {
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 92%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 92%);
+}
+
+.how-it-works-bg__orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(72px);
+  will-change: transform;
+}
+
+.how-it-works-bg__orb--one {
+  bottom: 14%;
+  left: -6%;
+  width: min(52vw, 28rem);
+  height: min(52vw, 28rem);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(230 57 23 / 0.52) 0%,
+    rgb(205 46 20 / 0.24) 42%,
+    transparent 72%
+  );
+  animation: how-it-works-orb-drift-a 22s ease-in-out infinite;
+}
+
+.how-it-works-bg__orb--two {
+  top: 28%;
+  right: -10%;
+  width: min(46vw, 24rem);
+  height: min(46vw, 24rem);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(224 54 22 / 0.55) 0%,
+    rgb(180 40 18 / 0.28) 45%,
+    transparent 70%
+  );
+  animation: how-it-works-orb-drift-b 26s ease-in-out infinite;
+}
+
+.how-it-works-bg__orb--three {
+  top: 8%;
+  left: 50%;
+  width: min(38vw, 20rem);
+  height: min(38vw, 20rem);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(255 100 40 / 0.42) 0%,
+    rgb(230 57 23 / 0.2) 48%,
+    transparent 74%
+  );
+  animation: how-it-works-orb-drift-c 19s ease-in-out infinite;
+}
+
+.how-it-works-bg__glass {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      145deg,
+      rgb(255 255 255 / 0.045) 0%,
+      transparent 36%,
+      rgb(230 57 23 / 0.04) 72%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(0 0 0 / 0.12) 0%,
+      transparent 34%,
+      rgb(0 0 0 / 0.18) 72%,
+      rgb(0 0 0 / 0.55) 100%
+    );
+  backdrop-filter: blur(42px) saturate(145%);
+  -webkit-backdrop-filter: blur(42px) saturate(145%);
+  border-top: 1px solid rgb(255 255 255 / 0.05);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  animation: how-it-works-glass-shimmer 14s ease-in-out infinite;
+}
+
+.how-it-works-bg__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* How it works — light scattered side abstractions */
+.how-it-works-step-abstract {
+  z-index: 0;
+}
+
+.how-it-works-step-abstract__speck {
+  position: absolute;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+}
+
+.how-it-works-step-abstract__speck--white {
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 0 8px rgb(255 255 255 / 0.12);
+}
+
+.how-it-works-step-abstract__speck--orange {
+  background: rgb(255 147 15 / 0.95);
+  box-shadow: 0 0 10px rgb(255 147 15 / 0.18);
+}
+
+.how-it-works-step-abstract__speck--soft {
+  filter: blur(1.5px);
+}
+
+.how-it-works-step-abstract__dash {
+  position: absolute;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  transform-origin: left center;
 }
 
 /* Floating product object — slow, subtle vertical drift */
@@ -734,6 +1113,118 @@ body {
   }
 }
 
+/* Services & benefits — sleek display typography on light bento band */
+.services-display-headline,
+.services-display-body {
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Segoe UI", sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+.services-display-body {
+  letter-spacing: -0.015em;
+}
+
+/* How it works — display typography on the dark steps band */
+.how-it-works-display-headline {
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Segoe UI", sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Choose your ride — rich corner mesh on true black */
+.bike-picker-section-bg__mesh {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateZ(0);
+  background-color: #000;
+  background-image:
+    radial-gradient(
+      ellipse 155% 135% at -6% -18%,
+      rgb(230 57 23 / 0.95) 0%,
+      rgb(224 54 22 / 0.72) 10%,
+      rgb(205 46 20 / 0.42) 24%,
+      rgb(160 34 16 / 0.18) 42%,
+      rgb(80 20 10 / 0.05) 58%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 135% 115% at 106% -12%,
+      rgb(156 107 97 / 0.65) 0%,
+      rgb(138 92 82 / 0.38) 14%,
+      rgb(110 74 66 / 0.16) 32%,
+      rgb(60 42 38 / 0.05) 50%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 95% 55% at 42% -2%,
+      rgb(210 72 38 / 0.14) 0%,
+      rgb(120 40 22 / 0.04) 40%,
+      transparent 68%
+    ),
+    linear-gradient(180deg, rgb(18 6 4 / 0.08) 0%, transparent 38%, rgb(0 0 0 / 0.55) 68%, #000 100%);
+}
+
+.bike-picker-section-bg__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.028;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* Services band — red light rising from the full top edge into the black section */
+.services-section-edge-glow {
+  isolation: isolate;
+}
+
+.services-section-edge-glow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    0 -48px 140px -24px rgb(230 57 23 / 0.62),
+    0 -20px 64px -16px rgb(224 54 22 / 0.48),
+    0 -8px 28px -6px rgb(205 46 20 / 0.34);
+}
+
+@media (min-width: 640px) {
+  .services-section-edge-glow::before {
+    box-shadow:
+      0 -56px 160px -28px rgb(230 57 23 / 0.58),
+      0 -24px 72px -18px rgb(224 54 22 / 0.44),
+      0 -10px 32px -8px rgb(205 46 20 / 0.32);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-section-edge-glow::before {
+    box-shadow:
+      0 -64px 180px -32px rgb(230 57 23 / 0.55),
+      0 -28px 80px -20px rgb(224 54 22 / 0.42),
+      0 -12px 36px -10px rgb(205 46 20 / 0.3);
+  }
+}
+
+/* Fleet category strip — sleek labels on the dark ride picker band */
+.fleet-category-strip__label {
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Segoe UI", sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
 /* Fleet marquee — seamless horizontal loop (track is two identical halves) */
 @keyframes fleet-marquee {
   from {
@@ -759,6 +1250,30 @@ body {
   }
   .reveal[data-revealed="true"] {
     animation: none;
+  }
+  .how-it-works-timeline__line-fill {
+    transform: scaleY(1);
+  }
+  .how-it-works-timeline__step {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .how-it-works-timeline__dot {
+    opacity: 1;
+    transform: none;
+  }
+  .how-it-works-step-abstract {
+    opacity: 0.55 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+  .how-it-works-bg__orb,
+  .how-it-works-bg__glass {
+    animation: none;
+  }
+  .how-it-works-bg__orb--three {
+    transform: translate3d(-50%, 0, 0);
   }
   .bike-float,
   .bike-shadow-pulse,
@@ -854,5 +1369,118 @@ body {
       scrollbar-width: thin;
       scrollbar-color: color-mix(in srgb, #94a3b8 55%, transparent) transparent;
     }
+  }
+}
+
+/* Site footer — background image + wordmark */
+.site-footer__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: #000;
+}
+
+.site-footer__background {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1822 / 863;
+  background-color: #000;
+  background-image: url("/footer-background.png");
+  background-size: 100% 100%;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.site-footer__background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.5) 0%,
+    rgb(0 0 0 / 0.15) 50%,
+    rgb(0 0 0 / 0.35) 100%
+  );
+  pointer-events: none;
+}
+
+/* Site footer — large background wordmark (MIDU-style gradient fade) */
+.footer-bg-wordmark-wrap {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  height: var(--footer-wordmark-height);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.footer-bg-wordmark {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: inline-flex;
+  max-width: 100%;
+  padding-inline: clamp(0.75rem, 3vw, 2rem);
+  font-family: var(--font-plus-jakarta-sans), "Avenir Next", "Segoe UI", sans-serif;
+  font-size: clamp(3.25rem, 12.5vw, 17.5rem);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  user-select: none;
+  transform: translateX(-50%) translateY(0.06em);
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 62%, transparent 98%);
+  mask-image: linear-gradient(to top, black 0%, black 62%, transparent 98%);
+}
+
+.footer-bg-wordmark-malta,
+.footer-bg-wordmark-rentals {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.footer-bg-wordmark-malta {
+  background-image: linear-gradient(
+    to top,
+    #ef4444 0%,
+    #dc2626 14%,
+    rgb(153 27 27 / 0.92) 36%,
+    rgb(69 10 10 / 0.55) 56%,
+    rgb(0 0 0 / 0.08) 78%,
+    transparent 100%
+  );
+}
+
+.footer-bg-wordmark-rentals {
+  margin-inline-start: 0.12em;
+  background-image: linear-gradient(
+    to top,
+    var(--brand-orange) 0%,
+    var(--brand-orange-strong) 14%,
+    rgb(160 62 6 / 0.92) 36%,
+    rgb(70 28 4 / 0.55) 56%,
+    rgb(0 0 0 / 0.08) 78%,
+    transparent 100%
+  );
+}
+
+@media (min-width: 640px) {
+  .footer-bg-wordmark {
+    font-size: clamp(4rem, 13vw, 18rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-bg-wordmark {
+    font-size: clamp(4.5rem, 13.5vw, 19rem);
+    letter-spacing: -0.05em;
   }
 }

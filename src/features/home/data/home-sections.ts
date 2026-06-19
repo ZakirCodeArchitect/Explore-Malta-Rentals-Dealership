@@ -119,6 +119,17 @@ export const servicesHighlights = [
   },
 ] as const;
 
+/** Headline icon strip — wider set than benefit cards for even spacing between title lines. */
+export const servicesHeadlineIcons = [
+  "easy-pickup",
+  "helmets",
+  "flexible",
+  "online-booking",
+  "support",
+  "hotel-delivery",
+  "route-tips",
+] as const;
+
 /**
  * Final homepage CTA (above footer). Copy tuned for emotion + conversion.
  *
@@ -135,9 +146,10 @@ export const servicesHighlights = [
  */
 export const quickBookingCta = {
   kicker: "Your next chapter",
-  title: "Malta is waiting, Make it yours.",
-  description:
-    "Explore Malta Rentals, your go-to choice to experience Malta your way. From affordable self-drive options to guided tours, we are passionate about helping locals and visitors experience the beauty of Malta in the most free, flexible, and affordable way possible. It starts with one booking.",
+  titleLines: ["Malta is waiting,", "Make it yours."],
+  bodyMuted:
+    "Explore Malta Rentals, your go-to choice to experience Malta your way. From affordable self-drive options to guided tours, we are passionate about helping locals and visitors experience the beauty of Malta in the most free, flexible, and affordable way possible.",
+  bodyClose: "It starts with one booking.",
   primaryCta: { href: "/booking", label: "Start your journey" },
   secondaryCta: { href: "#contact", label: "Contact us" },
 } as const;
@@ -150,14 +162,14 @@ export const contactSection = {
 
 /**
  * Fleet marquee categories (home strip). `id` maps to the i18n key under
- * `Home.fleetMarquee.<id>`; `image` reuses existing public assets.
+ * `Home.fleetMarquee.<id>`.
  */
 export const fleetMarqueeItems = [
-  { id: "premiumBikes", image: "/product-images/lexmoto-aura-125cc.png" },
-  { id: "scooters", image: "/product-images/neco-one-50cc.png" },
-  { id: "cityRides", image: "/product-images/giant-escape-city-bike.png" },
-  { id: "adventureRides", image: "/product-images/cfmoto-cforce-atv.png" },
-  { id: "longRental", image: "/vehicle-types/motorcycle.png" },
+  { id: "premiumBikes" },
+  { id: "scooters" },
+  { id: "cityRides" },
+  { id: "adventureRides" },
+  { id: "longRental" },
 ] as const;
 
 /** "How it works" steps. `id` maps to `Home.howItWorks.steps.<id>`. */

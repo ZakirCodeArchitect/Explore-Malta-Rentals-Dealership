@@ -98,13 +98,15 @@
     "aboutParagraph1": "We rent motorcycles, ATVs, and bikes from Pietà, Malta, so exploring the island feels straightforward, not stressful.",
     "aboutParagraph2": "We help you pick the right vehicle and plan; our team is safety-minded, service-focused, and built for visitors.",
     "quickCtaKicker": "Your next chapter",
-    "quickCtaTitle": "Malta is waiting, Make it yours.",
+    "quickCtaTitle": "Malta is waiting,\nMake it yours.",
     "quickCtaDescription": "Explore Malta Rentals, your go-to choice to experience Malta your way. From affordable self-drive options to guided tours, we are passionate about helping locals and visitors experience the beauty of Malta in the most free, flexible, and affordable way possible. It starts with one booking.",
     "quickCtaPrimary": "Start your journey",
     "quickCtaSecondary": "Contact us",
     "sectionFleetTitle": "Our fleet & categories",
     "sectionFleetDescription": "Pick the ride that matches your licence, comfort level, and Malta itinerary — from nimble scooters to adventure-ready ATVs.",
     "sectionServicesTitle": "Services & benefits",
+    "sectionServicesTitleLine1": "Services &",
+    "sectionServicesTitleLine2": "benefits",
     "sectionServicesDescription": "Straightforward rental support, safety-first kit, and flexible options so your Malta trip stays easy from pickup to return.",
     "testimonialsTitle": "What riders say",
     "testimonialsDescription": "Real feedback from visitors who explored Malta with us — quick handovers, clear guidance, and memorable rides.",
@@ -128,9 +130,30 @@
       "hotel": {
         "title": "Hotel delivery / return",
         "description": "Where it applies, we can help with convenient drop-off and collection."
+      },
+      "onlineBooking": {
+        "title": "Easy online booking",
+        "description": "Reserve your ride in minutes with a clear, simple booking flow."
+      },
+      "affordableRates": {
+        "title": "Affordable daily rates",
+        "description": "Straightforward pricing on scooters and bikes — great value for exploring Malta."
+      },
+      "routeTips": {
+        "title": "Local route tips",
+        "description": "Get practical suggestions for coastal roads, parking, and must-see stops."
+      },
+      "transparentPricing": {
+        "title": "Transparent pricing",
+        "description": "Clear rates and rental details up front — no guesswork at pickup."
+      },
+      "qualityFleet": {
+        "title": "Well-maintained fleet",
+        "description": "Clean, cared-for vehicles so every ride feels reliable from day one."
       }
     },
     "bikeCategories": {
+      "includesLabel": "Includes:",
       "50cc": {
         "title": "50cc Bikes",
         "description": "Easy to ride, perfect for cruising Malta's coast and city streets with confidence.",
@@ -167,8 +190,11 @@
       }
     },
     "sectionBikePickerTitle": "Choose your ride",
-    "sectionBikePickerDescription": "Pick the right engine size for your Malta plan — then we'll help you book confidently.",
+    "sectionBikePickerDescription": "Pick the right engine size for your Malta plan, then we'll help you book confidently.",
+    "sectionBikePickerKicker": "Fleet categories",
     "highlightedServicesKicker": "Malta Rentals",
+    "highlightedServicesHowWeWork": "See how we work",
+    "highlightedServicesInfoLabel": "Info",
     "highlightedServicesDescription": "Premium support from pickup to drop-off — so you focus on the ride, not the paperwork.",
     "highlightedExploreRentals": "Explore rentals",
     "highlightedExploreHint": "See bikes, ATVs, and bicycles — then lock in your dates in minutes.",
@@ -210,7 +236,7 @@
     "howItWorks": {
       "kicker": "How it works",
       "title": "Three steps to the open road",
-      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "description": "From picking your ride to exploring the island, renting with us is quick, clear, and built for visitors.",
       "steps": {
         "choose": {
           "title": "Choose your bike",
@@ -246,7 +272,7 @@
     }
   },
   "Faq": {
-    "title": "Frequently Asked Questions (FAQs)",
+    "title": "Frequently Asked Questions",
     "subtitleLead": "Can't find what you're looking for? Reach out on ",
     "subtitleTail": " or use the contact section below.",
     "items": {
@@ -297,7 +323,12 @@
     "description": "Call, message, or visit, we're here to help you choose the right ride. Your mobile number and map location are below.",
     "whatsappTitle": "Send a WhatsApp message",
     "whatsappBody": "We'll help you pick the right ride and answer availability questions.",
-    "envWhatsappHint": "Set NEXT_PUBLIC_WHATSAPP_NUMBER to enable the WhatsApp button."
+    "envWhatsappHint": "Set NEXT_PUBLIC_WHATSAPP_NUMBER to enable the WhatsApp button.",
+    "heroTitle": "Need a ride to explore Malta? This is where to start.",
+    "heroDescription": "Explore Malta Rentals is an excellent choice for visitors discovering the island — friendly local advice, quick pickup in Pietà, and a well-kept fleet for every plan.",
+    "ctaButton": "Contact us",
+    "contactDetailsTitle": "Contact details",
+    "locationImageAlt": "Explore Malta Rentals — Pietà pickup location"
   },
   "Footer": {
     "exploreHome": "Home",

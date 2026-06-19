@@ -13,6 +13,12 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 
 const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
+function isBookingEnabled() {
+  const raw = process.env.NEXT_PUBLIC_BOOKING_ENABLED?.trim().toLowerCase();
+  if (!raw) return true;
+  return raw !== "false" && raw !== "0" && raw !== "no";
+}
+
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
@@ -38,6 +44,10 @@ const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover
 export function SiteNavbar() {
   const t = useTranslations("Nav");
   const tBanner = useTranslations("SiteBanner");
+  const bookingEnabled = isBookingEnabled();
+  const bookingDisabledMessage =
+    process.env.NEXT_PUBLIC_BOOKING_DISABLED_MESSAGE?.trim() ||
+    tBanner("onlineBookingUnavailable");
   const pathname = usePathname();
   const [hash, setHash] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -57,6 +67,13 @@ export function SiteNavbar() {
   ] as const;
 
   const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("booking-banner-hidden", bookingEnabled);
+    return () => {
+      document.documentElement.classList.remove("booking-banner-hidden");
+    };
+  }, [bookingEnabled]);
 
   useEffect(() => {
     const sync = () => setHash(typeof window !== "undefined" ? window.location.hash : "");
@@ -227,12 +244,14 @@ export function SiteNavbar() {
           </div>
         </div>
       </nav>
-      <div
-        role="status"
-        className="pointer-events-auto w-full border-b border-black/10 bg-[var(--brand-orange-strong)] px-4 py-2.5 text-center text-sm font-semibold tracking-wide text-white shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
-      >
-        {tBanner("onlineBookingUnavailable")}
-      </div>
+      {!bookingEnabled ? (
+        <div
+          role="status"
+          className="pointer-events-auto w-full border-b border-black/10 bg-[var(--brand-orange-strong)] px-4 py-2.5 text-center text-sm font-semibold tracking-wide text-white shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
+        >
+          {bookingDisabledMessage}
+        </div>
+      ) : null}
     </header>
   );
 }

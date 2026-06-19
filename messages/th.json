@@ -128,6 +128,26 @@
       "hotel": {
         "title": "จัดส่ง/คืนที่โรงแรม",
         "description": "ในกรณีที่มีผลบังคับใช้ เราสามารถช่วยส่งและรับสินค้าได้อย่างสะดวก"
+      },
+      "onlineBooking": {
+        "title": "Easy online booking",
+        "description": "Reserve your ride in minutes with a clear, simple booking flow."
+      },
+      "affordableRates": {
+        "title": "Affordable daily rates",
+        "description": "Straightforward pricing on scooters and bikes — great value for exploring Malta."
+      },
+      "routeTips": {
+        "title": "Local route tips",
+        "description": "Get practical suggestions for coastal roads, parking, and must-see stops."
+      },
+      "transparentPricing": {
+        "title": "Transparent pricing",
+        "description": "Clear rates and rental details up front — no guesswork at pickup."
+      },
+      "qualityFleet": {
+        "title": "Well-maintained fleet",
+        "description": "Clean, cared-for vehicles so every ride feels reliable from day one."
       }
     },
     "bikeCategories": {
@@ -144,7 +164,8 @@
         "bullet1": "เหมาะสำหรับการเดินทางแบบไปเช้าเย็นกลับ",
         "bullet2": "ความสะดวกสบาย + การควบคุมที่สมดุล",
         "subtitle": "มอเตอร์ไซค์"
-      }
+      },
+      "includesLabel": "รวมถึง:"
     },
     "testimonials": {
       "t1": {
@@ -210,7 +231,7 @@
     "howItWorks": {
       "kicker": "How it works",
       "title": "Three steps to the open road",
-      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "description": "From picking your ride to exploring the island, renting with us is quick, clear, and built for visitors.",
       "steps": {
         "choose": {
           "title": "Choose your bike",
@@ -243,10 +264,15 @@
         "title": "Flexible Duration",
         "sub": "Short stays or long trips"
       }
-    }
+    },
+    "sectionBikePickerKicker": "หมวดหมู่ยานพาหนะ",
+    "sectionServicesTitleLine1": "บริการและ",
+    "sectionServicesTitleLine2": "สิทธิประโยชน์",
+    "highlightedServicesHowWeWork": "ดูวิธีการทำงานของเรา",
+    "highlightedServicesInfoLabel": "ข้อมูล"
   },
   "Faq": {
-    "title": "คำถามที่พบบ่อย (FAQ)",
+    "title": "คำถามที่พบบ่อย",
     "subtitleLead": "ไม่พบสิ่งที่คุณกำลังมองหา? เอื้อมมือออกไป",
     "subtitleTail": "หรือใช้ส่วนการติดต่อด้านล่าง",
     "items": {
@@ -297,7 +323,12 @@
     "description": "โทร ส่งข้อความ หรือเยี่ยมชม — เราพร้อมช่วยคุณเลือกการเดินทางที่เหมาะสม หมายเลขโทรศัพท์มือถือและตำแหน่งแผนที่ของคุณอยู่ด้านล่าง",
     "whatsappTitle": "ส่งข้อความ WhatsApp",
     "whatsappBody": "เราจะช่วยคุณเลือกรถที่เหมาะสมและตอบคำถามเกี่ยวกับความพร้อมให้บริการ",
-    "envWhatsappHint": "ตั้งค่า NEXT_PUBLIC_WHATSAPP_NUMBER เพื่อเปิดใช้งานปุ่ม WhatsApp"
+    "envWhatsappHint": "ตั้งค่า NEXT_PUBLIC_WHATSAPP_NUMBER เพื่อเปิดใช้งานปุ่ม WhatsApp",
+    "heroTitle": "Need a ride to explore Malta? This is where to start.",
+    "heroDescription": "Explore Malta Rentals is an excellent choice for visitors discovering the island — friendly local advice, quick pickup in Pietà, and a well-kept fleet for every plan.",
+    "ctaButton": "Contact us",
+    "contactDetailsTitle": "Contact details",
+    "locationImageAlt": "Explore Malta Rentals — Pietà pickup location"
   },
   "Footer": {
     "exploreHome": "บ้าน",

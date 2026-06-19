@@ -10,8 +10,10 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
     <>
       <SiteNavbar />
-      {children}
-      <Footer />
+      <div className="flex flex-1 flex-col gap-0">
+        {children}
+        <Footer />
+      </div>
       <WhatsAppFloatingButton />
     </>
   );

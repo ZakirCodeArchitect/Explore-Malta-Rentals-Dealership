@@ -62,7 +62,7 @@ export const faqItems = [
 ] as const;
 
 export const faqIntro = {
-  title: "Frequently Asked Questions (FAQs)",
+  title: "Frequently Asked Questions",
   /** Text before the WhatsApp callout (icon + label rendered in the section). */
   subtitleLead:
     "Can't find what you're looking for? Reach out on ",

@@ -1,74 +1,64 @@
-import Image from "next/image";
+import { Bike, CalendarDays, Mountain, Scooter, Sparkles } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { fleetMarqueeItems } from "@/features/home/data/home-sections";
 
-function MarqueeCard({
+const FLEET_ICONS: Record<(typeof fleetMarqueeItems)[number]["id"], LucideIcon> = {
+  premiumBikes: Sparkles,
+  scooters: Scooter,
+  cityRides: Bike,
+  adventureRides: Mountain,
+  longRental: CalendarDays,
+};
+
+function FleetStripItem({
   label,
-  image,
-  exploreLabel,
-}: Readonly<{ label: string; image: string; exploreLabel: string }>) {
+  icon: Icon,
+}: Readonly<{ label: string; icon: LucideIcon }>) {
   return (
     <Link
       href="/vehicles"
-      className="group flex w-[15rem] shrink-0 items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/90 px-5 py-4 shadow-[0_18px_50px_-38px_rgba(2,6,23,0.4)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[var(--brand-orange)]/40 hover:shadow-[0_26px_60px_-34px_rgba(2,6,23,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 sm:w-[16.5rem]"
+      className="group flex w-[8.25rem] shrink-0 flex-col items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:w-[9.5rem]"
     >
-      <span className="relative flex h-14 w-16 shrink-0 items-center justify-center">
-        <Image
-          src={image}
-          alt=""
-          width={96}
-          height={72}
+      <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] ring-1 ring-inset ring-white/[0.04] transition-[border-color,background-color,box-shadow] duration-300 group-hover:border-[var(--brand-orange)]/40 group-hover:bg-white/[0.05] group-hover:shadow-[0_0_28px_-8px_rgba(255,147,15,0.35)] sm:h-14 sm:w-14">
+        <Icon
+          className="size-[1.35rem] text-white/42 transition-[color,transform] duration-300 group-hover:scale-105 group-hover:text-[var(--brand-orange)] sm:size-6"
+          strokeWidth={1.25}
           aria-hidden
-          className="h-12 w-16 object-contain transition-transform duration-300 group-hover:scale-110"
         />
       </span>
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-bold tracking-[-0.01em] text-slate-950 sm:text-base">
-          {label}
-        </span>
-        <span className="mt-0.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--brand-orange-strong)]">
-          {exploreLabel}
-        </span>
+      <span className="fleet-category-strip__label text-center text-[13px] text-white/48 transition-colors duration-300 group-hover:text-white/88 sm:text-sm">
+        {label}
       </span>
     </Link>
   );
 }
 
-export async function FleetMarquee() {
+export async function FleetCategoryStrip() {
   const t = await getTranslations("Home.fleetMarquee");
   const tDynamic = t as unknown as (key: string) => string;
-  const exploreLabel = tDynamic("explore");
 
   const items = fleetMarqueeItems.map((item) => ({
     id: item.id,
-    image: item.image,
     label: tDynamic(item.id),
+    icon: FLEET_ICONS[item.id],
   }));
 
-  // Two identical halves so the -50% translate loops seamlessly.
   const track = [...items, ...items];
 
   return (
-    <section
+    <div
       aria-label={tDynamic("aria")}
-      className="border-y border-slate-200/70 bg-gradient-to-b from-white to-[var(--surface-card)] py-6 sm:py-8"
+      className="group/marquee relative -mx-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] sm:-mx-6 lg:-mx-8"
     >
-      <div
-        className="group/marquee relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
-      >
-        <ul className="fleet-marquee-track m-0 flex w-max list-none items-stretch gap-4 p-0 pl-4 sm:gap-5">
-          {track.map((item, index) => (
-            <li key={`${item.id}-${index}`} aria-hidden={index >= items.length}>
-              <MarqueeCard
-                label={item.label}
-                image={item.image}
-                exploreLabel={exploreLabel}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+      <ul className="fleet-marquee-track m-0 flex w-max list-none items-stretch gap-10 p-0 px-4 sm:gap-12 sm:px-6 lg:gap-14 lg:px-8">
+        {track.map((item, index) => (
+          <li key={`${item.id}-${index}`} aria-hidden={index >= items.length}>
+            <FleetStripItem label={item.label} icon={item.icon} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

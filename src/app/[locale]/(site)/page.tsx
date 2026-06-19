@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PremiumLandingHero } from "@/features/home/components/premium-landing-hero";
 import { HeroBookingSection } from "@/features/home/components/hero-booking-section";
-import { FleetMarquee } from "@/features/home/components/fleet-marquee";
 import { BikeCategoriesSection } from "@/features/home/components/bike-categories-section";
 import { HowItWorksSection } from "@/features/home/components/how-it-works-section";
 import { HighlightedServicesSection } from "@/features/home/components/highlighted-services-section";
 import { QuickBookingCtaSection } from "@/features/home/components/quick-booking-cta-section";
-import { ContactSection } from "@/features/home/components/contact-section";
+import { LandingContactSection } from "@/features/home/components/landing-contact-section";
 import { FaqSection } from "@/features/home/components/faq-section";
 
 type HomePageProps = Readonly<{
@@ -34,13 +33,12 @@ export default async function Home({ params }: HomePageProps) {
     <main className="flex flex-1 flex-col pt-[var(--site-header-offset)]">
       <PremiumLandingHero />
       <HeroBookingSection />
-      <FleetMarquee />
       <BikeCategoriesSection />
       <HowItWorksSection />
       <HighlightedServicesSection />
       <FaqSection />
       <QuickBookingCtaSection />
-      <ContactSection />
+      <LandingContactSection />
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   parseBikeImageEntry,
   type BikeImageEntry,
@@ -19,12 +19,14 @@ type CardTone = "default" | "white";
 type BikeCategoryImageCarouselProps = {
   images: readonly BikeImageEntry[];
   title: string;
+  layout?: "inline" | "overlay";
   onCardToneChange?: (tone: CardTone) => void;
 };
 
 export function BikeCategoryImageCarousel({
   images,
   title,
+  layout = "inline",
   onCardToneChange,
 }: BikeCategoryImageCarouselProps) {
   const [index, setIndex] = useState(0);
@@ -44,14 +46,6 @@ export function BikeCategoryImageCarousel({
     const whiteBg = parsed[safeIndex]?.whiteBg ?? false;
     onCardToneChange(whiteBg ? "white" : "default");
   }, [safeIndex, parsed, n, onCardToneChange]);
-
-  const go = useCallback(
-    (delta: number) => {
-      if (n <= 1) return;
-      setIndex((i) => (i + delta + n) % n);
-    },
-    [n],
-  );
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -73,20 +67,20 @@ export function BikeCategoryImageCarousel({
 
   if (n === 0) return null;
 
+  const layoutClasses =
+    layout === "overlay"
+      ? "relative h-full w-full"
+      : [
+          "relative z-0 shrink-0",
+          "mx-auto h-44 w-full max-w-[min(100%,18rem)] sm:h-52 sm:max-w-[min(100%,22rem)]",
+          "md:mx-0 md:h-56 md:w-[min(42%,13.75rem)] md:max-w-[13.75rem]",
+          "lg:h-60 lg:w-[min(40%,15rem)] lg:max-w-[15rem]",
+          "xl:h-[15.5rem] xl:w-[min(38%,17.5rem)] xl:max-w-[17.5rem]",
+        ].join(" ");
+
   return (
     <div
-      className={[
-        "relative z-0 shrink-0",
-        /* Stacked / narrow: full-width strip */
-        "mx-auto h-44 w-full max-w-[min(100%,18rem)] sm:h-52 sm:max-w-[min(100%,22rem)]",
-        /*
-         * Side-by-side with copy (flex row on card): percentage + max cap so narrow grid
-         * columns and wide columns both get a predictable rail — never overlaps text.
-         */
-        "md:mx-0 md:h-56 md:w-[min(42%,13.75rem)] md:max-w-[13.75rem]",
-        "lg:h-60 lg:w-[min(40%,15rem)] lg:max-w-[15rem]",
-        "xl:h-[15.5rem] xl:w-[min(38%,17.5rem)] xl:max-w-[17.5rem]",
-      ].join(" ")}
+      className={layoutClasses}
       role="region"
       aria-roledescription="carousel"
       aria-label={`${title} — photo gallery`}
@@ -111,58 +105,16 @@ export function BikeCategoryImageCarousel({
               alt={`${title} — ${file.replace(/\.[^.]+$/, "")}`}
               fill
               sizes="(min-width: 1280px) 280px, (min-width: 1024px) 240px, (min-width: 768px) 200px, (min-width: 640px) 352px, 288px"
-              className="object-contain object-bottom md:object-right md:object-bottom"
+              className={
+                layout === "overlay"
+                  ? "object-contain object-right object-bottom drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)]"
+                  : "object-contain object-bottom md:object-right md:object-bottom"
+              }
               priority={i === 0}
             />
           </div>
         ))}
       </div>
-
-      {n > 1 && (
-        <div
-          className="pointer-events-auto absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-0.5 md:left-auto md:right-1.5 md:translate-x-0"
-          role="group"
-          aria-label={`${title} photos`}
-        >
-          <button
-            type="button"
-            onClick={() => go(-1)}
-            className="inline-flex items-center justify-center rounded-md bg-transparent p-0.5 text-slate-600 transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
-            aria-label="Previous bike photo"
-          >
-            <ChevronIcon dir="left" />
-          </button>
-          <button
-            type="button"
-            onClick={() => go(1)}
-            className="inline-flex items-center justify-center rounded-md bg-transparent p-0.5 text-slate-600 transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
-            aria-label="Next bike photo"
-          >
-            <ChevronIcon dir="right" />
-          </button>
-        </div>
-      )}
     </div>
-  );
-}
-
-function ChevronIcon({ dir }: { dir: "left" | "right" }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-3.5 w-3.5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {dir === "left" ? (
-        <path d="m15 18-6-6 6-6" />
-      ) : (
-        <path d="m9 18 6-6-6-6" />
-      )}
-    </svg>
   );
 }

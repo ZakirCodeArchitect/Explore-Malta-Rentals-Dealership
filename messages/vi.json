@@ -128,6 +128,26 @@
       "hotel": {
         "title": "Giao/trả khách sạn",
         "description": "Khi áp dụng, chúng tôi có thể trợ giúp đưa và nhận hàng một cách thuận tiện."
+      },
+      "onlineBooking": {
+        "title": "Easy online booking",
+        "description": "Reserve your ride in minutes with a clear, simple booking flow."
+      },
+      "affordableRates": {
+        "title": "Affordable daily rates",
+        "description": "Straightforward pricing on scooters and bikes — great value for exploring Malta."
+      },
+      "routeTips": {
+        "title": "Local route tips",
+        "description": "Get practical suggestions for coastal roads, parking, and must-see stops."
+      },
+      "transparentPricing": {
+        "title": "Transparent pricing",
+        "description": "Clear rates and rental details up front — no guesswork at pickup."
+      },
+      "qualityFleet": {
+        "title": "Well-maintained fleet",
+        "description": "Clean, cared-for vehicles so every ride feels reliable from day one."
       }
     },
     "bikeCategories": {
@@ -144,7 +164,8 @@
         "bullet1": "Tuyệt vời cho chuyến đi trong ngày",
         "bullet2": "Cân bằng thoải mái + kiểm soát",
         "subtitle": "Xe máy"
-      }
+      },
+      "includesLabel": "Bao gồm:"
     },
     "testimonials": {
       "t1": {
@@ -210,7 +231,7 @@
     "howItWorks": {
       "kicker": "How it works",
       "title": "Three steps to the open road",
-      "description": "From picking your ride to exploring the island — renting with us is quick, clear, and built for visitors.",
+      "description": "From picking your ride to exploring the island, renting with us is quick, clear, and built for visitors.",
       "steps": {
         "choose": {
           "title": "Choose your bike",
@@ -243,10 +264,15 @@
         "title": "Flexible Duration",
         "sub": "Short stays or long trips"
       }
-    }
+    },
+    "sectionBikePickerKicker": "Danh mục đội xe",
+    "sectionServicesTitleLine1": "Dịch vụ &",
+    "sectionServicesTitleLine2": "lợi ích",
+    "highlightedServicesHowWeWork": "Xem cách chúng tôi hoạt động",
+    "highlightedServicesInfoLabel": "Thông tin"
   },
   "Faq": {
-    "title": "Câu hỏi thường gặp (FAQ)",
+    "title": "Câu hỏi thường gặp",
     "subtitleLead": "Không thể tìm thấy những gì bạn đang tìm kiếm? Tiếp cận",
     "subtitleTail": "hoặc sử dụng phần liên hệ bên dưới.",
     "items": {
@@ -297,7 +323,12 @@
     "description": "Gọi điện, nhắn tin hoặc ghé thăm - chúng tôi sẵn sàng giúp bạn chọn chuyến đi phù hợp. Số điện thoại di động và vị trí bản đồ của bạn ở bên dưới.",
     "whatsappTitle": "Gửi tin nhắn WhatsApp",
     "whatsappBody": "Chúng tôi sẽ giúp bạn chọn chuyến đi phù hợp và trả lời các câu hỏi về tình trạng sẵn có.",
-    "envWhatsappHint": "Đặt NEXT_PUBLIC_WHATSAPP_NUMBER để bật nút WhatsApp."
+    "envWhatsappHint": "Đặt NEXT_PUBLIC_WHATSAPP_NUMBER để bật nút WhatsApp.",
+    "heroTitle": "Need a ride to explore Malta? This is where to start.",
+    "heroDescription": "Explore Malta Rentals is an excellent choice for visitors discovering the island — friendly local advice, quick pickup in Pietà, and a well-kept fleet for every plan.",
+    "ctaButton": "Contact us",
+    "contactDetailsTitle": "Contact details",
+    "locationImageAlt": "Explore Malta Rentals — Pietà pickup location"
   },
   "Footer": {
     "exploreHome": "Trang chủ",
