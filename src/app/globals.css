@@ -334,6 +334,7 @@ body {
 /* How it works — scroll-scrubbed vertical timeline (GSAP ScrollTrigger) */
 .how-it-works-timeline__step {
   opacity: 0;
+  transform: translateZ(0);
 }
 
 .how-it-works-timeline__line-fill {
@@ -439,6 +440,8 @@ body {
 
 .how-it-works-bg {
   z-index: 0;
+  contain: paint layout;
+  isolation: isolate;
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 92%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 92%);
 }
@@ -446,8 +449,8 @@ body {
 .how-it-works-bg__orb {
   position: absolute;
   border-radius: 999px;
-  filter: blur(72px);
-  will-change: transform;
+  filter: blur(48px);
+  transform: translateZ(0);
 }
 
 .how-it-works-bg__orb--one {
@@ -510,11 +513,8 @@ body {
       rgb(0 0 0 / 0.18) 72%,
       rgb(0 0 0 / 0.55) 100%
     );
-  backdrop-filter: blur(42px) saturate(145%);
-  -webkit-backdrop-filter: blur(42px) saturate(145%);
   border-top: 1px solid rgb(255 255 255 / 0.05);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
-  animation: how-it-works-glass-shimmer 14s ease-in-out infinite;
 }
 
 .how-it-works-bg__grain {

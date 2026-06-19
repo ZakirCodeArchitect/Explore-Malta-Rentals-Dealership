@@ -63,19 +63,7 @@ export function HowItWorksSteps({ steps }: HowItWorksStepsProps) {
         return;
       }
 
-      gsap.set(abstractElements, {
-        autoAlpha: 0,
-        y: 16,
-        scale: 0.94,
-      });
-
       gsap.set(line, { scaleY: 0, transformOrigin: "top center" });
-      gsap.set(stepElements, {
-        autoAlpha: 0,
-        y: 40,
-        scale: 0.97,
-        filter: "blur(6px)",
-      });
       gsap.set(dotElements, { scale: 0.55, opacity: 0.25 });
 
       gsap.to(line, {
@@ -85,26 +73,21 @@ export function HowItWorksSteps({ steps }: HowItWorksStepsProps) {
           trigger: container,
           start: "top 90%",
           end: "bottom 42%",
-          scrub: 0.45,
+          scrub: 0.25,
           invalidateOnRefresh: true,
         },
       });
 
       stepElements.forEach((element, index) => {
         const dot = dotElements[index];
-        const isFirst = index === 0;
-        const isLast = index === stepElements.length - 1;
         const isRight = index % 2 === 1;
+        const abstract = abstractElements[index];
 
         const scrollTrigger = {
           trigger: element,
-          start: isFirst
-            ? "top 96%"
-            : isLast
-              ? "top 82%"
-              : "top bottom+=320",
-          end: isFirst ? "top 70%" : isLast ? "top 50%" : "top 78%",
-          scrub: 0.4,
+          start: "top 88%",
+          toggleActions: "play none none none",
+          once: true,
           invalidateOnRefresh: true,
         };
 
@@ -112,54 +95,47 @@ export function HowItWorksSteps({ steps }: HowItWorksStepsProps) {
           element,
           {
             autoAlpha: 0,
-            y: 40,
-            x: isRight ? 56 : -56,
-            scale: 0.97,
-            filter: "blur(6px)",
+            y: 32,
+            x: isRight ? 40 : -40,
+            scale: 0.98,
           },
           {
             autoAlpha: 1,
             y: 0,
             x: 0,
             scale: 1,
-            filter: "blur(0px)",
-            ease: "none",
+            duration: 0.65,
+            ease: "power2.out",
             scrollTrigger,
           },
         );
 
         if (dot != null) {
-          gsap.fromTo(
-            dot,
-            { scale: 0.55, opacity: 0.25 },
-            {
-              scale: 1,
-              opacity: 1,
-              ease: "none",
-              scrollTrigger,
-            },
-          );
+          gsap.to(dot, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.45,
+            ease: "power2.out",
+            scrollTrigger,
+          });
         }
 
-        const abstract = abstractElements[index];
         if (abstract != null) {
-          gsap.fromTo(
-            abstract,
-            {
-              autoAlpha: 0,
-              y: 18,
-              x: isRight ? -20 : 20,
-              scale: 0.94,
-            },
-            {
-              autoAlpha: 0.55,
-              y: 0,
-              x: 0,
-              scale: 1,
-              ease: "none",
-              scrollTrigger,
-            },
-          );
+          gsap.set(abstract, {
+            autoAlpha: 0,
+            y: 16,
+            x: isRight ? -16 : 16,
+            scale: 0.94,
+          });
+          gsap.to(abstract, {
+            autoAlpha: 0.55,
+            y: 0,
+            x: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "power2.out",
+            scrollTrigger,
+          });
         }
       });
     },
