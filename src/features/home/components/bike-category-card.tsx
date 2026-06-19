@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Check } from "lucide-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { BikeCategory } from "@/features/home/data/home-sections";
@@ -31,18 +32,30 @@ export function BikeCategoryCard({ cat }: BikeCategoryCardProps) {
 
   return (
     <article className="group relative flex min-h-[21rem] min-w-0 overflow-hidden rounded-[1.6rem] bg-[#111111] p-[1.6rem] ring-1 ring-inset ring-white/[0.06] transition-[box-shadow,ring-color] duration-300 hover:ring-white/[0.1] hover:shadow-[0_24px_80px_-40px_rgba(0,0,0,0.85)] sm:min-h-[24rem] sm:p-8 lg:min-h-[27rem] lg:rounded-[1.6rem] lg:p-10">
-      <div className="absolute bottom-3 right-4 z-20 h-[8.8rem] w-[10.4rem] sm:bottom-5 sm:right-6 sm:h-48 sm:w-[14.4rem] lg:bottom-6 lg:right-8 lg:h-[14.4rem] lg:w-64">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 scale-110 blur-2xl lg:blur-3xl"
-          style={{ background: glow }}
+      {cat.staticImage ? (
+        <Image
+          src={cat.staticImage}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="object-cover object-center"
+          priority
+          aria-hidden
         />
-        <BikeCategoryImageCarousel
-          images={cat.images}
-          title={title}
-          layout="overlay"
-        />
-      </div>
+      ) : (
+        <div className="absolute bottom-3 right-4 z-20 h-[8.8rem] w-[10.4rem] sm:bottom-5 sm:right-6 sm:h-48 sm:w-[14.4rem] lg:bottom-6 lg:right-8 lg:h-[14.4rem] lg:w-64">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 scale-110 blur-2xl lg:blur-3xl"
+            style={{ background: glow }}
+          />
+          <BikeCategoryImageCarousel
+            images={cat.images}
+            title={title}
+            layout="overlay"
+          />
+        </div>
+      )}
 
       <div className="relative z-10 flex flex-1 flex-col sm:max-w-[68%] lg:max-w-[62%]">
         <span className="inline-flex w-fit rounded-full bg-white/[0.08] px-3 py-1 text-[11px] font-medium tracking-wide text-white/70 ring-1 ring-inset ring-white/[0.08] sm:px-3.5 sm:text-xs">

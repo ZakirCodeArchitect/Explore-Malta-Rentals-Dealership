@@ -17,7 +17,7 @@ export async function BikeCategoriesSection() {
         <div aria-hidden="true" className="bike-picker-section-bg__mesh" />
         <div aria-hidden="true" className="bike-picker-section-bg__grain" />
 
-        <Container className="relative z-10 pt-[3.2rem] pb-0 sm:pt-16 sm:pb-0 lg:pt-[5.6rem] lg:pb-0 xl:pt-[6.4rem]">
+        <Container className="relative z-10 pt-[3.2rem] pb-[3.2rem] sm:pt-16 sm:pb-16 lg:pt-[5.6rem] lg:pb-[5.6rem] xl:pt-[6.4rem] xl:pb-[6.4rem]">
           <div className="max-w-5xl text-left">
             <h2
               id="bike-categories-title"

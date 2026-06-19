@@ -19,6 +19,8 @@ export type BikeCategory = {
   readonly description: string;
   readonly bullets: readonly string[];
   readonly images: readonly BikeImageEntry[];
+  /** When set, shows a single static image instead of the rotating gallery. */
+  readonly staticImage?: string;
 };
 
 export const bikeCategories = [
@@ -28,7 +30,8 @@ export const bikeCategories = [
     description:
       "Easy to ride, perfect for cruising Malta's coast and city streets with confidence.",
     bullets: ["Beginner-friendly handling", "Comfort-focused setup"],
-    images: ["neco one.png", "neco one retro.png"],
+    images: [],
+    staticImage: "/choose-us-images/50cc.png",
   },
   {
     id: "125cc",
@@ -36,11 +39,8 @@ export const bikeCategories = [
     description:
       "For riders who want a bit more power and smooth performance on longer routes.",
     bullets: ["Great for day trips", "Balanced comfort + control"],
-    images: [
-      { file: "lex moto blk.jpg", whiteBg: true },
-      { file: "lex moto grey.png", whiteBg: true },
-      "lex moto red.png",
-    ],
+    images: [],
+    staticImage: "/choose-us-images/125cc.png",
   },
 ] satisfies readonly BikeCategory[];
 
