@@ -37,8 +37,8 @@ function navLinkIsActive(href: string, pathname: string, hash: string): boolean 
 }
 
 const navLinkBaseClass =
-  "text-sm font-semibold tracking-[-0.02em] transition-colors";
-const navLinkInactiveClass = `${navLinkBaseClass} text-slate-800 hover:opacity-70`;
+  "text-[10px] font-medium normal-case tracking-normal transition-colors lg:text-[11px]";
+const navLinkInactiveClass = `${navLinkBaseClass} text-white/90 hover:text-white`;
 const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]`;
 
 export function SiteNavbar() {
@@ -117,7 +117,7 @@ export function SiteNavbar() {
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0px,env(safe-area-inset-top))]">
       <nav
         aria-label={t("primary")}
-        className="site-navbar pointer-events-auto w-full max-w-full border-b border-slate-200/90 bg-slate-100 text-[var(--foreground)] shadow-[0_1px_0_rgba(15,23,42,0.04)]"
+        className="site-navbar pointer-events-auto w-full max-w-full border-b border-white/20 bg-slate-600/40 text-white shadow-[0_8px_32px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl backdrop-saturate-150"
       >
         <div className="h-0.5 w-full shrink-0 bg-red-600" aria-hidden />
         <div className={SITE_SHELL_OUTER}>
@@ -146,8 +146,8 @@ export function SiteNavbar() {
 
               <ul
                 className={joinClasses(
-                  "hidden list-none items-center justify-center justify-self-center gap-5 md:flex",
-                  "lg:gap-8",
+                  "hidden list-none items-center justify-center justify-self-center gap-4 md:flex",
+                  "lg:gap-6",
                 )}
               >
                 {navLinks.map(({ href, labelKey }) => {
@@ -167,8 +167,8 @@ export function SiteNavbar() {
               </ul>
 
               <div className="flex shrink-0 items-center justify-self-end gap-2">
-                <div className="hidden md:block">
-                  <Suspense fallback={<div className="h-8 w-[5.5rem] rounded-full border border-slate-200/80 bg-white/60" aria-hidden />}>
+                <div className="hidden font-sans md:block">
+                  <Suspense fallback={<div className="h-8 w-[5.5rem] rounded-full border border-white/25 bg-white/15 backdrop-blur-sm" aria-hidden />}>
                     <LanguageSwitcher />
                   </Suspense>
                 </div>
@@ -178,9 +178,9 @@ export function SiteNavbar() {
                     type="button"
                     id={`${mobileMenuId}-trigger`}
                     className={joinClasses(
-                      "flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-md border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs font-semibold tracking-[-0.02em] text-slate-800 hover:bg-slate-50 sm:text-sm",
+                      "flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-md border border-white/25 bg-white/10 px-2.5 py-1.5 text-[10px] font-medium normal-case tracking-normal text-white backdrop-blur-sm hover:bg-white/20",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)] focus-visible:ring-offset-2",
-                      mobileNavOpen ? "border-slate-400 bg-slate-50" : undefined,
+                      mobileNavOpen ? "border-white/35 bg-white/20" : undefined,
                     )}
                     aria-expanded={mobileNavOpen}
                     aria-controls={mobileMenuId}
@@ -194,12 +194,12 @@ export function SiteNavbar() {
                     role="region"
                     aria-label={t("primary")}
                     className={joinClasses(
-                      "absolute right-0 top-[calc(100%+0.5rem)] w-[min(18rem,calc(100vw-1.5rem))] origin-top-right rounded-xl border border-slate-200 bg-white py-2 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.22)]",
+                      "absolute right-0 top-[calc(100%+0.5rem)] w-[min(18rem,calc(100vw-1.5rem))] origin-top-right rounded-xl border border-white/25 bg-slate-600/80 py-2 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.35)] backdrop-blur-xl",
                       mobileNavOpen ? undefined : "hidden",
                     )}
                   >
-                    <div className="border-b border-slate-100 px-4 py-3">
-                      <Suspense fallback={<div className="h-8 w-full rounded-full border border-slate-200/80 bg-slate-50" aria-hidden />}>
+                    <div className="border-b border-white/15 px-4 py-3 font-sans">
+                      <Suspense fallback={<div className="h-8 w-full rounded-full border border-white/25 bg-white/15 backdrop-blur-sm" aria-hidden />}>
                         <LanguageSwitcher />
                       </Suspense>
                     </div>
@@ -211,10 +211,10 @@ export function SiteNavbar() {
                             <Link
                               href={href}
                               className={joinClasses(
-                                "block px-4 py-2.5 text-sm font-semibold tracking-[-0.02em] transition-colors hover:bg-slate-50",
+                                "block px-4 py-2.5 text-[10px] font-medium normal-case tracking-normal transition-colors hover:bg-white/10 lg:text-[11px]",
                                 active
                                   ? "text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
-                                  : "text-slate-800",
+                                  : "text-white/90",
                               )}
                               aria-current={active ? "page" : undefined}
                               onClick={closeMobileNav}
@@ -231,7 +231,7 @@ export function SiteNavbar() {
                 <Link
                   href="/booking"
                   className={joinClasses(
-                    "inline-flex min-h-8 min-w-[2.5rem] items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold tracking-[-0.03em] text-white sm:min-h-8 sm:px-3.5 sm:py-2 sm:text-sm",
+                    "inline-flex min-h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold normal-case tracking-normal text-white sm:text-[11px]",
                     "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
                     "hover:bg-[var(--brand-orange-strong)]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",

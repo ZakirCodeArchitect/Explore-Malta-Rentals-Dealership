@@ -34,7 +34,7 @@ export default async function Home({ params }: HomePageProps) {
   return (
     <HomePreloaderLayout>
       <HomePageWithPreloader>
-        <main className="flex flex-1 flex-col pt-[var(--site-header-offset)]">
+        <main className="flex flex-1 flex-col">
           <PremiumLandingHero />
           <HeroBookingSection />
           <BikeCategoriesSection />

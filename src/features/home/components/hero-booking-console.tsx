@@ -20,7 +20,7 @@ export async function HeroBookingConsole() {
       <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span className="h-px w-7 bg-white/30" aria-hidden />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]">
+          <span className="text-[11px] font-semibold tracking-[0.02em] text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]">
             {tHome("heroConsoleTitle")}
           </span>
         </div>

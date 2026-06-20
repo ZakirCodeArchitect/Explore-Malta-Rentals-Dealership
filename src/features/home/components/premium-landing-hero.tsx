@@ -21,12 +21,12 @@ function delay(ms: number): CSSProperties {
   return { "--hero-delay": `${ms}ms` } as CSSProperties;
 }
 
-function PinIcon() {
+function PinIcon({ className = "h-4 w-4 text-[var(--brand-orange)]" }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className="h-4 w-4 text-[var(--brand-orange)]"
+      className={className}
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
@@ -70,10 +70,10 @@ export async function PremiumLandingHero() {
   return (
     <section
       aria-labelledby="home-hero-title"
-      className="hero-cinematic relative isolate w-full overflow-hidden text-white"
+      className="hero-cinematic relative isolate -mt-[var(--site-header-offset)] w-full overflow-hidden bg-black text-white"
       style={{
-        height: "calc(100svh - var(--site-header-offset))",
-        minHeight: "calc(100svh - var(--site-header-offset))",
+        height: "calc(100svh + var(--site-header-offset))",
+        minHeight: "calc(100svh + var(--site-header-offset))",
       }}
     >
       {/* Background photograph — same box as the hero so screen coordinates stay aligned */}
@@ -92,19 +92,19 @@ export async function PremiumLandingHero() {
       </div>
 
       {/* Foreground content */}
-      <div className="relative z-10 flex h-full flex-col">
+      <div className="relative z-10 flex h-full flex-col pt-[var(--site-header-offset)]">
         <SiteShell>
           <div className="flex min-h-[calc(100svh-var(--site-header-offset)-2.5rem)] flex-col pt-10 pb-1 sm:pt-12 sm:pb-2 lg:pt-14 lg:pb-3">
             {/* Location pill — top right */}
-            <div className="hero-rise flex shrink-0 justify-end" style={delay(0)}>
-              <span className="hero-cinematic__location inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-4 py-2 backdrop-blur-md">
-                <PinIcon />
+            <div className="hero-rise mt-10 flex shrink-0 justify-end sm:mt-5" style={delay(0)}>
+              <span className="hero-cinematic__location inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 backdrop-blur-md sm:gap-2 sm:px-4 sm:py-2">
+                <PinIcon className="h-3 w-3 shrink-0 text-[var(--brand-orange)] sm:h-4 sm:w-4" />
                 {tBrand("locationKicker")}
               </span>
             </div>
 
             {/* Main copy — anchored lower in the hero, lifted slightly from the bottom edge */}
-            <div className="mt-auto mb-10 sm:mb-14 lg:mb-20">
+            <div className="mt-auto mb-6 translate-y-3 sm:mb-10 sm:translate-y-4 lg:mb-14">
               <div className="max-w-xl lg:max-w-2xl">
               <h1
                 id="home-hero-title"
