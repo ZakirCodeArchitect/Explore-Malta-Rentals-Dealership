@@ -8,6 +8,8 @@ import { HighlightedServicesSection } from "@/features/home/components/highlight
 import { QuickBookingCtaSection } from "@/features/home/components/quick-booking-cta-section";
 import { LandingContactSection } from "@/features/home/components/landing-contact-section";
 import { FaqSection } from "@/features/home/components/faq-section";
+import { HomePageWithPreloader } from "@/features/home/components/home-page-with-preloader";
+import { HomePreloaderLayout } from "@/features/home/components/home-preloader-layout";
 
 type HomePageProps = Readonly<{
   params: Promise<{ locale: string }>;
@@ -30,15 +32,19 @@ export default async function Home({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   return (
-    <main className="flex flex-1 flex-col pt-[var(--site-header-offset)]">
-      <PremiumLandingHero />
-      <HeroBookingSection />
-      <BikeCategoriesSection />
-      <HowItWorksSection />
-      <HighlightedServicesSection />
-      <FaqSection />
-      <QuickBookingCtaSection />
-      <LandingContactSection />
-    </main>
+    <HomePreloaderLayout>
+      <HomePageWithPreloader>
+        <main className="flex flex-1 flex-col pt-[var(--site-header-offset)]">
+          <PremiumLandingHero />
+          <HeroBookingSection />
+          <BikeCategoriesSection />
+          <HowItWorksSection />
+          <HighlightedServicesSection />
+          <FaqSection />
+          <QuickBookingCtaSection />
+          <LandingContactSection />
+        </main>
+      </HomePageWithPreloader>
+    </HomePreloaderLayout>
   );
 }
