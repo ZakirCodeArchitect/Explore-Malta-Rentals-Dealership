@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useId, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { LandingPreloaderFrame } from "@/features/home/components/landing-preloader-frame";
 import {
   buildWavePath,
@@ -31,6 +31,12 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
   const overlayRef = useRef<HTMLDivElement>(null);
   const waveRef = useRef<SVGPathElement>(null);
   const percentRef = useRef<HTMLSpanElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+  const routeRef = useRef<SVGPathElement>(null);
+  const swooshRef = useRef<SVGPathElement>(null);
+  const accentRef = useRef<SVGSVGElement>(null);
+  const [exiting, setExiting] = useState(false);
   const clipId = useId().replace(/:/g, "");
 
   useGSAP(
@@ -38,8 +44,19 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
       const overlay = overlayRef.current;
       const wave = waveRef.current;
       const percentNode = percentRef.current;
+      const centerNode = centerRef.current;
+      const footerNode = footerRef.current;
+      const routeNode = routeRef.current;
+      const swooshNode = swooshRef.current;
+      const accentNode = accentRef.current;
 
-      if (overlay == null || wave == null || percentNode == null) {
+      if (
+        overlay == null ||
+        wave == null ||
+        percentNode == null ||
+        centerNode == null ||
+        footerNode == null
+      ) {
         return;
       }
 
@@ -52,7 +69,7 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
 
       const progress = { value: 0, phase: 0 };
 
-      const updateWave = () => {
+      const updateProgress = () => {
         const fillRatio = progress.value / 100;
         wave.setAttribute(
           "d",
@@ -62,21 +79,94 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
       };
 
       wave.setAttribute("d", INITIAL_WAVE_PATH);
-      updateWave();
+      updateProgress();
+
+      const routeLength = routeNode?.getTotalLength() ?? 0;
+      const swooshLength = swooshNode?.getTotalLength() ?? 0;
+
+      if (routeNode && routeLength > 0) {
+        routeNode.style.strokeDasharray = `${routeLength}`;
+        routeNode.style.strokeDashoffset = `${routeLength}`;
+      }
+
+      if (swooshNode && swooshLength > 0) {
+        swooshNode.style.strokeDasharray = `${swooshLength}`;
+        swooshNode.style.strokeDashoffset = `${swooshLength}`;
+      }
+
+      gsap.set([centerNode, footerNode], { autoAlpha: 0, y: 18 });
+      if (accentNode) {
+        gsap.set(accentNode, { autoAlpha: 0, scale: 0.88, transformOrigin: "50% 50%" });
+      }
+
+      const entrance = gsap.timeline({ delay: 0.08 });
+      entrance.to(centerNode, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.95,
+        ease: "power3.out",
+      });
+      entrance.to(
+        footerNode,
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.75,
+          ease: "power3.out",
+        },
+        0.22,
+      );
+
+      if (accentNode) {
+        entrance.to(
+          accentNode,
+          {
+            autoAlpha: 0.72,
+            scale: 1,
+            duration: 0.7,
+            ease: "power2.out",
+          },
+          0.18,
+        );
+      }
+
+      if (routeNode && routeLength > 0) {
+        entrance.to(
+          routeNode,
+          {
+            strokeDashoffset: 0,
+            duration: 2.4,
+            ease: "power1.inOut",
+          },
+          0.12,
+        );
+      }
+
+      if (swooshNode && swooshLength > 0) {
+        entrance.to(
+          swooshNode,
+          {
+            strokeDashoffset: 0,
+            duration: 1.15,
+            ease: "power2.inOut",
+          },
+          0.42,
+        );
+      }
 
       const phaseTween = gsap.to(progress, {
         phase: Math.PI * 2,
         duration: 2.4,
         repeat: -1,
         ease: "none",
-        onUpdate: updateWave,
+        onUpdate: updateProgress,
       });
 
       const counter = gsap.to(progress, {
         value: 92,
         duration: MIN_DURATION_S,
         ease: "power2.inOut",
-        onUpdate: updateWave,
+        onUpdate: updateProgress,
       });
 
       let finished = false;
@@ -88,14 +178,16 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
 
         gsap.to(progress, {
           value: 100,
-          duration: 0.5,
+          duration: 0.55,
           ease: "power2.out",
-          onUpdate: updateWave,
+          onUpdate: updateProgress,
           onComplete: () => {
             onReveal();
+            setExiting(true);
             gsap.to(overlay, {
               autoAlpha: 0,
-              duration: 0.75,
+              y: -28,
+              duration: 0.85,
               ease: "power2.inOut",
               onComplete: onDismiss,
             });
@@ -119,6 +211,7 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
       });
 
       return () => {
+        entrance.kill();
         phaseTween.kill();
         counter.kill();
       };
@@ -130,10 +223,16 @@ export function LandingPreloader({ onReveal, onDismiss }: LandingPreloaderProps)
     <LandingPreloaderFrame
       rootRef={overlayRef}
       animated
+      exiting={exiting}
       clipId={clipId}
       wavePath={INITIAL_WAVE_PATH}
       waveRef={waveRef}
       percentRef={percentRef}
+      centerRef={centerRef}
+      footerRef={footerRef}
+      routeRef={routeRef}
+      swooshRef={swooshRef}
+      accentRef={accentRef}
     />
   );
 }

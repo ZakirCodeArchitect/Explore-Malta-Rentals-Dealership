@@ -1,10 +1,24 @@
 export const BRAND_TITLE = "Explore Malta Rentals";
+export const BRAND_TITLE_PREFIX = "Explore ";
+export const BRAND_TITLE_MALTA = "Malta ";
+export const BRAND_TITLE_SCRIPT = "Rentals";
 export const INSTANT_CLIP_ID = "landing-preloader-instant-clip";
 export const SVG_WIDTH = 760;
-export const SVG_HEIGHT = 120;
-export const TEXT_Y = 78;
+export const SVG_HEIGHT = 128;
+export const TEXT_Y = 76;
 export const MIN_DURATION_S = 3;
 export const MAX_DURATION_S = 4.5;
+
+/** Abstract route line — subtle journey cue, not a map. */
+export const ROUTE_PATH =
+  "M -20 420 C 180 340, 320 480, 520 400 S 820 360, 980 440";
+
+/** Handwritten swoosh inspired by the Rentals script mark. */
+export const RENTALS_SWOOSH_PATH =
+  "M 584 98 C 612 108, 636 90, 660 98 S 684 104, 702 95";
+
+/** Angular star fragment — abstract brand accent, not the logo mark. */
+export const ACCENT_SHARD_PATH = "M 0 0 L 14 38 L 3 42 Z";
 
 export function buildWavePath(
   width: number,
