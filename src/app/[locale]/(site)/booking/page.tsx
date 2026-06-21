@@ -1,10 +1,28 @@
+import fs from "node:fs";
+import path from "node:path";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import { BookingFlow } from "@/features/booking-flow/components/booking-flow";
 import { Link } from "@/i18n/navigation";
+
+const RATE_AT_GLANCE_BACKGROUND_PATH = path.join(
+  process.cwd(),
+  "public",
+  "rate-at-glance.png",
+);
+
+function getRateAtGlanceBackgroundSrc(): string {
+  try {
+    const { mtimeMs } = fs.statSync(RATE_AT_GLANCE_BACKGROUND_PATH);
+    return `/rate-at-glance.png?v=${mtimeMs}`;
+  } catch {
+    return "/rate-at-glance.png";
+  }
+}
 
 type BookingPageProps = Readonly<{
   params: Promise<{ locale: string }>;
@@ -59,6 +77,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
   const bookedVehicleLabel =
     typeof vehicle === "string" && vehicle.trim().length > 0 ? vehicle.trim() : undefined;
   const bookingSubmittedBanner = submitted === "1" || submitted === "true";
+  const rateAtGlanceBackgroundSrc = getRateAtGlanceBackgroundSrc();
 
   return (
     <main className="flex flex-1 flex-col">
@@ -114,25 +133,38 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
 
       <section
         aria-labelledby="booking-indicative-rates-heading"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-12 sm:py-16"
+        className="relative isolate scroll-mt-28 overflow-hidden border-t border-slate-200/70 py-12 sm:py-16"
       >
-        <Container>
+        <div className="absolute inset-0" aria-hidden="true">
+          <Image
+            src={rateAtGlanceBackgroundSrc}
+            alt=""
+            fill
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-slate-950/40 to-slate-950/65" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_45%,rgba(0,0,0,0.22),transparent)]" />
+        </div>
+
+        <Container className="relative z-10">
           <div className="mx-auto max-w-5xl">
             <h2
               id="booking-indicative-rates-heading"
-              className="text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl"
+              className="text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl"
             >
               {t("ratesHeading")}
             </h2>
-            <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-600">{t("ratesDescription")}</p>
+            <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-300">{t("ratesDescription")}</p>
             <div className="mt-8 w-full">
               <IndicativeDailyRatesCard />
             </div>
-            <p className="mt-8 text-center text-sm text-slate-600 sm:text-left">
+            <p className="mt-8 text-center text-sm text-slate-300 sm:text-left">
               {t("ratesLinkLead")}{" "}
               <Link
                 href="/#services"
-                className="font-semibold text-slate-900 underline decoration-[var(--brand-orange)]/45 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
+                className="font-semibold text-white underline decoration-[var(--brand-orange)]/55 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
               >
                 {t("ratesLink")}
               </Link>

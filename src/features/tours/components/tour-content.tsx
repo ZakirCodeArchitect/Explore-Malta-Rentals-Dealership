@@ -10,6 +10,7 @@ import { getTranslations } from "next-intl/server";
 
 const TOUR_BIKES_PHOTO_SRC = `/TourPage-images/${encodeURIComponent("TOURS PAGE BIKES PHOTO.webp")}`;
 const TOUR_QUAD_PHOTO_SRC = `/TourPage-images/${encodeURIComponent("TOURS PAGE PHOTO QUAD.jpg")}`;
+const LOCAL_EXPERTS_BG_SRC = "/local-experts.png";
 
 function BulletList({ items }: Readonly<{ items: readonly string[] }>) {
   return (
@@ -125,9 +126,19 @@ export async function TourContent({ contact }: Readonly<{ contact: TourSiteConta
       <section
         id="guided-tours"
         aria-labelledby="guided-tours-title"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-12 sm:py-14 lg:py-16"
+        className="relative isolate scroll-mt-28 overflow-hidden border-t border-slate-200/70 py-12 sm:py-14 lg:py-16"
       >
-        <Container>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: [
+              "linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(248,250,252,0.78) 50%, rgba(241,245,249,0.84) 100%)",
+              `url("${LOCAL_EXPERTS_BG_SRC}")`,
+            ].join(", "),
+          }}
+        />
+        <Container className="relative z-10">
           <div className="mx-auto w-full max-w-prose">
             <h2
               id="guided-tours-title"
