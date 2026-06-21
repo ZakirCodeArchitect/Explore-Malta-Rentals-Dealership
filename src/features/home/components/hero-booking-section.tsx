@@ -1,12 +1,26 @@
+import fs from "node:fs";
+import path from "node:path";
 import Image from "next/image";
 import { SiteShell } from "@/components/site-shell";
 import { HeroBookingConsole } from "@/features/home/components/hero-booking-console";
-import { HeroVideoBackground } from "@/features/home/components/hero-video-background";
-import { heroContent } from "@/features/home/data/hero-content";
+
+const WAREHOUSE_BACKGROUND_PATH = path.join(
+  process.cwd(),
+  "public",
+  "warehouse background.png",
+);
+
+function getWarehouseBackgroundSrc(): string {
+  try {
+    const { mtimeMs } = fs.statSync(WAREHOUSE_BACKGROUND_PATH);
+    return `/warehouse background.png?v=${mtimeMs}`;
+  } catch {
+    return "/warehouse background.png";
+  }
+}
 
 export function HeroBookingSection() {
-  const { videoSrc, posterSrc } = heroContent.media;
-
+  const backgroundSrc = getWarehouseBackgroundSrc();
   return (
     <section
       id="hero-booking"
@@ -14,15 +28,16 @@ export function HeroBookingSection() {
     >
       <div className="absolute inset-0" aria-hidden="true">
         <Image
-          src={posterSrc}
+          src={backgroundSrc}
           alt=""
           fill
+          priority
+          unoptimized
           sizes="100vw"
           className="object-cover object-center"
         />
-        <HeroVideoBackground src={videoSrc} posterSrc={posterSrc} />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/55 to-slate-950/80" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(0,0,0,0.35),transparent)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-slate-950/60" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_45%,rgba(0,0,0,0.18),transparent)]" />
       </div>
 
       <SiteShell>

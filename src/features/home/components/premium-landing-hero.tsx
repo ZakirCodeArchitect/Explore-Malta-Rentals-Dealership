@@ -1,9 +1,11 @@
 import type { CSSProperties } from "react";
 import fs from "node:fs";
 import path from "node:path";
-import Image from "next/image";
-import { getTranslations } from "next-intl/server";
-import { SiteShell } from "@/components/site-shell";
+import { getTranslations } from "next-intl/server";import { SiteShell } from "@/components/site-shell";
+import {
+  HeroCinematicStage,
+  HeroVideoTrigger,
+} from "@/features/home/components/hero-cinematic-stage";
 import { Link } from "@/i18n/navigation";
 
 const HERO_BACKGROUND_PATH = path.join(process.cwd(), "public", "hero-section", "background.png");
@@ -68,31 +70,7 @@ export async function PremiumLandingHero() {
   const heroBackgroundSrc = getHeroBackgroundSrc();
 
   return (
-    <section
-      aria-labelledby="home-hero-title"
-      className="hero-cinematic relative isolate -mt-[var(--site-header-offset)] w-full overflow-hidden bg-black text-white"
-      style={{
-        height: "calc(100svh + var(--site-header-offset))",
-        minHeight: "calc(100svh + var(--site-header-offset))",
-      }}
-    >
-      {/* Background photograph — same box as the hero so screen coordinates stay aligned */}
-      <div className="hero-cinematic__background absolute inset-0" aria-hidden="true">
-        <Image
-          src={heroBackgroundSrc}
-          alt=""
-          fill
-          priority
-          unoptimized
-          sizes="100vw"
-          className="hero-cinematic__background-image object-cover"
-        />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-r from-slate-950/85 via-slate-950/30 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 z-[1] h-32 bg-gradient-to-t from-slate-950/70 to-transparent" />
-      </div>
-
-      {/* Foreground content */}
-      <div className="relative z-10 flex h-full flex-col pt-[var(--site-header-offset)]">
+    <HeroCinematicStage heroBackgroundSrc={heroBackgroundSrc}>
         <SiteShell>
           <div className="flex min-h-[calc(100svh-var(--site-header-offset)-2.5rem)] flex-col pt-10 pb-1 sm:pt-12 sm:pb-2 lg:pt-14 lg:pb-3">
             {/* Location pill — top right */}
@@ -135,11 +113,14 @@ export async function PremiumLandingHero() {
                   </span>
                 </Link>
               </div>
+
+              <div className="hero-rise mt-4 sm:mt-5" style={delay(320)}>
+                <HeroVideoTrigger />
+              </div>
             </div>
             </div>
           </div>
         </SiteShell>
-      </div>
-    </section>
+    </HeroCinematicStage>
   );
 }
