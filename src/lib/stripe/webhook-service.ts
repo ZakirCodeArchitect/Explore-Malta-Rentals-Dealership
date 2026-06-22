@@ -41,6 +41,7 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<ProcessW
   const webhookRecord = await prisma.webhookEvent.upsert({
     where: { stripeEventId },
     create: {
+      id: crypto.randomUUID(),
       stripeEventId,
       eventType,
       processed: false,
@@ -164,6 +165,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session):
 
     await tx.stripeTransaction.create({
       data: {
+        id: crypto.randomUUID(),
         stripePaymentId: stripePayment.id,
         transactionType: "charge",
         stripeTransactionId: session.id,
@@ -339,7 +341,7 @@ async function handleDisputeCreated(dispute: Stripe.Dispute): Promise<string> {
   const stripePayment = chargeId
     ? await prisma.stripePayment.findFirst({
         where: {
-          transactions: { some: { stripeTransactionId: chargeId } },
+          StripeTransaction: { some: { stripeTransactionId: chargeId } },
         },
       })
     : null;
@@ -401,11 +403,13 @@ async function handleRefundCreated(refund: Stripe.Refund): Promise<string> {
   await prisma.stripeRefund.upsert({
     where: { stripeRefundId: refund.id },
     create: {
+      id: crypto.randomUUID(),
       stripePaymentId: stripePayment.id,
       stripeRefundId: refund.id,
       amountCents: refund.amount,
       reason: mapStripeRefundReason(refund.reason),
       status: refund.status ?? "pending",
+      updatedAt: new Date(),
     },
     update: {
       status: refund.status ?? "pending",

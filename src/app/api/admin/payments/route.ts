@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma, StripePaymentStatus } from "@/generated/prisma/index";
 import { requireAdminApi, AdminUnauthorizedError } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
@@ -17,18 +18,19 @@ export async function GET(request: Request) {
     const status = searchParams.get("status");
     const search = searchParams.get("search")?.trim();
 
-    const where = {
-      ...(status ? { stripeStatus: status as import("@/generated/prisma").StripePaymentStatus } : {}),
-      ...(search
-        ? {
-            OR: [
-              { booking: { bookingReference: { contains: search, mode: "insensitive" as const } } },
-              { booking: { customerEmail: { contains: search, mode: "insensitive" as const } } },
-              { booking: { customerFullName: { contains: search, mode: "insensitive" as const } } },
-            ],
-          }
-        : {}),
-    };
+    const where: Prisma.StripePaymentWhereInput = {};
+
+    if (status) {
+      where.stripeStatus = status as StripePaymentStatus;
+    }
+
+    if (search) {
+      where.OR = [
+        { Booking: { bookingReference: { contains: search, mode: "insensitive" } } },
+        { Booking: { customerEmail: { contains: search, mode: "insensitive" } } },
+        { Booking: { customerFullName: { contains: search, mode: "insensitive" } } },
+      ];
+    }
 
     const [payments, total] = await Promise.all([
       prisma.stripePayment.findMany({
@@ -37,7 +39,7 @@ export async function GET(request: Request) {
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          booking: {
+          Booking: {
             select: {
               bookingReference: true,
               customerFullName: true,
@@ -49,7 +51,7 @@ export async function GET(request: Request) {
               paymentStatus: true,
             },
           },
-          refunds: {
+          StripeRefund: {
             select: { amountCents: true, status: true, createdAt: true },
             orderBy: { createdAt: "desc" },
           },
@@ -63,22 +65,22 @@ export async function GET(request: Request) {
       payments: payments.map((p) => ({
         id: p.id,
         bookingId: p.bookingId,
-        bookingReference: p.booking.bookingReference,
-        customerName: p.booking.customerFullName,
-        customerEmail: p.booking.customerEmail,
-        vehicleName: p.booking.vehicleNameSnapshot,
-        pickupDate: p.booking.pickupDateTime,
-        returnDate: p.booking.returnDateTime,
+        bookingReference: p.Booking.bookingReference,
+        customerName: p.Booking.customerFullName,
+        customerEmail: p.Booking.customerEmail,
+        vehicleName: p.Booking.vehicleNameSnapshot,
+        pickupDate: p.Booking.pickupDateTime,
+        returnDate: p.Booking.returnDateTime,
         amountEur: p.amountCents / 100,
         currency: p.currency,
         stripeStatus: p.stripeStatus,
         refundStatus: p.refundStatus,
         refundedAmountEur: p.refundedAmountCents / 100,
-        bookingStatus: p.booking.status,
-        bookingPaymentStatus: p.booking.paymentStatus,
+        bookingStatus: p.Booking.status,
+        bookingPaymentStatus: p.Booking.paymentStatus,
         stripeCheckoutSessionId: p.stripeCheckoutSessionId,
         stripePaymentIntentId: p.stripePaymentIntentId,
-        refunds: p.refunds.map((r) => ({
+        refunds: p.StripeRefund.map((r) => ({
           amountEur: r.amountCents / 100,
           status: r.status,
           createdAt: r.createdAt,

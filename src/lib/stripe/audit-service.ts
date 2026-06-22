@@ -22,6 +22,7 @@ export async function writePaymentAuditLog({
   try {
     await prisma.paymentAuditLog.create({
       data: {
+        id: crypto.randomUUID(),
         bookingId: bookingId ?? null,
         stripePaymentId: stripePaymentId ?? null,
         action,

@@ -757,13 +757,26 @@ async function resolveIdempotentBooking(
   idempotencyKey: string | null,
   holdReference: string | null,
 ): Promise<SubmitBookingResponse | null> {
+  const toResponse = (booking: {
+    id: string;
+    bookingReference: string;
+    totalDueOnline: { toNumber(): number } | number;
+  }): SubmitBookingResponse => ({
+    bookingId: booking.id,
+    bookingReference: booking.bookingReference,
+    totalDueOnline:
+      typeof booking.totalDueOnline === "number"
+        ? booking.totalDueOnline
+        : booking.totalDueOnline.toNumber(),
+  });
+
   if (idempotencyKey) {
     const existing = await prisma.booking.findUnique({
       where: { idempotencyKey },
-      select: { bookingReference: true },
+      select: { id: true, bookingReference: true, totalDueOnline: true },
     });
     if (existing) {
-      return { bookingReference: existing.bookingReference };
+      return toResponse(existing);
     }
   }
 
@@ -775,10 +788,10 @@ async function resolveIdempotentBooking(
     if (hold?.status === "CONVERTED" && hold.bookingId) {
       const booking = await prisma.booking.findUnique({
         where: { id: hold.bookingId },
-        select: { bookingReference: true },
+        select: { id: true, bookingReference: true, totalDueOnline: true },
       });
       if (booking) {
-        return { bookingReference: booking.bookingReference };
+        return toResponse(booking);
       }
     }
   }

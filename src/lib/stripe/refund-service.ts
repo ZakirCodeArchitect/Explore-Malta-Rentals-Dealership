@@ -95,6 +95,7 @@ export async function createRefund(input: CreateRefundInput): Promise<CreateRefu
 
       await tx.stripeRefund.create({
         data: {
+          id: crypto.randomUUID(),
           stripePaymentId: stripePayment.id,
           stripeRefundId: stripeRefund.id,
           amountCents: refundAmountCents,
@@ -102,6 +103,7 @@ export async function createRefund(input: CreateRefundInput): Promise<CreateRefu
           status: stripeRefund.status ?? "pending",
           initiatedBy,
           notes: notes ?? null,
+          updatedAt: new Date(),
         },
       });
 

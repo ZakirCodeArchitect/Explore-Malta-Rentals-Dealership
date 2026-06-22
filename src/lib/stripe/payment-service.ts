@@ -116,6 +116,7 @@ export async function createCheckoutSession(
     await prisma.stripePayment.upsert({
       where: { bookingId },
       create: {
+        id: crypto.randomUUID(),
         bookingId,
         stripeCheckoutSessionId: session.id,
         stripePaymentIntentId: typeof session.payment_intent === "string" ? session.payment_intent : null,
@@ -123,6 +124,7 @@ export async function createCheckoutSession(
         currency: CURRENCY,
         stripeStatus: "PENDING",
         refundStatus: "NONE",
+        updatedAt: new Date(),
         metadata: {
           customerEmail,
           customerName,
@@ -166,8 +168,8 @@ export async function getPaymentByBookingId(bookingId: string) {
   return prisma.stripePayment.findUnique({
     where: { bookingId },
     include: {
-      transactions: { orderBy: { createdAt: "desc" } },
-      refunds: { orderBy: { createdAt: "desc" } },
+      StripeTransaction: { orderBy: { createdAt: "desc" } },
+      StripeRefund: { orderBy: { createdAt: "desc" } },
     },
   });
 }
@@ -178,7 +180,7 @@ export async function getPaymentByBookingId(bookingId: string) {
 export async function getPaymentByCheckoutSessionId(sessionId: string) {
   return prisma.stripePayment.findUnique({
     where: { stripeCheckoutSessionId: sessionId },
-    include: { booking: { select: { bookingReference: true, customerEmail: true, totalDueOnline: true } } },
+    include: { Booking: { select: { bookingReference: true, customerEmail: true, totalDueOnline: true } } },
   });
 }
 
@@ -219,7 +221,7 @@ export async function verifyCheckoutSession(sessionId: string): Promise<
       prisma.stripePayment.findUnique({
         where: { stripeCheckoutSessionId: sessionId },
         include: {
-          booking: {
+          Booking: {
             select: {
               bookingReference: true,
               customerFullName: true,
@@ -242,11 +244,11 @@ export async function verifyCheckoutSession(sessionId: string): Promise<
       }),
     ]);
 
-    if (!payment?.booking) {
+    if (!payment?.Booking) {
       return { ok: false, error: "Payment record not found" };
     }
 
-    const booking = payment.booking;
+    const booking = payment.Booking;
 
     // Determine payment status from Stripe (authoritative) then fall back to DB
     const stripePaymentStatus = session.payment_status;
