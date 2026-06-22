@@ -1,6 +1,7 @@
 export { listAdminVehicles, getAdminVehicleById } from "@/lib/admin/vehicles/listAdminVehicles";
 export { getAdminVehicleBookingsForCalendar } from "@/lib/admin/vehicles/getAdminVehicleBookingsForCalendar";
 export {
+  activateAdminVehicle,
   createAdminVehicle,
   deactivateAdminVehicle,
   deleteAdminVehicle,

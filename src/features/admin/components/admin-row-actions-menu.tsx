@@ -10,7 +10,7 @@ export type AdminRowActionItem = {
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
-  tone?: "default" | "danger" | "warning";
+  tone?: "default" | "danger" | "warning" | "success";
 };
 
 type AdminRowActionsMenuProps = Readonly<{
@@ -40,6 +40,9 @@ function itemClassName(tone: AdminRowActionItem["tone"], disabled: boolean): str
   }
   if (tone === "warning") {
     return `${base} text-amber-800 hover:bg-amber-50`;
+  }
+  if (tone === "success") {
+    return `${base} text-emerald-700 hover:bg-emerald-50`;
   }
   return `${base} text-slate-700 hover:bg-slate-50`;
 }

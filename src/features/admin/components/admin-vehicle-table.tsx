@@ -16,7 +16,7 @@ type AdminVehicleTableProps = Readonly<{
   vehicles: AdminVehicleListItem[];
 }>;
 
-type DialogMode = "deactivate" | "delete";
+type DialogMode = "activate" | "deactivate" | "delete";
 
 type DialogTarget = {
   vehicle: AdminVehicleListItem;
@@ -66,15 +66,20 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
 
     try {
       const response =
-        mode === "deactivate"
-          ? await fetch(`/api/admin/vehicles/${vehicle.id}/deactivate`, {
+        mode === "activate"
+          ? await fetch(`/api/admin/vehicles/${vehicle.id}/activate`, {
               method: "POST",
               credentials: "same-origin",
             })
-          : await fetch(`/api/admin/vehicles/${vehicle.id}`, {
-              method: "DELETE",
-              credentials: "same-origin",
-            });
+          : mode === "deactivate"
+            ? await fetch(`/api/admin/vehicles/${vehicle.id}/deactivate`, {
+                method: "POST",
+                credentials: "same-origin",
+              })
+            : await fetch(`/api/admin/vehicles/${vehicle.id}`, {
+                method: "DELETE",
+                credentials: "same-origin",
+              });
 
       const payload = (await response.json()) as { success?: boolean; message?: string };
 
@@ -83,7 +88,11 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
           type: "error",
           message:
             payload.message ??
-            (mode === "deactivate" ? t("deactivateError") : t("deleteError")),
+            (mode === "activate"
+              ? t("activateError")
+              : mode === "deactivate"
+                ? t("deactivateError")
+                : t("deleteError")),
         });
         return;
       }
@@ -91,16 +100,23 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
       setFeedback({
         type: "success",
         message:
-          mode === "deactivate"
-            ? t("deactivateSuccess", { name: vehicle.name })
-            : t("deleteSuccess", { name: vehicle.name }),
+          mode === "activate"
+            ? t("activateSuccess", { name: vehicle.name })
+            : mode === "deactivate"
+              ? t("deactivateSuccess", { name: vehicle.name })
+              : t("deleteSuccess", { name: vehicle.name }),
       });
       setDialogTarget(null);
       router.refresh();
     } catch {
       setFeedback({
         type: "error",
-        message: mode === "deactivate" ? t("deactivateError") : t("deleteError"),
+        message:
+          mode === "activate"
+            ? t("activateError")
+            : mode === "deactivate"
+              ? t("deactivateError")
+              : t("deleteError"),
       });
     } finally {
       setActionVehicleId(null);
@@ -241,13 +257,21 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
                           ariaLabel={t("table.actionsMenu", { name: vehicle.name })}
                           isBusy={actionVehicleId === vehicle.id}
                           items={[
-                            {
-                              key: "deactivate",
-                              label: t("table.deactivate"),
-                              disabled: !vehicle.isActive || actionVehicleId === vehicle.id,
-                              tone: "warning",
-                              onClick: () => setDialogTarget({ vehicle, mode: "deactivate" }),
-                            },
+                            vehicle.isActive
+                              ? {
+                                  key: "deactivate",
+                                  label: t("table.deactivate"),
+                                  disabled: actionVehicleId === vehicle.id,
+                                  tone: "warning",
+                                  onClick: () => setDialogTarget({ vehicle, mode: "deactivate" }),
+                                }
+                              : {
+                                  key: "activate",
+                                  label: t("table.activate"),
+                                  disabled: actionVehicleId === vehicle.id,
+                                  tone: "success",
+                                  onClick: () => setDialogTarget({ vehicle, mode: "activate" }),
+                                },
                             {
                               key: "delete",
                               label: t("table.delete"),
