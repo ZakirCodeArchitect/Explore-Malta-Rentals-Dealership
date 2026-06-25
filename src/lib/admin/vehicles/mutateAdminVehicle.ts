@@ -156,6 +156,40 @@ export type DeactivateAdminVehicleResult =
   | { ok: true; vehicle: AdminVehicleDetail }
   | { ok: false; reason: "not_found" };
 
+export type ActivateAdminVehicleResult =
+  | { ok: true; vehicle: AdminVehicleDetail }
+  | { ok: false; reason: "not_found" | "already_active" };
+
+export async function activateAdminVehicle(id: string): Promise<ActivateAdminVehicleResult> {
+  const existing = await prisma.vehicle.findUnique({
+    where: { id },
+    select: { id: true, isActive: true },
+  });
+
+  if (!existing) {
+    return { ok: false, reason: "not_found" };
+  }
+
+  if (existing.isActive) {
+    return { ok: false, reason: "already_active" };
+  }
+
+  await prisma.vehicle.update({
+    where: { id },
+    data: {
+      isActive: true,
+      catalogStatus: "AVAILABLE",
+    },
+  });
+
+  const vehicle = await getAdminVehicleById(id);
+  if (!vehicle) {
+    return { ok: false, reason: "not_found" };
+  }
+
+  return { ok: true, vehicle };
+}
+
 export async function deactivateAdminVehicle(id: string): Promise<DeactivateAdminVehicleResult> {
   const existing = await prisma.vehicle.findUnique({
     where: { id },

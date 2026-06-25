@@ -10,7 +10,7 @@ export type AdminRowActionItem = {
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
-  tone?: "default" | "danger" | "warning";
+  tone?: "default" | "danger" | "warning" | "success";
 };
 
 type AdminRowActionsMenuProps = Readonly<{
@@ -28,6 +28,12 @@ type MenuPosition = {
 const MENU_MIN_WIDTH = 160;
 const MENU_GAP = 4;
 const VIEWPORT_PADDING = 8;
+const MENU_ITEM_HEIGHT = 36;
+const MENU_PADDING_Y = 8;
+
+function estimateMenuHeight(itemCount: number): number {
+  return itemCount * MENU_ITEM_HEIGHT + MENU_PADDING_Y;
+}
 
 function itemClassName(tone: AdminRowActionItem["tone"], disabled: boolean): string {
   const base =
@@ -41,18 +47,39 @@ function itemClassName(tone: AdminRowActionItem["tone"], disabled: boolean): str
   if (tone === "warning") {
     return `${base} text-amber-800 hover:bg-amber-50`;
   }
+  if (tone === "success") {
+    return `${base} text-emerald-700 hover:bg-emerald-50`;
+  }
   return `${base} text-slate-700 hover:bg-slate-50`;
 }
 
-function computeMenuPosition(button: HTMLButtonElement): MenuPosition {
+function computeMenuPosition(button: HTMLButtonElement, menuHeight: number): MenuPosition {
   const rect = button.getBoundingClientRect();
   const left = Math.min(
     Math.max(VIEWPORT_PADDING, rect.right - MENU_MIN_WIDTH),
     window.innerWidth - MENU_MIN_WIDTH - VIEWPORT_PADDING,
   );
 
+  const belowTop = rect.bottom + MENU_GAP;
+  const aboveTop = rect.top - menuHeight - MENU_GAP;
+  const maxTop = window.innerHeight - menuHeight - VIEWPORT_PADDING;
+  const fitsBelow = belowTop + menuHeight <= window.innerHeight - VIEWPORT_PADDING;
+  const fitsAbove = aboveTop >= VIEWPORT_PADDING;
+
+  let top: number;
+  if (fitsBelow) {
+    top = belowTop;
+  } else if (fitsAbove) {
+    top = aboveTop;
+  } else {
+    const spaceBelow = window.innerHeight - belowTop - VIEWPORT_PADDING;
+    const spaceAbove = rect.top - VIEWPORT_PADDING;
+    top = spaceBelow >= spaceAbove ? belowTop : aboveTop;
+    top = Math.max(VIEWPORT_PADDING, Math.min(top, maxTop));
+  }
+
   return {
-    top: rect.bottom + MENU_GAP,
+    top,
     left,
     minWidth: MENU_MIN_WIDTH,
   };
@@ -75,17 +102,31 @@ export function AdminRowActionsMenu({ items, ariaLabel, isBusy = false }: AdminR
       if (!buttonRef.current) {
         return;
       }
-      setMenuPosition(computeMenuPosition(buttonRef.current));
+      const measuredHeight = menuRef.current?.getBoundingClientRect().height;
+      const menuHeight = measuredHeight ?? estimateMenuHeight(items.length);
+      setMenuPosition(computeMenuPosition(buttonRef.current, menuHeight));
     }
 
     updatePosition();
+    const rafId = window.requestAnimationFrame(updatePosition);
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" && menuRef.current
+        ? new ResizeObserver(updatePosition)
+        : null;
+    if (menuRef.current && resizeObserver) {
+      resizeObserver.observe(menuRef.current);
+    }
+
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
     return () => {
+      window.cancelAnimationFrame(rafId);
+      resizeObserver?.disconnect();
       window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("resize", updatePosition);
     };
-  }, [open]);
+  }, [open, items.length]);
 
   useEffect(() => {
     if (!open) {
@@ -114,17 +155,17 @@ export function AdminRowActionsMenu({ items, ariaLabel, isBusy = false }: AdminR
     };
   }, [open]);
 
-  const menuPanel =
-    open && menuPosition ? (
+  const menuPanel = open ? (
       <div
         ref={menuRef}
         id={menuId}
         role="menu"
-        className="fixed z-[200] min-w-[10rem] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
+        className="fixed z-[200] max-h-[min(70vh,calc(100dvh-1rem))] min-w-[10rem] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
         style={{
-          top: menuPosition.top,
-          left: menuPosition.left,
-          minWidth: menuPosition.minWidth,
+          top: menuPosition?.top ?? -9999,
+          left: menuPosition?.left ?? VIEWPORT_PADDING,
+          minWidth: menuPosition?.minWidth ?? MENU_MIN_WIDTH,
+          visibility: menuPosition ? "visible" : "hidden",
         }}
       >
         {items.map((item) =>

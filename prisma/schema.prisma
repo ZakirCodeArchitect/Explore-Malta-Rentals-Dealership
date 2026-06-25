@@ -567,6 +567,35 @@ enum PaymentStatus {
   FAILED
 }
 
+enum StripePaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+  EXPIRED
+}
+
+enum RefundStatus {
+  NONE
+  PENDING
+  PARTIAL
+  FULL
+  FAILED
+}
+
+enum RefundReason {
+  DUPLICATE
+  FRAUDULENT
+  REQUESTED_BY_CUSTOMER
+  ADMIN_INITIATED
+  BOOKING_CANCELLED
+  FAILED_BOOKING
+}
+
 enum SecurityDepositStatus {
   PENDING
   COLLECTED
@@ -702,33 +731,4 @@ enum DocumentOwnerType {
 enum DocumentType {
   LICENSE
   PASSPORT_ID
-}
-
-enum RefundReason {
-  DUPLICATE
-  FRAUDULENT
-  REQUESTED_BY_CUSTOMER
-  ADMIN_INITIATED
-  BOOKING_CANCELLED
-  FAILED_BOOKING
-}
-
-enum RefundStatus {
-  NONE
-  PENDING
-  PARTIAL
-  FULL
-  FAILED
-}
-
-enum StripePaymentStatus {
-  PENDING
-  PROCESSING
-  SUCCEEDED
-  FAILED
-  CANCELLED
-  REFUNDED
-  PARTIALLY_REFUNDED
-  DISPUTED
-  EXPIRED
 }

@@ -9,6 +9,40 @@ import {
   type FetchVehiclesRentalWindow,
 } from "@/features/vehicles/lib/vehicles-api";
 
+// ---------------------------------------------------------------------------
+// Retry helper — transparent back-off for Neon serverless cold-starts.
+// Neon can take 2–8 s to wake from sleep; the first request often fails while
+// subsequent ones succeed immediately. We retry up to MAX_RETRIES times with
+// an exponential delay so the user never sees a flash of the error banner.
+// ---------------------------------------------------------------------------
+const MAX_RETRIES = 2;
+const RETRY_BASE_MS = 1_500; // 1.5 s → 3 s
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  signal: AbortSignal,
+  retries = MAX_RETRIES,
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+    try {
+      return await fn();
+    } catch (err) {
+      if (signal.aborted) throw err; // propagate abort immediately
+      lastError = err;
+      if (attempt < retries) {
+        await sleep(RETRY_BASE_MS * Math.pow(2, attempt));
+      }
+    }
+  }
+  throw lastError;
+}
+
 type UseVehiclesResult = {
   vehicles: Vehicle[];
   isLoading: boolean;
@@ -59,7 +93,10 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesResult
               } satisfies FetchVehiclesRentalWindow)
             : null;
 
-        const data = await fetchVehicles(controller.signal, windowPayload);
+        const data = await withRetry(
+          () => fetchVehicles(controller.signal, windowPayload),
+          controller.signal,
+        );
         if (!controller.signal.aborted) {
           setVehicles(data);
         }
@@ -117,7 +154,10 @@ export function useVehicle(slug: string): UseVehicleResult {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await fetchVehicleBySlug(normalizedSlug, controller.signal);
+        const data = await withRetry(
+          () => fetchVehicleBySlug(normalizedSlug, controller.signal),
+          controller.signal,
+        );
         if (!controller.signal.aborted) {
           setVehicle(data);
         }

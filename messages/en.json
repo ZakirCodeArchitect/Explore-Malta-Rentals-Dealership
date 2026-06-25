@@ -1210,6 +1210,8 @@
           }
         }
       },
+      "activateSuccess": "{name} was activated and is visible on the public site again.",
+      "activateError": "Unable to activate vehicle. Please try again.",
       "deactivateSuccess": "{name} was deactivated and hidden from the public site.",
       "deactivateError": "Unable to deactivate vehicle. Please try again.",
       "deleteSuccess": "{name} was permanently deleted.",
@@ -1240,6 +1242,7 @@
         "details": "Details",
         "edit": "Edit",
         "deactivate": "Deactivate",
+        "activate": "Activate",
         "delete": "Delete",
         "addUnit": "Add unit",
         "actionsMenu": "Actions for {name}",
@@ -1266,6 +1269,12 @@
         "unitActiveHoldsTitle": "Active reservation holds",
         "unitHoldReference": "Hold reference",
         "unitHoldExpires": "Expires"
+      },
+      "activateDialog": {
+        "title": "Activate vehicle?",
+        "description": "This will show {name} on public listings again with status Available.",
+        "confirm": "Activate",
+        "activating": "Activating…"
       },
       "deleteDialog": {
         "title": "Deactivate vehicle?",

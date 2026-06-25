@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 type AdminVehicleDeleteDialogProps = Readonly<{
   open: boolean;
-  mode: "deactivate" | "delete";
+  mode: "activate" | "deactivate" | "delete";
   vehicleName: string;
   bookingCount: number;
   isSubmitting: boolean;
@@ -28,6 +28,7 @@ export function AdminVehicleDeleteDialog({
     return null;
   }
 
+  const isActivate = mode === "activate";
   const isDeactivate = mode === "deactivate";
 
   return (
@@ -44,16 +45,27 @@ export function AdminVehicleDeleteDialog({
         aria-labelledby="admin-vehicle-delete-title"
         className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
       >
-        <div className="mb-4 inline-flex size-11 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+        <div
+          className={[
+            "mb-4 inline-flex size-11 items-center justify-center rounded-full",
+            isActivate ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600",
+          ].join(" ")}
+        >
           <AlertTriangle className="size-5" aria-hidden />
         </div>
         <h2 id="admin-vehicle-delete-title" className="text-lg font-bold text-slate-950">
-          {isDeactivate ? t("deleteDialog.title") : t("permanentDeleteDialog.title")}
+          {isActivate
+            ? t("activateDialog.title")
+            : isDeactivate
+              ? t("deleteDialog.title")
+              : t("permanentDeleteDialog.title")}
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">
-          {isDeactivate
-            ? t("deleteDialog.description", { name: vehicleName })
-            : t("permanentDeleteDialog.description")}
+          {isActivate
+            ? t("activateDialog.description", { name: vehicleName })
+            : isDeactivate
+              ? t("deleteDialog.description", { name: vehicleName })
+              : t("permanentDeleteDialog.description")}
         </p>
         {isDeactivate && bookingCount > 0 ? (
           <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
@@ -74,15 +86,24 @@ export function AdminVehicleDeleteDialog({
             type="button"
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="cursor-pointer rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:opacity-60"
+            className={[
+              "cursor-pointer rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition disabled:opacity-60",
+              isActivate
+                ? "bg-emerald-600 hover:bg-emerald-700"
+                : "bg-rose-600 hover:bg-rose-700",
+            ].join(" ")}
           >
             {isSubmitting
-              ? isDeactivate
-                ? t("deleteDialog.deactivating")
-                : t("permanentDeleteDialog.deleting")
-              : isDeactivate
-                ? t("deleteDialog.confirm")
-                : t("permanentDeleteDialog.confirm")}
+              ? isActivate
+                ? t("activateDialog.activating")
+                : isDeactivate
+                  ? t("deleteDialog.deactivating")
+                  : t("permanentDeleteDialog.deleting")
+              : isActivate
+                ? t("activateDialog.confirm")
+                : isDeactivate
+                  ? t("deleteDialog.confirm")
+                  : t("permanentDeleteDialog.confirm")}
           </button>
         </div>
       </div>

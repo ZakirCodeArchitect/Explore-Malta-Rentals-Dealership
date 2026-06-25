@@ -59,8 +59,11 @@ type ResolvedBookingVehicle = {
   supportsStorageBox: boolean;
 };
 
-type SubmitBookingResponse = {
+export type SubmitBookingResponse = {
   bookingReference: string;
+  bookingId: string;
+  /** Amount in euros that must be paid online. 0 means no online payment required. */
+  totalDueOnline: number;
 };
 
 type AvailabilityConflictContext = {
@@ -754,13 +757,26 @@ async function resolveIdempotentBooking(
   idempotencyKey: string | null,
   holdReference: string | null,
 ): Promise<SubmitBookingResponse | null> {
+  const toResponse = (booking: {
+    id: string;
+    bookingReference: string;
+    totalDueOnline: { toNumber(): number } | number;
+  }): SubmitBookingResponse => ({
+    bookingId: booking.id,
+    bookingReference: booking.bookingReference,
+    totalDueOnline:
+      typeof booking.totalDueOnline === "number"
+        ? booking.totalDueOnline
+        : booking.totalDueOnline.toNumber(),
+  });
+
   if (idempotencyKey) {
     const existing = await prisma.booking.findUnique({
       where: { idempotencyKey },
-      select: { bookingReference: true },
+      select: { id: true, bookingReference: true, totalDueOnline: true },
     });
     if (existing) {
-      return { bookingReference: existing.bookingReference };
+      return toResponse(existing);
     }
   }
 
@@ -772,10 +788,10 @@ async function resolveIdempotentBooking(
     if (hold?.status === "CONVERTED" && hold.bookingId) {
       const booking = await prisma.booking.findUnique({
         where: { id: hold.bookingId },
-        select: { bookingReference: true },
+        select: { id: true, bookingReference: true, totalDueOnline: true },
       });
       if (booking) {
-        return { bookingReference: booking.bookingReference };
+        return toResponse(booking);
       }
     }
   }
@@ -871,19 +887,27 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     requireHoldReference,
   );
 
-  const emailResult = await sendBookingConfirmation(booking);
-  if (emailResult.success) {
-    await updateEmailStatus(booking.id, true);
-  } else {
-    console.error("[bookings] Confirmation email was not sent", {
-      bookingId: booking.id,
-      bookingReference: booking.bookingReference,
-      reason: emailResult.reason,
-    });
-    await updateEmailStatus(booking.id, false);
+  const totalDueOnline = pricing.breakdown.totalDueOnline;
+
+  // Only send confirmation email immediately when no online payment is required.
+  // When Stripe payment is involved, the webhook fires the email after payment succeeds.
+  if (totalDueOnline <= 0) {
+    const emailResult = await sendBookingConfirmation(booking);
+    if (emailResult.success) {
+      await updateEmailStatus(booking.id, true);
+    } else {
+      console.error("[bookings] Confirmation email was not sent", {
+        bookingId: booking.id,
+        bookingReference: booking.bookingReference,
+        reason: emailResult.reason,
+      });
+      await updateEmailStatus(booking.id, false);
+    }
   }
 
   return {
     bookingReference: booking.bookingReference,
+    bookingId: booking.id,
+    totalDueOnline,
   };
 }
