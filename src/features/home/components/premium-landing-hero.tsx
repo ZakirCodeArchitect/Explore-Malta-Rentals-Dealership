@@ -8,14 +8,13 @@ import {
 } from "@/features/home/components/hero-cinematic-stage";
 import { Link } from "@/i18n/navigation";
 
-const HERO_BACKGROUND_PATH = path.join(process.cwd(), "public", "hero-section", "background.png");
-
-function getHeroBackgroundSrc(): string {
+function getHeroBackgroundSrc(filename: string): string {
+  const filePath = path.join(process.cwd(), "public", "hero-section", filename);
   try {
-    const { mtimeMs } = fs.statSync(HERO_BACKGROUND_PATH);
-    return `/hero-section/background.png?v=${mtimeMs}`;
+    const { mtimeMs } = fs.statSync(filePath);
+    return `/hero-section/${filename}?v=${mtimeMs}`;
   } catch {
-    return "/hero-section/background.png";
+    return `/hero-section/${filename}`;
   }
 }
 
@@ -67,14 +66,18 @@ export async function PremiumLandingHero() {
   const tNav = await getTranslations("Nav");
 
   const { lead, accent } = splitHeroTitle(tBrand("heroTitle"));
-  const heroBackgroundSrc = getHeroBackgroundSrc();
+  const heroBackgroundSrc = getHeroBackgroundSrc("background-2.png");
+  const heroBackgroundSrcMobile = getHeroBackgroundSrc("background.png");
 
   return (
-    <HeroCinematicStage heroBackgroundSrc={heroBackgroundSrc}>
+    <HeroCinematicStage
+      heroBackgroundSrc={heroBackgroundSrc}
+      heroBackgroundSrcMobile={heroBackgroundSrcMobile}
+    >
         <SiteShell>
-          <div className="flex min-h-[calc(100svh-var(--site-header-offset)-2.5rem)] flex-col pt-10 pb-1 sm:pt-12 sm:pb-2 lg:pt-14 lg:pb-3">
+          <div className="flex min-h-[calc(100svh-var(--site-header-offset)-var(--site-hero-content-inset)-2.5rem)] flex-col pt-6 pb-1 sm:pt-8 sm:pb-2 lg:pt-10 lg:pb-3">
             {/* Location pill — top right */}
-            <div className="hero-rise mt-10 flex shrink-0 justify-end sm:mt-5" style={delay(0)}>
+            <div className="hero-rise mt-6 flex shrink-0 justify-end sm:mt-4 lg:mt-6" style={delay(0)}>
               <span className="hero-cinematic__location inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 backdrop-blur-md sm:gap-2 sm:px-4 sm:py-2">
                 <PinIcon className="h-3 w-3 shrink-0 text-[var(--brand-orange)] sm:h-4 sm:w-4" />
                 {tBrand("locationKicker")}
@@ -82,7 +85,7 @@ export async function PremiumLandingHero() {
             </div>
 
             {/* Main copy — anchored lower in the hero, lifted slightly from the bottom edge */}
-            <div className="mt-auto mb-6 translate-y-3 sm:mb-10 sm:translate-y-4 lg:mb-14">
+            <div className="mt-auto mb-4 translate-y-8 sm:mb-8 sm:translate-y-10 lg:mb-10 lg:translate-y-12">
               <div className="max-w-xl lg:max-w-2xl">
               <h1
                 id="home-hero-title"

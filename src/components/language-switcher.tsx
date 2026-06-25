@@ -16,6 +16,10 @@ import {
   localeMetadata,
 } from "@/i18n/locales";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import {
+  SITE_NAV_CONTROL_BORDER,
+  SITE_NAV_CONTROL_RADIUS,
+} from "@/components/site-shell";
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -53,14 +57,22 @@ function LocalePill({
     <button
       type="button"
       onClick={() => onSelect(loc)}
-      className={
+      className={joinClasses(
+        `relative min-h-7 min-w-8 overflow-hidden ${SITE_NAV_CONTROL_RADIUS} px-2 py-1 transition-all duration-300 sm:min-w-9`,
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b45309] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900",
         active
-          ? "min-h-7 min-w-8 rounded-full bg-[var(--brand-orange)] px-2 py-1 text-white sm:min-w-9"
-          : "min-h-7 min-w-8 rounded-full px-2 py-1 text-slate-600 transition hover:bg-slate-100 sm:min-w-9"
-      }
+          ? "bg-gradient-to-br from-[#d97706] via-[#b45309] to-[#7c2d12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.26),0_8px_18px_-10px_rgba(124,45,18,0.95)]"
+          : "text-slate-600 hover:-translate-y-0.5 hover:bg-white/80 hover:text-slate-900 hover:shadow-[0_6px_14px_-12px_rgba(15,23,42,0.45)]",
+      )}
       aria-current={active ? "true" : undefined}
       lang={loc}
     >
+      {active ? (
+        <span
+          className="pointer-events-none absolute inset-x-1 top-0 h-px bg-white/60"
+          aria-hidden
+        />
+      ) : null}
       {shortLabel}
     </button>
   );
@@ -113,7 +125,11 @@ export function LanguageSwitcher() {
       role="group"
       aria-label={t("language")}
       data-testid="language-switcher"
-      className="relative flex items-center gap-0.5 rounded-full border border-slate-300/90 bg-white/90 p-0.5 text-[0.65rem] font-bold tracking-wide text-slate-700 shadow-sm sm:text-xs"
+      className={joinClasses(
+        "relative flex items-center gap-0.5 bg-white/80 p-0.5 text-[0.65rem] font-bold tracking-wide text-slate-700 backdrop-blur-xl backdrop-saturate-150 sm:text-xs",
+        SITE_NAV_CONTROL_RADIUS,
+        SITE_NAV_CONTROL_BORDER,
+      )}
     >
       <LocalePill loc={primary} active={locale === primary} onSelect={switchLocale} />
       <LocalePill loc={secondary} active={locale === secondary} onSelect={switchLocale} />
@@ -128,8 +144,9 @@ export function LanguageSwitcher() {
           aria-label={t("selectLanguage")}
           onClick={() => setOpen((v) => !v)}
           className={joinClasses(
-            "flex min-h-7 min-w-8 items-center justify-center rounded-full px-1.5 py-1 text-slate-600 transition hover:bg-slate-100 sm:min-w-9",
-            open ? "bg-slate-100 text-slate-800" : undefined,
+            `flex min-h-7 min-w-8 items-center justify-center ${SITE_NAV_CONTROL_RADIUS} px-1.5 py-1 text-slate-600 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/80 hover:text-slate-900 sm:min-w-9`,
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900",
+            open ? "bg-white text-slate-900 shadow-[0_6px_14px_-12px_rgba(15,23,42,0.5)]" : undefined,
           )}
         >
           <GlobeIcon />
@@ -140,7 +157,7 @@ export function LanguageSwitcher() {
             id={`${menuId}-listbox`}
             role="listbox"
             aria-labelledby={`${menuId}-trigger`}
-            className="language-switcher-dropdown absolute end-0 top-[calc(100%+0.35rem)] z-50 max-h-[min(18rem,70vh)] min-w-[11.5rem] overflow-y-auto overscroll-contain rounded-md border border-slate-200/90 bg-white py-1 text-[0.7rem] font-semibold text-slate-800 shadow-lg sm:text-xs"
+            className="language-switcher-dropdown absolute end-0 top-[calc(100%+0.45rem)] z-50 max-h-[min(18rem,70vh)] min-w-[11.5rem] overflow-y-auto overscroll-contain rounded-xl border border-white/70 bg-white/95 py-1.5 text-[0.7rem] font-semibold text-slate-800 shadow-[0_18px_42px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-900/5 backdrop-blur-xl sm:text-xs"
           >
             {localeList.map(({ code, label, nativeLabel }) => {
               const active = code === locale;

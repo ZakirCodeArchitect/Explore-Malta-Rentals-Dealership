@@ -60,10 +60,15 @@ export function HeroVideoTrigger() {
 
 type HeroCinematicStageProps = Readonly<{
   heroBackgroundSrc: string;
+  heroBackgroundSrcMobile: string;
   children: ReactNode;
 }>;
 
-export function HeroCinematicStage({ heroBackgroundSrc, children }: HeroCinematicStageProps) {
+export function HeroCinematicStage({
+  heroBackgroundSrc,
+  heroBackgroundSrcMobile,
+  children,
+}: HeroCinematicStageProps) {
   const tNav = useTranslations("Nav");
   const [videoOpen, setVideoOpen] = useState(false);
   const [videoVisible, setVideoVisible] = useState(false);
@@ -137,13 +142,22 @@ export function HeroCinematicStage({ heroBackgroundSrc, children }: HeroCinemati
           style={{ opacity: videoOpen ? 0 : 1 }}
         >
           <Image
+            src={heroBackgroundSrcMobile}
+            alt=""
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="hero-cinematic__background-image hero-cinematic__background-image--mobile object-cover md:hidden"
+          />
+          <Image
             src={heroBackgroundSrc}
             alt=""
             fill
             priority
             unoptimized
             sizes="100vw"
-            className="hero-cinematic__background-image object-cover"
+            className="hero-cinematic__background-image hero-cinematic__background-image--desktop hidden object-cover md:block"
           />
           <div className="absolute inset-0 z-[1] bg-gradient-to-r from-slate-950/85 via-slate-950/30 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 z-[1] h-32 bg-gradient-to-t from-slate-950/70 to-transparent" />
@@ -214,7 +228,7 @@ export function HeroCinematicStage({ heroBackgroundSrc, children }: HeroCinemati
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-32 bg-gradient-to-t from-slate-950/60 to-transparent" />
         </div>
 
-        <div className="relative z-10 flex h-full flex-col pt-[var(--site-header-offset)]">
+        <div className="relative z-10 flex h-full flex-col pt-[calc(var(--site-header-offset)+var(--site-hero-content-inset))]">
           {children}
         </div>
       </section>

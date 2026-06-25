@@ -19,11 +19,14 @@
    * Fixed `SiteNavbar` stack height: safe-area + red bar + logo row + booking notice banner.
    * Use for spacing page columns so content does not sit under the header.
    */
-  /* Red accent + logo/nav row + orange booking notice banner */
+  /* Floating nav gap + red accent + logo/nav row + orange booking notice banner */
+  --site-nav-float-gap: 0.75rem;
   --site-nav-height: 3.25rem;
   --site-banner-height: 2.625rem;
+  --site-hero-content-inset: 2rem;
   --site-header-offset: calc(
-    env(safe-area-inset-top, 0px) + var(--site-nav-height) + var(--site-banner-height)
+    env(safe-area-inset-top, 0px) + var(--site-nav-float-gap) + var(--site-nav-height) +
+      var(--site-banner-height)
   );
   --footer-wordmark-height: clamp(6.5rem, 15vw, 11.5rem);
 }
@@ -34,12 +37,15 @@ html.booking-banner-hidden {
 
 @media (min-width: 640px) {
   :root {
+    --site-nav-float-gap: 1rem;
+    --site-hero-content-inset: 2.5rem;
     --footer-wordmark-height: clamp(7.5rem, 16vw, 12.5rem);
   }
 }
 
 @media (min-width: 1024px) {
   :root {
+    --site-hero-content-inset: 3.25rem;
     --footer-wordmark-height: clamp(8rem, 17vw, 13.5rem);
   }
 }
@@ -723,11 +729,39 @@ body {
   text-rendering: geometricPrecision;
 }
 
+.site-navbar-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  box-shadow:
+    0 16px 48px -16px rgb(15 23 42 / 0.45),
+    0 4px 16px -8px rgb(15 23 42 / 0.25);
+}
+
+.site-navbar-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-color: rgb(71 85 105 / 0.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+}
+
 .site-navbar {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-plus-jakarta-sans), sans-serif;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: transparent;
+}
+
+.site-navbar__logo {
+  box-shadow: 0 2px 10px rgb(15 23 42 / 0.18);
 }
 
 .hero-cinematic__location {

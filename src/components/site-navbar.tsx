@@ -8,6 +8,8 @@ import {
   SITE_SHELL_OUTER,
   SITE_SHELL_CONTAINER,
   SITE_SHELL_INNER_PAD,
+  SITE_NAV_CONTROL_BORDER,
+  SITE_NAV_CONTROL_RADIUS,
 } from "@/components/site-shell";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
@@ -114,31 +116,32 @@ export function SiteNavbar() {
   }, [mobileNavOpen]);
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0px,env(safe-area-inset-top))]">
-      <nav
-        aria-label={t("primary")}
-        className="site-navbar pointer-events-auto w-full max-w-full border-b border-white/20 bg-slate-600/40 text-white shadow-[0_8px_32px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl backdrop-saturate-150"
-      >
-        <div className="h-0.5 w-full shrink-0 bg-red-600" aria-hidden />
-        <div className={SITE_SHELL_OUTER}>
-          <div className={SITE_SHELL_CONTAINER}>
+    <header
+      className={joinClasses(
+        "pointer-events-none fixed inset-x-0 top-0 z-50",
+        SITE_SHELL_OUTER,
+        "pt-[max(0.75rem,calc(env(safe-area-inset-top)+0.75rem))] sm:pt-[max(1rem,calc(env(safe-area-inset-top)+1rem))]",
+      )}
+    >
+      <div className={SITE_SHELL_CONTAINER}>
+        <div className={SITE_SHELL_INNER_PAD}>
+          <div className="site-navbar-shell pointer-events-auto w-full">
+            <nav aria-label={t("primary")} className="site-navbar w-full text-white">
             <div
               className={joinClasses(
-                SITE_SHELL_INNER_PAD,
-                "grid min-h-10 w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-x-3 gap-y-1.5 py-1 sm:min-h-11 sm:gap-y-2 sm:py-1",
-                "md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-x-4",
+                "grid min-h-10 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-1.5 pl-1.5 pr-3 sm:min-h-11 sm:gap-y-2 sm:py-1.5 sm:pl-1.5 sm:pr-4 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-x-4 md:pl-1.5 md:pr-5",
               )}
             >
               <Link
                 href="/"
-                className="relative flex min-w-0 max-w-[min(22rem,calc(100vw-9rem))] justify-self-start overflow-hidden"
+                className="site-navbar__logo relative inline-flex shrink-0 items-center self-center justify-self-start overflow-hidden rounded-sm"
               >
                 <Image
                   src={LOGO_SRC}
                   alt={t("logoAlt")}
                   width={320}
                   height={56}
-                  className="h-10 w-auto max-w-full object-contain object-left sm:h-11"
+                  className="block h-9 w-auto max-w-none object-contain object-left sm:h-10"
                   style={{ width: "auto" }}
                   priority
                 />
@@ -168,7 +171,7 @@ export function SiteNavbar() {
 
               <div className="flex shrink-0 items-center justify-self-end gap-2">
                 <div className="hidden font-sans md:block">
-                  <Suspense fallback={<div className="h-8 w-[5.5rem] rounded-full border border-white/25 bg-white/15 backdrop-blur-sm" aria-hidden />}>
+                  <Suspense fallback={<div className="h-8 w-[5.5rem] rounded-md border border-white/25 bg-white/15 backdrop-blur-sm" aria-hidden />}>
                     <LanguageSwitcher />
                   </Suspense>
                 </div>
@@ -199,7 +202,7 @@ export function SiteNavbar() {
                     )}
                   >
                     <div className="border-b border-white/15 px-4 py-3 font-sans">
-                      <Suspense fallback={<div className="h-8 w-full rounded-full border border-white/25 bg-white/15 backdrop-blur-sm" aria-hidden />}>
+                      <Suspense fallback={<div className="h-8 w-full rounded-md border border-white/25 bg-white/15 backdrop-blur-sm" aria-hidden />}>
                         <LanguageSwitcher />
                       </Suspense>
                     </div>
@@ -231,27 +234,52 @@ export function SiteNavbar() {
                 <Link
                   href="/booking"
                   className={joinClasses(
-                    "inline-flex min-h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-semibold normal-case tracking-normal text-white sm:text-[11px]",
-                    "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
-                    "hover:bg-[var(--brand-orange-strong)]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
+                    "group relative inline-flex min-h-8 shrink-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap px-3.5 py-1.5 text-[10px] font-bold normal-case tracking-[-0.01em] text-white sm:text-[11px]",
+                    SITE_NAV_CONTROL_RADIUS,
+                    SITE_NAV_CONTROL_BORDER,
+                    "bg-gradient-to-br from-[#d97706] via-[#b45309] to-[#7c2d12] shadow-[0_12px_28px_-14px_rgba(124,45,18,0.98),0_5px_14px_-10px_rgba(15,23,42,0.75)]",
+                    "transition-all duration-300 hover:-translate-y-0.5 hover:border-white/40 hover:from-[#ea8a10] hover:via-[#c45f0a] hover:to-[#8a3510] hover:shadow-[0_15px_32px_-14px_rgba(124,45,18,1),0_9px_18px_-12px_rgba(15,23,42,0.75)]",
+                    "active:translate-y-0 active:scale-[0.98]",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b45309] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900",
                   )}
                 >
-                  {t("bookNow")}
+                  <span
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,rgba(255,255,255,0.38)_48%,transparent_66%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    aria-hidden
+                  />
+                  <span className="relative z-10">{t("bookNow")}</span>
+                  <span
+                    className="relative z-10 inline-flex translate-x-0 transition-transform duration-300 group-hover:translate-x-0.5"
+                    aria-hidden
+                  >
+                    <svg
+                      viewBox="0 0 16 16"
+                      className="h-3 w-3"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3.5 8h8" />
+                      <path d="m8.5 4 4 4-4 4" />
+                    </svg>
+                  </span>
                 </Link>
               </div>
             </div>
+            </nav>
           </div>
+          {!bookingEnabled ? (
+            <div
+              role="status"
+              className="pointer-events-auto mt-2 rounded-xl border border-black/10 bg-[var(--brand-orange-strong)] px-4 py-2.5 text-center text-sm font-semibold tracking-wide text-white shadow-[0_12px_32px_-16px_rgba(15,23,42,0.35),inset_0_-1px_0_rgba(0,0,0,0.08)]"
+            >
+              {bookingDisabledMessage}
+            </div>
+          ) : null}
         </div>
-      </nav>
-      {!bookingEnabled ? (
-        <div
-          role="status"
-          className="pointer-events-auto w-full border-b border-black/10 bg-[var(--brand-orange-strong)] px-4 py-2.5 text-center text-sm font-semibold tracking-wide text-white shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
-        >
-          {bookingDisabledMessage}
-        </div>
-      ) : null}
+      </div>
     </header>
   );
 }
