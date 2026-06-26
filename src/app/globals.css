@@ -1458,6 +1458,17 @@ body {
 }
 
 /* Choose your ride — rich corner mesh on true black */
+/* Choose your ride — preserve source image frame (1672×941 / 16:9) */
+.bike-picker-section-shell {
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+  min-height: max(32rem, 56.25vw);
+}
+
+.bike-picker-section-shell__media {
+  inset: 0;
+}
+
 .bike-picker-section-bg__mesh {
   position: absolute;
   inset: 0;
@@ -1492,7 +1503,114 @@ body {
     linear-gradient(180deg, rgb(18 6 4 / 0.08) 0%, transparent 38%, rgb(0 0 0 / 0.55) 68%, #000 100%);
 }
 
+.bike-picker-section-bg__mesh--with-image {
+  z-index: 2;
+  background-color: #000;
+  /* Keep the left red glow only — drop right/center washes that dull the bike photo */
+  background-image:
+    radial-gradient(
+      ellipse 155% 135% at -6% -18%,
+      rgb(230 57 23 / 0.95) 0%,
+      rgb(224 54 22 / 0.72) 10%,
+      rgb(205 46 20 / 0.42) 24%,
+      rgb(160 34 16 / 0.18) 42%,
+      rgb(80 20 10 / 0.05) 58%,
+      transparent 76%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(18 6 4 / 0.08) 0%,
+      transparent 38%,
+      rgb(0 0 0 / 0.42) 72%,
+      rgb(0 0 0 / 0.78) 100%
+    );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 42%,
+    rgb(0 0 0 / 0.9) 50%,
+    rgb(0 0 0 / 0.35) 58%,
+    transparent 66%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 42%,
+    rgb(0 0 0 / 0.9) 50%,
+    rgb(0 0 0 / 0.35) 58%,
+    transparent 66%
+  );
+}
+
+.bike-picker-section-bg__grain--with-image {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 48%,
+    transparent 64%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 48%,
+    transparent 64%
+  );
+}
+
+/* Choose your ride — minimal cc selector with red underline */
+.bike-picker-selector {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1.75rem;
+}
+
+.bike-picker-selector__option {
+  position: relative;
+  padding: 0 0 0.55rem;
+  border: 0;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.38);
+  cursor: pointer;
+  transition: color 0.28s ease;
+}
+
+.bike-picker-selector__option:hover {
+  color: rgb(255 255 255 / 0.72);
+}
+
+.bike-picker-selector__option:focus-visible {
+  outline: 2px solid rgb(230 57 23 / 0.85);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.bike-picker-selector__option--active {
+  color: rgb(255 255 255 / 0.96);
+}
+
+.bike-picker-selector__option--active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgb(230 57 23) 0%,
+    rgb(224 54 22) 100%
+  );
+  box-shadow: 0 0 12px rgb(230 57 23 / 0.55);
+}
+
 .bike-picker-section-bg__grain {
+  z-index: 3;
   position: absolute;
   inset: 0;
   pointer-events: none;

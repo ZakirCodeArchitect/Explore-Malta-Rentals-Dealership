@@ -1,48 +1,14 @@
-/** Plain filename, or file plus flag when the asset has a solid white box behind the bike */
-export type BikeImageEntry =
-  | string
-  | { readonly file: string; readonly whiteBg?: boolean };
+export type ChooseUsPickerOptionId = "125cc" | "50cc";
 
-export function parseBikeImageEntry(entry: BikeImageEntry): {
-  file: string;
-  whiteBg: boolean;
-} {
-  if (typeof entry === "string") {
-    return { file: entry, whiteBg: false };
-  }
-  return { file: entry.file, whiteBg: Boolean(entry.whiteBg) };
-}
+export const chooseUsPickerOptions = [
+  { id: "125cc", image: "/choose-us-images/125cc.png" },
+  { id: "50cc", image: "/choose-us-images/50cc.png" },
+] as const satisfies ReadonlyArray<{
+  readonly id: ChooseUsPickerOptionId;
+  readonly image: string;
+}>;
 
-export type BikeCategory = {
-  readonly id: string;
-  readonly title: string;
-  readonly description: string;
-  readonly bullets: readonly string[];
-  readonly images: readonly BikeImageEntry[];
-  /** When set, shows a single static image instead of the rotating gallery. */
-  readonly staticImage?: string;
-};
-
-export const bikeCategories = [
-  {
-    id: "50cc",
-    title: "50cc Bikes",
-    description:
-      "Easy to ride, perfect for cruising Malta's coast and city streets with confidence.",
-    bullets: ["Beginner-friendly handling", "Comfort-focused setup"],
-    images: [],
-    staticImage: "/choose-us-images/50cc.png",
-  },
-  {
-    id: "125cc",
-    title: "125cc Bikes",
-    description:
-      "For riders who want a bit more power and smooth performance on longer routes.",
-    bullets: ["Great for day trips", "Balanced comfort + control"],
-    images: [],
-    staticImage: "/choose-us-images/125cc.png",
-  },
-] satisfies readonly BikeCategory[];
+export const defaultChooseUsPickerOptionId: ChooseUsPickerOptionId = "125cc";
 
 export const aboutBusiness = {
   title: "About the Business",
