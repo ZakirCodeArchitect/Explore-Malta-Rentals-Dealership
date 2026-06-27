@@ -1331,22 +1331,51 @@ body {
     0 8px 24px -6px rgba(193, 18, 31, 0.55);
 }
 
-/* ─── Hero booking form — frosted white glass ─────────────────── */
+/* ─── Hero booking form — soft light glass on form-background ──── */
 
 .hero-booking-form-shell {
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  --hero-spotlight-x: 50%;
+  --hero-spotlight-y: 50%;
+  --hero-spotlight-opacity: 0;
+  position: relative;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.42);
   background: linear-gradient(
     155deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.58) 50%,
-    rgba(255, 252, 248, 0.52) 100%
+    rgba(203, 213, 225, 0.72) 0%,
+    rgba(186, 198, 212, 0.66) 48%,
+    rgba(170, 183, 200, 0.62) 100%
   );
-  backdrop-filter: blur(20px) saturate(1.12);
-  -webkit-backdrop-filter: blur(20px) saturate(1.12);
+  backdrop-filter: blur(20px) saturate(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(1.05);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
-    0 28px 70px -36px rgba(0, 0, 0, 0.48);
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 28px 70px -36px rgba(15, 34, 53, 0.38);
   color: #0f172a;
+}
+
+.hero-booking-form-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--hero-spotlight-opacity);
+  transition: opacity 0.35s ease;
+  background: radial-gradient(
+    clamp(240px, 42vw, 420px) circle at var(--hero-spotlight-x) var(--hero-spotlight-y),
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 248, 240, 0.22) 28%,
+    rgba(255, 169, 57, 0.08) 46%,
+    transparent 72%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-booking-form-shell::before {
+    display: none;
+  }
 }
 
 .hero-booking-form-shell label,
@@ -1355,7 +1384,7 @@ body {
 }
 
 .hero-booking-form-shell .text-slate-500 {
-  color: #1e293b;
+  color: #64748b;
 }
 
 .hero-booking-form-shell .text-slate-400 {
@@ -1363,32 +1392,32 @@ body {
 }
 
 .hero-booking-form-shell .text-slate-600 {
-  color: #334155;
+  color: #475569;
 }
 
 .hero-booking-form-shell .text-slate-700 {
-  color: #1e293b;
+  color: #334155;
 }
 
 .hero-booking-form-shell .text-slate-800 {
-  color: #0f172a;
+  color: #1e293b;
 }
 
 .hero-booking-form-shell .text-slate-900,
 .hero-booking-form-shell .text-slate-950 {
-  color: #020617;
+  color: #0f172a;
 }
 
 .hero-booking-form-shell .hero-booking-form-panel {
-  border-color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(148, 163, 184, 0.55);
+  background: rgba(226, 232, 240, 0.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 .hero-booking-form-shell .hero-booking-form-input {
-  border-color: rgba(148, 163, 184, 0.45);
-  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(148, 163, 184, 0.75);
+  background: rgba(241, 245, 249, 0.72);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #0f172a;
@@ -1399,17 +1428,28 @@ body {
 }
 
 .hero-booking-form-shell .hero-booking-form-divider {
-  border-color: rgba(148, 163, 184, 0.35);
+  border-color: rgba(148, 163, 184, 0.55);
+}
+
+.hero-booking-form-shell button[role="radio"]:not([aria-checked="true"]),
+.hero-booking-form-shell .hero-booking-vehicle-option {
+  background: rgba(226, 232, 240, 0.5);
+  color: #1e293b;
+}
+
+.hero-booking-form-shell button[role="radio"]:not([aria-checked="true"]):hover,
+.hero-booking-form-shell .hero-booking-vehicle-option:hover {
+  background: rgba(203, 213, 225, 0.62);
 }
 
 .hero-booking-quick-filters {
-  border-color: color-mix(in srgb, var(--brand-orange-strong) 55%, rgba(255, 255, 255, 0.45));
-  background: rgba(255, 255, 255, 0.82);
+  border-color: color-mix(in srgb, var(--brand-orange-strong) 52%, rgba(148, 163, 184, 0.45));
+  background: rgba(203, 213, 225, 0.68);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    0 16px 40px -28px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 16px 40px -28px rgba(15, 34, 53, 0.28);
 }
 
 .hero-booking-quick-filters .text-slate-800,
@@ -1423,11 +1463,11 @@ body {
   inset: -0.75rem;
   z-index: 0;
   border-radius: 1rem;
-  opacity: 0.55;
+  opacity: 0.5;
   filter: blur(2rem);
   background: radial-gradient(
     ellipse 85% 65% at 50% 0%,
-    rgba(255, 255, 255, 0.28),
+    rgba(255, 169, 57, 0.2),
     transparent 68%
   );
 }

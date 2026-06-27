@@ -4,23 +4,26 @@ import Image from "next/image";
 import { SiteShell } from "@/components/site-shell";
 import { HeroBookingConsole } from "@/features/home/components/hero-booking-console";
 
-const WAREHOUSE_BACKGROUND_PATH = path.join(
+const FORM_BACKGROUND_FILENAME = "form background.png";
+
+const FORM_BACKGROUND_PATH = path.join(
   process.cwd(),
   "public",
-  "warehouse background.png",
+  FORM_BACKGROUND_FILENAME,
 );
 
-function getWarehouseBackgroundSrc(): string {
+function getFormBackgroundSrc(): string {
+  const publicPath = `/${encodeURIComponent(FORM_BACKGROUND_FILENAME)}`;
   try {
-    const { mtimeMs } = fs.statSync(WAREHOUSE_BACKGROUND_PATH);
-    return `/warehouse background.png?v=${mtimeMs}`;
+    const { mtimeMs } = fs.statSync(FORM_BACKGROUND_PATH);
+    return `${publicPath}?v=${mtimeMs}`;
   } catch {
-    return "/warehouse background.png";
+    return publicPath;
   }
 }
 
 export function HeroBookingSection() {
-  const backgroundSrc = getWarehouseBackgroundSrc();
+  const backgroundSrc = getFormBackgroundSrc();
   return (
     <section
       id="hero-booking"
@@ -34,10 +37,10 @@ export function HeroBookingSection() {
           priority
           unoptimized
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover object-[22%_center]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-slate-950/60" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_45%,rgba(0,0,0,0.18),transparent)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/45" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_40%,rgba(0,0,0,0.25),transparent_70%)]" />
       </div>
 
       <SiteShell>

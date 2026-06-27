@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -50,6 +50,13 @@ const quickFilterCcIconByCc = {
   "50": "/landing page/50cc.png",
   "125": "/landing page/125cc.png",
 } as const;
+
+const heroQuickFilterCcIconByCc = {
+  "50": "/vehicle-types/scooter.png",
+  "125": "/vehicle-types/motorcycle.png",
+} as const;
+
+const heroDarkIconClass = "brightness-0 invert";
 
 const quickFilterChipClass =
   "group inline-flex h-12 items-center justify-center gap-2.5 rounded-md border border-transparent px-5 text-base font-semibold tracking-[-0.01em] text-slate-800 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
@@ -227,15 +234,19 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
 
   const summaryDayLabel = durationDays === 1 ? tCommon("day") : tCommon("days");
   const isHeroTone = quickFilterTone === "hero";
+  const quickFilterIcons = isHeroTone ? heroQuickFilterCcIconByCc : quickFilterCcIconByCc;
   const resolvedInputShell = isHeroTone ? `${inputShell} hero-booking-form-input` : inputShell;
   const resolvedTextareaClass = isHeroTone ? `${textareaClass} hero-booking-form-input` : textareaClass;
   const resolvedFormShellClass = isHeroTone
-    ? "hero-booking-form-shell relative z-10 rounded-2xl p-4 sm:p-5 lg:p-6"
+    ? "hero-booking-form-shell relative z-10 overflow-hidden rounded-2xl p-4 sm:p-5 lg:p-6"
     : formShellClass;
   const resolvedFormGlowClass = isHeroTone ? "hero-booking-form-glow" : formShellGlowClass;
   const resolvedQuickFilterClass = isHeroTone
     ? `${quickFilterGroupClass} hero-booking-quick-filters mx-auto`
     : `${quickFilterGroupClass} mx-auto`;
+  const resolvedQuickFilterChipClass = isHeroTone
+    ? "group inline-flex h-12 items-center justify-center gap-2.5 rounded-md border border-transparent px-5 text-base font-semibold tracking-[-0.01em] text-slate-800 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-100"
+    : quickFilterChipClass;
   const panelClass = isHeroTone
     ? "hero-booking-form-panel"
     : "border-slate-100 bg-white";
@@ -256,12 +267,34 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     [],
   );
 
+  const formShellRef = useRef<HTMLDivElement>(null);
+
+  const handleHeroFormShellMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const shell = formShellRef.current;
+      if (!shell) return;
+      const rect = shell.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      shell.style.setProperty("--hero-spotlight-x", `${x}%`);
+      shell.style.setProperty("--hero-spotlight-y", `${y}%`);
+      shell.style.setProperty("--hero-spotlight-opacity", "1");
+    },
+    [],
+  );
+
+  const handleHeroFormShellMouseLeave = useCallback(() => {
+    const shell = formShellRef.current;
+    if (!shell) return;
+    shell.style.setProperty("--hero-spotlight-opacity", "0");
+  }, []);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <div className={resolvedQuickFilterClass}>
-        <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
+        <Link href="/vehicles?cc=50&type=scooter" className={resolvedQuickFilterChipClass}>
           <Image
-            src={quickFilterCcIconByCc["50"]}
+            src={quickFilterIcons["50"]}
             alt=""
             width={56}
             height={48}
@@ -271,9 +304,9 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
           />
           <span className={`tabular-nums ${quickFilterChipLabelClass}`}>{tSearch("chip50")}</span>
         </Link>
-        <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
+        <Link href="/vehicles?cc=125&type=scooter" className={resolvedQuickFilterChipClass}>
           <Image
-            src={quickFilterCcIconByCc["125"]}
+            src={quickFilterIcons["125"]}
             alt=""
             width={36}
             height={36}
@@ -283,15 +316,20 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
           />
           <span className={`tabular-nums ${quickFilterChipLabelClass}`}>{tSearch("chip125")}</span>
         </Link>
-        <Link href="/#services" className={quickFilterChipClass}>
+        <Link href="/#services" className={resolvedQuickFilterChipClass}>
           <span className={quickFilterChipLabelClass}>{tSearch("chipServices")}</span>
         </Link>
       </div>
 
       <div className="relative isolate">
         <div className={resolvedFormGlowClass} aria-hidden />
-        <div className={resolvedFormShellClass}>
-        <div className="flex flex-col gap-5">
+        <div
+          ref={isHeroTone ? formShellRef : undefined}
+          className={resolvedFormShellClass}
+          onMouseMove={isHeroTone ? handleHeroFormShellMouseMove : undefined}
+          onMouseLeave={isHeroTone ? handleHeroFormShellMouseLeave : undefined}
+        >
+        <div className="relative z-[1] flex flex-col gap-5">
           <div className={`flex items-center gap-4 rounded-lg border px-4 py-3 ${panelClass}`}>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-500">{tSearch("pickupLocationTitle")}</p>
@@ -457,7 +495,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                               selected
                                 ? "bg-[var(--brand-orange)] text-white"
                                 : isHeroTone
-                                  ? "bg-white/88 text-slate-950 hover:bg-white"
+                                  ? "hero-booking-vehicle-option text-slate-900"
                                   : "bg-white text-slate-900 hover:bg-orange-50/70",
                             ].join(" ")}
                           >
@@ -474,6 +512,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                                 className={[
                                   "h-9 w-14 object-contain transition duration-200 group-hover:scale-105",
                                   option.imageClassName ?? "",
+                                  selected ? heroDarkIconClass : "",
                                 ].join(" ")}
                               />
                             </span>
