@@ -254,6 +254,9 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     ? "hero-booking-form-panel border-slate-200"
     : "border-slate-200 bg-white";
   const resolvedTimeSlotClass = isHeroTone ? "hero-booking-form-input" : undefined;
+  const fieldLabelClass = "mb-1.5 block text-xs font-semibold text-slate-800";
+  const fieldHintClass = "mt-1.5 text-xs font-medium text-slate-700";
+  const summaryDetailClass = "mt-0.5 text-xs font-medium text-slate-700";
 
   const vehicleTypeCards = useMemo(
     (): VehicleTypeCard[] => [
@@ -547,7 +550,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">
-              <label className="mb-1.5 block text-xs font-semibold text-slate-500">{tSearch("tripDatesLabel")}</label>
+              <label className={fieldLabelClass}>{tSearch("tripDatesLabel")}</label>
               <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
                 <Popover.Trigger asChild>
                   <button type="button" className={`${resolvedInputShell} justify-between`}>
@@ -591,7 +594,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                   </Popover.Content>
                 </Popover.Portal>
               </Popover.Root>
-              <p className="mt-1.5 text-xs text-slate-500">
+              <p className={fieldHintClass}>
                 {tSearch("tripLengthNote", { min: TRIP_MIN_SPAN_DAYS, max: TRIP_MAX_SPAN_DAYS })}
               </p>
               {errors.pickupDate ? (
@@ -606,7 +609,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               <div>
                 <label
                   id="booking-pickup-time-label"
-                  className="mb-1.5 block text-xs font-semibold text-slate-500"
+                  className={fieldLabelClass}
                 >
                   {tSearch("pickupTime")}
                 </label>
@@ -630,7 +633,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               <div>
                 <label
                   id="booking-dropoff-time-label"
-                  className="mb-1.5 block text-xs font-semibold text-slate-500"
+                  className={fieldLabelClass}
                 >
                   {tSearch("dropoffTime")}
                 </label>
@@ -673,7 +676,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
                     : "",
               })}
             </p>
-            <p className="mt-0.5 text-xs text-slate-600">
+            <p className={summaryDetailClass}>
               {tSearch("indicativeSummary", {
                 tripEur: indicativeTripTotalEur,
                 dailyEur: indicativeDailyEur,

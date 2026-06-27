@@ -1,26 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import Image from "next/image";
 import { SiteShell } from "@/components/site-shell";
 import { HeroBookingConsole } from "@/features/home/components/hero-booking-console";
-
-const FORM_BACKGROUND_FILENAME = "form background.png";
-
-const FORM_BACKGROUND_PATH = path.join(
-  process.cwd(),
-  "public",
-  FORM_BACKGROUND_FILENAME,
-);
-
-function getFormBackgroundSrc(): string {
-  const publicPath = `/${encodeURIComponent(FORM_BACKGROUND_FILENAME)}`;
-  try {
-    const { mtimeMs } = fs.statSync(FORM_BACKGROUND_PATH);
-    return `${publicPath}?v=${mtimeMs}`;
-  } catch {
-    return publicPath;
-  }
-}
+import { getFormBackgroundSrc } from "@/lib/form-background.server";
 
 export function HeroBookingSection() {
   const backgroundSrc = getFormBackgroundSrc();

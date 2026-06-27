@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 import { IndicativeDailyRatesCard } from "@/components/pricing/indicative-daily-rates-card";
 import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
-import { LOGO_PATH } from "@/lib/site-brand-copy";
+import { getFormBackgroundPublicPath } from "@/lib/form-background";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
 import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
 import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
@@ -612,19 +612,17 @@ export function VehicleListingShell({
         className="relative isolate overflow-hidden pb-12 pt-28 sm:pb-14 sm:pt-32"
       >
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-          <div className="absolute inset-0 flex items-start justify-center bg-[#0b1624] pt-28 sm:pt-32">
-            <Image
-              src={LOGO_PATH}
-              alt=""
-              width={480}
-              height={96}
-              className="h-auto w-[min(88%,26rem)] max-w-full object-contain opacity-[0.38]"
-              style={{ height: "auto" }}
-              priority={false}
-            />
-          </div>
-          <div className="absolute inset-0 bg-slate-950/35" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.72)_0%,rgba(15,23,42,0.38)_55%,rgba(15,23,42,0.12)_100%)]" />
+          <Image
+            src={getFormBackgroundPublicPath()}
+            alt=""
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-[22%_center]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/45" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_40%,rgba(0,0,0,0.25),transparent_70%)]" />
         </div>
         <Container className="relative z-10">
           <h1
