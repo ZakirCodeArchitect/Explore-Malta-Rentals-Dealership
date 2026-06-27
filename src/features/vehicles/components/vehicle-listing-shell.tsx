@@ -469,10 +469,12 @@ export function VehicleListingShell({
     return `?${p.toString()}`;
   })();
 
-  const showListingSidebar = pathname === "/vehicles";
+  const isVehiclesPage = pathname === "/vehicles";
+  // Left filter sidebar temporarily disabled — set to isVehiclesPage to restore
+  const showListingSidebar = false;
   const isLg = useIsLgViewport();
-  const hideSeatsInHero = showListingSidebar && isLg;
-  const showListingExtrasInHero = showListingSidebar && !isLg;
+  const hideSeatsInHero = isVehiclesPage && showListingSidebar && isLg;
+  const showListingExtrasInHero = isVehiclesPage && !isLg;
 
   const filters = (
     <VehicleFilters
@@ -504,6 +506,7 @@ export function VehicleListingShell({
     />
   );
 
+  /* Left filter sidebar temporarily disabled
   const listingSidebar = showListingSidebar ? (
     <VehicleListingSidebar
       variant="rail"
@@ -520,6 +523,8 @@ export function VehicleListingShell({
       onSeatsChange={(v) => persistListingFilters({ seats: v })}
     />
   ) : null;
+  */
+  const listingSidebar = null;
 
   const results = (
     <div id="vehicle-listing-results" className="space-y-6 scroll-mt-28">

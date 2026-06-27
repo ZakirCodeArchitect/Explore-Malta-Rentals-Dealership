@@ -59,13 +59,10 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
       aria-labelledby="no-vehicle-modal-title"
     >
       <div
-        className={`relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200/60 transition-all duration-300 ${
+        className={`relative w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-slate-200/60 transition-all duration-300 ${
           visible ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-95"
         }`}
       >
-        {/* Decorative gradient header band */}
-        <div className="h-2 w-full bg-gradient-to-r from-[var(--brand-orange)] via-amber-400 to-[var(--brand-orange-strong)]" />
-
         {/* Close button */}
         <button
           type="button"
@@ -92,22 +89,23 @@ export function NoVehicleModal({ show, onDismiss }: NoVehicleModalProps) {
           <p className="mt-2 text-sm leading-relaxed text-slate-500">{t("noneSelectedBodyLong")}</p>
 
           {/* CTA */}
-          <Link
-            href="/vehicles"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--brand-orange)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2"
-          >
-            <Bike className="h-4 w-4" />
-            {t("browseFleet")}
-          </Link>
+          <div className="mt-6 flex flex-row items-center justify-center gap-3">
+            <Link
+              href="/vehicles"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--brand-orange)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2"
+            >
+              <Bike className="h-4 w-4" />
+              {t("browseFleet")}
+            </Link>
 
-          {/* Dismiss link */}
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="mt-3 w-full rounded-xl px-6 py-2.5 text-sm text-slate-500 transition-colors hover:text-slate-700"
-          >
-            {tFlow("noVehicleChooseLater")}
-          </button>
+            <button
+              type="button"
+              onClick={onDismiss}
+              className="rounded-xl px-4 py-2.5 text-sm text-slate-500 transition-colors hover:text-slate-700"
+            >
+              {tFlow("noVehicleChooseLater")}
+            </button>
+          </div>
         </div>
       </div>
     </div>
