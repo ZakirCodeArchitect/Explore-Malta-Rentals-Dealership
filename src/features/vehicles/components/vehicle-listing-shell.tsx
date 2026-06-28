@@ -7,6 +7,7 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { addDays } from "date-fns";
 import { TRIP_MIN_SPAN_DAYS } from "@/features/booking/lib/booking-schema";
@@ -18,8 +19,7 @@ import { Container } from "@/components/ui/container";
 import type { BookingOption } from "@/features/home/data/hero-booking-options";
 import { LOGO_PATH } from "@/lib/site-brand-copy";
 import { VehicleCard } from "@/features/vehicles/components/vehicle-card";
-import { VehicleFilters } from "@/features/vehicles/components/vehicle-filters";
-import { VehicleListingSidebar } from "@/features/vehicles/components/vehicle-listing-sidebar";
+import { filterVehicles } from "@/features/vehicles/lib/filter-vehicles";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import type {
   Transmission,
@@ -43,6 +43,31 @@ import {
   vehicleFilterTypeToUrlParam,
   type EngineCcFilter,
 } from "@/features/vehicles/lib/booking-search-params";
+
+const VehicleFilters = dynamic(
+  () =>
+    import("@/features/vehicles/components/vehicle-filters").then((m) => ({
+      default: m.VehicleFilters,
+    })),
+  {
+    loading: () => (
+      <div className="h-72 animate-pulse rounded-2xl bg-slate-100/80" aria-hidden />
+    ),
+  },
+);
+
+const VehicleListingSidebar = dynamic(
+  () =>
+    import("@/features/vehicles/components/vehicle-listing-sidebar").then((m) => ({
+      default: m.VehicleListingSidebar,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-48 animate-pulse rounded-lg bg-slate-100" aria-hidden />
+    ),
+  },
+);
 
 /** Tailwind `lg` — sidebar rail visible; hero omits seats/color there. */
 const LG_MIN_PX = 1024;
@@ -83,12 +108,15 @@ type VehicleListingShellProps = Readonly<{
    * card on the vehicles listing page without duplicating any logic.
    */
   searchPanel?: React.ReactNode;
+  /** Server-rendered vehicle grid — shown until client filters take over. */
+  children?: React.ReactNode;
 }>;
 
 export function VehicleListingShell({
   vehicles,
   heroIntro,
   searchPanel,
+  children,
 }: VehicleListingShellProps) {
   const tListing = useTranslations("VehicleListing");
   const shouldFetchFromApi = !vehicles;
@@ -191,6 +219,7 @@ export function VehicleListingShell({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
   const [tripDatesPrompt, setTripDatesPrompt] = useState(false);
+  const [useClientResults, setUseClientResults] = useState(false);
 
   useEffect(() => {
     if (!tripDatesPrompt) {
@@ -305,6 +334,7 @@ export function VehicleListingShell({
       setAppliedColor(c);
       setSelectedSeats(s);
       setAppliedSeats(s);
+      setUseClientResults(true);
       replaceQuery((p) => {
         p.set("type", vehicleFilterTypeToUrlParam(t));
         p.set("transmission", transmissionToUrlParam(tr));
@@ -320,6 +350,7 @@ export function VehicleListingShell({
     setAppliedTransmission(selectedTransmission);
     setAppliedColor(selectedColor);
     setAppliedSeats(selectedSeats);
+    setUseClientResults(true);
     setIsRefreshing(true);
     window.setTimeout(() => setIsRefreshing(false), 220);
     replaceQuery((p) => {
@@ -378,6 +409,7 @@ export function VehicleListingShell({
     setSelectedSeats("All");
     setAppliedSeats("All");
     setAppliedCc("All");
+    setUseClientResults(true);
     setIsRefreshing(false);
     replaceQuery((p) => {
       p.set("type", vehicleFilterTypeToUrlParam("All"));
@@ -406,46 +438,25 @@ export function VehicleListingShell({
     return ["All" as const, ...sorted];
   }, [vehicleDataset]);
 
-  const filteredVehicles = useMemo(() => {
-    const typeFiltered =
-      appliedType === "All"
-        ? vehicleDataset
-        : vehicleDataset.filter((vehicle) => vehicle.type === appliedType);
-    const transmissionFiltered =
-      appliedTransmission === "All"
-        ? typeFiltered
-        : typeFiltered.filter(
-            (vehicle) => vehicle.transmission === appliedTransmission,
-          );
-    const colorFiltered =
-      appliedColor === "All"
-        ? transmissionFiltered
-        : transmissionFiltered.filter(
-            (vehicle) => vehicle.color === appliedColor,
-          );
-    const seatsFiltered =
-      appliedSeats === "All"
-        ? colorFiltered
-        : colorFiltered.filter((vehicle) => vehicle.seats === appliedSeats);
-
-    const ccFiltered =
-      appliedCc === "All"
-        ? seatsFiltered
-        : seatsFiltered.filter((vehicle) =>
-            appliedCc === "50"
-              ? /\b50cc\b/i.test(vehicle.engine)
-              : /\b125cc\b/i.test(vehicle.engine),
-          );
-
-    return [...ccFiltered];
-  }, [
-    vehicleDataset,
-    appliedCc,
-    appliedColor,
-    appliedSeats,
-    appliedType,
-    appliedTransmission,
-  ]);
+  const filteredVehicles = useMemo(
+    () =>
+      filterVehicles({
+        vehicles: vehicleDataset,
+        type: appliedType,
+        transmission: appliedTransmission,
+        color: appliedColor,
+        seats: appliedSeats,
+        cc: appliedCc,
+      }),
+    [
+      vehicleDataset,
+      appliedCc,
+      appliedColor,
+      appliedSeats,
+      appliedType,
+      appliedTransmission,
+    ],
+  );
 
   const bookingHref = (() => {
     if (!vehiclesFetchRentalWindow) {
@@ -474,7 +485,7 @@ export function VehicleListingShell({
   const hideSeatsInHero = showListingSidebar && isLg;
   const showListingExtrasInHero = showListingSidebar && !isLg;
 
-  const filters = (
+  const filters = searchPanel ? null : (
     <VehicleFilters
       pickupLocation={pickupLocation}
       onPickupLocationChange={handlePickupLocationChange}
@@ -520,6 +531,31 @@ export function VehicleListingShell({
       onSeatsChange={(v) => persistListingFilters({ seats: v })}
     />
   ) : null;
+
+  const showServerGrid =
+    !useClientResults &&
+    !isRefreshing &&
+    !(shouldFetchFromApi && isVehiclesLoading) &&
+    children != null;
+
+  const clientVehicleGrid = (
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {filteredVehicles.map((vehicle) => (
+        <VehicleCard
+          key={vehicle.slug}
+          vehicle={vehicle}
+          bookingHref={bookingHref}
+          detailsHref={`/vehicles/${vehicle.slug}${detailsDateQuery}`}
+          tripDatesCommitted={tripDatesCommitted}
+          onTripDatesRequired={() => setTripDatesPrompt(true)}
+          pickupDate={vehiclesFetchRentalWindow?.pickupDate ?? null}
+          returnDate={vehiclesFetchRentalWindow?.returnDate ?? null}
+          pickupTime={vehiclesFetchRentalWindow?.pickupTime ?? null}
+          returnTime={vehiclesFetchRentalWindow?.returnTime ?? null}
+        />
+      ))}
+    </div>
+  );
 
   const results = (
     <div id="vehicle-listing-results" className="space-y-6 scroll-mt-28">
@@ -570,22 +606,7 @@ export function VehicleListingShell({
           <p className="mt-2 text-sm text-rose-800">{vehiclesError}</p>
         </div>
       ) : filteredVehicles.length > 0 ? (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredVehicles.map((vehicle) => (
-            <VehicleCard
-              key={vehicle.slug}
-              vehicle={vehicle}
-              bookingHref={bookingHref}
-              detailsHref={`/vehicles/${vehicle.slug}${detailsDateQuery}`}
-              tripDatesCommitted={tripDatesCommitted}
-              onTripDatesRequired={() => setTripDatesPrompt(true)}
-              pickupDate={vehiclesFetchRentalWindow?.pickupDate ?? null}
-              returnDate={vehiclesFetchRentalWindow?.returnDate ?? null}
-              pickupTime={vehiclesFetchRentalWindow?.pickupTime ?? null}
-              returnTime={vehiclesFetchRentalWindow?.returnTime ?? null}
-            />
-          ))}
-        </div>
+        showServerGrid ? children : clientVehicleGrid
       ) : vehicleDataset.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center">
           <h3 className="text-lg font-semibold text-slate-900">{tListing("emptyTitle")}</h3>

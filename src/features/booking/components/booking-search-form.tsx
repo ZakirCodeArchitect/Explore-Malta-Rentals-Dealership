@@ -1,5 +1,7 @@
 "use client";
 
+import "react-day-picker/style.css";
+
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";

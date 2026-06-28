@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
+import { SectionSkeleton } from "@/components/section-skeleton";
 import { VideoHero } from "@/features/home/components/video-hero";
 import { BikeCategoriesSection } from "@/features/home/components/bike-categories-section";
 import { HighlightedServicesSection } from "@/features/home/components/highlighted-services-section";
@@ -30,11 +32,15 @@ export default async function Home({ params }: HomePageProps) {
   return (
     <main className="flex flex-1 flex-col">
       <VideoHero />
-      <BikeCategoriesSection />
-      <HighlightedServicesSection />
-      <FaqSection />
-      <QuickBookingCtaSection />
-      <ContactSection />
+      <Suspense fallback={<SectionSkeleton />}>
+        <BikeCategoriesSection />
+        <HighlightedServicesSection />
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton />}>
+        <FaqSection />
+        <QuickBookingCtaSection />
+        <ContactSection />
+      </Suspense>
     </main>
   );
 }

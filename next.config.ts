@@ -37,6 +37,14 @@ function loadPublicAssetRewriteEntries(): Array<{ source: string; destination: s
 }
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "@mui/material",
+      "@mui/x-date-pickers",
+    ],
+  },
   async rewrites() {
     const publicAssetRewrites = loadPublicAssetRewriteEntries();
     return [

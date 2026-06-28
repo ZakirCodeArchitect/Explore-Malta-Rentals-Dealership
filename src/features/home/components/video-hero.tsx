@@ -1,10 +1,21 @@
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { getTranslations } from "next-intl/server";
 import { SiteShell } from "@/components/site-shell";
 import { heroContent } from "@/features/home/data/hero-content";
-import { BookingSearchForm } from "@/features/booking/components/booking-search-form";
+import { BookingSearchFormSkeleton } from "@/features/booking/components/booking-search-form-skeleton";
 import { LOGO_PATH } from "@/lib/site-brand-copy";
 import { HeroVideoBackground } from "@/features/home/components/hero-video-background";
+
+const BookingSearchForm = dynamic(
+  () =>
+    import("@/features/booking/components/booking-search-form").then((m) => ({
+      default: m.BookingSearchForm,
+    })),
+  {
+    loading: () => <BookingSearchFormSkeleton tone="hero" />,
+  },
+);
 
 /* ─── tiny SVG pin icon (no external dep, no client bundle cost) ─── */
 function PinIcon() {
@@ -29,7 +40,7 @@ export async function VideoHero() {
   const tBrand = await getTranslations("Brand");
   const tNav = await getTranslations("Nav");
 
-  const { videoSrc } = heroContent.media;
+  const { videoSrc, posterSrc } = heroContent.media;
 
   return (
     <section
@@ -45,15 +56,25 @@ export async function VideoHero() {
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="sticky top-[var(--site-header-offset)] h-[calc(100svh-var(--site-header-offset))] overflow-hidden">
 
-          {/* Dark background shown while video loads */}
-          <div className="absolute inset-0 bg-slate-900" />
+          {/* Poster image — fast SSR paint target before video/JS */}
+          <Image
+            src={posterSrc}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+
+          {/* Dark overlay while video loads */}
+          <div className="absolute inset-0 bg-slate-900/40" />
 
           {/* ── 1. Lazy video (client island) ─────────────────────
               Renders nothing on the server.
               Client-side: skipped on mobile / reduced-motion / slow network.
               Fades in over 1.2 s once the first frame is decoded.
           ──────────────────────────────────────────────────────── */}
-          <HeroVideoBackground src={videoSrc} />
+          <HeroVideoBackground src={videoSrc} posterSrc={posterSrc} />
 
           {/* ── 2. Radial vignette ────────────────────────────────
               Darkens the corners of the frame to keep hero text readable.
@@ -93,7 +114,6 @@ export async function VideoHero() {
                     alt={tNav("logoAlt")}
                     width={480}
                     height={96}
-                    priority
                     className="h-16 w-auto max-w-[min(100%,22rem)] object-contain object-left drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] sm:h-20 md:h-24 md:max-w-[min(100%,26rem)]"
                     style={{ width: "auto", height: "auto" }}
                   />

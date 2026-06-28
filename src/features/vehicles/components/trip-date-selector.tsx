@@ -2,6 +2,8 @@
 
 /** Earliest selectable day defaults to today (`minDate ?? today`); no fixed June-only floor. */
 
+import "react-day-picker/style.css";
+
 import { useEffect, useMemo, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { DayPicker, type DateRange } from "react-day-picker";
