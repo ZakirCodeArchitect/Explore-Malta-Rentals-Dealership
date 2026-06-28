@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import type { Vehicle } from "@/features/vehicles/data/vehicles";
+import { buildBookingUrlWithVehicle } from "@/features/vehicles/lib/build-booking-url-with-vehicle";
 import { createReservationHoldWithRetry } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";
 
@@ -28,14 +29,6 @@ type BookNowButtonProps = {
   /** When set (and allowHold is false), button shows this message instead of the error. */
   holdBlockedMessage?: string | null;
 };
-
-export function buildBookingUrlWithVehicle(baseHref: string, vehicleSlug: string): string {
-  const [path, query] = baseHref.split("?");
-  const params = new URLSearchParams(query ?? "");
-  params.set("vehicle", vehicleSlug);
-  const qs = params.toString();
-  return qs.length > 0 ? `${path}?${qs}` : path;
-}
 
 export function BookNowButton({
   vehicle,

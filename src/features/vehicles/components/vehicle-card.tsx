@@ -2,10 +2,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatVehicleTypeLabel, type Vehicle } from "@/features/vehicles/data/vehicles";
-import {
-  BookNowButton,
-  buildBookingUrlWithVehicle,
-} from "@/features/vehicles/components/book-now-button";
+import { BookNowButton } from "@/features/vehicles/components/book-now-button";
+import { buildBookingUrlWithVehicle } from "@/features/vehicles/lib/build-booking-url-with-vehicle";
 
 type VehicleCardProps = Readonly<{
   vehicle: Vehicle;
