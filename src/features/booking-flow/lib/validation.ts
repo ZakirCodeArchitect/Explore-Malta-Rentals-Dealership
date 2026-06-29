@@ -295,12 +295,6 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
         message: m.depositMethodRequired,
         path: ["deposit", "depositMethod"],
       });
-    } else if (state.deposit.depositMethod === "online") {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: m.depositMethodRequired,
-        path: ["deposit", "depositMethod"],
-      });
     }
   });
 }

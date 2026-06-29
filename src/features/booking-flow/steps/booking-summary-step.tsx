@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
@@ -79,12 +79,6 @@ export function BookingSummaryStep() {
     [durationRules, selectedVehicle, state],
   );
 
-  useEffect(() => {
-    if (state.deposit.depositMethod !== "in_person") {
-      updateSection("deposit", { depositMethod: "in_person" });
-    }
-  }, [state.deposit.depositMethod, updateSection]);
-
   const paymentSummary = useMemo(() => {
     if (!pricing) {
       return null;
@@ -93,11 +87,11 @@ export function BookingSummaryStep() {
     return buildBookingPaymentSummary({
       subtotal: pricing.subtotal,
       depositAmount: pricing.depositAmount,
-      depositMethod: "in_person",
+      depositMethod: state.deposit.depositMethod || "in_person",
       totalDueOnline: pricing.totalDueOnline,
       totalDueLater: pricing.totalDueLater,
     });
-  }, [pricing]);
+  }, [pricing, state.deposit.depositMethod]);
 
   const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
   const addOnList = [
@@ -204,20 +198,49 @@ export function BookingSummaryStep() {
 
           <div className="mt-3">
             <p className="font-semibold text-slate-900">{t("securityDepositMethod")}</p>
-            <p className="mt-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-              {t("paySecurityDepositAtPickup")}
-            </p>
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => updateSection("deposit", { depositMethod: "in_person" })}
+                className={
+                  state.deposit.depositMethod !== "online"
+                    ? "flex flex-col gap-1 rounded-xl border-2 border-blue-500 bg-blue-50 p-3 text-left transition-colors"
+                    : "flex flex-col gap-1 rounded-xl border-2 border-slate-200 bg-white p-3 text-left transition-colors hover:border-slate-300"
+                }
+              >
+                <span className="text-sm font-semibold text-slate-900">Pay at pickup</span>
+                <span className="text-xs text-slate-500">
+                  Hand over the security deposit in person when collecting the vehicle.
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSection("deposit", { depositMethod: "online" })}
+                className={
+                  state.deposit.depositMethod === "online"
+                    ? "flex flex-col gap-1 rounded-xl border-2 border-blue-500 bg-blue-50 p-3 text-left transition-colors"
+                    : "flex flex-col gap-1 rounded-xl border-2 border-slate-200 bg-white p-3 text-left transition-colors hover:border-slate-300"
+                }
+              >
+                <span className="text-sm font-semibold text-slate-900">Pay online now</span>
+                <span className="text-xs text-slate-500">
+                  Include the security deposit in your Stripe payment — fully refundable after the rental.
+                </span>
+              </button>
+            </div>
           </div>
 
           {paymentSummary ? (
             <div className="mt-4 space-y-2 rounded-lg border border-slate-200 bg-white px-3 py-3">
               <p className="font-semibold text-slate-900">{t("paymentSummaryTitle")}</p>
+              {/* Rental charges */}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
                 <span>{t("bookingChargesTotal")}</span>
                 <span className="font-medium tabular-nums text-slate-900">
                   {formatEur(paymentSummary.bookingChargesTotal)}
                 </span>
               </div>
+              {/* Security deposit */}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
                 <span>
                   {paymentSummary.securityDepositDueAtPickup
@@ -228,12 +251,25 @@ export function BookingSummaryStep() {
                   {formatEur(paymentSummary.securityDeposit)}
                 </span>
               </div>
+              <div className="border-t border-slate-100" />
+              {/* Pay now online */}
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 font-medium text-emerald-700">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                  Pay now online (Stripe)
+                </span>
+                <span className="tabular-nums">
+                  {formatEur(paymentSummary.amountPayableOnline ?? 0)}
+                </span>
+              </div>
+              {/* Pay at pickup */}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
                 <span>{t("amountDueAtPickupLater")}</span>
                 <span className="font-medium tabular-nums text-slate-900">
                   {formatEur(paymentSummary.amountDueAtPickupLater)}
                 </span>
               </div>
+              {/* Total */}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 border-t border-slate-200 pt-2 font-semibold text-slate-900">
                 <span>{t("totalCustomerLiability")}</span>
                 <span className="tabular-nums">{formatEur(paymentSummary.totalCustomerLiability)}</span>
@@ -242,9 +278,15 @@ export function BookingSummaryStep() {
           ) : null}
 
           <p className="mt-3 text-xs text-slate-600">{t("securityDepositHelperText")}</p>
-          <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
-            {t("depositAtPickupNote")}
-          </p>
+          {state.deposit.depositMethod !== "online" ? (
+            <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+              {t("depositAtPickupNote")}
+            </p>
+          ) : (
+            <p className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              Your security deposit will be charged with your booking and refunded after the vehicle is returned in good condition.
+            </p>
+          )}
         </div>
       </div>
 

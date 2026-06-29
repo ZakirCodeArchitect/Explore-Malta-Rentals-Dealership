@@ -135,7 +135,7 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     officeIdConfirmed: false,
   },
   deposit: {
-    depositMethod: "",
+    depositMethod: "in_person",
   },
   consent: {
     summaryReviewed: false,
