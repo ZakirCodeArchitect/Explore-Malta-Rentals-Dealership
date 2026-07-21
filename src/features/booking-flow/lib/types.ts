@@ -1,3 +1,5 @@
+import type { InsurancePlanSelection } from "@/lib/pricing/insurance-plans";
+
 export type LicenseCategory = "" | "B" | "AM" | "A" | "A1" | "A2";
 export type ReservationHoldStatus = "ACTIVE" | "EXPIRED" | "RELEASED" | "CONVERTED";
 
@@ -41,7 +43,12 @@ export type BookingFlowState = {
     additionalDriver: boolean;
     storageBox: boolean;
     cdw: boolean;
-    cdwPlan: "none" | "scooter_50" | "scooter_125" | "scooter_full" | "atv_full";
+    /**
+     * Explicit insurance selection.
+     * `null` = customer has not chosen yet (triggers pre-payment prompt).
+     * `NO_INSURANCE` = customer explicitly declined paid insurance.
+     */
+    cdwPlan: InsurancePlanSelection;
   };
   customer: {
     fullName: string;
@@ -109,7 +116,7 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     additionalDriver: false,
     storageBox: false,
     cdw: false,
-    cdwPlan: "none",
+    cdwPlan: null,
   },
   customer: {
     fullName: "",

@@ -856,7 +856,8 @@
       "dueLater": "受け取り時/後払い：",
       "depositAtPickupNote": "デポジットは受け取り時に支払われ、オンライン合計には含まれません。",
       "depositOnlineNote": "デポジットはオンライン支払い金額に含まれています。",
-      "reviewCheckbox": "上記の概要を確認しました。"
+      "reviewCheckbox": "上記の概要を確認しました。",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "受け取りと返却",
@@ -922,7 +923,7 @@
       "cdwAtv": "EUR 15/日 - EUR 800に軽減（ATV）",
       "cdwTitle": "衝突損害免責（CDW）",
       "cdwDefaultIntro": "デフォルトでは、以下の方法で損害に対する責任を負います：",
-      "cdwExclusionsTitle": "CDWがカバーしないもの：",
+      "cdwExclusionsTitle": "Insuranceがカバーしないもの：",
       "cdwEx1": "責任 EUR 500（50cc）",
       "cdwEx2": "責任 EUR 800（125cc）",
       "cdwEx3": "除外事項：過失",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "追加ドライバーの本人確認（受け取り方法に基づく）",
       "addDriverIdBody": "配達受け取りには写真アップロードが必要です。店舗受け取りには対面での本人確認が必要です。",
       "addDriverOfficeConfirm": "追加ドライバーが受け取り時に対面で身分証を提示することを確認します。",
-      "storageBoxLabel": "収納ボックス（EUR 10 一回限り）"
+      "storageBoxLabel": "収納ボックス（EUR 10 一回限り）",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {

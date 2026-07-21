@@ -1,6 +1,10 @@
 import type { BookingSubmissionInput, VehicleType as ApiVehicleType } from "@/lib/booking/types";
 import type { BookingFlowState } from "@/features/booking-flow/lib/types";
 import { isApiVehicleType } from "@/features/vehicles/data/vehicles";
+import {
+  isInsurancePlanCode,
+  mapInsurancePlanToStoredCdw,
+} from "@/lib/pricing/insurance-plans";
 
 export function mapVehicleTypeToApiVehicleType(
   stateVehicleType: string,
@@ -41,24 +45,11 @@ function toHelmetSize(value: string): "S" | "M" | "L" | null {
 
 function mapCdwPlanToApi(
   plan: BookingFlowState["addons"]["cdwPlan"],
-  apiVehicle: ApiVehicleType,
 ): BookingSubmissionInput["addons"]["cdwOption"] {
-  if (plan === "none") {
-    return "NO_CDW";
+  if (!isInsurancePlanCode(plan)) {
+    throw new Error("Insurance plan must be explicitly selected before booking submission");
   }
-  if (plan === "atv_full") {
-    return "REDUCE_800_ATV";
-  }
-  if (plan === "scooter_full") {
-    return "FULL_COVERAGE_50CC_125CC";
-  }
-  if (plan === "scooter_50") {
-    return apiVehicle === "Scooter" ? "REDUCE_350_50CC" : "NO_CDW";
-  }
-  if (plan === "scooter_125") {
-    return apiVehicle === "Motorcycle" ? "REDUCE_500_125CC" : "NO_CDW";
-  }
-  return "NO_CDW";
+  return mapInsurancePlanToStoredCdw(plan);
 }
 
 function emptyToNull(value: string): string | null {
@@ -111,7 +102,7 @@ export function mapBookingFlowStateToSubmission(
       dropoffLongitude: null,
     },
     addons: {
-      cdwOption: mapCdwPlanToApi(state.addons.cdwPlan, apiVehicle),
+      cdwOption: mapCdwPlanToApi(state.addons.cdwPlan),
       additionalDriverEnabled: additionalEnabled,
       helmetSize1: helmetRequired ? toHelmetSize(state.addons.helmetSize1) : null,
       helmetSize2: helmetRequired ? toHelmetSize(state.addons.helmetSize2) : null,

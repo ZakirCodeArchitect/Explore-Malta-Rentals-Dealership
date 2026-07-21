@@ -842,7 +842,8 @@
       "pickupAddress": "Pickup address:",
       "dropoffMethod": "Drop-off method:",
       "dropoffAddress": "Drop-off address:",
-      "cdwLine": "CDW selected: {label}",
+      "cdwLine": "Insurance selected: {label}",
+      "insuranceNotSelected": "Not selected yet",
       "addDriverLine": "Additional driver: {value}",
       "helmet1": "Helmet size 1:",
       "helmet2": "Helmet size 2:",
@@ -852,7 +853,7 @@
       "hotelDiscount": "Hotel discount ({percent}% via {hotel}): -{amount}",
       "deliveryLine": "Delivery / Drop-off: {total} (pickup {pickup} + drop-off {dropoff}{discount})",
       "bundleDiscount": " - {amount} bundle discount",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "Additional Driver:",
       "storageCost": "Storage Box:",
       "subtotal": "Subtotal:",
@@ -945,8 +946,28 @@
       "cdwFull": "EUR 8/day - full coverage",
       "cdwAtv": "EUR 15/day - reduce to EUR 800 (ATV)",
       "cdwTitle": "Collision Damage Waiver (CDW)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      },
       "cdwDefaultIntro": "By default you are liable for damages in such manner:",
-      "cdwExclusionsTitle": "CDW does not cover:",
+      "cdwExclusionsTitle": "Insurance does not cover:",
       "cdwEx1": "Liability EUR 500 (50cc)",
       "cdwEx2": "Liability EUR 800 (125cc)",
       "cdwEx3": "Exclusion note: negligence",
@@ -969,6 +990,14 @@
       "addDriverIdBody": "Delivery pickup requires photo upload. Office pickup requires in-person ID confirmation.",
       "addDriverOfficeConfirm": "I confirm the additional driver will show ID in person at pickup.",
       "storageBoxLabel": "Storage box (EUR 10 one-time)"
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     },
     "hotelCode": {
       "label": "Hotel Code (optional)",

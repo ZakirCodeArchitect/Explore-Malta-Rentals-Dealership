@@ -842,7 +842,7 @@
       "rentalCost": "Huurkosten:",
       "deliveryLine": "Bezorging / afleveren: {total} (ophalen {pickup} + afleveren {dropoff}{discount})",
       "bundleDiscount": "- {amount} bundelkorting",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "Extra bestuurder:",
       "storageCost": "Opbergdoos:",
       "subtotal": "Subtotaal:",
@@ -856,7 +856,8 @@
       "dueLater": "Te betalen bij ophalen / later:",
       "depositAtPickupNote": "De borg wordt betaald bij het ophalen en is niet inbegrepen in het online totaal.",
       "depositOnlineNote": "De borg is inbegrepen in het online te betalen bedrag.",
-      "reviewCheckbox": "Ik heb de samenvatting hierboven bekeken."
+      "reviewCheckbox": "Ik heb de samenvatting hierboven bekeken.",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "Ophalen en afzetten",
@@ -922,7 +923,7 @@
       "cdwAtv": "15 EUR/dag - verlagen tot 800 EUR (ATV)",
       "cdwTitle": "Vrijstelling van schade door botsingen (CDW)",
       "cdwDefaultIntro": "U bent standaard aansprakelijk voor schade op de volgende wijze:",
-      "cdwExclusionsTitle": "CDW dekt niet:",
+      "cdwExclusionsTitle": "Insurance dekt niet:",
       "cdwEx1": "Aansprakelijkheid EUR 500 (50cc)",
       "cdwEx2": "Aansprakelijkheid EUR 800 (125cc)",
       "cdwEx3": "Uitsluitingsopmerking: nalatigheid",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "Extra verificatie van de chauffeurs-ID (op basis van de ophaalmethode)",
       "addDriverIdBody": "Voor het ophalen van de bezorging is een foto-upload vereist. Voor ophalen op kantoor is een persoonlijke identiteitsbevestiging vereist.",
       "addDriverOfficeConfirm": "Ik bevestig dat de extra bestuurder bij het ophalen persoonlijk een identiteitsbewijs zal tonen.",
-      "storageBoxLabel": "Opbergdoos (€ 10,- eenmalig)"
+      "storageBoxLabel": "Opbergdoos (€ 10,- eenmalig)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {

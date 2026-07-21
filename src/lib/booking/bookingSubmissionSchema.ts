@@ -9,6 +9,10 @@ import {
   MAX_BILLABLE_RENTAL_DAYS,
 } from "@/lib/pricing/rental-duration";
 
+import {
+  BOOKABLE_STORED_CDW_OPTIONS,
+} from "@/lib/pricing/insurance-plans";
+
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^\d{2}:\d{2}$/;
 
@@ -195,10 +199,10 @@ const ALLOWED_LICENSE_BY_VEHICLE: Record<string, ReadonlySet<string> | null> = {
 };
 
 const ALLOWED_CDW_BY_VEHICLE: Record<(typeof VEHICLE_TYPES)[number], ReadonlySet<string>> = {
-  Scooter: new Set(["NO_CDW", "REDUCE_350_50CC", "FULL_COVERAGE_50CC_125CC"]),
-  Motorcycle: new Set(["NO_CDW", "REDUCE_500_125CC", "FULL_COVERAGE_50CC_125CC"]),
-  ATV: new Set(["NO_CDW", "REDUCE_800_ATV"]),
-  Bicycle: new Set(["NO_CDW"]),
+  Scooter: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
+  Motorcycle: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
+  ATV: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
+  Bicycle: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
 };
 
 function isLicenseAllowed(vehicleType: string, licenseCategory: string): boolean {
@@ -538,7 +542,7 @@ export const bookingSubmissionSchema = z
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["addons", "cdwOption"],
-        message: "Invalid CDW option for selected vehicle",
+        message: "Invalid insurance plan for selected vehicle",
       });
     }
 

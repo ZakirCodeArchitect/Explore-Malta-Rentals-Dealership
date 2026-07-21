@@ -842,7 +842,7 @@
       "rentalCost": "Coste de alquiler:",
       "deliveryLine": "Entrega / Devolución: {total} (recogida {pickup} + devolución {dropoff}{discount})",
       "bundleDiscount": " - dto. paquete {amount}",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "Conductor adicional:",
       "storageCost": "Baúl:",
       "subtotal": "Importe parcial:",
@@ -856,7 +856,8 @@
       "dueLater": "A pagar al recoger / después:",
       "depositAtPickupNote": "La fianza se paga al recoger y no entra en el total en línea.",
       "depositOnlineNote": "La fianza está incluida en el importe pagable en línea.",
-      "reviewCheckbox": "He revisado el resumen anterior."
+      "reviewCheckbox": "He revisado el resumen anterior.",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "Recogida y devolución",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "Verificación de identidad del conductor adicional (según método de recogida)",
       "addDriverIdBody": "Con entrega se requiere subir foto. Con recogida en oficina, confirmación presencial del documento.",
       "addDriverOfficeConfirm": "Confirmo que el conductor adicional presentará el documento en persona al recoger.",
-      "storageBoxLabel": "Baúl de almacenamiento (EUR 10 pago único)"
+      "storageBoxLabel": "Baúl de almacenamiento (EUR 10 pago único)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {

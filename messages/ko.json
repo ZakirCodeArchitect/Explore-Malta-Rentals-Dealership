@@ -842,7 +842,7 @@
       "rentalCost": "임대 비용:",
       "deliveryLine": "배달/반납: {total} (픽업 {pickup} + 반납 {dropoff}{discount})",
       "bundleDiscount": "- {amount} 묶음 할인",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "추가 드라이버:",
       "storageCost": "보관함:",
       "subtotal": "소계:",
@@ -856,7 +856,8 @@
       "dueLater": "픽업 마감일/나중:",
       "depositAtPickupNote": "보증금은 픽업 시 지불되며 온라인 총액에는 포함되지 않습니다.",
       "depositOnlineNote": "보증금은 온라인 결제금액에 포함되어 있습니다.",
-      "reviewCheckbox": "위의 요약을 검토했습니다."
+      "reviewCheckbox": "위의 요약을 검토했습니다.",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "픽업 및 하차",
@@ -922,7 +923,7 @@
       "cdwAtv": "EUR 15/일 - EUR 800(ATV)로 인하",
       "cdwTitle": "충돌 피해 면제(CDW)",
       "cdwDefaultIntro": "기본적으로 귀하는 다음과 같은 방식으로 손해 배상 책임을 집니다.",
-      "cdwExclusionsTitle": "CDW는 다음을 보장하지 않습니다:",
+      "cdwExclusionsTitle": "Insurance는 다음을 보장하지 않습니다:",
       "cdwEx1": "책임 EUR 500 (50cc)",
       "cdwEx2": "책임 EUR 800 (125cc)",
       "cdwEx3": "제외 사항: 과실",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "추가 운전자 ID 확인 (픽업 방법에 따라 다름)",
       "addDriverIdBody": "배달 픽업에는 사진 업로드가 필요합니다. 사무실 픽업에는 직접 신분증 확인이 필요합니다.",
       "addDriverOfficeConfirm": "추가 운전자가 픽업 시 신분증을 직접 제시할 것임을 확인합니다.",
-      "storageBoxLabel": "보관함(1회당 EUR 10)"
+      "storageBoxLabel": "보관함(1회당 EUR 10)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {

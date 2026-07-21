@@ -577,6 +577,172 @@ function runHotelDiscountAssertions(): void {
   );
 }
 
+function runInsurancePlanAssertions(): void {
+  const oneDayRental = {
+    ...basePricingInput.rental,
+    pickupDate: "2026-05-10",
+    returnDate: "2026-05-10",
+    pickupTime: "10:00",
+    returnTime: "18:00",
+  } as const;
+
+  const oneDayNoInsurance = calculateBookingPrice({
+    ...basePricingInput,
+    rental: oneDayRental,
+    addons: { ...basePricingInput.addons, cdwOption: "NO_INSURANCE" },
+  });
+  if (!oneDayNoInsurance) {
+    throw new Error("1-day no insurance pricing returned null");
+  }
+  assertApprox("1-day calendar rental days", oneDayNoInsurance.rentalDays, 1);
+  assertApprox("1-day no insurance cost", oneDayNoInsurance.cdwCost, 0);
+
+  const oneDayBasic = calculateBookingPrice({
+    ...basePricingInput,
+    rental: oneDayRental,
+    addons: { ...basePricingInput.addons, cdwOption: "BASIC" },
+  });
+  if (!oneDayBasic) {
+    throw new Error("1-day basic insurance pricing returned null");
+  }
+  assertApprox("1-day basic insurance cost", oneDayBasic.cdwCost, 3);
+
+  const oneDayFull = calculateBookingPrice({
+    ...basePricingInput,
+    rental: oneDayRental,
+    addons: { ...basePricingInput.addons, cdwOption: "FULL_COVERAGE" },
+  });
+  if (!oneDayFull) {
+    throw new Error("1-day full coverage pricing returned null");
+  }
+  assertApprox("1-day full coverage cost", oneDayFull.cdwCost, 8);
+
+  const fourDayBasic = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      pickupDate: "2026-05-10",
+      returnDate: "2026-05-13",
+    },
+    addons: { ...basePricingInput.addons, cdwOption: "BASIC" },
+  });
+  if (!fourDayBasic) {
+    throw new Error("4-day basic insurance pricing returned null");
+  }
+  assertApprox("4-day calendar rental days", fourDayBasic.rentalDays, 4);
+  assertApprox("4-day basic insurance cost", fourDayBasic.cdwCost, 12);
+
+  const fourDayFull = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      pickupDate: "2026-05-10",
+      returnDate: "2026-05-13",
+    },
+    addons: { ...basePricingInput.addons, cdwOption: "FULL_COVERAGE" },
+  });
+  if (!fourDayFull) {
+    throw new Error("4-day full coverage pricing returned null");
+  }
+  assertApprox("4-day full coverage cost", fourDayFull.cdwCost, 32);
+
+  const overnightCalendar = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      pickupDate: "2026-05-10",
+      pickupTime: "22:00",
+      returnDate: "2026-05-11",
+      returnTime: "02:00",
+    },
+    addons: { ...basePricingInput.addons, cdwOption: "BASIC" },
+  });
+  if (!overnightCalendar) {
+    throw new Error("overnight calendar-day insurance pricing returned null");
+  }
+  assertApprox("overnight uses 2 calendar days", overnightCalendar.rentalDays, 2);
+  assertApprox("overnight basic insurance uses calendar days", overnightCalendar.cdwCost, 6);
+
+  // Insurance is added after rental discount — not discounted by duration rules.
+  const discountedWithInsurance = calculateBookingPrice({
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      returnDate: "2026-05-14",
+    },
+    addons: { ...basePricingInput.addons, cdwOption: "FULL_COVERAGE" },
+  });
+  if (!discountedWithInsurance) {
+    throw new Error("discounted rental + insurance pricing returned null");
+  }
+  assertApprox("5-day rental with duration discount", discountedWithInsurance.rentalCost, 100);
+  assertApprox("5-day full insurance not discounted", discountedWithInsurance.cdwCost, 40);
+  assertApprox(
+    "5-day subtotal rental + insurance",
+    discountedWithInsurance.subtotal,
+    140,
+  );
+
+  const invalidLegacyAtv = bookingSubmissionSchema.safeParse({
+    rental: {
+      vehicleType: "ATV",
+      pickupDate: "2026-05-10",
+      returnDate: "2026-05-11",
+      pickupTime: "10:00",
+      returnTime: "10:00",
+    },
+    delivery: {
+      pickupOption: "OFFICE",
+      pickupAddress: null,
+      pickupLatitude: null,
+      pickupLongitude: null,
+      dropoffOption: "OFFICE",
+      dropoffAddress: null,
+      dropoffLatitude: null,
+      dropoffLongitude: null,
+    },
+    addons: {
+      cdwOption: "REDUCE_800_ATV",
+      additionalDriverEnabled: false,
+      helmetSize1: "M",
+      helmetSize2: "L",
+      storageBoxSelected: false,
+    },
+    customer: {
+      fullName: "Alex Rider",
+      phone: "+35677770000",
+      email: "alex@example.com",
+      nationality: "Maltese",
+      dateOfBirth: "1995-06-15",
+      licenseCategory: "B",
+      specialNotes: null,
+      licenseUploadPath: null,
+      passportUploadPath: null,
+      willPresentLicenseAtPickup: true,
+      willPresentIdAtPickup: true,
+    },
+    additionalDriver: {
+      fullName: null,
+      phone: null,
+      email: null,
+      nationality: null,
+      dateOfBirth: null,
+      licenseCategory: null,
+      licenseUploadPath: null,
+      passportUploadPath: null,
+      willPresentLicenseAtPickup: false,
+      willPresentIdAtPickup: false,
+    },
+    deposit: { depositMethod: "IN_PERSON" },
+    consent: { termsAccepted: true, termsAcceptedAt: "2026-05-01T10:00:00.000Z" },
+  });
+  if (invalidLegacyAtv.success) {
+    throw new Error("Legacy ATV CDW option should be rejected for new bookings");
+  }
+
+  console.log("Insurance plan assertions passed");
+}
+
 async function main(): Promise<void> {
   runDurationRuleAssertions();
   runCalendarRentalDaysAssertions();
@@ -584,6 +750,7 @@ async function main(): Promise<void> {
   runPricingAssertions();
   runStorageBoxAssertions();
   runHotelDiscountAssertions();
+  runInsurancePlanAssertions();
   runNegativeValidationTests();
   runSundayDeliveryRestrictionTests();
   console.log("All checks OK.");

@@ -93,7 +93,12 @@ export function BookingSummaryStep() {
     });
   }, [pricing, state.deposit.depositMethod]);
 
-  const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
+  const cdwLabel =
+    state.addons.cdwPlan === null
+      ? t("insuranceNotSelected")
+      : pricing
+        ? getCdwLabel(pricing.cdwOptionApplied)
+        : "-";
   const addOnList = [
     t("cdwLine", { label: cdwLabel }),
     t("addDriverLine", {

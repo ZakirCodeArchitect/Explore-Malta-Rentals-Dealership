@@ -842,7 +842,7 @@
       "rentalCost": "ভাড়া খরচ:",
       "deliveryLine": "ডেলিভারি/ড্রপ-অফ: {total} (পিকআপ {pickup} + ড্রপ-অফ {dropoff}{discount})",
       "bundleDiscount": "- {amount} বান্ডিল ছাড়",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "অতিরিক্ত ড্রাইভার:",
       "storageCost": "স্টোরেজ বক্স:",
       "subtotal": "সাবটোটাল:",
@@ -856,7 +856,8 @@
       "dueLater": "পিকআপের সময় / পরে:",
       "depositAtPickupNote": "আমানত পিকআপে প্রদান করা হবে এবং অনলাইন মোটের মধ্যে অন্তর্ভুক্ত নয়।",
       "depositOnlineNote": "জমা অনলাইন প্রদেয় পরিমাণ অন্তর্ভুক্ত করা হয়.",
-      "reviewCheckbox": "আমি উপরের সারাংশ পর্যালোচনা."
+      "reviewCheckbox": "আমি উপরের সারাংশ পর্যালোচনা.",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "পিকআপ এবং ড্রপ-অফ",
@@ -922,7 +923,7 @@
       "cdwAtv": "EUR 15/দিন - কমিয়ে EUR 800 (ATV)",
       "cdwTitle": "সংঘর্ষের ক্ষতি মওকুফ (CDW)",
       "cdwDefaultIntro": "ডিফল্টরূপে আপনি এইভাবে ক্ষতির জন্য দায়ী:",
-      "cdwExclusionsTitle": "CDW কভার করে না:",
+      "cdwExclusionsTitle": "Insurance কভার করে না:",
       "cdwEx1": "দায় EUR 500 (50cc)",
       "cdwEx2": "দায় EUR 800 (125cc)",
       "cdwEx3": "বর্জন নোট: অবহেলা",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "অতিরিক্ত ড্রাইভার আইডি যাচাইকরণ (পিকআপ পদ্ধতির উপর ভিত্তি করে)",
       "addDriverIdBody": "ডেলিভারি পিক আপ ফটো আপলোড প্রয়োজন. অফিস পিকআপের জন্য ব্যক্তিগত আইডি নিশ্চিতকরণ প্রয়োজন।",
       "addDriverOfficeConfirm": "আমি নিশ্চিত করি যে অতিরিক্ত ড্রাইভার পিকআপে ব্যক্তিগতভাবে আইডি দেখাবে।",
-      "storageBoxLabel": "স্টোরেজ বক্স (একবার 10 ইউরো)"
+      "storageBoxLabel": "স্টোরেজ বক্স (একবার 10 ইউরো)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {

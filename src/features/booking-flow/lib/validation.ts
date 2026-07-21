@@ -94,7 +94,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       additionalDriver: z.boolean(),
       storageBox: z.boolean(),
       cdw: z.boolean(),
-      cdwPlan: z.enum(["none", "scooter_50", "scooter_125", "scooter_full", "atv_full"]),
+      cdwPlan: z.enum(["NO_INSURANCE", "BASIC", "FULL_COVERAGE"]).nullable(),
     }),
     customer: z.object({
       fullName: requiredText(m.fullNameRequired),

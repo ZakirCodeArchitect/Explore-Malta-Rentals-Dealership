@@ -842,7 +842,7 @@
       "rentalCost": "Kiralama Maliyeti:",
       "deliveryLine": "Teslimat / Bırakma: {total} (alma {pickup} + bırakma {dropoff}{discount})",
       "bundleDiscount": "- {amount} paket indirimi",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "Ek Sürücü:",
       "storageCost": "Saklama Kutusu:",
       "subtotal": "Ara toplam:",
@@ -856,7 +856,8 @@
       "dueLater": "Teslim Alırken / Daha Sonra Teslim Tarihi:",
       "depositAtPickupNote": "Depozito teslim alırken ödenecektir ve çevrimiçi toplam tutara dahil edilmeyecektir.",
       "depositOnlineNote": "Depozito, çevrimiçi ödeme tutarına dahildir.",
-      "reviewCheckbox": "Yukarıdaki özeti inceledim."
+      "reviewCheckbox": "Yukarıdaki özeti inceledim.",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "Teslim alma ve bırakma",
@@ -922,7 +923,7 @@
       "cdwAtv": "15 Euro/gün - 800 Euro'ya (ATV) düşürün",
       "cdwTitle": "Çarpışma Hasarından Feragat (CDW)",
       "cdwDefaultIntro": "Varsayılan olarak zararlardan şu şekilde sorumlu olursunuz:",
-      "cdwExclusionsTitle": "CDW aşağıdakileri kapsamaz:",
+      "cdwExclusionsTitle": "Insurance aşağıdakileri kapsamaz:",
       "cdwEx1": "Sorumluluk 500 Euro (50cc)",
       "cdwEx2": "Sorumluluk 800 Euro (125cc)",
       "cdwEx3": "Hariç tutma notu: ihmal",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "Ek sürücü kimliği doğrulaması (teslim alma yöntemine göre)",
       "addDriverIdBody": "Teslimat teslimi fotoğraf yüklemeyi gerektirir. Ofisten teslim alma, şahsen kimlik onayı gerektirir.",
       "addDriverOfficeConfirm": "Ek sürücünün teslim alma sırasında bizzat kimliğini göstereceğini onaylıyorum.",
-      "storageBoxLabel": "Saklama kutusu (tek seferlik 10 EUR)"
+      "storageBoxLabel": "Saklama kutusu (tek seferlik 10 EUR)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {

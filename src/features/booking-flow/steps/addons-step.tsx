@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
+import { InsurancePlanOptions } from "@/features/booking-flow/components/insurance-plan-options";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-rental";
@@ -14,6 +15,8 @@ import {
   getLicenseCategoryHint,
   type LicenseCategory,
 } from "@/features/booking-flow/lib/license-categories";
+import type { InsurancePlanCode } from "@/lib/pricing/insurance-plans";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
 
 const fieldClass =
   "mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
@@ -44,17 +47,6 @@ export function AddonsStep() {
       ] as const,
     [t],
   );
-  const allCdwOptions = useMemo(
-    () =>
-      [
-        { value: "none", label: t("cdwNone") },
-        { value: "scooter_50", label: t("cdw50") },
-        { value: "scooter_125", label: t("cdw125") },
-        { value: "scooter_full", label: t("cdwFull") },
-        { value: "atv_full", label: t("cdwAtv") },
-      ] as const,
-    [t],
-  );
 
   const { state, updateSection, getFieldError, isFieldInvalid, bookingSessionId } = useBookingFlow();
   const { vehicles } = useVehicles();
@@ -65,30 +57,17 @@ export function AddonsStep() {
     return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
   }, [state.rental.vehicleId, vehicles]);
   const supportsStorageBox = selectedVehicle?.supportsStorageBox === true;
-  const [cdwMenuOpen, setCdwMenuOpen] = useState(false);
   const [licenseMenuOpen, setLicenseMenuOpen] = useState(false);
   const [helmetSize1MenuOpen, setHelmetSize1MenuOpen] = useState(false);
   const [helmetSize2MenuOpen, setHelmetSize2MenuOpen] = useState(false);
   const helmetEnabled = state.addons.helmet;
   const supportsHelmet = vehicleTypeNeedsHelmetFlow(state.rental.vehicleType);
 
-  const allowedCdwValues = useMemo((): ReadonlyArray<string> => {
-    const vt = (state.rental.vehicleType ?? "").toLowerCase();
-    if (vt === "scooter") return ["none", "scooter_50", "scooter_full"];
-    if (vt === "motorcycle") return ["none", "scooter_125", "scooter_full"];
-    if (vt === "atv") return ["none", "atv_full"];
-    if (vt === "bicycle") return ["none"];
-    return ["none", "scooter_50", "scooter_125", "scooter_full", "atv_full"];
-  }, [state.rental.vehicleType]);
-
-  const cdwOptions = useMemo(
-    () => allCdwOptions.filter((o) => allowedCdwValues.includes(o.value)),
-    [allCdwOptions, allowedCdwValues],
+  const rentalDays = useMemo(
+    () => calculateCalendarRentalDays(state.rental.pickupDate, state.rental.returnDate),
+    [state.rental.pickupDate, state.rental.returnDate],
   );
 
-  const selectedCdwOption =
-    cdwOptions.find((option) => option.value === state.addons.cdwPlan) ??
-    cdwOptions[0];
   const selectedLicenseCategoryOption =
     licenseCategoryOptions.find(
       (option) => option.value === state.additionalDriver.licenseCategory,
@@ -146,16 +125,6 @@ export function AddonsStep() {
   ]);
 
   useEffect(() => {
-    if (
-      state.addons.cdwPlan &&
-      state.addons.cdwPlan !== "none" &&
-      !allowedCdwValues.includes(state.addons.cdwPlan)
-    ) {
-      updateSection("addons", { cdwPlan: "none", cdw: false });
-    }
-  }, [allowedCdwValues, state.addons.cdwPlan, updateSection]);
-
-  useEffect(() => {
     if (state.delivery.pickupOption === "office" && state.additionalDriver.passportIdUpload) {
       updateSection("additionalDriver", { passportIdUpload: "" });
     }
@@ -166,6 +135,13 @@ export function AddonsStep() {
       updateSection("addons", { storageBox: false });
     }
   }, [supportsStorageBox, state.addons.storageBox, updateSection]);
+
+  function handleInsuranceSelect(plan: InsurancePlanCode) {
+    updateSection("addons", {
+      cdwPlan: plan,
+      cdw: plan !== "NO_INSURANCE",
+    });
+  }
 
   return (
     <StepShell title={tSteps("title")} description={tSteps("description")}>
@@ -528,66 +504,16 @@ export function AddonsStep() {
       </div>
 
       <div className="mt-4 rounded-lg border border-slate-200 p-4">
-        <p className="text-sm font-semibold text-slate-900">{t("cdwTitle")}</p>
-        <p className="mt-2 text-xs font-semibold text-slate-700">{t("cdwDefaultIntro")}</p>
-        <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-slate-600">
-          <li>{t("cdwEx1")}</li>
-          <li>{t("cdwEx2")}</li>
-          <li>{t("cdwCanReduce")}</li>
-        </ul>
-        <Popover.Root open={cdwMenuOpen} onOpenChange={setCdwMenuOpen}>
-          <Popover.Trigger asChild>
-            <button
-              type="button"
-              aria-haspopup="listbox"
-              className="mt-2 flex w-full items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-left text-sm text-slate-900 outline-none transition hover:border-slate-300 focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20"
-            >
-              <span>{selectedCdwOption.label}</span>
-              <ChevronDown
-                className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${
-                  cdwMenuOpen ? "rotate-180" : ""
-                }`}
-                aria-hidden
-              />
-            </button>
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Content
-              side="bottom"
-              align="start"
-              sideOffset={6}
-              className="z-[100] w-[var(--radix-popover-trigger-width)] rounded-md border border-slate-200 bg-white p-1 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)]"
-            >
-              <div role="listbox" className="max-h-64 overflow-y-auto">
-                {cdwOptions.map((option) => {
-                  const selected = option.value === state.addons.cdwPlan;
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="option"
-                      aria-selected={selected}
-                      className={`flex w-full items-center rounded-md px-3 py-2 text-left text-sm transition ${
-                        selected
-                          ? "bg-[var(--brand-blue)]/10 text-slate-900"
-                          : "text-slate-700 hover:bg-slate-50"
-                      }`}
-                      onClick={() => {
-                        updateSection("addons", {
-                          cdwPlan: option.value,
-                          cdw: option.value !== "none",
-                        });
-                        setCdwMenuOpen(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </Popover.Content>
-          </Popover.Portal>
-        </Popover.Root>
+        <p className="text-sm font-semibold text-slate-900">{t("insuranceTitle")}</p>
+        <p className="mt-1 text-xs text-slate-600">{t("insuranceIntro")}</p>
+        <div className="mt-3">
+          <InsurancePlanOptions
+            selectedPlan={state.addons.cdwPlan}
+            rentalDays={rentalDays}
+            onSelect={handleInsuranceSelect}
+            name="addonsInsurancePlan"
+          />
+        </div>
         <p className="mt-3 text-xs font-semibold text-slate-700">{t("cdwExclusionsTitle")}</p>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-slate-600">
           <li>{t("cdwEx3")}</li>
@@ -596,6 +522,7 @@ export function AddonsStep() {
           <li>{t("cdwEx6")}</li>
           <li>{t("cdwEx7")}</li>
         </ul>
+        <p className="mt-2 text-[11px] text-slate-500">{t("insuranceExclusionsNote")}</p>
       </div>
 
       {supportsStorageBox ? (

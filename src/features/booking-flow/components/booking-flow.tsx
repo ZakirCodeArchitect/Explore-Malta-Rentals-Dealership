@@ -8,6 +8,7 @@ import { BookingStepper } from "@/features/booking-flow/components/booking-stepp
 import { ReservationBanner } from "@/features/booking-flow/components/reservation-banner";
 import { HoldExpiredNotice } from "@/features/booking-flow/components/hold-expired-notice";
 import { TermsConsentModal } from "@/features/booking-flow/components/terms-consent-modal";
+import { InsurancePromptModal } from "@/features/booking-flow/components/insurance-prompt-modal";
 import { NoVehicleModal } from "@/features/booking-flow/components/no-vehicle-modal";
 import { BookingLookupPanel } from "@/features/booking-flow/components/booking-lookup-panel";
 import { useHoldHeartbeat } from "@/features/booking-flow/hooks/use-hold-heartbeat";
@@ -29,6 +30,8 @@ import { RentalDetailsStep } from "@/features/booking-flow/steps/rental-details-
 import { OptionsDeliveryStep } from "@/features/booking-flow/steps/options-delivery-step";
 import { YourInformationStep } from "@/features/booking-flow/steps/your-information-step";
 import { ReviewConfirmStep } from "@/features/booking-flow/steps/review-confirm-step";
+import type { InsurancePlanCode } from "@/lib/pricing/insurance-plans";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
 
 type BookingFlowBodyProps = {
   bookingLookupReference?: string;
@@ -47,6 +50,8 @@ function BookingFlowBody({
   const t = useTranslations("BookingFlow");
   const tLookup = useTranslations("BookingPage.lookup");
   const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [insuranceModalOpen, setInsuranceModalOpen] = useState(false);
+  const [insuranceModalKey, setInsuranceModalKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [heartbeatWarning, setHeartbeatWarning] = useState<string | null>(null);
@@ -115,6 +120,7 @@ function BookingFlowBody({
       markReservationHoldExpired(message);
       setHeartbeatWarning(null);
       setTermsModalOpen(false);
+      setInsuranceModalOpen(false);
     },
     onHeartbeatTransientError: (message) => {
       setHeartbeatWarning(message);
@@ -202,6 +208,13 @@ function BookingFlowBody({
       return;
     }
 
+    const currentValues = getBookingValues();
+    if (currentValues.addons.cdwPlan === null) {
+      setInsuranceModalKey((key) => key + 1);
+      setInsuranceModalOpen(true);
+      return;
+    }
+
     setTermsModalOpen(true);
   }, [
     activeStepId,
@@ -215,6 +228,18 @@ function BookingFlowBody({
     validateCurrentStep,
     validateAllBookingFields,
   ]);
+
+  const handleInsuranceConfirm = useCallback(
+    (plan: InsurancePlanCode) => {
+      updateSection("addons", {
+        cdwPlan: plan,
+        cdw: plan !== "NO_INSURANCE",
+      });
+      setInsuranceModalOpen(false);
+      setTermsModalOpen(true);
+    },
+    [updateSection],
+  );
 
   const handleTermsAgree = useCallback(async () => {
     if (submitInFlightRef.current) {
@@ -434,6 +459,15 @@ function BookingFlowBody({
       {submitError ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">{submitError}</p>
       ) : null}
+
+      <InsurancePromptModal
+        key={insuranceModalKey}
+        isOpen={insuranceModalOpen}
+        rentalDays={calculateCalendarRentalDays(state.rental.pickupDate, state.rental.returnDate)}
+        initialPlan={state.addons.cdwPlan}
+        onCancel={() => setInsuranceModalOpen(false)}
+        onConfirm={handleInsuranceConfirm}
+      />
 
       <TermsConsentModal
         isOpen={termsModalOpen}

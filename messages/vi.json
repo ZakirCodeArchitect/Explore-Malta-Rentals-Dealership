@@ -842,7 +842,7 @@
       "rentalCost": "Giá thuê:",
       "deliveryLine": "Giao hàng / Trả khách: {total} (nhận hàng {pickup} + trả khách {dropoff}{discount})",
       "bundleDiscount": "- Giảm giá gói {amount}",
-      "cdwCost": "CDW:",
+      "cdwCost": "Insurance:",
       "addDriverCost": "Trình điều khiển bổ sung:",
       "storageCost": "Hộp lưu trữ:",
       "subtotal": "Tổng phụ:",
@@ -856,7 +856,8 @@
       "dueLater": "Hạn chót khi nhận hàng/sau:",
       "depositAtPickupNote": "Tiền đặt cọc sẽ được thanh toán khi nhận hàng và không được bao gồm trong tổng số tiền trực tuyến.",
       "depositOnlineNote": "Tiền đặt cọc được bao gồm trong số tiền phải trả trực tuyến.",
-      "reviewCheckbox": "Tôi đã xem lại bản tóm tắt ở trên."
+      "reviewCheckbox": "Tôi đã xem lại bản tóm tắt ở trên.",
+      "insuranceNotSelected": "Not selected yet"
     },
     "pickupDropoff": {
       "shellTitle": "Đón và trả khách",
@@ -922,7 +923,7 @@
       "cdwAtv": "15 EUR/ngày - giảm xuống còn 800 EUR (ATV)",
       "cdwTitle": "Miễn trừ thiệt hại do va chạm (CDW)",
       "cdwDefaultIntro": "Theo mặc định, bạn phải chịu trách nhiệm bồi thường thiệt hại theo cách sau:",
-      "cdwExclusionsTitle": "CDW không bao gồm:",
+      "cdwExclusionsTitle": "Insurance không bao gồm:",
       "cdwEx1": "Trách nhiệm 500 EUR (50cc)",
       "cdwEx2": "Trách nhiệm 800 EUR (125cc)",
       "cdwEx3": "Lưu ý loại trừ: sơ suất",
@@ -944,7 +945,35 @@
       "addDriverIdHeading": "Xác minh ID tài xế bổ sung (dựa trên phương thức đón)",
       "addDriverIdBody": "Nhận hàng giao hàng yêu cầu tải ảnh lên. Nhận hàng tại văn phòng yêu cầu xác nhận ID trực tiếp.",
       "addDriverOfficeConfirm": "Tôi xác nhận tài xế bổ sung sẽ trực tiếp xuất trình giấy tờ tùy thân khi đón.",
-      "storageBoxLabel": "Hộp đựng đồ (10 EUR một lần)"
+      "storageBoxLabel": "Hộp đựng đồ (10 EUR một lần)",
+      "insuranceTitle": "Insurance options",
+      "insuranceIntro": "Choose an insurance plan for your rental. You can continue without paid coverage by selecting No Insurance.",
+      "insuranceFree": "€0/day",
+      "insurancePerDay": "{amount}/day",
+      "insuranceTotalLine": "{days} rental days × {rate} = {total}",
+      "insuranceExclusionsNote": "Insurance does not cover negligence, alcohol/drug use, off-road misuse, lost keys, or tyre damage.",
+      "insurancePlan": {
+        "NO_INSURANCE": {
+          "name": "No Insurance",
+          "coverage": "Customers are fully liable. An excess of €800 applies in case of damage."
+        },
+        "BASIC": {
+          "name": "Basic Plan",
+          "coverage": "The company covers damage costs up to €500. The customer is responsible for the remaining excess."
+        },
+        "FULL_COVERAGE": {
+          "name": "Full Coverage",
+          "coverage": "All damages are fully covered by the insurance company. Zero customer liability."
+        }
+      }
+    },
+    "insurancePrompt": {
+      "title": "Choose your insurance",
+      "description": "Please select an insurance option before continuing to payment. You may choose No Insurance if you prefer to decline paid coverage.",
+      "selectionRequired": "Please select an insurance option to continue.",
+      "confirmContinue": "Confirm and continue",
+      "cancel": "Cancel",
+      "dismiss": "Close insurance prompt"
     }
   },
   "TripDate": {
