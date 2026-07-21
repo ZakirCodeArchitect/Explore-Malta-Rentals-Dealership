@@ -27,6 +27,7 @@ import {
   INITIAL_RESERVATION_HOLD_STATE,
 } from "@/features/booking-flow/lib/types";
 import { buildBookingInitialState } from "@/features/booking-flow/lib/init-state";
+import { getPickupDeliveryResetForSunday } from "@/lib/booking/delivery-availability";
 import {
   createBookingFlowSchema,
   canAccessStep,
@@ -184,6 +185,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       minRental: tVal("minRental"),
       maxRental: tVal("maxRental"),
       pickupAddressDelivery: tVal("pickupAddressDelivery"),
+      deliveryUnavailableSunday: tVal("deliveryUnavailableSunday"),
       dropoffAddressRequired: tVal("dropoffAddressRequired"),
       helmetSizesRequired: tVal("helmetSizesRequired"),
       additionalDriverName: tVal("additionalDriverName"),
@@ -332,7 +334,18 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       }
 
       if (Object.keys(rentalPatch).length > 0) {
-        form.setValue("rental", { ...rental, ...rentalPatch }, { shouldDirty: false, shouldValidate: false });
+        const updatedRental = { ...rental, ...rentalPatch };
+        form.setValue("rental", updatedRental, { shouldDirty: false, shouldValidate: false });
+
+        const delivery = form.getValues("delivery");
+        const deliveryReset = getPickupDeliveryResetForSunday(updatedRental.pickupDate, delivery);
+        if (deliveryReset) {
+          form.setValue(
+            "delivery",
+            { ...delivery, ...deliveryReset },
+            { shouldDirty: false, shouldValidate: false },
+          );
+        }
       }
     }, 0);
     return () => window.clearTimeout(timeoutId);
@@ -365,11 +378,39 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
   const updateSection = useCallback(
     <K extends keyof BookingFlowState>(section: K, value: Partial<BookingFlowState[K]>) => {
       const currentSection = form.getValues(section);
-      form.setValue(section, { ...currentSection, ...value }, {
+      const nextSection = { ...currentSection, ...value };
+      form.setValue(section, nextSection, {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
       });
+
+      const pickupDateToCheck =
+        section === "rental" &&
+        "pickupDate" in value &&
+        typeof value.pickupDate === "string"
+          ? value.pickupDate
+          : section === "delivery" &&
+              "pickupOption" in value &&
+              value.pickupOption === "delivery"
+            ? form.getValues("rental.pickupDate")
+            : null;
+
+      if (pickupDateToCheck) {
+        const delivery = form.getValues("delivery");
+        const deliveryReset = getPickupDeliveryResetForSunday(pickupDateToCheck, delivery);
+        if (deliveryReset) {
+          form.setValue(
+            "delivery",
+            { ...delivery, ...deliveryReset },
+            {
+              shouldDirty: true,
+              shouldTouch: true,
+              shouldValidate: true,
+            },
+          );
+        }
+      }
 
       setStepErrors((prev) => {
         if (!prev[activeStepId]) {

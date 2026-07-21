@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Le téléchargement du passeport/pièce d'identité est requis pour la livraison",
     "confirmDocumentsPickup": "Veuillez confirmer que vous présenterez vos documents lors de la prise en charge",
     "depositMethodRequired": "La méthode de dépôt est obligatoire",
-    "reviewFields": "Veuillez vérifier les champs surlignés."
+    "reviewFields": "Veuillez vérifier les champs surlignés.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Mentions légales",
@@ -875,7 +876,8 @@
       "bothLabel": "Les deux : {amount}",
       "youGetOff": " (Vous économisez {amount})",
       "currentTotal": "Total de la configuration choisie : {total} ({pickup} prise en charge + {dropoff} retour{discount})",
-      "bundleDiscountShort": " - {amount} remise groupée"
+      "bundleDiscountShort": " - {amount} remise groupée",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Informations client",

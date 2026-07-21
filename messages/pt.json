@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Upload de passaporte/identificação obrigatório para entrega",
     "confirmDocumentsPickup": "Por favor confirme que apresentará documentos no levantamento",
     "depositMethodRequired": "O método de depósito é obrigatório",
-    "reviewFields": "Por favor reveja os campos destacados."
+    "reviewFields": "Por favor reveja os campos destacados.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Legal",
@@ -875,7 +876,8 @@
       "bothLabel": "Ambos: {amount}",
       "youGetOff": " (Poupa {amount})",
       "currentTotal": "Total da configuração escolhida: {total} ({pickup} levantamento + {dropoff} devolução{discount})",
-      "bundleDiscountShort": " - {amount} desconto de pacote"
+      "bundleDiscountShort": " - {amount} desconto de pacote",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Informações do Cliente",

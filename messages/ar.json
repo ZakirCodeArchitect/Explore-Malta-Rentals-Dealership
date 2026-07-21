@@ -488,7 +488,8 @@
     "passportUploadDelivery": "رفع جواز السفر/الهوية مطلوب للتوصيل",
     "confirmDocumentsPickup": "يرجى تأكيد أنك ستُقدم المستندات عند الاستلام",
     "depositMethodRequired": "طريقة الوديعة مطلوبة",
-    "reviewFields": "يرجى مراجعة الحقول المُبرزة."
+    "reviewFields": "يرجى مراجعة الحقول المُبرزة.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "قانوني",
@@ -875,7 +876,8 @@
       "bothLabel": "كلاهما: {amount}",
       "youGetOff": " (تحصل على خصم {amount})",
       "currentTotal": "إجمالي الإعداد المختار الحالي: {total} ({pickup} استلام + {dropoff} تسليم{discount})",
-      "bundleDiscountShort": " - {amount} خصم الحزمة"
+      "bundleDiscountShort": " - {amount} خصم الحزمة",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "معلومات العميل",

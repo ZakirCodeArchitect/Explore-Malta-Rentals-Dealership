@@ -6,6 +6,10 @@
 import type { z } from "zod";
 
 import { bookingSubmissionSchema } from "../src/lib/booking/bookingSubmissionSchema";
+import {
+  isPickupDeliveryAllowedForDate,
+  isSundayDateOnly,
+} from "../src/lib/booking/delivery-availability";
 import { normalizeBookingPayload } from "../src/lib/booking/normalizeBookingPayload";
 import { calculateBookingPrice, type BookingPricingInput } from "../src/lib/pricing/calculate-booking-price";
 import { calculateHotelDiscount } from "../src/lib/hotel-codes/calculate-hotel-discount";
@@ -185,6 +189,87 @@ function expectSchemaFailure(
     throw new Error(`${name}: no matching issue path. Got:\n${paths.join("\n")}`);
   }
   console.log(`OK negative: ${name} (${parsed.error.issues.length} issue(s))`);
+}
+
+function expectSchemaSuccess(name: string, payload: BookingPayload): void {
+  const parsed = bookingSubmissionSchema.safeParse(payload);
+  if (!parsed.success) {
+    const paths = parsed.error.issues.map((issue) => issue.path.map(String).join("."));
+    throw new Error(`${name}: expected schema success, got issues:\n${paths.join("\n")}`);
+  }
+  console.log(`OK positive: ${name}`);
+}
+
+const SUNDAY_PICKUP_DATE = "2026-07-19";
+const SATURDAY_PICKUP_DATE = "2026-07-18";
+
+function runSundayDeliveryRestrictionTests(): void {
+  if (!isSundayDateOnly(SUNDAY_PICKUP_DATE)) {
+    throw new Error("Sunday test fixture date is not a Sunday");
+  }
+  if (isPickupDeliveryAllowedForDate(SUNDAY_PICKUP_DATE)) {
+    throw new Error("Pickup delivery should be blocked on Sunday");
+  }
+  if (!isPickupDeliveryAllowedForDate(SATURDAY_PICKUP_DATE)) {
+    throw new Error("Pickup delivery should be allowed on Saturday");
+  }
+
+  expectSchemaFailure(
+    "Sunday delivery pickup",
+    {
+      ...bookingBody,
+      rental: {
+        ...bookingBody.rental,
+        pickupDate: SUNDAY_PICKUP_DATE,
+        returnDate: "2026-07-20",
+      },
+      delivery: {
+        ...bookingBody.delivery,
+        pickupOption: "DELIVERY",
+        pickupAddress: "Test Hotel, Valletta",
+      },
+      customer: {
+        ...bookingBody.customer,
+        licenseUploadPath: "/uploads/license.pdf",
+        passportUploadPath: "/uploads/passport.pdf",
+        willPresentLicenseAtPickup: false,
+        willPresentIdAtPickup: false,
+      },
+    },
+    (p) => p === "delivery.pickupOption",
+  );
+
+  expectSchemaSuccess("Sunday office pickup", {
+    ...bookingBody,
+    rental: {
+      ...bookingBody.rental,
+      pickupDate: SUNDAY_PICKUP_DATE,
+      returnDate: "2026-07-20",
+    },
+  });
+
+  expectSchemaSuccess("Saturday delivery pickup", {
+    ...bookingBody,
+    rental: {
+      ...bookingBody.rental,
+      pickupDate: SATURDAY_PICKUP_DATE,
+      returnDate: "2026-07-19",
+    },
+    delivery: {
+      ...bookingBody.delivery,
+      pickupOption: "DELIVERY",
+      pickupAddress: "Test Hotel, Valletta",
+    },
+    customer: {
+      ...bookingBody.customer,
+      licenseUploadPath: "/uploads/license.pdf",
+      passportUploadPath: "/uploads/passport.pdf",
+      willPresentLicenseAtPickup: false,
+      willPresentIdAtPickup: false,
+    },
+  });
+
+  console.log("Sunday delivery restriction assertions passed");
 }
 
 const bookingBody: BookingPayload = {
@@ -408,6 +493,7 @@ async function main(): Promise<void> {
   runStorageBoxAssertions();
   runHotelDiscountAssertions();
   runNegativeValidationTests();
+  runSundayDeliveryRestrictionTests();
   console.log("All checks OK.");
 }
 

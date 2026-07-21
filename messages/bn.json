@@ -488,7 +488,8 @@
     "passportUploadDelivery": "ডেলিভারির জন্য পাসপোর্ট/আইডি আপলোড প্রয়োজন",
     "confirmDocumentsPickup": "অনুগ্রহ করে নিশ্চিত করুন যে আপনি পিকআপে নথি উপস্থাপন করবেন",
     "depositMethodRequired": "জমা পদ্ধতি প্রয়োজন",
-    "reviewFields": "হাইলাইট করা ক্ষেত্র পর্যালোচনা করুন."
+    "reviewFields": "হাইলাইট করা ক্ষেত্র পর্যালোচনা করুন.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "আইনি",
@@ -875,7 +876,8 @@
       "bothLabel": "উভয়ই: {amount}",
       "youGetOff": "(আপনি {amount} ছাড় পাবেন)",
       "currentTotal": "বর্তমান নির্বাচিত সেটআপ মোট: {total} ({pickup} পিকআপ + {dropoff} ড্রপ-অফ{discount})",
-      "bundleDiscountShort": "- {amount} বান্ডিল ছাড়"
+      "bundleDiscountShort": "- {amount} বান্ডিল ছাড়",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "গ্রাহক তথ্য",

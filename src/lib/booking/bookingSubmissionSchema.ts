@@ -1,5 +1,9 @@
 import { differenceInMilliseconds, format, parse } from "date-fns";
 import { z } from "zod";
+import {
+  isPickupDeliveryAllowedForDate,
+  SUNDAY_PICKUP_DELIVERY_ERROR_MESSAGE,
+} from "@/lib/booking/delivery-availability";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^\d{2}:\d{2}$/;
@@ -345,6 +349,17 @@ export const bookingSubmissionSchema = z
         code: z.ZodIssueCode.custom,
         path: ["rental", "returnDate"],
         message: "Maximum rental is 4 weeks",
+      });
+    }
+
+    if (
+      payload.delivery.pickupOption === "DELIVERY" &&
+      !isPickupDeliveryAllowedForDate(payload.rental.pickupDate)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["delivery", "pickupOption"],
+        message: SUNDAY_PICKUP_DELIVERY_ERROR_MESSAGE,
       });
     }
 

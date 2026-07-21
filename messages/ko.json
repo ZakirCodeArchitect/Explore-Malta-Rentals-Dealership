@@ -488,7 +488,8 @@
     "passportUploadDelivery": "배송을 위해서는 여권/신분증 업로드가 필요합니다.",
     "confirmDocumentsPickup": "픽업 시 서류를 제시할 것인지 확인하세요.",
     "depositMethodRequired": "입금 방법이 필요합니다",
-    "reviewFields": "강조표시된 필드를 검토하세요."
+    "reviewFields": "강조표시된 필드를 검토하세요.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "합법적인",
@@ -875,7 +876,8 @@
       "bothLabel": "둘 다: {amount}",
       "youGetOff": "({amount} 할인)",
       "currentTotal": "현재 선택한 설정 합계: {total} ({pickup} 픽업 + {dropoff} 하차{discount})",
-      "bundleDiscountShort": "- {amount} 묶음 할인"
+      "bundleDiscountShort": "- {amount} 묶음 할인",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "고객정보",

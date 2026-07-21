@@ -488,7 +488,8 @@
     "passportUploadDelivery": "จำเป็นต้องอัปโหลดหนังสือเดินทาง/บัตรประจำตัวประชาชนในการจัดส่ง",
     "confirmDocumentsPickup": "โปรดยืนยันว่าคุณจะแสดงเอกสารที่จุดรับ",
     "depositMethodRequired": "ต้องระบุวิธีการฝากเงิน",
-    "reviewFields": "โปรดตรวจสอบช่องที่ไฮไลต์"
+    "reviewFields": "โปรดตรวจสอบช่องที่ไฮไลต์",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "ถูกกฎหมาย",
@@ -875,7 +876,8 @@
       "bothLabel": "ทั้งสอง: {amount}",
       "youGetOff": "(คุณได้รับส่วนลด {amount})",
       "currentTotal": "ยอดรวมการตั้งค่าที่เลือกในปัจจุบัน: {total} ({pickup} กระบะ + {dropoff} ดรอปออฟ{discount})",
-      "bundleDiscountShort": "- {amount} ส่วนลดมัดรวม"
+      "bundleDiscountShort": "- {amount} ส่วนลดมัดรวม",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "ข้อมูลลูกค้า",

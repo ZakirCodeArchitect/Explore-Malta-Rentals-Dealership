@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Unggah paspor/ID diperlukan untuk pengiriman",
     "confirmDocumentsPickup": "Harap konfirmasi bahwa Anda akan menunjukkan dokumen pada saat pengambilan",
     "depositMethodRequired": "Metode deposit diperlukan",
-    "reviewFields": "Harap tinjau bidang yang disorot."
+    "reviewFields": "Harap tinjau bidang yang disorot.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Legal",
@@ -875,7 +876,8 @@
       "bothLabel": "Keduanya: {amount}",
       "youGetOff": "(Anda mendapatkan diskon {amount})",
       "currentTotal": "Total pengaturan yang dipilih saat ini: {total} ({pickup} pengambilan + {dropoff} pengantaran{discount})",
-      "bundleDiscountShort": "- Diskon bundel {amount}"
+      "bundleDiscountShort": "- Diskon bundel {amount}",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Informasi Pelanggan",

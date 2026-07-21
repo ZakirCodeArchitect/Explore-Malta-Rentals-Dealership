@@ -5,6 +5,8 @@ import { BOOKING_FLOW_STEPS, type BookingFlowStepId } from "@/features/booking-f
 import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-rental";
 import { isLicenseAllowedForVehicle } from "@/features/booking-flow/lib/license-categories";
 import type { BookingFlowState } from "@/features/booking-flow/lib/types";
+import { isPickupDeliveryAllowedForDate } from "@/lib/booking/delivery-availability";
+
 export type BookingValidationMessages = Readonly<{
   vehicleTypeRequired: string;
   pickupOptionRequired: string;
@@ -22,6 +24,7 @@ export type BookingValidationMessages = Readonly<{
   minRental: string;
   maxRental: string;
   pickupAddressDelivery: string;
+  deliveryUnavailableSunday: string;
   dropoffAddressRequired: string;
   helmetSizesRequired: string;
   additionalDriverName: string;
@@ -151,6 +154,14 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
           path: ["rental", "returnDate"],
         });
       }
+    }
+
+    if (state.delivery.pickupOption === "delivery" && !isPickupDeliveryAllowedForDate(state.rental.pickupDate)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: m.deliveryUnavailableSunday,
+        path: ["delivery", "pickupOption"],
+      });
     }
 
     if (state.delivery.pickupOption === "delivery" && !hasText(state.delivery.pickupAddress)) {

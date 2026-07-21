@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Teslimat için pasaport/kimlik yüklemesi gerekiyor",
     "confirmDocumentsPickup": "Lütfen teslim alırken belgeleri sunacağınızı onaylayın",
     "depositMethodRequired": "Para yatırma yöntemi gerekli",
-    "reviewFields": "Lütfen vurgulanan alanları inceleyin."
+    "reviewFields": "Lütfen vurgulanan alanları inceleyin.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Yasal",
@@ -875,7 +876,8 @@
       "bothLabel": "İkisi de: {amount}",
       "youGetOff": "({amount} indirim alırsınız)",
       "currentTotal": "Mevcut seçilen kurulum toplamı: {total} ({pickup} başlatma + {dropoff} bırakma{discount})",
-      "bundleDiscountShort": "- {amount} paket indirimi"
+      "bundleDiscountShort": "- {amount} paket indirimi",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Müşteri Bilgileri",

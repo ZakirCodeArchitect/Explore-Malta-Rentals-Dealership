@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Upload van paspoort/ID vereist voor bezorging",
     "confirmDocumentsPickup": "Bevestig dat u bij het ophalen de documenten zult overleggen",
     "depositMethodRequired": "Stortingsmethode is vereist",
-    "reviewFields": "Controleer de gemarkeerde velden."
+    "reviewFields": "Controleer de gemarkeerde velden.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Legaal",
@@ -875,7 +876,8 @@
       "bothLabel": "Beide: {amount}",
       "youGetOff": "(Je krijgt {amount} korting)",
       "currentTotal": "Totaal gekozen opstelling: {total} ({pickup} ophalen + {dropoff} afzetten{discount})",
-      "bundleDiscountShort": "- {amount} bundelkorting"
+      "bundleDiscountShort": "- {amount} bundelkorting",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Klantinformatie",

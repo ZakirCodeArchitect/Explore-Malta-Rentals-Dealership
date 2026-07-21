@@ -488,7 +488,8 @@
     "passportUploadDelivery": "ڈیلیوری کے لیے پاسپورٹ/ID اپ لوڈ درکار ہے۔",
     "confirmDocumentsPickup": "براہ کرم تصدیق کریں کہ آپ پک اپ پر دستاویزات پیش کریں گے۔",
     "depositMethodRequired": "جمع کرنے کا طریقہ درکار ہے۔",
-    "reviewFields": "براہ کرم نمایاں کردہ فیلڈز کا جائزہ لیں۔"
+    "reviewFields": "براہ کرم نمایاں کردہ فیلڈز کا جائزہ لیں۔",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "قانونی",
@@ -875,7 +876,8 @@
       "bothLabel": "دونوں: {amount}",
       "youGetOff": "(آپ کو {amount} کی چھوٹ ملتی ہے)",
       "currentTotal": "موجودہ منتخب کردہ سیٹ اپ کل: {total} ({pickup} پک اپ + {dropoff} ڈراپ آف{discount})",
-      "bundleDiscountShort": "- {amount} بنڈل ڈسکاؤنٹ"
+      "bundleDiscountShort": "- {amount} بنڈل ڈسکاؤنٹ",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "کسٹمر کی معلومات",

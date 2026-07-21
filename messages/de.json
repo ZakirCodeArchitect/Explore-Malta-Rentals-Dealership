@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Reisepass-/Ausweis-Upload bei Lieferung erforderlich",
     "confirmDocumentsPickup": "Bitte bestätige, dass du die Dokumente bei Abholung vorlegst",
     "depositMethodRequired": "Kaution-Art ist erforderlich",
-    "reviewFields": "Bitte prüfe die markierten Felder."
+    "reviewFields": "Bitte prüfe die markierten Felder.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Rechtliches",
@@ -875,7 +876,8 @@
       "bothLabel": "Beides: {amount}",
       "youGetOff": " (Du sparst {amount})",
       "currentTotal": "Aktuelle Auswahl gesamt: {total} ({pickup} Abholung + {dropoff} Rückgabe{discount})",
-      "bundleDiscountShort": " - Paket-Rabatt {amount}"
+      "bundleDiscountShort": " - Paket-Rabatt {amount}",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Kundendaten",

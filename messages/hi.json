@@ -488,7 +488,8 @@
     "passportUploadDelivery": "डिलीवरी के लिए पासपोर्ट/आईडी अपलोड आवश्यक है",
     "confirmDocumentsPickup": "कृपया पुष्टि करें कि आप पिकअप पर दस्तावेज़ प्रस्तुत करेंगे",
     "depositMethodRequired": "जमा विधि आवश्यक है",
-    "reviewFields": "कृपया हाइलाइट किए गए फ़ील्ड की समीक्षा करें।"
+    "reviewFields": "कृपया हाइलाइट किए गए फ़ील्ड की समीक्षा करें।",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "कानूनी",
@@ -875,7 +876,8 @@
       "bothLabel": "दोनों: {amount}",
       "youGetOff": " (आपको {amount} की छूट मिलती है)",
       "currentTotal": "वर्तमान चुना हुआ सेटअप कुल: {total} ({pickup} पिकअप + {dropoff} ड्रॉप-ऑफ{discount})",
-      "bundleDiscountShort": " - {amount} बंडल छूट"
+      "bundleDiscountShort": " - {amount} बंडल छूट",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "ग्राहक जानकारी",

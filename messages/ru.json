@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Загрузка паспорта/удостоверения личности обязательна для доставки",
     "confirmDocumentsPickup": "Пожалуйста, подтвердите, что предъявите документы при получении",
     "depositMethodRequired": "Способ залога обязателен",
-    "reviewFields": "Пожалуйста, проверьте выделенные поля."
+    "reviewFields": "Пожалуйста, проверьте выделенные поля.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Правовая информация",
@@ -875,7 +876,8 @@
       "bothLabel": "Оба: {amount}",
       "youGetOff": " (Вы получаете скидку {amount})",
       "currentTotal": "Итого выбранной конфигурации: {total} ({pickup} получение + {dropoff} возврат{discount})",
-      "bundleDiscountShort": " - {amount} скидка за пакет"
+      "bundleDiscountShort": " - {amount} скидка за пакет",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Информация о клиенте",

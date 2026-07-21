@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Cần tải lên hộ chiếu/ID để giao hàng",
     "confirmDocumentsPickup": "Vui lòng xác nhận bạn sẽ xuất trình tài liệu khi nhận hàng",
     "depositMethodRequired": "Phương thức gửi tiền là bắt buộc",
-    "reviewFields": "Vui lòng xem lại các trường được đánh dấu."
+    "reviewFields": "Vui lòng xem lại các trường được đánh dấu.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Hợp pháp",
@@ -875,7 +876,8 @@
       "bothLabel": "Cả hai: {amount}",
       "youGetOff": "(Bạn được giảm {amount})",
       "currentTotal": "Tổng số thiết lập đã chọn hiện tại: {total} ({pickup} nhận hàng + {dropoff} giao hàng{discount})",
-      "bundleDiscountShort": "- Giảm giá gói {amount}"
+      "bundleDiscountShort": "- Giảm giá gói {amount}",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Thông tin khách hàng",

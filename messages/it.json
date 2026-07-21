@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Per la consegna è necessario caricare passaporto/carta d'identità",
     "confirmDocumentsPickup": "Conferma che presenterai i documenti al momento del ritiro",
     "depositMethodRequired": "È richiesto il metodo di deposito",
-    "reviewFields": "Si prega di rivedere i campi evidenziati."
+    "reviewFields": "Si prega di rivedere i campi evidenziati.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Legale",
@@ -875,7 +876,8 @@
       "bothLabel": "Entrambi: {amount}",
       "youGetOff": "(Ottieni uno sconto di {amount})",
       "currentTotal": "Totale della configurazione attualmente scelta: {total} ({pickup} ritiro + {dropoff} riconsegna{discount})",
-      "bundleDiscountShort": "- Sconto pacchetto {amount}"
+      "bundleDiscountShort": "- Sconto pacchetto {amount}",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Informazioni sul cliente",

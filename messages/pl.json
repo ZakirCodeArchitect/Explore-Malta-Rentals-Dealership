@@ -488,7 +488,8 @@
     "passportUploadDelivery": "Do dostawy wymagane jest przesłanie paszportu/dowód osobisty",
     "confirmDocumentsPickup": "Potwierdź, że przedstawisz dokumenty przy odbiorze",
     "depositMethodRequired": "Wymagana jest metoda wpłaty",
-    "reviewFields": "Proszę sprawdzić wyróżnione pola."
+    "reviewFields": "Proszę sprawdzić wyróżnione pola.",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "Prawny",
@@ -875,7 +876,8 @@
       "bothLabel": "Obydwa: {amount}",
       "youGetOff": "(Otrzymujesz {amount} wyłączone)",
       "currentTotal": "Aktualnie wybrana suma konfiguracji: {total} (odbiór {pickup} + wyładunek {dropoff}{discount})",
-      "bundleDiscountShort": "- Zniżka na pakiet {amount}"
+      "bundleDiscountShort": "- Zniżka na pakiet {amount}",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "Informacje o kliencie",

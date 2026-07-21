@@ -488,7 +488,8 @@
     "passportUploadDelivery": "配達にはパスポート/身分証のアップロードが必要です",
     "confirmDocumentsPickup": "受け取り時に書類を提示することを確認してください",
     "depositMethodRequired": "デポジット方法は必須です",
-    "reviewFields": "ハイライトされたフィールドをご確認ください。"
+    "reviewFields": "ハイライトされたフィールドをご確認ください。",
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
   },
   "PrivacyPage": {
     "legalKicker": "法的情報",
@@ -875,7 +876,8 @@
       "bothLabel": "両方：{amount}",
       "youGetOff": "（{amount}割引）",
       "currentTotal": "現在の選択セットアップ合計：{total}（受け取り{pickup}＋返却{dropoff}{discount}）",
-      "bundleDiscountShort": " - {amount}バンドル割引"
+      "bundleDiscountShort": " - {amount}バンドル割引",
+      "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
     },
     "customer": {
       "shellTitle": "お客様情報",
