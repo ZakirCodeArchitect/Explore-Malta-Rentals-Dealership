@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { BookingSearchForm } from "./booking-search-form";
 import { VEHICLE_TYPES } from "@/features/vehicles/data/vehicles";
+import { parseBrandSearchParam } from "@/features/vehicles/lib/booking-search-params";
 
 /**
  * Thin wrapper around BookingSearchForm that reads current URL search params and
@@ -13,7 +14,9 @@ import { VEHICLE_TYPES } from "@/features/vehicles/data/vehicles";
  *
  * Must be rendered inside a <Suspense> boundary because it calls useSearchParams().
  */
-export function BookingSearchFormFromUrl() {
+export function BookingSearchFormFromUrl({
+  brandOptions,
+}: Readonly<{ brandOptions?: readonly string[] }> = {}) {
   const searchParams = useSearchParams();
 
   const initialValues = useMemo(() => {
@@ -31,8 +34,12 @@ export function BookingSearchFormFromUrl() {
     const vehicleType =
       (VEHICLE_TYPES as readonly string[]).includes(rawType) ? rawType : "all";
 
-    return { pickupDate, dropoffDate, pickupTime, dropoffTime, vehicleType };
+    const brand = parseBrandSearchParam(searchParams.get("brand"));
+
+    return { pickupDate, dropoffDate, pickupTime, dropoffTime, vehicleType, brand };
   }, [searchParams]);
 
-  return <BookingSearchForm initialValues={initialValues} />;
+  return (
+    <BookingSearchForm initialValues={initialValues} brandOptions={brandOptions} />
+  );
 }

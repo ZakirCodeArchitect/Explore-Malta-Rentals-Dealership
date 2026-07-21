@@ -662,7 +662,7 @@
     "emptyTitle": "Aktuell keine Fahrzeuge verfügbar",
     "emptyBody": "Bitte später erneut prüfen oder neue Inserate ansehen.",
     "noMatchTitle": "Keine exakte Übereinstimmung",
-    "noMatchBody": "Typ, Getriebe, Sitzplätze oder Farbe ändern.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Richtwerte pro Kalendertag für Motorräder und Roller vor Extras — Orientierung bei der Suche.",
     "ariaFilters": "Fahrzeugfilter",
     "ariaRates": "Richtwert-Tagestarife"
@@ -696,7 +696,10 @@
     "indicativeLine": "Richtwert Motorräder/Roller gesamt ~€{tripEur} (€{dailyEur}/Tag × {count} {dayLabel}) · Endpreis hängt von Fahrzeug und Extras ab.",
     "hotelDelivery": "Hotelzustellung",
     "clearFilters": "Filter löschen",
-    "search": "Suchen"
+    "search": "Suchen",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Richtwert-Tagestarife",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Fahrzeugtyp",
     "vehicleTypeAll": "Alle Typen",
     "submitSearching": "Suche läuft…",
-    "submitIdle": "Verfügbare Fahrzeuge suchen"
+    "submitIdle": "Verfügbare Fahrzeuge suchen",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Ungültiges Abholdatum",
@@ -980,5 +985,13 @@
     "label": "Reisedaten",
     "change": "Ändern",
     "ariaSummary": "Reisedaten: {summary}. Daten ändern."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

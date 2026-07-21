@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { VEHICLE_COLOR_OPTIONS } from "@/features/vehicles/lib/vehicle-color";
 import { defaultBaseDailyRateForVehicleType } from "@/lib/admin/vehicles/pricing-defaults";
 import { slugifyVehicleName } from "@/lib/admin/vehicles/slugify-name";
 import type { AdminVehicleDetail } from "@/lib/admin/vehicles/types";
@@ -72,6 +73,7 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
   const [vehicleType, setVehicleType] = useState<VehicleType>(vehicle?.vehicleType ?? "Scooter");
   const [brand, setBrand] = useState(vehicle?.brand ?? "");
   const [model, setModel] = useState(vehicle?.model ?? "");
+  const [color, setColor] = useState(vehicle?.color ?? "");
   const [shortDescription, setShortDescription] = useState(vehicle?.shortDescription ?? "");
   const [description, setDescription] = useState(vehicle?.description ?? "");
   const [mainImageUrl, setMainImageUrl] = useState(vehicle?.mainImageUrl ?? "");
@@ -124,6 +126,7 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
       vehicleType,
       brand: brand.trim() || null,
       model: model.trim() || null,
+      color: color.trim() || null,
       shortDescription: shortDescription.trim() || null,
       description: description.trim() || null,
       mainImageUrl: mainImageUrl.trim() || null,
@@ -137,6 +140,7 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
     }),
     [
       brand,
+      color,
       catalogStatus,
       description,
       displayOrder,
@@ -320,6 +324,21 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.model")}</span>
             <input type="text" value={model} onChange={(event) => setModel(event.target.value)} className={inputClassName()} />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.color")}</span>
+            <select
+              value={color}
+              onChange={(event) => setColor(event.target.value)}
+              className={inputClassName()}
+            >
+              <option value="">{t("form.colorNone")}</option>
+              {VEHICLE_COLOR_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
       </section>

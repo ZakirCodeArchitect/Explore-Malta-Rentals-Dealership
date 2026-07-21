@@ -662,7 +662,7 @@
     "emptyTitle": "No hay vehículos disponibles ahora",
     "emptyBody": "Vuelve a intentarlo en breve o mira nuevos anuncios.",
     "noMatchTitle": "No hay coincidencias exactas",
-    "noMatchBody": "Prueba otro tipo, transmisión, plazas o color.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Importes orientativos por día natural para motos y scooters antes de extras; úsalos como guía mientras buscas.",
     "ariaFilters": "Filtros de vehículos",
     "ariaRates": "Tarifas diarias orientativas"
@@ -696,7 +696,10 @@
     "indicativeLine": "Total orientativo motos/scooters ~€{tripEur} (€{dailyEur}/día × {count} {dayLabel}) · El precio final depende del vehículo y extras.",
     "hotelDelivery": "Entrega en hotel",
     "clearFilters": "Borrar filtros",
-    "search": "Buscar"
+    "search": "Buscar",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Tarifas diarias orientativas",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Tipo de vehículo",
     "vehicleTypeAll": "Todos los tipos",
     "submitSearching": "Buscando…",
-    "submitIdle": "Buscar vehículos disponibles"
+    "submitIdle": "Buscar vehículos disponibles",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Fecha de recogida no válida",
@@ -980,5 +985,13 @@
     "label": "Fechas del viaje",
     "change": "Cambiar",
     "ariaSummary": "Fechas del viaje: {summary}. Cambiar fechas."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

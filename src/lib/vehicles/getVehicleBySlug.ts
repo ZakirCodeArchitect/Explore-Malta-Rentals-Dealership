@@ -9,6 +9,7 @@ function mapVehicleDetail(vehicle: {
   vehicleType: VehicleDetailDto["vehicleType"];
   brand: string | null;
   model: string | null;
+  color: string | null;
   shortDescription: string | null;
   description: string | null;
   mainImageUrl: string | null;
@@ -26,6 +27,7 @@ function mapVehicleDetail(vehicle: {
     vehicleType: vehicle.vehicleType,
     brand: vehicle.brand,
     model: vehicle.model,
+    color: vehicle.color,
     shortDescription: vehicle.shortDescription,
     description: vehicle.description,
     mainImageUrl: vehicle.mainImageUrl ?? vehicle.images[0]?.imageUrl ?? null,
@@ -56,6 +58,7 @@ export async function getVehicleBySlug(slug: string): Promise<GetVehicleBySlugRe
       vehicleType: true,
       brand: true,
       model: true,
+      color: true,
       shortDescription: true,
       description: true,
       mainImageUrl: true,

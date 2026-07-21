@@ -116,6 +116,7 @@ export async function AdminVehicleDetailView({
                 />
                 <DetailField label={t("form.brand")} value={vehicle.brand ?? "—"} />
                 <DetailField label={t("form.model")} value={vehicle.model ?? "—"} />
+                <DetailField label={t("form.color")} value={vehicle.color ?? "—"} />
                 <DetailField label={t("form.catalogStatus")} value={t(`catalogStatus.${vehicle.catalogStatus}`)} />
                 <DetailField
                   label={t("form.isActive")}

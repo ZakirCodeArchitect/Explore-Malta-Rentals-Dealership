@@ -29,8 +29,10 @@ import type {
   VehicleType,
 } from "@/features/vehicles/data/vehicles";
 import {
+  brandToUrlParam,
   clampTripEndDate,
   formatPickupDateParam,
+  parseBrandSearchParam,
   parseCcSearchParam,
   parseColorSearchParam,
   parsePickupDateParam,
@@ -43,6 +45,7 @@ import {
   vehicleFilterTypeToUrlParam,
   type EngineCcFilter,
 } from "@/features/vehicles/lib/booking-search-params";
+import { resolveBrandFilterLabel } from "@/lib/vehicles/brand-utils";
 
 const VehicleFilters = dynamic(
   () =>
@@ -97,6 +100,8 @@ function useIsLgViewport() {
 
 type VehicleListingShellProps = Readonly<{
   vehicles?: readonly Vehicle[];
+  /** Preloaded active listing brands for the search card dropdown. */
+  brandOptions?: readonly string[];
   /** When set, title + filters sit in a bounded band with backdrop; grid sits on page background below. */
   heroIntro?: Readonly<{
     title: string;
@@ -114,6 +119,7 @@ type VehicleListingShellProps = Readonly<{
 
 export function VehicleListingShell({
   vehicles,
+  brandOptions = [],
   heroIntro,
   searchPanel,
   children,
@@ -124,6 +130,7 @@ export function VehicleListingShell({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
+  const brandParam = searchParams.get("brand");
   const transmissionParam = searchParams.get("transmission");
   const colorParam = searchParams.get("color");
   const seatsParam = searchParams.get("seats");
@@ -139,6 +146,10 @@ export function VehicleListingShell({
   const dropoffTimeParam = searchParams.get("dropoffTime");
 
   const initialType = parseVehicleTypeSearchParam(typeParam);
+  const initialBrand = resolveBrandFilterLabel(
+    parseBrandSearchParam(brandParam),
+    brandOptions,
+  );
   const initialTransmission =
     parseTransmissionSearchParam(transmissionParam);
   const initialColor = parseColorSearchParam(colorParam);
@@ -164,6 +175,7 @@ export function VehicleListingShell({
   const [returnDate, setReturnDate] = useState<Date>(initialReturn);
   const [selectedType, setSelectedType] =
     useState<VehicleType | "All">(initialType);
+  const [selectedBrand, setSelectedBrand] = useState<string | "All">(initialBrand);
   const [selectedTransmission, setSelectedTransmission] =
     useState<Transmission | "All">(initialTransmission);
   const [selectedColor, setSelectedColor] = useState<VehicleColor | "All">(
@@ -202,6 +214,7 @@ export function VehicleListingShell({
 
   const [appliedType, setAppliedType] =
     useState<VehicleType | "All">(initialType);
+  const [appliedBrand, setAppliedBrand] = useState<string | "All">(initialBrand);
   const [appliedTransmission, setAppliedTransmission] =
     useState<Transmission | "All">(initialTransmission);
   const [appliedColor, setAppliedColor] =
@@ -244,6 +257,12 @@ export function VehicleListingShell({
     setSelectedType(t);
     setAppliedType(t);
   }, [typeParam]);
+
+  useEffect(() => {
+    const b = resolveBrandFilterLabel(parseBrandSearchParam(brandParam), brandOptions);
+    setSelectedBrand(b);
+    setAppliedBrand(b);
+  }, [brandParam, brandOptions]);
 
   useEffect(() => {
     const tr = parseTransmissionSearchParam(transmissionParam);
@@ -318,16 +337,20 @@ export function VehicleListingShell({
   const persistListingFilters = useCallback(
     (next: {
       type?: VehicleType | "All";
+      brand?: string | "All";
       transmission?: Transmission | "All";
       color?: VehicleColor | "All";
       seats?: VehicleSeatsFilter;
     }) => {
       const t = next.type ?? selectedType;
+      const b = next.brand ?? selectedBrand;
       const tr = next.transmission ?? selectedTransmission;
       const c = next.color ?? selectedColor;
       const s = next.seats ?? selectedSeats;
       setSelectedType(t);
       setAppliedType(t);
+      setSelectedBrand(b);
+      setAppliedBrand(b);
       setSelectedTransmission(tr);
       setAppliedTransmission(tr);
       setSelectedColor(c);
@@ -337,16 +360,18 @@ export function VehicleListingShell({
       setUseClientResults(true);
       replaceQuery((p) => {
         p.set("type", vehicleFilterTypeToUrlParam(t));
+        p.set("brand", brandToUrlParam(b));
         p.set("transmission", transmissionToUrlParam(tr));
         p.set("color", vehicleColorToUrlParam(c));
         p.set("seats", seatsFilterToUrlParam(s));
       });
     },
-    [replaceQuery, selectedColor, selectedSeats, selectedTransmission, selectedType],
+    [replaceQuery, selectedBrand, selectedColor, selectedSeats, selectedTransmission, selectedType],
   );
 
   const handleSearchResults = useCallback(() => {
     setAppliedType(selectedType);
+    setAppliedBrand(selectedBrand);
     setAppliedTransmission(selectedTransmission);
     setAppliedColor(selectedColor);
     setAppliedSeats(selectedSeats);
@@ -355,6 +380,7 @@ export function VehicleListingShell({
     window.setTimeout(() => setIsRefreshing(false), 220);
     replaceQuery((p) => {
       p.set("type", vehicleFilterTypeToUrlParam(selectedType));
+      p.set("brand", brandToUrlParam(selectedBrand));
       p.set("transmission", transmissionToUrlParam(selectedTransmission));
       p.set("color", vehicleColorToUrlParam(selectedColor));
       p.set("seats", seatsFilterToUrlParam(selectedSeats));
@@ -389,6 +415,7 @@ export function VehicleListingShell({
     returnDate,
     pickupLocation,
     replaceQuery,
+    selectedBrand,
     selectedColor,
     selectedSeats,
     selectedTransmission,
@@ -402,6 +429,8 @@ export function VehicleListingShell({
     setHotelDelivery(false);
     setSelectedType("All");
     setAppliedType("All");
+    setSelectedBrand("All");
+    setAppliedBrand("All");
     setSelectedTransmission("All");
     setAppliedTransmission("All");
     setSelectedColor("All");
@@ -413,6 +442,7 @@ export function VehicleListingShell({
     setIsRefreshing(false);
     replaceQuery((p) => {
       p.set("type", vehicleFilterTypeToUrlParam("All"));
+      p.set("brand", brandToUrlParam("All"));
       p.set("transmission", transmissionToUrlParam("All"));
       p.set("color", vehicleColorToUrlParam("All"));
       p.set("seats", seatsFilterToUrlParam("All"));
@@ -432,7 +462,7 @@ export function VehicleListingShell({
   const vehicleListingColorOptions = useMemo(() => {
     const unique = new Set<VehicleColor>();
     for (const v of vehicleDataset) {
-      unique.add(v.color);
+      if (v.color) unique.add(v.color);
     }
     const sorted = [...unique].sort((a, b) => a.localeCompare(b));
     return ["All" as const, ...sorted];
@@ -443,6 +473,7 @@ export function VehicleListingShell({
       filterVehicles({
         vehicles: vehicleDataset,
         type: appliedType,
+        brand: appliedBrand,
         transmission: appliedTransmission,
         color: appliedColor,
         seats: appliedSeats,
@@ -450,6 +481,7 @@ export function VehicleListingShell({
       }),
     [
       vehicleDataset,
+      appliedBrand,
       appliedCc,
       appliedColor,
       appliedSeats,
@@ -520,6 +552,9 @@ export function VehicleListingShell({
       variant="rail"
       collapsed={filtersCollapsed}
       onToggleCollapsed={() => setFiltersCollapsed((c) => !c)}
+      brandOptions={brandOptions}
+      selectedBrand={selectedBrand}
+      onBrandChange={(v) => persistListingFilters({ brand: v })}
       colorOptions={vehicleListingColorOptions}
       selectedType={selectedType}
       onTypeChange={(v) => persistListingFilters({ type: v })}

@@ -662,7 +662,7 @@
     "emptyTitle": "Er zijn momenteel geen voertuigen beschikbaar",
     "emptyBody": "Kom binnenkort terug voor nieuw vermelde huurwoningen.",
     "noMatchTitle": "Geen exacte match gevonden",
-    "noMatchBody": "Probeer een ander type, transmissie, stoelen of kleur.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Bedragen per kalenderdag voor motorfietsen en scooters vóór extra's. Gebruik deze als richtlijn terwijl u zoekt.",
     "ariaFilters": "Voertuigfilters",
     "ariaRates": "Indicatieve dagtarieven"
@@ -696,7 +696,10 @@
     "indicativeLine": "Indicatief totaal voor motorfietsen/scooters ~€{tripEur} (€{dailyEur}/dag × {count} {dayLabel}) · De uiteindelijke prijs is afhankelijk van het voertuig en de add-ons.",
     "hotelDelivery": "Hotelbezorging nodig",
     "clearFilters": "Filters wissen",
-    "search": "Zoekopdracht"
+    "search": "Zoekopdracht",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Indicatieve dagtarieven",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Voertuigtype",
     "vehicleTypeAll": "Alle soorten",
     "submitSearching": "Zoeken…",
-    "submitIdle": "Zoek beschikbare voertuigen"
+    "submitIdle": "Zoek beschikbare voertuigen",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Ongeldige ophaaldatum",
@@ -980,5 +985,13 @@
     "label": "Reisdata",
     "change": "Wijziging",
     "ariaSummary": "Reisdata: {summary}. Wijzig data."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

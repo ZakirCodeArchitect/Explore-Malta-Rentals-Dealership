@@ -662,7 +662,7 @@
     "emptyTitle": "Şu anda müsait araç yok",
     "emptyBody": "Yeni listelenen kiralamalar için lütfen kısa süre sonra tekrar kontrol edin.",
     "noMatchTitle": "Tam eşleşme bulunamadı",
-    "noMatchBody": "Başka bir tür, şanzıman, koltuk veya renk deneyin.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Ekstralardan önce motosikletler ve scooterlar için takvim günü başına basketbol sahası miktarları, arama yaparken bunları kılavuz olarak kullanın.",
     "ariaFilters": "Araç filtreleri",
     "ariaRates": "Gösterge niteliğindeki günlük oranlar"
@@ -696,7 +696,10 @@
     "indicativeLine": "Gösterge motosiklet/scooter toplamı ~€{tripEur} (€{dailyEur}/gün × {count} {dayLabel}) · Nihai fiyat araca ve eklentilere bağlıdır.",
     "hotelDelivery": "Otel teslimatına ihtiyacınız var",
     "clearFilters": "Filtreleri temizle",
-    "search": "Aramak"
+    "search": "Aramak",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Gösterge niteliğindeki günlük oranlar",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Araç tipi",
     "vehicleTypeAll": "Tüm türler",
     "submitSearching": "Arama…",
-    "submitIdle": "Mevcut araçları arayın"
+    "submitIdle": "Mevcut araçları arayın",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Geçersiz teslim alma tarihi",
@@ -980,5 +985,13 @@
     "label": "Seyahat tarihleri",
     "change": "Değiştirmek",
     "ariaSummary": "Seyahat tarihleri: {summary}. Tarihleri ​​değiştirin."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

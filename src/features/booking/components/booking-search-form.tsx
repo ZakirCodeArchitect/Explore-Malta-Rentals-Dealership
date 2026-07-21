@@ -18,8 +18,16 @@ import {
   startOfDay,
 } from "date-fns";
 import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
-import { CalendarDays, Loader2, MapPin, Search, SlidersHorizontal } from "lucide-react";
+import Select, {
+  components as selectComponents,
+  type DropdownIndicatorProps,
+} from "react-select";
+import { CalendarDays, Loader2, MapPin, Search, SlidersHorizontal, Tag } from "lucide-react";
+import type { BookingOption } from "@/features/home/data/hero-booking-options";
 import { VEHICLE_TYPES } from "@/features/vehicles/data/vehicles";
+import { vehicleFilterReactSelectStyles } from "@/features/vehicles/components/vehicle-pickup-fields";
+import { resolveBrandFilterLabel } from "@/lib/vehicles/brand-utils";
+import { useVehicleBrands } from "@/features/vehicles/lib/use-vehicle-brands";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   createBookingFormSchema,
@@ -92,14 +100,38 @@ function defaultDates() {
   };
 }
 
+function optionByValue(
+  options: readonly BookingOption[],
+  value: string,
+): BookingOption {
+  return options.find((option) => option.value === value) ?? options[0]!;
+}
+
+function makeBrandDropdownIndicator(changeLabel: string) {
+  return function BrandDropdownIndicator(
+    props: DropdownIndicatorProps<BookingOption, false>,
+  ) {
+    return (
+      <selectComponents.DropdownIndicator {...props}>
+        <span className="shrink-0 text-xs font-semibold text-slate-500">
+          {changeLabel}
+        </span>
+      </selectComponents.DropdownIndicator>
+    );
+  };
+}
+
 type BookingSearchFormProps = Readonly<{
   initialValues?: Partial<{
     vehicleType: string;
+    brand: string;
     pickupDate: string;
     dropoffDate: string;
     pickupTime: string;
     dropoffTime: string;
   }>;
+  /** Preloaded active listing brands (skips client fetch when set). */
+  brandOptions?: readonly string[];
   quickFilterTone?: "default" | "hero";
 }>;
 
@@ -110,11 +142,20 @@ type VehicleTypeCard = Readonly<{
   imageClassName?: string;
 }>;
 
-export function BookingSearchForm({ initialValues, quickFilterTone = "default" }: BookingSearchFormProps = {}) {
+export function BookingSearchForm({
+  initialValues,
+  brandOptions,
+  quickFilterTone = "default",
+}: BookingSearchFormProps = {}) {
   const router = useRouter();
   const tSearch = useTranslations("BookingSearch");
   const tForm = useTranslations("BookingForm");
   const tCommon = useTranslations("Common");
+  const tFilters = useTranslations("VehicleFilters");
+  const { brands: fetchedBrands, isLoading: isBrandsLoading } = useVehicleBrands({
+    initialBrands: brandOptions,
+  });
+  const brandChoices = brandOptions ?? fetchedBrands;
   const [calOpen, setCalOpen] = useState(false);
   const [calendarMonths, setCalendarMonths] = useState(1);
   const minFrom = useMemo(() => startOfDay(new Date()), []);
@@ -150,6 +191,10 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     resolver: formResolver,
     defaultValues: {
       vehicleType: initialValues?.vehicleType ?? "all",
+      brand:
+        initialValues?.brand && initialValues.brand !== "all"
+          ? resolveBrandFilterLabel(initialValues.brand, brandChoices)
+          : "all",
       alternatePickupRequested: false,
       alternatePickupAddress: "",
       differentDropoff: false,
@@ -177,6 +222,13 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    if (!initialValues?.brand || initialValues.brand === "all") {
+      return;
+    }
+    setValue("brand", resolveBrandFilterLabel(initialValues.brand, brandChoices));
+  }, [brandChoices, initialValues?.brand, setValue]);
 
   /* eslint-disable react-hooks/incompatible-library -- react-hook-form watch() */
   const pickupDate = watch("pickupDate");
@@ -234,6 +286,21 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
       })),
     ],
     [],
+  );
+
+  const brandSelectOptions = useMemo((): BookingOption[] => {
+    return [
+      { value: "all", label: tFilters("allBrands") },
+      ...brandChoices.map((brand) => ({ value: brand, label: brand })),
+    ];
+  }, [brandChoices, tFilters]);
+
+  const brandSelectComponents = useMemo(
+    () => ({
+      DropdownIndicator: makeBrandDropdownIndicator(tCommon("change")),
+      IndicatorSeparator: () => null,
+    }),
+    [tCommon],
   );
 
   return (
@@ -476,6 +543,45 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               )}
             />
           </fieldset>
+
+          {brandChoices.length > 0 ? (
+            <div className="min-w-0">
+              <label
+                htmlFor="booking-search-brand"
+                className="mb-1.5 block text-xs font-semibold text-slate-500"
+              >
+                {tSearch("brandLabel")}
+              </label>
+              <Controller
+                name="brand"
+                control={control}
+                render={({ field }) => (
+                  <div className={inputShell}>
+                    <Tag className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
+                    <Select<BookingOption, false>
+                      inputId="booking-search-brand"
+                      instanceId="booking-search-brand"
+                      aria-label={tSearch("brandAria")}
+                      value={optionByValue(brandSelectOptions, field.value ?? "all")}
+                      onChange={(option) => field.onChange(option?.value ?? "all")}
+                      onBlur={field.onBlur}
+                      options={brandSelectOptions}
+                      isSearchable={false}
+                      isDisabled={isBrandsLoading && brandChoices.length === 0}
+                      styles={vehicleFilterReactSelectStyles}
+                      components={brandSelectComponents}
+                      menuPortalTarget={
+                        typeof document !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
+                      className="min-w-0 flex-1"
+                      classNamePrefix="booking-search-brand"
+                    />
+                  </div>
+                )}
+              />
+            </div>
+          ) : null}
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">

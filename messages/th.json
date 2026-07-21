@@ -662,7 +662,7 @@
     "emptyTitle": "ไม่มียานพาหนะให้บริการในขณะนี้",
     "emptyBody": "โปรดกลับมาตรวจสอบอีกครั้งเร็วๆ นี้เพื่อดูการเช่ารายการใหม่",
     "noMatchTitle": "ไม่พบรายการที่ตรงกันทุกประการ",
-    "noMatchBody": "ลองประเภทอื่น ระบบเกียร์ เบาะนั่ง หรือสีอื่น",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "จำนวน Ballpark ต่อวันปฏิทินสำหรับรถจักรยานยนต์และสกู๊ตเตอร์ก่อนค่าใช้จ่ายเพิ่มเติม ใช้เป็นแนวทางในขณะที่คุณค้นหา",
     "ariaFilters": "ตัวกรองยานพาหนะ",
     "ariaRates": "อัตรารายวันที่บ่งชี้"
@@ -696,7 +696,10 @@
     "indicativeLine": "จำนวนรถจักรยานยนต์/สกู๊ตเตอร์โดยประมาณ ~€{tripEur} (€{dailyEur}/วัน × {count} {dayLabel}) · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและอุปกรณ์เสริม",
     "hotelDelivery": "ต้องการจัดส่งที่โรงแรม",
     "clearFilters": "ล้างตัวกรอง",
-    "search": "ค้นหา"
+    "search": "ค้นหา",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "อัตรารายวันที่บ่งชี้",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "ประเภทยานพาหนะ",
     "vehicleTypeAll": "ทุกประเภท",
     "submitSearching": "กำลังค้นหา...",
-    "submitIdle": "ค้นหายานพาหนะที่มีอยู่"
+    "submitIdle": "ค้นหายานพาหนะที่มีอยู่",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "วันที่รับไม่ถูกต้อง",
@@ -980,5 +985,13 @@
     "label": "วันเดินทาง",
     "change": "เปลี่ยน",
     "ariaSummary": "วันที่เดินทาง: {summary}. เปลี่ยนวันที่"
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

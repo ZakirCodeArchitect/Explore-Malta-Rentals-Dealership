@@ -662,7 +662,7 @@
     "emptyTitle": "ابھی کوئی گاڑیاں دستیاب نہیں ہیں۔",
     "emptyBody": "نئے درج کرائے کے لیے براہ کرم جلد ہی دوبارہ چیک کریں۔",
     "noMatchTitle": "کوئی قطعی مماثلت نہیں ملی",
-    "noMatchBody": "دوسری قسم، ٹرانسمیشن، سیٹیں یا رنگ آزمائیں۔",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "بالپارک فی کیلنڈر ڈے کی رقم ایکسٹرا سے پہلے موٹرسائیکلوں اور سکوٹرز کے لیے، جب آپ تلاش کرتے ہیں تو انہیں بطور رہنما استعمال کریں۔",
     "ariaFilters": "گاڑیوں کے فلٹرز",
     "ariaRates": "اشارے روزانہ کی شرح"
@@ -696,7 +696,10 @@
     "indicativeLine": "اشارے والی موٹرسائیکلیں/سکوٹر کل ~€{tripEur} (€{dailyEur}/day × {count} {dayLabel}) · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔",
     "hotelDelivery": "ہوٹل ڈیلیوری کی ضرورت ہے۔",
     "clearFilters": "فلٹرز صاف کریں۔",
-    "search": "تلاش کریں۔"
+    "search": "تلاش کریں۔",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "اشارے روزانہ کی شرح",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "گاڑی کی قسم",
     "vehicleTypeAll": "تمام اقسام",
     "submitSearching": "تلاش کر رہا ہے…",
-    "submitIdle": "دستیاب گاڑیاں تلاش کریں۔"
+    "submitIdle": "دستیاب گاڑیاں تلاش کریں۔",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "پک اپ کی غلط تاریخ",
@@ -980,5 +985,13 @@
     "label": "سفر کی تاریخیں۔",
     "change": "تبدیلی",
     "ariaSummary": "سفر کی تاریخیں: {summary}. تاریخیں تبدیل کریں۔"
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

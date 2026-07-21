@@ -662,7 +662,7 @@
     "emptyTitle": "W tej chwili brak dostępnych pojazdów",
     "emptyBody": "Sprawdź wkrótce nowo wystawione oferty wynajmu.",
     "noMatchTitle": "Nie znaleziono dokładnego dopasowania",
-    "noMatchBody": "Wypróbuj inny typ, skrzynię biegów, siedzenia lub kolor.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Kwoty na dzień kalendarzowy dla motocykli i skuterów przed dodatkami. Skorzystaj z nich jako wskazówki podczas wyszukiwania.",
     "ariaFilters": "Filtry samochodowe",
     "ariaRates": "Orientacyjne stawki dzienne"
@@ -696,7 +696,10 @@
     "indicativeLine": "Orientacyjna suma motocykli/skuterów ~{tripEur} ({dailyEur}/dzień × {count} {dayLabel}) · Ostateczna cena zależy od pojazdu i dodatków.",
     "hotelDelivery": "Potrzebujesz dostawy do hotelu",
     "clearFilters": "Wyczyść filtry",
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Orientacyjne stawki dzienne",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Typ pojazdu",
     "vehicleTypeAll": "Wszystkie typy",
     "submitSearching": "Badawczy…",
-    "submitIdle": "Wyszukaj dostępne pojazdy"
+    "submitIdle": "Wyszukaj dostępne pojazdy",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Nieprawidłowa data odbioru",
@@ -980,5 +985,13 @@
     "label": "Daty wycieczek",
     "change": "Zmiana",
     "ariaSummary": "Daty wyjazdu: {summary}. Zmień daty."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

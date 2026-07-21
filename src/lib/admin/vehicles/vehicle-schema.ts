@@ -32,6 +32,7 @@ export const adminVehicleWriteSchema = z.object({
   vehicleType: z.enum(VEHICLE_TYPES as [string, ...string[]]),
   brand: optionalText,
   model: optionalText,
+  color: optionalText,
   shortDescription: z.string().trim().max(500).nullable().optional(),
   description: z.string().trim().max(10000).nullable().optional(),
   mainImageUrl: z.string().trim().max(2048).nullable().optional(),

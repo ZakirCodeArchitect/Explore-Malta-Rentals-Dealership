@@ -662,7 +662,7 @@
     "emptyTitle": "কোন যানবাহন এই মুহূর্তে উপলব্ধ",
     "emptyBody": "নতুন তালিকাভুক্ত ভাড়ার জন্য শীঘ্রই ফিরে চেক করুন.",
     "noMatchTitle": "কোনো সঠিক মিল পাওয়া যায়নি",
-    "noMatchBody": "অন্য প্রকার, ট্রান্সমিশন, আসন বা রঙ চেষ্টা করুন।",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "অতিরিক্তের আগে মোটরসাইকেল এবং স্কুটারগুলির জন্য প্রতি ক্যালেন্ডার-দিনের পরিমাণ বলপার্ক, আপনি অনুসন্ধান করার সময় এগুলিকে গাইড হিসাবে ব্যবহার করুন।",
     "ariaFilters": "যানবাহন ফিল্টার",
     "ariaRates": "নির্দেশক দৈনিক হার"
@@ -696,7 +696,10 @@
     "indicativeLine": "মোটর সাইকেল/স্কুটার মোট ~€{tripEur} (€{dailyEur}/day × {count} {dayLabel}) · চূড়ান্ত মূল্য গাড়ি এবং অ্যাড-অনগুলির উপর নির্ভর করে।",
     "hotelDelivery": "হোটেল ডেলিভারি প্রয়োজন",
     "clearFilters": "ফিল্টার সাফ করুন",
-    "search": "অনুসন্ধান করুন"
+    "search": "অনুসন্ধান করুন",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "নির্দেশক দৈনিক হার",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "যানবাহনের ধরন",
     "vehicleTypeAll": "সব ধরনের",
     "submitSearching": "অনুসন্ধান করা হচ্ছে...",
-    "submitIdle": "উপলব্ধ যানবাহন অনুসন্ধান করুন"
+    "submitIdle": "উপলব্ধ যানবাহন অনুসন্ধান করুন",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "অবৈধ পিকআপ তারিখ",
@@ -980,5 +985,13 @@
     "label": "ভ্রমণের তারিখ",
     "change": "পরিবর্তন",
     "ariaSummary": "ভ্রমণের তারিখ: {summary}। তারিখ পরিবর্তন করুন।"
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

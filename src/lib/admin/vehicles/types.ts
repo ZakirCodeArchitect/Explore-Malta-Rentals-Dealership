@@ -17,6 +17,7 @@ export type AdminVehicleListItem = {
   vehicleType: VehicleType;
   brand: string | null;
   model: string | null;
+  color: string | null;
   mainImageUrl: string | null;
   catalogStatus: VehicleCatalogStatus;
   isActive: boolean;

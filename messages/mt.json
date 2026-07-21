@@ -662,7 +662,7 @@
     "emptyTitle": "Ebda vetturi disponibbli bħalissa",
     "emptyBody": "Jekk jogħġbok erġa' iċċekkja dalwaqt għal kirjiet ġodda.",
     "noMatchTitle": "Ebda korrispondenza eżatta nstabet",
-    "noMatchBody": "Pprova tip, trasmissjoni, siġġijiet, jew kulur ieħor.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Ammonti approssimattivi ta' kuljum għal muturi u skutters qabel l-extras, uża dawn bħala gwida waqt li tfittex.",
     "ariaFilters": "Filtri tal-vetturi",
     "ariaRates": "Rati ta' kuljum indikattivi"
@@ -696,7 +696,10 @@
     "indicativeLine": "Total indikattiv muturi/skutters ~€{tripEur} (€{dailyEur}/jum × {count} {dayLabel}) · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet.",
     "hotelDelivery": "Teħtieġ konsenja tal-lukanda",
     "clearFilters": "Ħassar il-filtri",
-    "search": "Fittex"
+    "search": "Fittex",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Rati indikattivi ta' kuljum",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Tip ta' vettura",
     "vehicleTypeAll": "It-tipi kollha",
     "submitSearching": "Qed ifittex…",
-    "submitIdle": "Fittex vetturi disponibbli"
+    "submitIdle": "Fittex vetturi disponibbli",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Data tal-irkupru invalida",
@@ -980,5 +985,13 @@
     "label": "Dati tal-vjaġġ",
     "change": "Ibdel",
     "ariaSummary": "Dati tal-vjaġġ: {summary}. Ibdel id-dati."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

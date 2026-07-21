@@ -190,6 +190,12 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
                         <div className="min-w-0">
                           <p className="truncate font-semibold text-slate-900">{vehicle.name}</p>
                           <p className="truncate text-xs text-slate-500">{vehicle.slug}</p>
+                          {(vehicle.brand || vehicle.model || vehicle.color) ? (
+                            <p className="mt-0.5 truncate text-[11px] text-slate-500">
+                              {[vehicle.brand, vehicle.model].filter(Boolean).join(" ")}
+                              {vehicle.color ? ` · ${vehicle.color}` : ""}
+                            </p>
+                          ) : null}
                           {vehicle.bookingCount > 0 ? (
                             <p className="mt-0.5 text-[11px] text-slate-400">
                               {t("table.bookingCount", { count: vehicle.bookingCount })}

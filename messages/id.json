@@ -662,7 +662,7 @@
     "emptyTitle": "Tidak ada kendaraan yang tersedia saat ini",
     "emptyBody": "Silakan periksa kembali segera untuk melihat persewaan yang baru terdaftar.",
     "noMatchTitle": "Tidak ditemukan kecocokan persis",
-    "noMatchBody": "Coba tipe, transmisi, jok, atau warna lain.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Perkiraan jumlah rata-rata per hari kalender untuk sepeda motor dan skuter sebelum tambahan, gunakan ini sebagai panduan saat Anda melakukan penelusuran.",
     "ariaFilters": "Filter kendaraan",
     "ariaRates": "Tarif harian indikatif"
@@ -696,7 +696,10 @@
     "indicativeLine": "Total sepeda motor/skuter indikatif ~€{tripEur} (€{dailyEur}/hari × {count} {dayLabel}) · Harga akhir tergantung pada kendaraan dan tambahannya.",
     "hotelDelivery": "Butuh pengiriman hotel",
     "clearFilters": "Hapus filter",
-    "search": "Mencari"
+    "search": "Mencari",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Tarif harian indikatif",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Jenis kendaraan",
     "vehicleTypeAll": "Semua tipe",
     "submitSearching": "Mencari…",
-    "submitIdle": "Cari kendaraan yang tersedia"
+    "submitIdle": "Cari kendaraan yang tersedia",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Tanggal pengambilan tidak valid",
@@ -980,5 +985,13 @@
     "label": "Tanggal perjalanan",
     "change": "Mengubah",
     "ariaSummary": "Tanggal perjalanan: {summary}. Ubah tanggal."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

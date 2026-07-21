@@ -662,7 +662,7 @@
     "emptyTitle": "目前没有可用车辆",
     "emptyBody": "请稍后查看新上架的租赁车辆。",
     "noMatchTitle": "未找到完全匹配",
-    "noMatchBody": "请尝试其他类型、变速箱、座位或颜色。",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "摩托车和踏板车的大概日历日费用（不含额外费用），在搜索时作为参考。",
     "ariaFilters": "车辆筛选器",
     "ariaRates": "参考日租价格"
@@ -696,7 +696,10 @@
     "indicativeLine": "摩托车/踏板车预计总价约 €{tripEur}（€{dailyEur}/天 × {count} {dayLabel}）· 最终价格取决于车辆和附加项目。",
     "hotelDelivery": "需要酒店送车",
     "clearFilters": "清除筛选器",
-    "search": "搜索"
+    "search": "搜索",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "参考日租价格",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "车辆类型",
     "vehicleTypeAll": "所有类型",
     "submitSearching": "搜索中…",
-    "submitIdle": "搜索可用车辆"
+    "submitIdle": "搜索可用车辆",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "取车日期无效",
@@ -980,5 +985,13 @@
     "label": "行程日期",
     "change": "更改",
     "ariaSummary": "行程日期：{summary}。更改日期。"
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

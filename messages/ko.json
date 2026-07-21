@@ -662,7 +662,7 @@
     "emptyTitle": "현재 이용 가능한 차량이 없습니다.",
     "emptyBody": "새로 등록된 임대 목록을 잠시 후에 다시 확인해 주세요.",
     "noMatchTitle": "정확히 일치하는 항목이 없습니다.",
-    "noMatchBody": "다른 유형, 변속기, 좌석 또는 색상을 사용해 보십시오.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "추가 금액 이전에 오토바이 및 스쿠터에 대한 달력일당 금액을 검색하는 동안 가이드로 사용하세요.",
     "ariaFilters": "차량 필터",
     "ariaRates": "일일 요금"
@@ -696,7 +696,10 @@
     "indicativeLine": "오토바이/스쿠터 총계 ~€{tripEur} (€{dailyEur}/일 × {count} {dayLabel}) · 최종 가격은 차량 및 추가 품목에 따라 다릅니다.",
     "hotelDelivery": "호텔 배송이 필요합니다",
     "clearFilters": "필터 지우기",
-    "search": "찾다"
+    "search": "찾다",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "일일 요금",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "차량 종류",
     "vehicleTypeAll": "모든 유형",
     "submitSearching": "수색…",
-    "submitIdle": "이용 가능한 차량 검색"
+    "submitIdle": "이용 가능한 차량 검색",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "잘못된 픽업 날짜",
@@ -980,5 +985,13 @@
     "label": "여행 날짜",
     "change": "변화",
     "ariaSummary": "여행 날짜: {summary}. 날짜를 변경하세요."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

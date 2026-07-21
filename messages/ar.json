@@ -662,7 +662,7 @@
     "emptyTitle": "لا توجد مركبات متاحة الآن",
     "emptyBody": "يرجى المراجعة قريباً للإيجارات المدرجة حديثاً.",
     "noMatchTitle": "لم يتم العثور على تطابق دقيق",
-    "noMatchBody": "جرب نوعاً أو ناقلاً أو مقاعد أو لوناً آخر.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "مبالغ تقريبية لكل يوم تقويمي للدراجات النارية والسكوتر قبل الإضافات — استخدمها كمرشد أثناء البحث.",
     "ariaFilters": "مرشحات المركبات",
     "ariaRates": "الأسعار اليومية التوجيهية"
@@ -696,7 +696,10 @@
     "indicativeLine": "الإجمالي التوجيهي للدراجات النارية/السكوتر ~€{tripEur} (€{dailyEur}/يوم × {count} {dayLabel}) · السعر النهائي يعتمد على المركبة والإضافات.",
     "hotelDelivery": "التوصيل إلى الفندق مطلوب",
     "clearFilters": "مسح المرشحات",
-    "search": "بحث"
+    "search": "بحث",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "الأسعار اليومية التوجيهية",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "نوع المركبة",
     "vehicleTypeAll": "جميع الأنواع",
     "submitSearching": "جارٍ البحث…",
-    "submitIdle": "البحث عن المركبات المتاحة"
+    "submitIdle": "البحث عن المركبات المتاحة",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "تاريخ استلام غير صالح",
@@ -980,5 +985,13 @@
     "label": "تواريخ الرحلة",
     "change": "تغيير",
     "ariaSummary": "تواريخ الرحلة: {summary}. تغيير التواريخ."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

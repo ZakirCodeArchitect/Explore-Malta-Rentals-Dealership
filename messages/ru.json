@@ -662,7 +662,7 @@
     "emptyTitle": "Нет доступных транспортных средств сейчас",
     "emptyBody": "Пожалуйста, проверьте позже для новых объявлений об аренде.",
     "noMatchTitle": "Точного совпадения не найдено",
-    "noMatchBody": "Попробуйте другой тип, коробку передач, количество мест или цвет.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Приблизительные суммы за календарный день для мотоциклов и скутеров до дополнений — используйте их как ориентир при поиске.",
     "ariaFilters": "Фильтры транспортных средств",
     "ariaRates": "Ориентировочные дневные тарифы"
@@ -696,7 +696,10 @@
     "indicativeLine": "Ориентировочный итог мотоциклы/скутеры ~€{tripEur} (€{dailyEur}/день × {count} {dayLabel}) · Окончательная цена зависит от транспортного средства и дополнений.",
     "hotelDelivery": "Требуется доставка в отель",
     "clearFilters": "Очистить фильтры",
-    "search": "Поиск"
+    "search": "Поиск",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Ориентировочные дневные тарифы",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Тип транспортного средства",
     "vehicleTypeAll": "Все типы",
     "submitSearching": "Поиск…",
-    "submitIdle": "Найти доступные транспортные средства"
+    "submitIdle": "Найти доступные транспортные средства",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Неверная дата получения",
@@ -980,5 +985,13 @@
     "label": "Даты поездки",
     "change": "Изменить",
     "ariaSummary": "Даты поездки: {summary}. Изменить даты."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

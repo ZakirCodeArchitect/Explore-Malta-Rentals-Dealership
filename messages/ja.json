@@ -662,7 +662,7 @@
     "emptyTitle": "現在利用可能な車両はありません",
     "emptyBody": "新しいレンタルの掲載についてはしばらくしてからご確認ください。",
     "noMatchTitle": "完全一致が見つかりません",
-    "noMatchBody": "別のタイプ、トランスミッション、シート数、または色を試してください。",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "バイクとスクーターの追加料金前の1暦日あたりのおおよその金額 — 検索中のガイドとしてご使用ください。",
     "ariaFilters": "車両フィルター",
     "ariaRates": "参考日額料金"
@@ -696,7 +696,10 @@
     "indicativeLine": "バイク/スクーターの参考合計 ~€{tripEur}（€{dailyEur}/日 × {count}{dayLabel}）· 最終価格は車両とオプションによって異なります。",
     "hotelDelivery": "ホテルへの配達が必要",
     "clearFilters": "フィルターをクリア",
-    "search": "検索"
+    "search": "検索",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "参考日額料金",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "車両タイプ",
     "vehicleTypeAll": "すべてのタイプ",
     "submitSearching": "検索中…",
-    "submitIdle": "利用可能な車両を検索"
+    "submitIdle": "利用可能な車両を検索",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "無効な受け取り日",
@@ -980,5 +985,13 @@
     "label": "旅行の日程",
     "change": "変更",
     "ariaSummary": "旅行の日程：{summary}。日程を変更。"
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

@@ -55,6 +55,18 @@ const URL_TO_COLOR: Record<string, VehicleColor | "All"> = {
   orange: "Orange",
 };
 
+export function parseBrandSearchParam(raw: string | null): string | "All" {
+  if (!raw) return "All";
+  const decoded = decodeURIComponent(raw.trim());
+  if (!decoded || decoded.toLowerCase() === "all") return "All";
+  return decoded;
+}
+
+export function brandToUrlParam(value: string | "All"): string {
+  if (value === "All") return "all";
+  return encodeURIComponent(value.trim());
+}
+
 export function parseColorSearchParam(
   raw: string | null,
 ): VehicleColor | "All" {

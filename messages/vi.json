@@ -662,7 +662,7 @@
     "emptyTitle": "Hiện tại không có phương tiện nào có sẵn",
     "emptyBody": "Vui lòng kiểm tra lại ngay để biết thông tin cho thuê mới được liệt kê.",
     "noMatchTitle": "Không tìm thấy kết quả khớp chính xác",
-    "noMatchBody": "Hãy thử loại, hộp số, ghế hoặc màu sắc khác.",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "Số lượng sân chơi mỗi ngày theo lịch dành cho xe máy và xe tay ga trước các tính năng bổ sung, hãy sử dụng chúng làm hướng dẫn trong khi bạn tìm kiếm.",
     "ariaFilters": "Bộ lọc xe",
     "ariaRates": "Tỷ lệ hàng ngày chỉ định"
@@ -696,7 +696,10 @@
     "indicativeLine": "Tổng số xe máy/tay ga dự kiến ​​~€{tripEur} (€{dailyEur}/ngày × {count} {dayLabel}) · Giá cuối cùng tùy thuộc vào loại xe và tiện ích bổ sung.",
     "hotelDelivery": "Cần giao hàng khách sạn",
     "clearFilters": "Xóa bộ lọc",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "Tỷ lệ hàng ngày chỉ định",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "Loại xe",
     "vehicleTypeAll": "Tất cả các loại",
     "submitSearching": "Đang tìm kiếm…",
-    "submitIdle": "Tìm kiếm xe có sẵn"
+    "submitIdle": "Tìm kiếm xe có sẵn",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "Ngày nhận hàng không hợp lệ",
@@ -980,5 +985,13 @@
     "label": "Ngày chuyến đi",
     "change": "Thay đổi",
     "ariaSummary": "Ngày chuyến đi: {summary}. Thay đổi ngày."
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { parseVehicleColorValue } from "@/features/vehicles/lib/vehicle-color";
 import type { VehicleRentalWindowStatus } from "@/lib/vehicles/types";
 
 export const VEHICLE_TYPES = ["Scooter", "Motorcycle", "Bicycle", "ATV"] as const;
@@ -33,6 +34,7 @@ export type VehicleListApiItem = Readonly<{
   vehicleType: ApiVehicleType;
   brand: string | null;
   model: string | null;
+  color: string | null;
   shortDescription: string | null;
   description: string | null;
   mainImageUrl: string | null;
@@ -74,7 +76,7 @@ export type Vehicle = Readonly<{
   seats: number;
   transmission: Transmission;
   fuel: string;
-  color: VehicleColor;
+  color: VehicleColor | null;
   engine: string;
   rating: number;
   reviewCount: number;
@@ -163,7 +165,7 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
     seats: item.vehicleType === "Bicycle" ? 1 : 2,
     transmission: item.vehicleType === "Bicycle" ? "Manual" : "Automatic",
     fuel: item.vehicleType === "Bicycle" ? "Human powered" : "Petrol",
-    color: "Gray",
+    color: parseVehicleColorValue(item.color),
     engine: engineByApiType(item.vehicleType),
     rating: 0,
     reviewCount: 0,

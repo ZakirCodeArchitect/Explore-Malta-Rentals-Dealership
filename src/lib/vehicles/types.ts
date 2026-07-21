@@ -28,6 +28,7 @@ export type VehicleListItemDto = {
   vehicleType: VehicleType;
   brand: string | null;
   model: string | null;
+  color: string | null;
   shortDescription: string | null;
   description: string | null;
   mainImageUrl: string | null;

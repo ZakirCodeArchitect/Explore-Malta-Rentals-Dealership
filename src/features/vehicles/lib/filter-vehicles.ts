@@ -6,6 +6,7 @@ import type {
   VehicleType,
 } from "@/features/vehicles/data/vehicles";
 import {
+  parseBrandSearchParam,
   parseCcSearchParam,
   parseColorSearchParam,
   parseSeatsSearchParam,
@@ -13,10 +14,12 @@ import {
   parseVehicleTypeSearchParam,
   type EngineCcFilter,
 } from "@/features/vehicles/lib/booking-search-params";
+import { brandsMatch } from "@/lib/vehicles/brand-utils";
 
 type FilterVehiclesInput = Readonly<{
   vehicles: readonly Vehicle[];
   type?: VehicleType | "All";
+  brand?: string | "All";
   transmission?: Transmission | "All";
   color?: VehicleColor | "All";
   seats?: VehicleSeatsFilter;
@@ -26,6 +29,7 @@ type FilterVehiclesInput = Readonly<{
 export function filterVehicles({
   vehicles,
   type = "All",
+  brand = "All",
   transmission = "All",
   color = "All",
   seats = "All",
@@ -33,10 +37,16 @@ export function filterVehicles({
 }: FilterVehiclesInput): Vehicle[] {
   const typeFiltered =
     type === "All" ? vehicles : vehicles.filter((vehicle) => vehicle.type === type);
+  const brandFiltered =
+    brand === "All"
+      ? typeFiltered
+      : typeFiltered.filter(
+          (vehicle) => vehicle.brand != null && brandsMatch(vehicle.brand, brand),
+        );
   const transmissionFiltered =
     transmission === "All"
-      ? typeFiltered
-      : typeFiltered.filter((vehicle) => vehicle.transmission === transmission);
+      ? brandFiltered
+      : brandFiltered.filter((vehicle) => vehicle.transmission === transmission);
   const colorFiltered =
     color === "All"
       ? transmissionFiltered
@@ -60,6 +70,7 @@ export function filterVehiclesFromSearchParams(
   searchParams: Record<string, string | string[] | undefined>,
 ): Vehicle[] {
   const typeParam = searchParams.type;
+  const brandParam = searchParams.brand;
   const transmissionParam = searchParams.transmission;
   const colorParam = searchParams.color;
   const seatsParam = searchParams.seats;
@@ -70,6 +81,7 @@ export function filterVehiclesFromSearchParams(
     type: parseVehicleTypeSearchParam(
       typeof typeParam === "string" ? typeParam : null,
     ),
+    brand: parseBrandSearchParam(typeof brandParam === "string" ? brandParam : null),
     transmission: parseTransmissionSearchParam(
       typeof transmissionParam === "string" ? transmissionParam : null,
     ),

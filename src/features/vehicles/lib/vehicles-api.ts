@@ -54,6 +54,7 @@ function isVehicleListItem(value: unknown): value is VehicleListApiItem {
     isApiVehicleType(candidate.vehicleType) &&
     (candidate.brand === null || typeof candidate.brand === "string") &&
     (candidate.model === null || typeof candidate.model === "string") &&
+    (candidate.color === null || typeof candidate.color === "string") &&
     (candidate.shortDescription === null || typeof candidate.shortDescription === "string") &&
     (candidate.description === null || typeof candidate.description === "string") &&
     (candidate.mainImageUrl === null || typeof candidate.mainImageUrl === "string") &&

@@ -662,7 +662,7 @@
     "emptyTitle": "अभी कोई वाहन उपलब्ध नहीं है",
     "emptyBody": "नए सूचीबद्ध किराये के लिए थोड़ी देर बाद वापस देखें।",
     "noMatchTitle": "कोई सटीक मेल नहीं मिला",
-    "noMatchBody": "दूसरा प्रकार, ट्रांसमिशन, सीटें या रंग आज़माएं।",
+    "noMatchBody": "Try another brand, type, transmission, seats, or color.",
     "ratesBlurb": "एक्स्ट्रा से पहले मोटरसाइकिल और स्कूटर के लिए अनुमानित प्रति-कैलेंडर-दिन राशि — खोजते समय इन्हें गाइड के रूप में उपयोग करें।",
     "ariaFilters": "वाहन फ़िल्टर",
     "ariaRates": "सांकेतिक दैनिक दरें"
@@ -696,7 +696,10 @@
     "indicativeLine": "मोटरसाइकिल/स्कूटर कुल सांकेतिक ~€{tripEur} (€{dailyEur}/दिन × {count} {dayLabel}) · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।",
     "hotelDelivery": "होटल डिलीवरी चाहिए",
     "clearFilters": "फ़िल्टर साफ़ करें",
-    "search": "खोजें"
+    "search": "खोजें",
+    "brand": "Brand",
+    "allBrands": "All brands",
+    "brandAria": "Vehicle brand"
   },
   "IndicativeRates": {
     "cardTitle": "सांकेतिक दैनिक दरें",
@@ -744,7 +747,9 @@
     "vehicleTypeLabel": "वाहन का प्रकार",
     "vehicleTypeAll": "सभी प्रकार",
     "submitSearching": "खोज हो रही है…",
-    "submitIdle": "उपलब्ध वाहन खोजें"
+    "submitIdle": "उपलब्ध वाहन खोजें",
+    "brandLabel": "Brand",
+    "brandAria": "Vehicle brand"
   },
   "BookingForm": {
     "invalidPickupDate": "अमान्य पिकअप तारीख",
@@ -980,5 +985,13 @@
     "label": "यात्रा तारीखें",
     "change": "बदलें",
     "ariaSummary": "यात्रा तारीखें: {summary}। तारीखें बदलें।"
+  },
+  "Admin": {
+    "vehicles": {
+      "form": {
+        "color": "Color",
+        "colorNone": "No color specified"
+      }
+    }
   }
 }
