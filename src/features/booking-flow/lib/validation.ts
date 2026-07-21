@@ -6,6 +6,10 @@ import { vehicleTypeNeedsHelmetFlow } from "@/features/booking-flow/lib/helmet-r
 import { isLicenseAllowedForVehicle } from "@/features/booking-flow/lib/license-categories";
 import type { BookingFlowState } from "@/features/booking-flow/lib/types";
 import { isPickupDeliveryAllowedForDate } from "@/lib/booking/delivery-availability";
+import {
+  calculateCalendarRentalDays,
+  MAX_BILLABLE_RENTAL_DAYS,
+} from "@/lib/pricing/rental-duration";
 
 export type BookingValidationMessages = Readonly<{
   vehicleTypeRequired: string;
@@ -147,7 +151,11 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
         });
       }
 
-      if (rentalHours > 24 * 7 * 4) {
+      const billableDays = calculateCalendarRentalDays(
+        state.rental.pickupDate,
+        state.rental.returnDate,
+      );
+      if (billableDays !== null && billableDays > MAX_BILLABLE_RENTAL_DAYS) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message: m.maxRental,

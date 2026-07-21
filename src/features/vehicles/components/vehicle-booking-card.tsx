@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarRange, Globe, Lock, Mail, Package, ShieldCheck, User, Phone } from "lucide-react";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
 import type { Vehicle, VehicleType } from "@/features/vehicles/data/vehicles";
 
 type VehicleBookingCardProps = Readonly<{
@@ -20,11 +21,7 @@ function joinClasses(...classes: Array<string | undefined>) {
 }
 
 function getRentalDays(start: string, end: string) {
-  if (!start || !end) return 0;
-  const startDate = new Date(`${start}T12:00:00`);
-  const endDate = new Date(`${end}T12:00:00`);
-  if (Number.isNaN(startDate.valueOf()) || Number.isNaN(endDate.valueOf()) || endDate <= startDate) return 0;
-  return Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  return calculateCalendarRentalDays(start, end) ?? 0;
 }
 
 function todayISODate() {

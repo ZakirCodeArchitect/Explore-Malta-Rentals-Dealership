@@ -18,7 +18,7 @@ import {
   resolveDurationPricingRule,
   type DurationPricingRuleDto,
 } from "../src/lib/pricing/duration-pricing";
-import { calculateRentalDuration } from "../src/lib/pricing/rental-duration";
+import { calculateCalendarRentalDays, calculateRentalDuration } from "../src/lib/pricing/rental-duration";
 import { validateStorageBoxSelection } from "../src/lib/booking/validateStorageBoxSelection";
 
 type BookingPayload = z.input<typeof bookingSubmissionSchema>;
@@ -34,7 +34,7 @@ const basePricingInput = {
   rental: {
     vehicle: { type: "Scooter" },
     pickupDate: "2026-05-10",
-    returnDate: "2026-05-12",
+    returnDate: "2026-05-11",
     pickupTime: "10:00",
     returnTime: "10:00",
   },
@@ -86,6 +86,97 @@ function runDurationRuleAssertions(): void {
   }
 }
 
+function runCalendarRentalDaysAssertions(): void {
+  const cases: Array<{
+    name: string;
+    pickupDate: string;
+    returnDate: string;
+    expected: number | null;
+  }> = [
+    { name: "same date", pickupDate: "2026-07-24", returnDate: "2026-07-24", expected: 1 },
+    { name: "two consecutive dates", pickupDate: "2026-07-24", returnDate: "2026-07-25", expected: 2 },
+    { name: "multi-day 24–26 Jul", pickupDate: "2026-07-24", returnDate: "2026-07-26", expected: 3 },
+    { name: "month boundary", pickupDate: "2026-07-31", returnDate: "2026-08-01", expected: 2 },
+    { name: "year boundary", pickupDate: "2026-12-31", returnDate: "2027-01-01", expected: 2 },
+    { name: "leap year Feb 28–Mar 1", pickupDate: "2024-02-28", returnDate: "2024-03-01", expected: 3 },
+    { name: "return before pickup", pickupDate: "2026-07-25", returnDate: "2026-07-24", expected: null },
+    { name: "invalid date", pickupDate: "2026-13-01", returnDate: "2026-13-02", expected: null },
+  ];
+
+  for (const testCase of cases) {
+    const actual = calculateCalendarRentalDays(testCase.pickupDate, testCase.returnDate);
+    if (actual !== testCase.expected) {
+      throw new Error(
+        `${testCase.name}: expected ${testCase.expected}, got ${actual}`,
+      );
+    }
+  }
+
+  const sameDayTimed = calculateRentalDuration("2026-07-24", "09:00", "2026-07-24", "18:00");
+  if (!sameDayTimed || sameDayTimed.billableDays !== 1) {
+    throw new Error(
+      `same date different times should bill 1 day, got ${sameDayTimed?.billableDays ?? "null"}`,
+    );
+  }
+
+  const exactlyAcrossTwoDates = calculateRentalDuration(
+    "2026-07-24",
+    "17:00",
+    "2026-07-25",
+    "17:00",
+  );
+  if (!exactlyAcrossTwoDates || exactlyAcrossTwoDates.billableDays !== 2) {
+    throw new Error(
+      `24 Jul 5 PM → 25 Jul 5 PM should bill 2 days, got ${exactlyAcrossTwoDates?.billableDays ?? "null"}`,
+    );
+  }
+
+  const oneMinutePastMidnight = calculateRentalDuration(
+    "2026-07-24",
+    "23:59",
+    "2026-07-25",
+    "00:00",
+  );
+  if (!oneMinutePastMidnight || oneMinutePastMidnight.billableDays !== 2) {
+    throw new Error(
+      `one minute across midnight should bill 2 days, got ${oneMinutePastMidnight?.billableDays ?? "null"}`,
+    );
+  }
+
+  const timeOnlyChangeMorning = calculateRentalDuration(
+    "2026-07-24",
+    "09:00",
+    "2026-07-26",
+    "09:00",
+  );
+  const timeOnlyChangeEvening = calculateRentalDuration(
+    "2026-07-24",
+    "21:00",
+    "2026-07-26",
+    "21:00",
+  );
+  if (
+    !timeOnlyChangeMorning ||
+    !timeOnlyChangeEvening ||
+    timeOnlyChangeMorning.billableDays !== 3 ||
+    timeOnlyChangeEvening.billableDays !== 3
+  ) {
+    throw new Error("changing pickup/return time only must not change calendar rental days");
+  }
+
+  const returnBeforePickupTimed = calculateRentalDuration(
+    "2026-07-25",
+    "10:00",
+    "2026-07-24",
+    "10:00",
+  );
+  if (returnBeforePickupTimed !== null) {
+    throw new Error("return before pickup datetime must be rejected");
+  }
+
+  console.log("Calendar rental days assertions passed");
+}
+
 function runBillableDaysConsistencyAssertions(): void {
   const pickupDate = "2026-05-10";
   const returnDate = "2026-05-12";
@@ -95,7 +186,7 @@ function runBillableDaysConsistencyAssertions(): void {
   const duration = calculateRentalDuration(pickupDate, pickupTime, returnDate, returnTime);
   if (!duration || duration.billableDays !== 3) {
     throw new Error(
-      `48h+1m should bill as 3 days via minute-based duration, got ${duration?.billableDays ?? "null"}`,
+      `May 10–12 inclusive should bill as 3 calendar days, got ${duration?.billableDays ?? "null"}`,
     );
   }
 
@@ -146,7 +237,7 @@ function runPricingAssertions(): void {
     ...basePricingInput,
     rental: {
       ...basePricingInput.rental,
-      returnDate: "2026-05-15",
+      returnDate: "2026-05-14",
     },
   });
   if (!fiveDayBooking) {
@@ -159,7 +250,7 @@ function runPricingAssertions(): void {
     ...basePricingInput,
     rental: {
       ...basePricingInput.rental,
-      returnDate: "2026-05-31",
+      returnDate: "2026-05-30",
     },
   });
   if (!twentyOneDayBooking) {
@@ -276,7 +367,7 @@ const bookingBody: BookingPayload = {
   rental: {
     vehicleType: "Scooter",
     pickupDate: "2026-05-10",
-    returnDate: "2026-05-12",
+    returnDate: "2026-05-11",
     pickupTime: "10:00",
     returnTime: "10:00",
   },
@@ -449,7 +540,7 @@ function runHotelDiscountAssertions(): void {
     ...basePricingInput,
     rental: {
       ...basePricingInput.rental,
-      returnDate: "2026-05-15",
+      returnDate: "2026-05-14",
     },
     hotelDiscount: { discountPercent: 10 },
   });
@@ -466,7 +557,7 @@ function runHotelDiscountAssertions(): void {
     ...basePricingInput,
     rental: {
       ...basePricingInput.rental,
-      returnDate: "2026-05-15",
+      returnDate: "2026-05-14",
     },
     delivery: {
       pickupOption: "delivery",
@@ -488,6 +579,7 @@ function runHotelDiscountAssertions(): void {
 
 async function main(): Promise<void> {
   runDurationRuleAssertions();
+  runCalendarRentalDaysAssertions();
   runBillableDaysConsistencyAssertions();
   runPricingAssertions();
   runStorageBoxAssertions();

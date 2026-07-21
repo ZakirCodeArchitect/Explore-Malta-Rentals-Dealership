@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { differenceInCalendarDays, startOfDay } from "date-fns";
 import { Car, Gauge, Palette, Users } from "lucide-react";
 import Select, {
   components as selectComponents,
@@ -21,10 +20,12 @@ import {
   vehicleFilterReactSelectStyles,
 } from "@/features/vehicles/components/vehicle-pickup-fields";
 import { TripDateSelector } from "@/features/vehicles/components/trip-date-selector";
+import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-params";
 import {
   getIndicativeMotorcycleScooterDailyRateEur,
   getIndicativeMotorcycleScooterTripTotalEur,
 } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
 
 type VehicleFiltersProps = Readonly<{
   pickupLocation: BookingOption | null;
@@ -217,17 +218,11 @@ export function VehicleFilters({
     return "grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4";
   })();
 
-  const durationDays = useMemo(
-    () =>
-      Math.max(
-        1,
-        differenceInCalendarDays(
-          startOfDay(tripEnd),
-          startOfDay(tripStart),
-        ),
-      ),
-    [tripStart, tripEnd],
-  );
+  const durationDays = useMemo(() => {
+    const pickupDate = formatPickupDateParam(tripStart);
+    const returnDate = formatPickupDateParam(tripEnd);
+    return calculateCalendarRentalDays(pickupDate, returnDate) ?? 0;
+  }, [tripStart, tripEnd]);
 
   const indicativeDailyEur =
     getIndicativeMotorcycleScooterDailyRateEur(durationDays);

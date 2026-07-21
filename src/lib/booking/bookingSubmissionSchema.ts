@@ -4,6 +4,10 @@ import {
   isPickupDeliveryAllowedForDate,
   SUNDAY_PICKUP_DELIVERY_ERROR_MESSAGE,
 } from "@/lib/booking/delivery-availability";
+import {
+  calculateCalendarRentalDays,
+  MAX_BILLABLE_RENTAL_DAYS,
+} from "@/lib/pricing/rental-duration";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^\d{2}:\d{2}$/;
@@ -344,7 +348,11 @@ export const bookingSubmissionSchema = z
       });
     }
 
-    if (diffHours > 24 * 7 * 4) {
+    const billableDays = calculateCalendarRentalDays(
+      payload.rental.pickupDate,
+      payload.rental.returnDate,
+    );
+    if (billableDays !== null && billableDays > MAX_BILLABLE_RENTAL_DAYS) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["rental", "returnDate"],

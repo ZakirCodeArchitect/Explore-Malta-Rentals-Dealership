@@ -17,6 +17,7 @@ import {
   parse,
   startOfDay,
 } from "date-fns";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
 import { CalendarDays, Loader2, MapPin, Search, SlidersHorizontal } from "lucide-react";
 import { VEHICLE_TYPES } from "@/features/vehicles/data/vehicles";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
@@ -191,13 +192,7 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     to: parse(dropoffDate, "yyyy-MM-dd", new Date()),
   };
 
-  const durationDays = Math.max(
-    1,
-    differenceInCalendarDays(
-      parse(dropoffDate, "yyyy-MM-dd", new Date()),
-      parse(pickupDate, "yyyy-MM-dd", new Date()),
-    ),
-  );
+  const durationDays = calculateCalendarRentalDays(pickupDate, dropoffDate) ?? 0;
 
   const indicativeDailyEur =
     getIndicativeMotorcycleScooterDailyRateEur(durationDays);
