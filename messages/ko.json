@@ -663,7 +663,7 @@
     "emptyBody": "새로 등록된 임대 목록을 잠시 후에 다시 확인해 주세요.",
     "noMatchTitle": "정확히 일치하는 항목이 없습니다.",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "추가 금액 이전에 오토바이 및 스쿠터에 대한 달력일당 금액을 검색하는 동안 가이드로 사용하세요.",
+    "ratesBlurb": "장기 대여 시 추가 옵션 전에 기간 할인이 적용됩니다 — 검색 중 참고용으로 활용하세요.",
     "ariaFilters": "차량 필터",
     "ariaRates": "일일 요금"
   },
@@ -693,28 +693,27 @@
     "anyColor": "모든 색상",
     "durationLine": "{count, plural, one {#일} other {#일}}",
     "pickupPrefix": "찾다",
-    "indicativeLine": "오토바이/스쿠터 총계 ~€{tripEur} (€{dailyEur}/일 × {count} {dayLabel}) · 최종 가격은 차량 및 추가 품목에 따라 다릅니다.",
     "hotelDelivery": "호텔 배송이 필요합니다",
     "clearFilters": "필터 지우기",
     "search": "찾다",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% 기간 할인 · 최종 가격은 차량 및 추가 옵션에 따라 다릅니다.",
+    "durationDiscountLineMax": "7일 이상 대여 시 최대 {percent}% 절약 · 최종 가격은 차량 및 추가 옵션에 따라 다릅니다."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "기간 할인",
+    "cardSubtitle": "오래 빌릴수록 더 절약",
     "perDaySuffix": "/ 낮",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "추가 옵션 전 차량 대여에 적용",
+    "footnote": "최종 가격은 기본 요금, 시즌, 재고에 따라 달라집니다 — 견적은 문의해 주세요.",
     "rowOneDay": "1일",
     "rowTwoDays": "2일",
     "rowThreeTo21": "3일 – 3주",
     "rowThreeWeeksPlus": "3주 이상",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% 할인",
+    "percentOff": "{percent}% 할인"
   },
   "BookingSearch": {
     "quickFilterTitle": "엔진 크기별 빠른 필터링",
@@ -747,15 +746,14 @@
     "offPickup": "· 현장 픽업 요청",
     "offDropoff": "· 다른 하차",
     "offSiteExtra": "· +€{amount} 오프사이트",
-    "indicativeSummary": "오토바이/스쿠터 총계 ~€{tripEur} (€{dailyEur}/일 × {days} {dayLabel}) · 최종 가격은 차량 및 추가 품목에 따라 다릅니다.",
     "vehicleTypeLabel": "차량 종류",
     "vehicleTypeAll": "모든 유형",
     "submitSearching": "수색…",
     "submitIdle": "이용 가능한 차량 검색",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% 기간 할인 · 최종 가격은 차량 및 추가 옵션에 따라 다릅니다.",
+    "durationDiscountSummaryMax": "7일 이상 대여 시 최대 {percent}% 절약 · 최종 가격은 차량 및 추가 옵션에 따라 다릅니다."
   },
   "BookingForm": {
     "invalidPickupDate": "잘못된 픽업 날짜",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "보증금은 온라인 결제금액에 포함되어 있습니다.",
       "reviewCheckbox": "위의 요약을 검토했습니다.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "기본 일일 요금:",
+      "rentalDuration": "대여 기간:",
+      "durationDiscount": "기간 할인: {percent}% → {rate}/일"
     },
     "pickupDropoff": {
       "shellTitle": "픽업 및 하차",

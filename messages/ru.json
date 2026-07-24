@@ -663,7 +663,7 @@
     "emptyBody": "Пожалуйста, проверьте позже для новых объявлений об аренде.",
     "noMatchTitle": "Точного совпадения не найдено",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Приблизительные суммы за календарный день для мотоциклов и скутеров до дополнений — используйте их как ориентир при поиске.",
+    "ratesBlurb": "Более длительная аренда открывает скидки за срок до дополнений — используйте их как ориентир при поиске.",
     "ariaFilters": "Фильтры транспортных средств",
     "ariaRates": "Ориентировочные дневные тарифы"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Любой цвет",
     "durationLine": "{count, plural, one {# день} other {# дней}}",
     "pickupPrefix": "Получение",
-    "indicativeLine": "Ориентировочный итог мотоциклы/скутеры ~€{tripEur} (€{dailyEur}/день × {count} {dayLabel}) · Окончательная цена зависит от транспортного средства и дополнений.",
     "hotelDelivery": "Требуется доставка в отель",
     "clearFilters": "Очистить фильтры",
     "search": "Поиск",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: скидка {percent} % за срок · Итоговая цена зависит от транспорта и дополнений.",
+    "durationDiscountLineMax": "Арендуйте 7+ дней и экономьте до {percent} % · Итоговая цена зависит от транспорта и дополнений."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Скидки за срок аренды",
+    "cardSubtitle": "Чем дольше аренда, тем больше экономия",
     "perDaySuffix": "/ день",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Применяется к аренде транспорта до дополнений",
+    "footnote": "Итоговая цена зависит от базового тарифа, сезона и наличия — напишите нам для расчёта.",
     "rowOneDay": "1 день",
     "rowTwoDays": "2 дня",
     "rowThreeTo21": "3 дня – 3 недели",
     "rowThreeWeeksPlus": "3 недели или более",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0 % скидки",
+    "percentOff": "{percent} % скидки"
   },
   "BookingSearch": {
     "quickFilterTitle": "Быстрый фильтр по объёму двигателя",
@@ -747,15 +746,14 @@
     "offPickup": " · Запрошено получение вне офиса",
     "offDropoff": " · Другое место возврата",
     "offSiteExtra": " · +€{amount} вне офиса",
-    "indicativeSummary": "Ориентировочный итог мотоциклы/скутеры ~€{tripEur} (€{dailyEur}/день × {days} {dayLabel}) · Окончательная цена зависит от транспортного средства и дополнений.",
     "vehicleTypeLabel": "Тип транспортного средства",
     "vehicleTypeAll": "Все типы",
     "submitSearching": "Поиск…",
     "submitIdle": "Найти доступные транспортные средства",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: скидка {percent} % за срок · Итоговая цена зависит от транспорта и дополнений.",
+    "durationDiscountSummaryMax": "Арендуйте 7+ дней и экономьте до {percent} % · Итоговая цена зависит от транспорта и дополнений."
   },
   "BookingForm": {
     "invalidPickupDate": "Неверная дата получения",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "Залог включён в сумму, подлежащую оплате онлайн.",
       "reviewCheckbox": "Я проверил(а) сводку выше.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Базовая дневная ставка:",
+      "rentalDuration": "Срок аренды:",
+      "durationDiscount": "Скидка за срок: {percent} % → {rate}/день"
     },
     "pickupDropoff": {
       "shellTitle": "Получение и возврат",

@@ -92,12 +92,14 @@ export function buildDurationPricingPreview(baseDailyRate: number): DurationPric
     return [];
   }
 
+  const roundedBaseDailyRate = roundPricingAmount(baseDailyRate);
+
   return PRICING_TIERS.map((tier) => ({
     key: tier.key,
     minDays: tier.minDays,
     maxDays: tier.maxDays,
     discountPercent: tier.discountPercent,
-    appliedDailyRate: calculateDiscountedDailyRate(baseDailyRate, tier.discountPercent),
+    appliedDailyRate: calculateDiscountedDailyRate(roundedBaseDailyRate, tier.discountPercent),
     label: formatDurationRuleLabel(tier.minDays, tier.maxDays),
   }));
 }

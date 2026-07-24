@@ -663,7 +663,7 @@
     "emptyBody": "Yeni listelenen kiralamalar için lütfen kısa süre sonra tekrar kontrol edin.",
     "noMatchTitle": "Tam eşleşme bulunamadı",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Ekstralardan önce motosikletler ve scooterlar için takvim günü başına basketbol sahası miktarları, arama yaparken bunları kılavuz olarak kullanın.",
+    "ratesBlurb": "Daha uzun kiralamalar ekstralar öncesi süre indirimlerini açar — arama sırasında rehber olarak kullanın.",
     "ariaFilters": "Araç filtreleri",
     "ariaRates": "Gösterge niteliğindeki günlük oranlar"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Herhangi bir renk",
     "durationLine": "{count, plural, one {# gün} other {# gün}}",
     "pickupPrefix": "Toplamak",
-    "indicativeLine": "Gösterge motosiklet/scooter toplamı ~€{tripEur} (€{dailyEur}/gün × {count} {dayLabel}) · Nihai fiyat araca ve eklentilere bağlıdır.",
     "hotelDelivery": "Otel teslimatına ihtiyacınız var",
     "clearFilters": "Filtreleri temizle",
     "search": "Aramak",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: %{percent} süre indirimi · Nihai fiyat araca ve ekstralara bağlıdır.",
+    "durationDiscountLineMax": "7+ gün kiralayın ve %{percent}'e kadar tasarruf edin · Nihai fiyat araca ve ekstralara bağlıdır."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Süre indirimleri",
+    "cardSubtitle": "Uzun kiralama, daha fazla tasarruf",
     "perDaySuffix": "/ gün",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Ekstralar öncesi araç kiralamasına uygulanır",
+    "footnote": "Nihai fiyat temel ücret, sezon ve müsaitliğe bağlıdır — teklif için bize yazın.",
     "rowOneDay": "1 gün",
     "rowTwoDays": "2 gün",
     "rowThreeTo21": "3 gün – 3 hafta",
     "rowThreeWeeksPlus": "3 hafta veya daha fazla",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "%0 indirim",
+    "percentOff": "%{percent} indirim"
   },
   "BookingSearch": {
     "quickFilterTitle": "Motor boyutuna göre hızlı filtreleme",
@@ -747,15 +746,14 @@
     "offPickup": "· Tesis dışından teslim alma talep edildi",
     "offDropoff": "· Farklı bırakma",
     "offSiteExtra": "· +€{amount} tesis dışı",
-    "indicativeSummary": "Gösterge motosiklet/scooter toplamı ~€{tripEur} (€{dailyEur}/gün × {days} {dayLabel}) · Nihai fiyat araca ve eklentilere bağlıdır.",
     "vehicleTypeLabel": "Araç tipi",
     "vehicleTypeAll": "Tüm türler",
     "submitSearching": "Arama…",
     "submitIdle": "Mevcut araçları arayın",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: %{percent} süre indirimi · Nihai fiyat araca ve ekstralara bağlıdır.",
+    "durationDiscountSummaryMax": "7+ gün kiralayın ve %{percent}'e kadar tasarruf edin · Nihai fiyat araca ve ekstralara bağlıdır."
   },
   "BookingForm": {
     "invalidPickupDate": "Geçersiz teslim alma tarihi",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "Depozito, çevrimiçi ödeme tutarına dahildir.",
       "reviewCheckbox": "Yukarıdaki özeti inceledim.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Temel günlük ücret:",
+      "rentalDuration": "Kiralama süresi:",
+      "durationDiscount": "Süre indirimi: %{percent} → {rate}/gün"
     },
     "pickupDropoff": {
       "shellTitle": "Teslim alma ve bırakma",

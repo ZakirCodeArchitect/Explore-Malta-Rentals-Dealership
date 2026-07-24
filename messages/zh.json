@@ -663,7 +663,7 @@
     "emptyBody": "请稍后查看新上架的租赁车辆。",
     "noMatchTitle": "未找到完全匹配",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "摩托车和踏板车的大概日历日费用（不含额外费用），在搜索时作为参考。",
+    "ratesBlurb": "租期越长，越可享受时长折扣（不含附加项目）——搜索时可作为参考。",
     "ariaFilters": "车辆筛选器",
     "ariaRates": "参考日租价格"
   },
@@ -693,28 +693,27 @@
     "anyColor": "任意颜色",
     "durationLine": "{count, plural, one {# 天} other {# 天}}",
     "pickupPrefix": "取车",
-    "indicativeLine": "摩托车/踏板车预计总价约 €{tripEur}（€{dailyEur}/天 × {count} {dayLabel}）· 最终价格取决于车辆和附加项目。",
     "hotelDelivery": "需要酒店送车",
     "clearFilters": "清除筛选器",
     "search": "搜索",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}：{percent}% 时长折扣 · 最终价格取决于车辆和附加项目。",
+    "durationDiscountLineMax": "租满 7 天以上最高可省 {percent}% · 最终价格取决于车辆和附加项目。"
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "时长折扣",
+    "cardSubtitle": "租期越长，省得越多",
     "perDaySuffix": "/ 天",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "适用于车辆租金（不含附加项目）",
+    "footnote": "最终价格取决于车辆基础价、季节和库存——请联系我们获取报价。",
     "rowOneDay": "1 天",
     "rowTwoDays": "2 天",
     "rowThreeTo21": "3 天 – 3 周",
     "rowThreeWeeksPlus": "3 周以上",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% 折扣",
+    "percentOff": "{percent}% 折扣"
   },
   "BookingSearch": {
     "quickFilterTitle": "按排量快速筛选",
@@ -747,15 +746,14 @@
     "offPickup": " · 已申请异地取车",
     "offDropoff": " · 不同还车地点",
     "offSiteExtra": " · +€{amount} 异地",
-    "indicativeSummary": "摩托车/踏板车预计总价约 €{tripEur}（€{dailyEur}/天 × {days} {dayLabel}）· 最终价格取决于车辆和附加项目。",
     "vehicleTypeLabel": "车辆类型",
     "vehicleTypeAll": "所有类型",
     "submitSearching": "搜索中…",
     "submitIdle": "搜索可用车辆",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}：{percent}% 时长折扣 · 最终价格取决于车辆和附加项目。",
+    "durationDiscountSummaryMax": "租满 7 天以上最高可省 {percent}% · 最终价格取决于车辆和附加项目。"
   },
   "BookingForm": {
     "invalidPickupDate": "取车日期无效",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "押金已含在在线应付金额中。",
       "reviewCheckbox": "我已审核以上摘要。",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "基础日租金：",
+      "rentalDuration": "租期：",
+      "durationDiscount": "时长折扣：{percent}% → {rate}/天"
     },
     "pickupDropoff": {
       "shellTitle": "取车与还车",

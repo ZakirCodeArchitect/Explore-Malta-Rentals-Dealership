@@ -663,7 +663,7 @@
     "emptyBody": "नए सूचीबद्ध किराये के लिए थोड़ी देर बाद वापस देखें।",
     "noMatchTitle": "कोई सटीक मेल नहीं मिला",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "एक्स्ट्रा से पहले मोटरसाइकिल और स्कूटर के लिए अनुमानित प्रति-कैलेंडर-दिन राशि — खोजते समय इन्हें गाइड के रूप में उपयोग करें।",
+    "ratesBlurb": "लंबी किराये पर अवधि छूट एक्स्ट्रा से पहले लागू होती है — खोजते समय मार्गदर्शन के रूप में उपयोग करें।",
     "ariaFilters": "वाहन फ़िल्टर",
     "ariaRates": "सांकेतिक दैनिक दरें"
   },
@@ -693,28 +693,27 @@
     "anyColor": "कोई भी रंग",
     "durationLine": "{count, plural, one {# दिन} other {# दिन}}",
     "pickupPrefix": "पिकअप",
-    "indicativeLine": "मोटरसाइकिल/स्कूटर कुल सांकेतिक ~€{tripEur} (€{dailyEur}/दिन × {count} {dayLabel}) · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।",
     "hotelDelivery": "होटल डिलीवरी चाहिए",
     "clearFilters": "फ़िल्टर साफ़ करें",
     "search": "खोजें",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% अवधि छूट · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।",
+    "durationDiscountLineMax": "7+ दिन किराए पर {percent}% तक बचाएं · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।"
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "अवधि छूट",
+    "cardSubtitle": "लंबा किराया, अधिक बचत",
     "perDaySuffix": "/ दिन",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "एक्स्ट्रा से पहले वाहन किराए पर लागू",
+    "footnote": "अंतिम मूल्य आधार दर, सीज़न और उपलब्धता पर निर्भर करता है — कोट के लिए संपर्क करें।",
     "rowOneDay": "1 दिन",
     "rowTwoDays": "2 दिन",
     "rowThreeTo21": "3 दिन – 3 सप्ताह",
     "rowThreeWeeksPlus": "3 सप्ताह या अधिक",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% छूट",
+    "percentOff": "{percent}% छूट"
   },
   "BookingSearch": {
     "quickFilterTitle": "इंजन साइज़ के आधार पर त्वरित फ़िल्टर",
@@ -747,15 +746,14 @@
     "offPickup": " · ऑफ-साइट पिकअप अनुरोधित",
     "offDropoff": " · भिन्न ड्रॉप-ऑफ",
     "offSiteExtra": " · +€{amount} ऑफ-साइट",
-    "indicativeSummary": "मोटरसाइकिल/स्कूटर कुल सांकेतिक ~€{tripEur} (€{dailyEur}/दिन × {days} {dayLabel}) · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।",
     "vehicleTypeLabel": "वाहन का प्रकार",
     "vehicleTypeAll": "सभी प्रकार",
     "submitSearching": "खोज हो रही है…",
     "submitIdle": "उपलब्ध वाहन खोजें",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% अवधि छूट · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।",
+    "durationDiscountSummaryMax": "7+ दिन किराए पर {percent}% तक बचाएं · अंतिम मूल्य वाहन और ऐड-ऑन पर निर्भर करता है।"
   },
   "BookingForm": {
     "invalidPickupDate": "अमान्य पिकअप तारीख",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "जमा राशि ऑनलाइन देय राशि में शामिल है।",
       "reviewCheckbox": "मैंने उपरोक्त सारांश की समीक्षा की है।",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "आधार दैनिक दर:",
+      "rentalDuration": "किराये की अवधि:",
+      "durationDiscount": "अवधि छूट: {percent}% → {rate}/दिन"
     },
     "pickupDropoff": {
       "shellTitle": "पिकअप और ड्रॉप-ऑफ",

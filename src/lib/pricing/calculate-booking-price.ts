@@ -315,7 +315,8 @@ export function formatEur(amount: number): string {
   return new Intl.NumberFormat("en-MT", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 }
 

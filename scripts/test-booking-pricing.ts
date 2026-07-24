@@ -273,6 +273,24 @@ function runPricingAssertions(): void {
       rentalCost: 201.6,
       tierKey: "TIER_3",
     },
+    {
+      name: "14 days €19.99",
+      rentalDays: 14,
+      baseDailyRate: 19.99,
+      discountPercent: 28,
+      appliedDailyRate: 14.39,
+      rentalCost: 201.46,
+      tierKey: "TIER_3",
+    },
+    {
+      name: "14 days €24.95",
+      rentalDays: 14,
+      baseDailyRate: 24.95,
+      discountPercent: 28,
+      appliedDailyRate: 17.96,
+      rentalCost: 251.44,
+      tierKey: "TIER_3",
+    },
   ];
 
   for (const testCase of cases) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Car, Gauge, Palette, Users } from "lucide-react";
 import Select, {
@@ -148,6 +148,11 @@ export function VehicleFilters({
 }: VehicleFiltersProps) {
   const t = useTranslations("VehicleFilters");
   const tCommon = useTranslations("Common");
+  const [selectMenuPortalTarget, setSelectMenuPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setSelectMenuPortalTarget(document.body);
+  }, []);
 
   const filterSelectComponents = useMemo(
     () => ({
@@ -268,9 +273,7 @@ export function VehicleFilters({
                 isSearchable={false}
                 styles={vehicleFilterReactSelectStyles}
                 components={filterSelectComponents}
-                menuPortalTarget={
-                  typeof document !== "undefined" ? document.body : null
-                }
+                menuPortalTarget={selectMenuPortalTarget}
                 menuPosition="fixed"
                 className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-type"
@@ -304,9 +307,7 @@ export function VehicleFilters({
                 isSearchable={false}
                 styles={vehicleFilterReactSelectStyles}
                 components={filterSelectComponents}
-                menuPortalTarget={
-                  typeof document !== "undefined" ? document.body : null
-                }
+                menuPortalTarget={selectMenuPortalTarget}
                 menuPosition="fixed"
                 className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-transmission"
@@ -340,9 +341,7 @@ export function VehicleFilters({
                   isSearchable={false}
                   styles={vehicleFilterReactSelectStyles}
                   components={filterSelectComponents}
-                  menuPortalTarget={
-                    typeof document !== "undefined" ? document.body : null
-                  }
+                  menuPortalTarget={selectMenuPortalTarget}
                   menuPosition="fixed"
                   className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-seats"
@@ -375,9 +374,7 @@ export function VehicleFilters({
                   isSearchable={false}
                   styles={vehicleFilterReactSelectStyles}
                   components={filterSelectComponents}
-                  menuPortalTarget={
-                    typeof document !== "undefined" ? document.body : null
-                  }
+                  menuPortalTarget={selectMenuPortalTarget}
                   menuPosition="fixed"
                   className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-color"

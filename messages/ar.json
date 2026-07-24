@@ -663,7 +663,7 @@
     "emptyBody": "يرجى المراجعة قريباً للإيجارات المدرجة حديثاً.",
     "noMatchTitle": "لم يتم العثور على تطابق دقيق",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "مبالغ تقريبية لكل يوم تقويمي للدراجات النارية والسكوتر قبل الإضافات — استخدمها كمرشد أثناء البحث.",
+    "ratesBlurb": "الإيجارات الأطول تفتح خصومات المدة قبل الإضافات — استخدمها كدليل أثناء البحث.",
     "ariaFilters": "مرشحات المركبات",
     "ariaRates": "الأسعار اليومية التوجيهية"
   },
@@ -693,28 +693,27 @@
     "anyColor": "أي لون",
     "durationLine": "{count, plural, one {# يوم} other {# أيام}}",
     "pickupPrefix": "الاستلام",
-    "indicativeLine": "الإجمالي التوجيهي للدراجات النارية/السكوتر ~€{tripEur} (€{dailyEur}/يوم × {count} {dayLabel}) · السعر النهائي يعتمد على المركبة والإضافات.",
     "hotelDelivery": "التوصيل إلى الفندق مطلوب",
     "clearFilters": "مسح المرشحات",
     "search": "بحث",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: خصم مدة {percent}٪ · السعر النهائي يعتمد على المركبة والإضافات.",
+    "durationDiscountLineMax": "أجرِ 7+ أيام ووفّر حتى {percent}٪ · السعر النهائي يعتمد على المركبة والإضافات."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "خصومات المدة",
+    "cardSubtitle": "إيجار أطول يعني توفيراً أكبر",
     "perDaySuffix": "/ يوم",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "يُطبق على إيجار المركبة قبل الإضافات",
+    "footnote": "السعر النهائي يعتمد على السعر الأساسي والموسم والتوفر — راسلنا للحصول على عرض.",
     "rowOneDay": "يوم واحد",
     "rowTwoDays": "يومان",
     "rowThreeTo21": "3 أيام – 3 أسابيع",
     "rowThreeWeeksPlus": "3 أسابيع أو أكثر",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "خصم 0٪",
+    "percentOff": "خصم {percent}٪"
   },
   "BookingSearch": {
     "quickFilterTitle": "فلترة سريعة حسب حجم المحرك",
@@ -747,15 +746,14 @@
     "offPickup": " · تم طلب الاستلام خارج الموقع",
     "offDropoff": " · تسليم مختلف",
     "offSiteExtra": " · +€{amount} خارج الموقع",
-    "indicativeSummary": "الإجمالي التوجيهي للدراجات النارية/السكوتر ~€{tripEur} (€{dailyEur}/يوم × {days} {dayLabel}) · السعر النهائي يعتمد على المركبة والإضافات.",
     "vehicleTypeLabel": "نوع المركبة",
     "vehicleTypeAll": "جميع الأنواع",
     "submitSearching": "جارٍ البحث…",
     "submitIdle": "البحث عن المركبات المتاحة",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: خصم مدة {percent}٪ · السعر النهائي يعتمد على المركبة والإضافات.",
+    "durationDiscountSummaryMax": "أجرِ 7+ أيام ووفّر حتى {percent}٪ · السعر النهائي يعتمد على المركبة والإضافات."
   },
   "BookingForm": {
     "invalidPickupDate": "تاريخ استلام غير صالح",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "الوديعة مشمولة في المبلغ الإلكتروني المستحق.",
       "reviewCheckbox": "راجعت الملخص أعلاه.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "السعر اليومي الأساسي:",
+      "rentalDuration": "مدة الإيجار:",
+      "durationDiscount": "خصم المدة: {percent}٪ → {rate}/يوم"
     },
     "pickupDropoff": {
       "shellTitle": "الاستلام والتسليم",

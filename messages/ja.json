@@ -663,7 +663,7 @@
     "emptyBody": "新しいレンタルの掲載についてはしばらくしてからご確認ください。",
     "noMatchTitle": "完全一致が見つかりません",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "バイクとスクーターの追加料金前の1暦日あたりのおおよその金額 — 検索中のガイドとしてご使用ください。",
+    "ratesBlurb": "長期レンタルほど期間割引が適用されます（オプション前）— 検索中の目安としてご利用ください。",
     "ariaFilters": "車両フィルター",
     "ariaRates": "参考日額料金"
   },
@@ -693,28 +693,27 @@
     "anyColor": "色問わず",
     "durationLine": "{count, plural, one {# 日} other {# 日間}}",
     "pickupPrefix": "受け取り",
-    "indicativeLine": "バイク/スクーターの参考合計 ~€{tripEur}（€{dailyEur}/日 × {count}{dayLabel}）· 最終価格は車両とオプションによって異なります。",
     "hotelDelivery": "ホテルへの配達が必要",
     "clearFilters": "フィルターをクリア",
     "search": "検索",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}：{percent}% 期間割引 · 最終価格は車両とオプションにより異なります。",
+    "durationDiscountLineMax": "7日以上で最大 {percent}% お得 · 最終価格は車両とオプションにより異なります。"
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "期間割引",
+    "cardSubtitle": "長く借りるほどお得",
     "perDaySuffix": "/ 日",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "オプション前の車両レンタルに適用",
+    "footnote": "最終価格は基本料金・シーズン・在庫により異なります — お見積りはお問い合わせください。",
     "rowOneDay": "1日",
     "rowTwoDays": "2日",
     "rowThreeTo21": "3日 〜 3週間",
     "rowThreeWeeksPlus": "3週間以上",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% 割引",
+    "percentOff": "{percent}% 割引"
   },
   "BookingSearch": {
     "quickFilterTitle": "エンジンサイズで素早くフィルター",
@@ -747,15 +746,14 @@
     "offPickup": " · オフサイト受け取りリクエスト済み",
     "offDropoff": " · 別の返却場所",
     "offSiteExtra": " · +€{amount} オフサイト",
-    "indicativeSummary": "バイク/スクーターの参考合計 ~€{tripEur}（€{dailyEur}/日 × {days}{dayLabel}）· 最終価格は車両とオプションによって異なります。",
     "vehicleTypeLabel": "車両タイプ",
     "vehicleTypeAll": "すべてのタイプ",
     "submitSearching": "検索中…",
     "submitIdle": "利用可能な車両を検索",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}：{percent}% 期間割引 · 最終価格は車両とオプションにより異なります。",
+    "durationDiscountSummaryMax": "7日以上で最大 {percent}% お得 · 最終価格は車両とオプションにより異なります。"
   },
   "BookingForm": {
     "invalidPickupDate": "無効な受け取り日",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "デポジットはオンライン支払い金額に含まれています。",
       "reviewCheckbox": "上記の概要を確認しました。",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "基本日額：",
+      "rentalDuration": "レンタル期間：",
+      "durationDiscount": "期間割引：{percent}% → {rate}/日"
     },
     "pickupDropoff": {
       "shellTitle": "受け取りと返却",

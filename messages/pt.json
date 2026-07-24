@@ -663,7 +663,7 @@
     "emptyBody": "Por favor verifique em breve para novos alugueres listados.",
     "noMatchTitle": "Nenhuma correspondência exata encontrada",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Valores aproximados por dia de calendário para motas e scooters antes de extras — use-os como guia durante a pesquisa.",
+    "ratesBlurb": "Alugueres mais longos desbloqueiam descontos por duração antes dos extras — use como guia enquanto pesquisa.",
     "ariaFilters": "Filtros de veículos",
     "ariaRates": "Tarifas diárias indicativas"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Qualquer cor",
     "durationLine": "{count, plural, one {# dia} other {# dias}}",
     "pickupPrefix": "Levantamento",
-    "indicativeLine": "Total indicativo motas/scooters ~€{tripEur} (€{dailyEur}/dia × {count} {dayLabel}) · O preço final depende do veículo e dos extras.",
     "hotelDelivery": "Necessita entrega no hotel",
     "clearFilters": "Limpar filtros",
     "search": "Pesquisar",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent} % de desconto por duração · O preço final depende do veículo e extras.",
+    "durationDiscountLineMax": "Alugue 7+ dias e poupe até {percent} % · O preço final depende do veículo e extras."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Descontos por duração",
+    "cardSubtitle": "Alugueres mais longos poupam mais",
     "perDaySuffix": "/ dia",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Aplicado ao aluguer do veículo antes dos extras",
+    "footnote": "O preço final depende da tarifa base, época e disponibilidade — contacte-nos para um orçamento.",
     "rowOneDay": "1 dia",
     "rowTwoDays": "2 dias",
     "rowThreeTo21": "3 dias – 3 semanas",
     "rowThreeWeeksPlus": "3 semanas ou mais",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0 % de desconto",
+    "percentOff": "{percent} % de desconto"
   },
   "BookingSearch": {
     "quickFilterTitle": "Filtro rápido por cilindrada",
@@ -747,15 +746,14 @@
     "offPickup": " · Levantamento externo solicitado",
     "offDropoff": " · Devolução diferente",
     "offSiteExtra": " · +€{amount} externo",
-    "indicativeSummary": "Total indicativo motas/scooters ~€{tripEur} (€{dailyEur}/dia × {days} {dayLabel}) · O preço final depende do veículo e dos extras.",
     "vehicleTypeLabel": "Tipo de veículo",
     "vehicleTypeAll": "Todos os tipos",
     "submitSearching": "A pesquisar…",
     "submitIdle": "Pesquisar veículos disponíveis",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent} % de desconto por duração · O preço final depende do veículo e extras.",
+    "durationDiscountSummaryMax": "Alugue 7+ dias e poupe até {percent} % · O preço final depende do veículo e extras."
   },
   "BookingForm": {
     "invalidPickupDate": "Data de levantamento inválida",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "O depósito está incluído no valor a pagar online.",
       "reviewCheckbox": "Revi o resumo acima.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Tarifa diária base:",
+      "rentalDuration": "Duração do aluguer:",
+      "durationDiscount": "Desconto por duração: {percent} % → {rate}/dia"
     },
     "pickupDropoff": {
       "shellTitle": "Levantamento e Devolução",

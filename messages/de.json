@@ -663,7 +663,7 @@
     "emptyBody": "Bitte später erneut prüfen oder neue Inserate ansehen.",
     "noMatchTitle": "Keine exakte Übereinstimmung",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Richtwerte pro Kalendertag für Motorräder und Roller vor Extras — Orientierung bei der Suche.",
+    "ratesBlurb": "Längere Mieten schalten Mietdauer-Rabatte vor Extras frei — als Orientierung bei der Suche.",
     "ariaFilters": "Fahrzeugfilter",
     "ariaRates": "Richtwert-Tagestarife"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Beliebige Farbe",
     "durationLine": "{count, plural, one {# Tag} other {# Tage}}",
     "pickupPrefix": "Abholung",
-    "indicativeLine": "Richtwert Motorräder/Roller gesamt ~€{tripEur} (€{dailyEur}/Tag × {count} {dayLabel}) · Endpreis hängt von Fahrzeug und Extras ab.",
     "hotelDelivery": "Hotelzustellung",
     "clearFilters": "Filter löschen",
     "search": "Suchen",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent} % Mietdauer-Rabatt · Endpreis hängt von Fahrzeug und Extras ab.",
+    "durationDiscountLineMax": "Ab 7 Tagen bis zu {percent} % sparen · Endpreis hängt von Fahrzeug und Extras ab."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Mietdauer-Rabatte",
+    "cardSubtitle": "Längere Mieten sparen mehr",
     "perDaySuffix": "/ Tag",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Gilt für die Fahrzeugmiete vor Extras",
+    "footnote": "Endpreis hängt vom Fahrzeug-Grundpreis, Saison und Verfügbarkeit ab — schreiben Sie uns für ein Angebot.",
     "rowOneDay": "1 Tag",
     "rowTwoDays": "2 Tage",
     "rowThreeTo21": "3 Tage – 3 Wochen",
     "rowThreeWeeksPlus": "3 Wochen oder mehr",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0 % Rabatt",
+    "percentOff": "{percent} % Rabatt"
   },
   "BookingSearch": {
     "quickFilterTitle": "Schnellfilter nach Hubraum",
@@ -747,15 +746,14 @@
     "offPickup": " · Abholung außerhalb angefragt",
     "offDropoff": " · Andere Rückgabe",
     "offSiteExtra": " · +€{amount} außerhalb",
-    "indicativeSummary": "Richtwert Motorräder/Roller gesamt ~€{tripEur} (€{dailyEur}/Tag × {days} {dayLabel}) · Endpreis hängt von Fahrzeug und Extras ab.",
     "vehicleTypeLabel": "Fahrzeugtyp",
     "vehicleTypeAll": "Alle Typen",
     "submitSearching": "Suche läuft…",
     "submitIdle": "Verfügbare Fahrzeuge suchen",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent} % Mietdauer-Rabatt · Endpreis hängt von Fahrzeug und Extras ab.",
+    "durationDiscountSummaryMax": "Ab 7 Tagen bis zu {percent} % sparen · Endpreis hängt von Fahrzeug und Extras ab."
   },
   "BookingForm": {
     "invalidPickupDate": "Ungültiges Abholdatum",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "Kaution ist im online zahlbaren Betrag enthalten.",
       "reviewCheckbox": "Ich habe die obige Zusammenfassung geprüft.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Grundpreis pro Tag:",
+      "rentalDuration": "Mietdauer:",
+      "durationDiscount": "Mietdauer-Rabatt: {percent} % → {rate}/Tag"
     },
     "pickupDropoff": {
       "shellTitle": "Abholung & Rückgabe",

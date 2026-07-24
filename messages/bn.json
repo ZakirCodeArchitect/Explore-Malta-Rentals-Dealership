@@ -663,7 +663,7 @@
     "emptyBody": "নতুন তালিকাভুক্ত ভাড়ার জন্য শীঘ্রই ফিরে চেক করুন.",
     "noMatchTitle": "কোনো সঠিক মিল পাওয়া যায়নি",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "অতিরিক্তের আগে মোটরসাইকেল এবং স্কুটারগুলির জন্য প্রতি ক্যালেন্ডার-দিনের পরিমাণ বলপার্ক, আপনি অনুসন্ধান করার সময় এগুলিকে গাইড হিসাবে ব্যবহার করুন।",
+    "ratesBlurb": "দীর্ঘ ভাড়ায় এক্সট্রার আগে সময়কাল ছাড় খুলে যায় — অনুসন্ধানের সময় গাইড হিসেবে ব্যবহার করুন।",
     "ariaFilters": "যানবাহন ফিল্টার",
     "ariaRates": "নির্দেশক দৈনিক হার"
   },
@@ -693,28 +693,27 @@
     "anyColor": "যে কোনো রঙ",
     "durationLine": "{count, plural, one {# দিন} other {# দিন}}",
     "pickupPrefix": "পিকআপ",
-    "indicativeLine": "মোটর সাইকেল/স্কুটার মোট ~€{tripEur} (€{dailyEur}/day × {count} {dayLabel}) · চূড়ান্ত মূল্য গাড়ি এবং অ্যাড-অনগুলির উপর নির্ভর করে।",
     "hotelDelivery": "হোটেল ডেলিভারি প্রয়োজন",
     "clearFilters": "ফিল্টার সাফ করুন",
     "search": "অনুসন্ধান করুন",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% সময়কাল ছাড় · চূড়ান্ত মূল্য গাড়ি ও অ্যাড-অনের উপর নির্ভর করে।",
+    "durationDiscountLineMax": "৭+ দিন ভাড়ায় {percent}% পর্যন্ত সাশ্রয় · চূড়ান্ত মূল্য গাড়ি ও অ্যাড-অনের উপর নির্ভর করে।"
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "সময়কাল ছাড়",
+    "cardSubtitle": "দীর্ঘ ভাড়ায় বেশি সাশ্রয়",
     "perDaySuffix": "/ দিন",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "এক্সট্রার আগে গাড়ি ভাড়ায় প্রযোজ্য",
+    "footnote": "চূড়ান্ত মূল্য বেস রেট, মৌসুম ও উপলব্ধতার উপর নির্ভর করে — কোটের জন্য যোগাযোগ করুন।",
     "rowOneDay": "1 দিন",
     "rowTwoDays": "2 দিন",
     "rowThreeTo21": "3 দিন - 3 সপ্তাহ",
     "rowThreeWeeksPlus": "3 সপ্তাহ বা তার বেশি",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "০% ছাড়",
+    "percentOff": "{percent}% ছাড়"
   },
   "BookingSearch": {
     "quickFilterTitle": "ইঞ্জিন আকার দ্বারা দ্রুত ফিল্টার",
@@ -747,15 +746,14 @@
     "offPickup": "· অফ-সাইট পিকআপ অনুরোধ করা হয়েছে",
     "offDropoff": "· বিভিন্ন ড্রপ-অফ",
     "offSiteExtra": "· +€{amount} অফ-সাইট",
-    "indicativeSummary": "মোটর সাইকেল/স্কুটার মোট ~€{tripEur} (€{dailyEur}/day × {days} {dayLabel}) · চূড়ান্ত মূল্য গাড়ি এবং অ্যাড-অনগুলির উপর নির্ভর করে।",
     "vehicleTypeLabel": "যানবাহনের ধরন",
     "vehicleTypeAll": "সব ধরনের",
     "submitSearching": "অনুসন্ধান করা হচ্ছে...",
     "submitIdle": "উপলব্ধ যানবাহন অনুসন্ধান করুন",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% সময়কাল ছাড় · চূড়ান্ত মূল্য গাড়ি ও অ্যাড-অনের উপর নির্ভর করে।",
+    "durationDiscountSummaryMax": "৭+ দিন ভাড়ায় {percent}% পর্যন্ত সাশ্রয় · চূড়ান্ত মূল্য গাড়ি ও অ্যাড-অনের উপর নির্ভর করে।"
   },
   "BookingForm": {
     "invalidPickupDate": "অবৈধ পিকআপ তারিখ",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "জমা অনলাইন প্রদেয় পরিমাণ অন্তর্ভুক্ত করা হয়.",
       "reviewCheckbox": "আমি উপরের সারাংশ পর্যালোচনা.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "মূল দৈনিক হার:",
+      "rentalDuration": "ভাড়ার সময়কাল:",
+      "durationDiscount": "সময়কাল ছাড়: {percent}% → {rate}/দিন"
     },
     "pickupDropoff": {
       "shellTitle": "পিকআপ এবং ড্রপ-অফ",

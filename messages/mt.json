@@ -663,7 +663,7 @@
     "emptyBody": "Jekk jogħġbok erġa' iċċekkja dalwaqt għal kirjiet ġodda.",
     "noMatchTitle": "Ebda korrispondenza eżatta nstabet",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Ammonti approssimattivi ta' kuljum għal muturi u skutters qabel l-extras, uża dawn bħala gwida waqt li tfittex.",
+    "ratesBlurb": "Kiri itwal jiftħu skonti fuq id-durata qabel l-extra — użahom bħala gwida waqt it-tfittxija.",
     "ariaFilters": "Filtri tal-vetturi",
     "ariaRates": "Rati ta' kuljum indikattivi"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Kwalunkwe kulur",
     "durationLine": "{count, plural, one {# jum} other {# ijiem}}",
     "pickupPrefix": "Irkupru",
-    "indicativeLine": "Total indikattiv muturi/skutters ~€{tripEur} (€{dailyEur}/jum × {count} {dayLabel}) · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet.",
     "hotelDelivery": "Teħtieġ konsenja tal-lukanda",
     "clearFilters": "Ħassar il-filtri",
     "search": "Fittex",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% skont fuq id-durata · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet.",
+    "durationDiscountLineMax": "Ikri 7+ ijiem u iffranka sa {percent}% · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Skonti fuq id-durata",
+    "cardSubtitle": "Kiri itwal jiffranka aktar",
     "perDaySuffix": "/ jum",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Applikat għall-kiri tal-vettura qabel l-extra",
+    "footnote": "Il-prezz finali jiddependi fuq ir-rata bażi, is-sajf u d-disponibbiltà — ibgħatilna messaġġ għal kwotazzjoni.",
     "rowOneDay": "1 jum",
     "rowTwoDays": "2 ijiem",
     "rowThreeTo21": "3 ijiem – 3 ġimgħat",
     "rowThreeWeeksPlus": "3 ġimgħat jew aktar",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% skont",
+    "percentOff": "{percent}% skont"
   },
   "BookingSearch": {
     "quickFilterTitle": "Filtru malajr skont id-daqs tal-magna",
@@ -747,15 +746,14 @@
     "offPickup": " · Irkupru barra mis-sit mitlub",
     "offDropoff": " · Drop-off differenti",
     "offSiteExtra": " · +€{amount} barra mis-sit",
-    "indicativeSummary": "Total indikattiv muturi/skutters ~€{tripEur} (€{dailyEur}/jum × {days} {dayLabel}) · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet.",
     "vehicleTypeLabel": "Tip ta' vettura",
     "vehicleTypeAll": "It-tipi kollha",
     "submitSearching": "Qed ifittex…",
     "submitIdle": "Fittex vetturi disponibbli",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% skont fuq id-durata · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet.",
+    "durationDiscountSummaryMax": "Ikri 7+ ijiem u iffranka sa {percent}% · Il-prezz finali jiddependi fuq il-vettura u ż-żidiet."
   },
   "BookingForm": {
     "invalidPickupDate": "Data tal-irkupru invalida",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "Id-depożitu huwa inkluż fl-ammont pagabbli online.",
       "reviewCheckbox": "Irrevedejt is-sommarju hawn fuq.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Rata ta' kuljum bażi:",
+      "rentalDuration": "Tul tal-kiri:",
+      "durationDiscount": "Skont fuq id-durata: {percent}% → {rate}/jum"
     },
     "pickupDropoff": {
       "shellTitle": "Irkupru u Drop-off",

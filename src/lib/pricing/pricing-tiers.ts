@@ -26,10 +26,3 @@ export function getPricingTierForDays(rentalDays: number): PricingTier | null {
     ) ?? null
   );
 }
-
-export function formatTierDiscountLabel(discountPercent: number): string {
-  if (discountPercent <= 0) {
-    return "0%";
-  }
-  return `${discountPercent}%`;
-}

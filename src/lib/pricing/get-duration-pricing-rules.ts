@@ -1,6 +1,7 @@
 import { PRICING_TIERS } from "@/lib/pricing/pricing-tiers";
 
-export type DurationPricingRuleDto = Readonly<{
+/** Static tier config returned by pricing APIs — not loaded from the database. */
+export type PricingTierDto = Readonly<{
   key: string;
   minDays: number;
   maxDays: number | null;
@@ -8,10 +9,13 @@ export type DurationPricingRuleDto = Readonly<{
   displayOrder: number;
 }>;
 
+/** @deprecated Use {@link PricingTierDto} */
+export type DurationPricingRuleDto = PricingTierDto;
+
 function mapPricingTierToDto(
   tier: (typeof PRICING_TIERS)[number],
   displayOrder: number,
-): DurationPricingRuleDto {
+): PricingTierDto {
   return {
     key: tier.key,
     minDays: tier.minDays,
@@ -21,10 +25,17 @@ function mapPricingTierToDto(
   };
 }
 
-export async function getDurationPricingRules(): Promise<DurationPricingRuleDto[]> {
+/** Returns the static PRICING_TIERS configuration (not database rows). */
+export async function getPricingTiers(): Promise<PricingTierDto[]> {
   return PRICING_TIERS.map((tier, index) => mapPricingTierToDto(tier, (index + 1) * 10));
 }
 
-export async function getDurationPricingRulesForType(): Promise<DurationPricingRuleDto[]> {
-  return getDurationPricingRules();
+/** @deprecated Use {@link getPricingTiers} — name retained for backward compatibility. */
+export async function getDurationPricingRules(): Promise<PricingTierDto[]> {
+  return getPricingTiers();
+}
+
+/** @deprecated Use {@link getPricingTiers} */
+export async function getDurationPricingRulesForType(): Promise<PricingTierDto[]> {
+  return getPricingTiers();
 }

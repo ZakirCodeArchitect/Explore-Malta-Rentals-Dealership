@@ -28,6 +28,7 @@ import { useVehicle, useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   buildDurationPricingPreview,
   calculateVehicleRentalPricing,
+  roundPricingAmount,
 } from "@/lib/pricing/duration-pricing";
 import { getBillableRentalDays } from "@/lib/pricing/rental-duration";
 import { BOOKING_TIME_SLOTS } from "@/features/booking/lib/time-slots";
@@ -42,6 +43,10 @@ import { BookNowButton } from "@/features/vehicles/components/book-now-button";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function formatTierRateEur(value: number): string {
+  return roundPricingAmount(value).toFixed(2).replace(/\.00$/, "");
 }
 
 function isTripCommitted(pd: string, rd: string): boolean {
@@ -335,7 +340,7 @@ function BookingSidebar({
             <ul className="mt-3 space-y-1 text-xs text-slate-600">
               {durationPreview.map((row) => (
                 <li key={`${row.minDays}-${row.maxDays ?? "plus"}`}>
-                  {row.label}: {row.discountPercent}% off → €{row.appliedDailyRate}/day
+                  {row.label}: {row.discountPercent}% off → €{formatTierRateEur(row.appliedDailyRate)}/day
                 </li>
               ))}
             </ul>
@@ -492,8 +497,8 @@ function BookingSidebar({
       {estimatedTotal !== null && estimatedTierDailyRate !== null ? (
         <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
           <div className="flex justify-between text-sm text-slate-600">
-            <span>€{estimatedTierDailyRate} × {days} day{days !== 1 ? "s" : ""}</span>
-            <span className="font-semibold text-slate-900">€{estimatedTotal}</span>
+            <span>€{formatTierRateEur(estimatedTierDailyRate)} × {days} day{days !== 1 ? "s" : ""}</span>
+            <span className="font-semibold text-slate-900">€{formatTierRateEur(estimatedTotal)}</span>
           </div>
           <p className="mt-1 text-[0.65rem] text-slate-400">
             Flat tier rate applied to the full trip duration. Final price confirmed before you pay — no card taken online.

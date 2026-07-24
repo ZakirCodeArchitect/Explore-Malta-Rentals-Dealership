@@ -663,7 +663,7 @@
     "emptyBody": "Vui lòng kiểm tra lại ngay để biết thông tin cho thuê mới được liệt kê.",
     "noMatchTitle": "Không tìm thấy kết quả khớp chính xác",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Số lượng sân chơi mỗi ngày theo lịch dành cho xe máy và xe tay ga trước các tính năng bổ sung, hãy sử dụng chúng làm hướng dẫn trong khi bạn tìm kiếm.",
+    "ratesBlurb": "Thuê dài hơn mở khóa giảm giá theo thời hạn trước phụ phí — dùng làm hướng dẫn khi tìm kiếm.",
     "ariaFilters": "Bộ lọc xe",
     "ariaRates": "Tỷ lệ hàng ngày chỉ định"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Bất kỳ màu nào",
     "durationLine": "{count, plural, one {# ngày} other {# ngày}}",
     "pickupPrefix": "Nhặt lên",
-    "indicativeLine": "Tổng số xe máy/tay ga dự kiến ​​~€{tripEur} (€{dailyEur}/ngày × {count} {dayLabel}) · Giá cuối cùng tùy thuộc vào loại xe và tiện ích bổ sung.",
     "hotelDelivery": "Cần giao hàng khách sạn",
     "clearFilters": "Xóa bộ lọc",
     "search": "Tìm kiếm",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: giảm {percent}% theo thời hạn · Giá cuối phụ thuộc xe và phụ phí.",
+    "durationDiscountLineMax": "Thuê 7+ ngày tiết kiệm tới {percent}% · Giá cuối phụ thuộc xe và phụ phí."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Giảm giá theo thời hạn",
+    "cardSubtitle": "Thuê lâu hơn, tiết kiệm hơn",
     "perDaySuffix": "/ ngày",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Áp dụng cho thuê xe trước phụ phí",
+    "footnote": "Giá cuối phụ thuộc giá cơ bản, mùa và tình trạng — nhắn tin để nhận báo giá.",
     "rowOneDay": "1 ngày",
     "rowTwoDays": "2 ngày",
     "rowThreeTo21": "3 ngày – 3 tuần",
     "rowThreeWeeksPlus": "3 tuần trở lên",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "Giảm 0%",
+    "percentOff": "Giảm {percent}%"
   },
   "BookingSearch": {
     "quickFilterTitle": "Lọc nhanh theo kích thước động cơ",
@@ -747,15 +746,14 @@
     "offPickup": "· Yêu cầu nhận hàng tại chỗ",
     "offDropoff": "· Điểm thả khác nhau",
     "offSiteExtra": "· +€{amount} ngoài cơ sở",
-    "indicativeSummary": "Tổng số xe máy/tay ga dự kiến ​​~€{tripEur} (€{dailyEur}/ngày × {days} {dayLabel}) · Giá cuối cùng tùy thuộc vào loại xe và tiện ích bổ sung.",
     "vehicleTypeLabel": "Loại xe",
     "vehicleTypeAll": "Tất cả các loại",
     "submitSearching": "Đang tìm kiếm…",
     "submitIdle": "Tìm kiếm xe có sẵn",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: giảm {percent}% theo thời hạn · Giá cuối phụ thuộc xe và phụ phí.",
+    "durationDiscountSummaryMax": "Thuê 7+ ngày tiết kiệm tới {percent}% · Giá cuối phụ thuộc xe và phụ phí."
   },
   "BookingForm": {
     "invalidPickupDate": "Ngày nhận hàng không hợp lệ",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "Tiền đặt cọc được bao gồm trong số tiền phải trả trực tuyến.",
       "reviewCheckbox": "Tôi đã xem lại bản tóm tắt ở trên.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Giá ngày cơ bản:",
+      "rentalDuration": "Thời hạn thuê:",
+      "durationDiscount": "Giảm theo thời hạn: {percent}% → {rate}/ngày"
     },
     "pickupDropoff": {
       "shellTitle": "Đón và trả khách",

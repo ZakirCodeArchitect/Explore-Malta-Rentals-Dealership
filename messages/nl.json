@@ -663,7 +663,7 @@
     "emptyBody": "Kom binnenkort terug voor nieuw vermelde huurwoningen.",
     "noMatchTitle": "Geen exacte match gevonden",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Bedragen per kalenderdag voor motorfietsen en scooters vóór extra's. Gebruik deze als richtlijn terwijl u zoekt.",
+    "ratesBlurb": "Langere huurperiodes ontgrendelen duur-kortingen vóór extras — gebruik ze als leidraad tijdens het zoeken.",
     "ariaFilters": "Voertuigfilters",
     "ariaRates": "Indicatieve dagtarieven"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Elke kleur",
     "durationLine": "{count, plural, one {# dag} other {# dagen}}",
     "pickupPrefix": "Ophalen",
-    "indicativeLine": "Indicatief totaal voor motorfietsen/scooters ~€{tripEur} (€{dailyEur}/dag × {count} {dayLabel}) · De uiteindelijke prijs is afhankelijk van het voertuig en de add-ons.",
     "hotelDelivery": "Hotelbezorging nodig",
     "clearFilters": "Filters wissen",
     "search": "Zoekopdracht",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent} % duur-korting · Eindprijs hangt af van voertuig en extra's.",
+    "durationDiscountLineMax": "Huur 7+ dagen en bespaar tot {percent} % · Eindprijs hangt af van voertuig en extra's."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Duur-kortingen",
+    "cardSubtitle": "Langere huur = meer besparing",
     "perDaySuffix": "/ dag",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Van toepassing op voertuighuur vóór extras",
+    "footnote": "Eindprijs hangt af van basistarief, seizoen en beschikbaarheid — stuur ons een bericht voor een offerte.",
     "rowOneDay": "1 dag",
     "rowTwoDays": "2 dagen",
     "rowThreeTo21": "3 dagen – 3 weken",
     "rowThreeWeeksPlus": "3 weken of langer",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0 % korting",
+    "percentOff": "{percent} % korting"
   },
   "BookingSearch": {
     "quickFilterTitle": "Snel filteren op motorgrootte",
@@ -747,15 +746,14 @@
     "offPickup": "· Ophalen buiten de locatie aangevraagd",
     "offDropoff": "· Verschillende drop-off",
     "offSiteExtra": "· +€{amount} buiten de locatie",
-    "indicativeSummary": "Indicatief totaal voor motorfietsen/scooters ~€{tripEur} (€{dailyEur}/dag × {days} {dayLabel}) · De uiteindelijke prijs is afhankelijk van het voertuig en de add-ons.",
     "vehicleTypeLabel": "Voertuigtype",
     "vehicleTypeAll": "Alle soorten",
     "submitSearching": "Zoeken…",
     "submitIdle": "Zoek beschikbare voertuigen",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent} % duur-korting · Eindprijs hangt af van voertuig en extra's.",
+    "durationDiscountSummaryMax": "Huur 7+ dagen en bespaar tot {percent} % · Eindprijs hangt af van voertuig en extra's."
   },
   "BookingForm": {
     "invalidPickupDate": "Ongeldige ophaaldatum",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "De borg is inbegrepen in het online te betalen bedrag.",
       "reviewCheckbox": "Ik heb de samenvatting hierboven bekeken.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Basis dagtarief:",
+      "rentalDuration": "Huurduur:",
+      "durationDiscount": "Duur-korting: {percent} % → {rate}/dag"
     },
     "pickupDropoff": {
       "shellTitle": "Ophalen en afzetten",

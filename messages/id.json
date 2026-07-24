@@ -663,7 +663,7 @@
     "emptyBody": "Silakan periksa kembali segera untuk melihat persewaan yang baru terdaftar.",
     "noMatchTitle": "Tidak ditemukan kecocokan persis",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "Perkiraan jumlah rata-rata per hari kalender untuk sepeda motor dan skuter sebelum tambahan, gunakan ini sebagai panduan saat Anda melakukan penelusuran.",
+    "ratesBlurb": "Sewa lebih lama membuka diskon durasi sebelum tambahan — gunakan sebagai panduan saat mencari.",
     "ariaFilters": "Filter kendaraan",
     "ariaRates": "Tarif harian indikatif"
   },
@@ -693,28 +693,27 @@
     "anyColor": "Warna apa pun",
     "durationLine": "{count, plural, one {# hari} other {# hari}}",
     "pickupPrefix": "Menjemput",
-    "indicativeLine": "Total sepeda motor/skuter indikatif ~€{tripEur} (€{dailyEur}/hari × {count} {dayLabel}) · Harga akhir tergantung pada kendaraan dan tambahannya.",
     "hotelDelivery": "Butuh pengiriman hotel",
     "clearFilters": "Hapus filter",
     "search": "Mencari",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: diskon durasi {percent}% · Harga akhir tergantung kendaraan dan tambahan.",
+    "durationDiscountLineMax": "Sewa 7+ hari dan hemat hingga {percent}% · Harga akhir tergantung kendaraan dan tambahan."
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "Diskon durasi",
+    "cardSubtitle": "Sewa lebih lama, hemat lebih banyak",
     "perDaySuffix": "/ hari",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "Berlaku untuk sewa kendaraan sebelum tambahan",
+    "footnote": "Harga akhir tergantung tarif dasar, musim, dan ketersediaan — hubungi kami untuk penawaran.",
     "rowOneDay": "1 hari",
     "rowTwoDays": "2 hari",
     "rowThreeTo21": "3 hari – 3 minggu",
     "rowThreeWeeksPlus": "3 minggu atau lebih",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% diskon",
+    "percentOff": "{percent}% diskon"
   },
   "BookingSearch": {
     "quickFilterTitle": "Filter cepat berdasarkan ukuran mesin",
@@ -747,15 +746,14 @@
     "offPickup": "· Penjemputan di luar lokasi diminta",
     "offDropoff": "· Penurunan yang berbeda",
     "offSiteExtra": "· +€{amount} di luar lokasi",
-    "indicativeSummary": "Total sepeda motor/skuter indikatif ~€{tripEur} (€{dailyEur}/hari × {days} {dayLabel}) · Harga akhir tergantung pada kendaraan dan tambahannya.",
     "vehicleTypeLabel": "Jenis kendaraan",
     "vehicleTypeAll": "Semua tipe",
     "submitSearching": "Mencari…",
     "submitIdle": "Cari kendaraan yang tersedia",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: diskon durasi {percent}% · Harga akhir tergantung kendaraan dan tambahan.",
+    "durationDiscountSummaryMax": "Sewa 7+ hari dan hemat hingga {percent}% · Harga akhir tergantung kendaraan dan tambahan."
   },
   "BookingForm": {
     "invalidPickupDate": "Tanggal pengambilan tidak valid",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "Deposit sudah termasuk dalam jumlah pembayaran online.",
       "reviewCheckbox": "Saya meninjau ringkasan di atas.",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "Tarif harian dasar:",
+      "rentalDuration": "Durasi sewa:",
+      "durationDiscount": "Diskon durasi: {percent}% → {rate}/hari"
     },
     "pickupDropoff": {
       "shellTitle": "Penjemputan & Pengantaran",

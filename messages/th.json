@@ -663,7 +663,7 @@
     "emptyBody": "โปรดกลับมาตรวจสอบอีกครั้งเร็วๆ นี้เพื่อดูการเช่ารายการใหม่",
     "noMatchTitle": "ไม่พบรายการที่ตรงกันทุกประการ",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "จำนวน Ballpark ต่อวันปฏิทินสำหรับรถจักรยานยนต์และสกู๊ตเตอร์ก่อนค่าใช้จ่ายเพิ่มเติม ใช้เป็นแนวทางในขณะที่คุณค้นหา",
+    "ratesBlurb": "เช่าระยะยาวจะได้ส่วนลดตามระยะเวลาก่อนส่วนเสริม — ใช้เป็นคำแนะนำขณะค้นหา",
     "ariaFilters": "ตัวกรองยานพาหนะ",
     "ariaRates": "อัตรารายวันที่บ่งชี้"
   },
@@ -693,28 +693,27 @@
     "anyColor": "สีใดก็ได้",
     "durationLine": "{count, plural, one {# วัน} other {# วัน}}",
     "pickupPrefix": "หยิบ",
-    "indicativeLine": "จำนวนรถจักรยานยนต์/สกู๊ตเตอร์โดยประมาณ ~€{tripEur} (€{dailyEur}/วัน × {count} {dayLabel}) · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและอุปกรณ์เสริม",
     "hotelDelivery": "ต้องการจัดส่งที่โรงแรม",
     "clearFilters": "ล้างตัวกรอง",
     "search": "ค้นหา",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: ส่วนลดระยะเวลา {percent}% · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและส่วนเสริม",
+    "durationDiscountLineMax": "เช่า 7+ วัน ประหยัดได้สูงสุด {percent}% · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและส่วนเสริม"
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "ส่วนลดตามระยะเวลา",
+    "cardSubtitle": "เช่านานขึ้น ประหยัดมากขึ้น",
     "perDaySuffix": "/ วัน",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "ใช้กับค่าเช่ายานพาหนะก่อนส่วนเสริม",
+    "footnote": "ราคาสุดท้ายขึ้นอยู่กับอัตราพื้นฐาน ฤดูกาล และความพร้อม — ติดต่อเราเพื่อขอใบเสนอราคา",
     "rowOneDay": "1 วัน",
     "rowTwoDays": "2 วัน",
     "rowThreeTo21": "3 วัน – 3 สัปดาห์",
     "rowThreeWeeksPlus": "3 สัปดาห์ขึ้นไป",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "ส่วนลด 0%",
+    "percentOff": "ส่วนลด {percent}%"
   },
   "BookingSearch": {
     "quickFilterTitle": "กรองด่วนตามขนาดเครื่องยนต์",
@@ -747,15 +746,14 @@
     "offPickup": "· ขอรถกระบะนอกสถานที่",
     "offDropoff": "· จุดส่งที่แตกต่างกัน",
     "offSiteExtra": "· +€{amount} นอกสถานที่",
-    "indicativeSummary": "จำนวนรถจักรยานยนต์/สกู๊ตเตอร์โดยประมาณ ~€{tripEur} (€{dailyEur}/วัน × {days} {dayLabel}) · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและอุปกรณ์เสริม",
     "vehicleTypeLabel": "ประเภทยานพาหนะ",
     "vehicleTypeAll": "ทุกประเภท",
     "submitSearching": "กำลังค้นหา...",
     "submitIdle": "ค้นหายานพาหนะที่มีอยู่",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: ส่วนลดระยะเวลา {percent}% · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและส่วนเสริม",
+    "durationDiscountSummaryMax": "เช่า 7+ วัน ประหยัดได้สูงสุด {percent}% · ราคาสุดท้ายขึ้นอยู่กับยานพาหนะและส่วนเสริม"
   },
   "BookingForm": {
     "invalidPickupDate": "วันที่รับไม่ถูกต้อง",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "เงินฝากจะรวมอยู่ในจำนวนเงินที่ต้องชำระออนไลน์",
       "reviewCheckbox": "ฉันตรวจสอบสรุปข้างต้นแล้ว",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "อัตรารายวันพื้นฐาน:",
+      "rentalDuration": "ระยะเวลาเช่า:",
+      "durationDiscount": "ส่วนลดระยะเวลา: {percent}% → {rate}/วัน"
     },
     "pickupDropoff": {
       "shellTitle": "การรับและส่ง",

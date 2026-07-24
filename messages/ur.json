@@ -663,7 +663,7 @@
     "emptyBody": "نئے درج کرائے کے لیے براہ کرم جلد ہی دوبارہ چیک کریں۔",
     "noMatchTitle": "کوئی قطعی مماثلت نہیں ملی",
     "noMatchBody": "Try another brand, type, transmission, seats, or color.",
-    "ratesBlurb": "بالپارک فی کیلنڈر ڈے کی رقم ایکسٹرا سے پہلے موٹرسائیکلوں اور سکوٹرز کے لیے، جب آپ تلاش کرتے ہیں تو انہیں بطور رہنما استعمال کریں۔",
+    "ratesBlurb": "طویل کرایے پر مدت کی رعایت اضافی چیزوں سے پہلے لاگو ہوتی ہے — تلاش کے دوران رہنما کے طور پر استعمال کریں۔",
     "ariaFilters": "گاڑیوں کے فلٹرز",
     "ariaRates": "اشارے روزانہ کی شرح"
   },
@@ -693,28 +693,27 @@
     "anyColor": "کوئی بھی رنگ",
     "durationLine": "{count, plural, one {# دن} other {# دن}}",
     "pickupPrefix": "اٹھاؤ",
-    "indicativeLine": "اشارے والی موٹرسائیکلیں/سکوٹر کل ~€{tripEur} (€{dailyEur}/day × {count} {dayLabel}) · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔",
     "hotelDelivery": "ہوٹل ڈیلیوری کی ضرورت ہے۔",
     "clearFilters": "فلٹرز صاف کریں۔",
     "search": "تلاش کریں۔",
     "brand": "Brand",
     "allBrands": "All brands",
     "brandAria": "Vehicle brand",
-    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% مدت کی رعایت · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔",
+    "durationDiscountLineMax": "7+ دن کرایے پر {percent}% تک بچائیں · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔"
   },
   "IndicativeRates": {
-    "cardTitle": "Duration discounts",
-    "cardSubtitle": "Longer rentals save more",
+    "cardTitle": "مدت کی رعایتیں",
+    "cardSubtitle": "طویل کرایہ، زیادہ بچت",
     "perDaySuffix": "/ دن",
-    "beforeExtras": "Applied to vehicle rental before extras",
-    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
+    "beforeExtras": "اضافی چیزوں سے پہلے گاڑی کے کرایے پر لاگو",
+    "footnote": "حتمی قیمت بنیادی نرخ، موسم اور دستیابی پر منحصر ہے — قیمت کے لیے رابطہ کریں۔",
     "rowOneDay": "1 دن",
     "rowTwoDays": "2 دن",
     "rowThreeTo21": "3 دن - 3 ہفتے",
     "rowThreeWeeksPlus": "3 ہفتے یا اس سے زیادہ",
-    "noDiscount": "0% Discount",
-    "percentOff": "{percent}% Off"
+    "noDiscount": "0% رعایت",
+    "percentOff": "{percent}% رعایت"
   },
   "BookingSearch": {
     "quickFilterTitle": "انجن کے سائز کے لحاظ سے فوری فلٹر",
@@ -747,15 +746,14 @@
     "offPickup": "· آف سائٹ پک اپ کی درخواست کی گئی۔",
     "offDropoff": "· مختلف ڈراپ آف",
     "offSiteExtra": "· +€{amount} آف سائٹ",
-    "indicativeSummary": "اشارے والی موٹرسائیکلیں/سکوٹر کل ~€{tripEur} (€{dailyEur}/day × {days} {dayLabel}) · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔",
     "vehicleTypeLabel": "گاڑی کی قسم",
     "vehicleTypeAll": "تمام اقسام",
     "submitSearching": "تلاش کر رہا ہے…",
     "submitIdle": "دستیاب گاڑیاں تلاش کریں۔",
     "brandLabel": "Brand",
     "brandAria": "Vehicle brand",
-    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
-    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% مدت کی رعایت · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔",
+    "durationDiscountSummaryMax": "7+ دن کرایے پر {percent}% تک بچائیں · حتمی قیمت گاڑی اور ایڈونس پر منحصر ہے۔"
   },
   "BookingForm": {
     "invalidPickupDate": "پک اپ کی غلط تاریخ",
@@ -869,9 +867,9 @@
       "depositOnlineNote": "جمع آن لائن قابل ادائیگی رقم میں شامل ہے۔",
       "reviewCheckbox": "میں نے اوپر کے خلاصے کا جائزہ لیا۔",
       "insuranceNotSelected": "Not selected yet",
-      "baseDailyRate": "Base daily rate:",
-      "rentalDuration": "Rental duration:",
-      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
+      "baseDailyRate": "بنیادی روزانہ نرخ:",
+      "rentalDuration": "کرایے کی مدت:",
+      "durationDiscount": "مدت کی رعایت: {percent}% → {rate}/دن"
     },
     "pickupDropoff": {
       "shellTitle": "پک اپ اور ڈراپ آف",
