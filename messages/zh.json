@@ -699,18 +699,22 @@
     "search": "搜索",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "参考日租价格",
-    "cardSubtitle": "摩托车 / 踏板车",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ 天",
-    "beforeExtras": "每日历日，不含额外费用",
-    "footnote": "最终价格取决于车辆、季节和可用情况——请向我们发送消息获取报价。",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 天",
     "rowTwoDays": "2 天",
     "rowThreeTo21": "3 天 – 3 周",
-    "rowThreeWeeksPlus": "3 周以上"
+    "rowThreeWeeksPlus": "3 周以上",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "按排量快速筛选",
@@ -749,7 +753,9 @@
     "submitSearching": "搜索中…",
     "submitIdle": "搜索可用车辆",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "取车日期无效",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "押金将在取车时支付，不含在线总额中。",
       "depositOnlineNote": "押金已含在在线应付金额中。",
       "reviewCheckbox": "我已审核以上摘要。",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "取车与还车",

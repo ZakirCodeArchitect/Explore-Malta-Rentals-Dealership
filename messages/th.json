@@ -699,18 +699,22 @@
     "search": "ค้นหา",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "อัตรารายวันที่บ่งชี้",
-    "cardSubtitle": "รถจักรยานยนต์ / สกู๊ตเตอร์",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ วัน",
-    "beforeExtras": "ตามวันปฏิทิน ก่อนค่าใช้จ่ายเพิ่มเติม",
-    "footnote": "ราคาสุดท้ายขึ้นอยู่กับยานพาหนะ ฤดูกาล และความพร้อม — ส่งข้อความหาเราเพื่อขอใบเสนอราคา",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 วัน",
     "rowTwoDays": "2 วัน",
     "rowThreeTo21": "3 วัน – 3 สัปดาห์",
-    "rowThreeWeeksPlus": "3 สัปดาห์ขึ้นไป"
+    "rowThreeWeeksPlus": "3 สัปดาห์ขึ้นไป",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "กรองด่วนตามขนาดเครื่องยนต์",
@@ -749,7 +753,9 @@
     "submitSearching": "กำลังค้นหา...",
     "submitIdle": "ค้นหายานพาหนะที่มีอยู่",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "วันที่รับไม่ถูกต้อง",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "จะต้องชำระเงินมัดจำเมื่อไปรับและไม่รวมอยู่ในยอดรวมออนไลน์",
       "depositOnlineNote": "เงินฝากจะรวมอยู่ในจำนวนเงินที่ต้องชำระออนไลน์",
       "reviewCheckbox": "ฉันตรวจสอบสรุปข้างต้นแล้ว",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "การรับและส่ง",

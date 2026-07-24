@@ -24,7 +24,6 @@ import { Container } from "@/components/ui/container";
 import { VehicleDetailGallery } from "@/features/vehicles/components/vehicle-detail-gallery";
 import { VehicleRelatedSlider } from "@/features/vehicles/components/vehicle-related-slider";
 import { formatVehicleTypeLabel, type Vehicle } from "@/features/vehicles/data/vehicles";
-import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
 import { useVehicle, useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   buildDurationPricingPreview,
@@ -257,7 +256,6 @@ function BookingSidebar({
   initialPickupTime,
   initialReturnTime,
 }: BookingSidebarProps) {
-  const { rules: durationRules } = useDurationPricingRules();
   const minDate = todayISO();
   const defaultTime = BOOKING_TIME_SLOTS[0] ?? "09:30";
   const [pickupDate, setPickupDate] = useState(initialPickupDate);
@@ -298,18 +296,13 @@ function BookingSidebar({
   }, [pickupDate, returnDate, pickupTime, returnTime]);
 
   const durationPreview = useMemo(
-    () => buildDurationPricingPreview(vehicle.baseDailyRate, vehicle.apiVehicleType, durationRules),
-    [durationRules, vehicle.apiVehicleType, vehicle.baseDailyRate],
+    () => buildDurationPricingPreview(vehicle.baseDailyRate),
+    [vehicle.baseDailyRate],
   );
 
   const estimatedPricing =
-    vehicle.baseDailyRate > 0 && days > 0 && durationRules.length > 0
-      ? calculateVehicleRentalPricing(
-          vehicle.baseDailyRate,
-          vehicle.apiVehicleType,
-          days,
-          durationRules,
-        )
+    vehicle.baseDailyRate > 0 && days > 0
+      ? calculateVehicleRentalPricing(vehicle.baseDailyRate, days)
       : null;
   const estimatedTotal = estimatedPricing?.rentalSubtotal ?? null;
   const estimatedTierDailyRate = estimatedPricing?.appliedDailyRate ?? null;

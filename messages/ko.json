@@ -699,18 +699,22 @@
     "search": "찾다",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "일일 요금",
-    "cardSubtitle": "오토바이/스쿠터",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ 낮",
-    "beforeExtras": "달력일 기준, 추가 항목 전",
-    "footnote": "최종 가격은 차량, 시즌, 가용성에 따라 달라집니다. 견적을 원하시면 메시지를 보내주세요.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1일",
     "rowTwoDays": "2일",
     "rowThreeTo21": "3일 – 3주",
-    "rowThreeWeeksPlus": "3주 이상"
+    "rowThreeWeeksPlus": "3주 이상",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "엔진 크기별 빠른 필터링",
@@ -749,7 +753,9 @@
     "submitSearching": "수색…",
     "submitIdle": "이용 가능한 차량 검색",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "잘못된 픽업 날짜",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "보증금은 픽업 시 지불되며 온라인 총액에는 포함되지 않습니다.",
       "depositOnlineNote": "보증금은 온라인 결제금액에 포함되어 있습니다.",
       "reviewCheckbox": "위의 요약을 검토했습니다.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "픽업 및 하차",

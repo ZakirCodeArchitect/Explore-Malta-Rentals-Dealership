@@ -699,18 +699,22 @@
     "search": "Zoekopdracht",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "Indicatieve dagtarieven",
-    "cardSubtitle": "Motoren/scooters",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ dag",
-    "beforeExtras": "Per kalenderdag, vóór extra's",
-    "footnote": "De uiteindelijke prijs is afhankelijk van het voertuig, het seizoen en de beschikbaarheid. Stuur ons een bericht voor een offerte.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 dag",
     "rowTwoDays": "2 dagen",
     "rowThreeTo21": "3 dagen – 3 weken",
-    "rowThreeWeeksPlus": "3 weken of langer"
+    "rowThreeWeeksPlus": "3 weken of langer",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "Snel filteren op motorgrootte",
@@ -749,7 +753,9 @@
     "submitSearching": "Zoeken…",
     "submitIdle": "Zoek beschikbare voertuigen",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "Ongeldige ophaaldatum",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "De borg wordt betaald bij het ophalen en is niet inbegrepen in het online totaal.",
       "depositOnlineNote": "De borg is inbegrepen in het online te betalen bedrag.",
       "reviewCheckbox": "Ik heb de samenvatting hierboven bekeken.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "Ophalen en afzetten",

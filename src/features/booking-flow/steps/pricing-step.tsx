@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   calculateBookingPrice,
@@ -13,7 +12,6 @@ import {
 export function PricingStep() {
   const { state, updateSection } = useBookingFlow();
   const { vehicles } = useVehicles();
-  const { rules: durationRules } = useDurationPricingRules();
 
   const selectedVehicle = useMemo(() => {
     if (!state.rental.vehicleId) {
@@ -23,7 +21,7 @@ export function PricingStep() {
   }, [state.rental.vehicleId, vehicles]);
 
   const pricing = useMemo(() => {
-    if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0 || durationRules.length === 0) {
+    if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0) {
       return null;
     }
 
@@ -58,11 +56,10 @@ export function PricingStep() {
       vehiclePricing: {
         baseDailyRate: selectedVehicle.baseDailyRate,
         vehicleType: selectedVehicle.apiVehicleType,
-        durationRules,
         supportsStorageBox: selectedVehicle.supportsStorageBox,
       },
     });
-  }, [durationRules, selectedVehicle, state]);
+  }, [selectedVehicle, state]);
 
   return (
     <StepShell
@@ -78,10 +75,11 @@ export function PricingStep() {
           <div className="space-y-2">
             <p className="font-semibold text-slate-900">Pricing Summary</p>
             <ul className="list-disc space-y-1 pl-5 text-sm">
-              <li>Duration: {pricing.rentalDays} day(s) billed</li>
+              <li>Duration: {pricing.rentalDays} day(s) billed ({pricing.tierRange})</li>
               <li>Actual duration: {pricing.actualDurationHours.toFixed(1)} hours</li>
+              <li>Base daily rate: {formatEur(pricing.baseDailyRate)}/day</li>
               <li>
-                Applied rate: {formatEur(pricing.appliedDailyRate)}/day ({pricing.durationDiscountPercent}% discount)
+                Duration discount: {pricing.durationDiscountPercent}% → {formatEur(pricing.appliedDailyRate)}/day
               </li>
               <li>Estimated rental total: {formatEur(pricing.rentalCost)}</li>
             </ul>

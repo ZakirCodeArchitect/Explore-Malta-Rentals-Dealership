@@ -699,18 +699,22 @@
     "search": "অনুসন্ধান করুন",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "নির্দেশক দৈনিক হার",
-    "cardSubtitle": "মোটরসাইকেল/স্কুটার",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ দিন",
-    "beforeExtras": "প্রতি ক্যালেন্ডার দিন, অতিরিক্ত আগে",
-    "footnote": "চূড়ান্ত মূল্য গাড়ি, মরসুম এবং প্রাপ্যতার উপর নির্ভর করে — একটি উদ্ধৃতির জন্য আমাদের বার্তা দিন।",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 দিন",
     "rowTwoDays": "2 দিন",
     "rowThreeTo21": "3 দিন - 3 সপ্তাহ",
-    "rowThreeWeeksPlus": "3 সপ্তাহ বা তার বেশি"
+    "rowThreeWeeksPlus": "3 সপ্তাহ বা তার বেশি",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "ইঞ্জিন আকার দ্বারা দ্রুত ফিল্টার",
@@ -749,7 +753,9 @@
     "submitSearching": "অনুসন্ধান করা হচ্ছে...",
     "submitIdle": "উপলব্ধ যানবাহন অনুসন্ধান করুন",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "অবৈধ পিকআপ তারিখ",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "আমানত পিকআপে প্রদান করা হবে এবং অনলাইন মোটের মধ্যে অন্তর্ভুক্ত নয়।",
       "depositOnlineNote": "জমা অনলাইন প্রদেয় পরিমাণ অন্তর্ভুক্ত করা হয়.",
       "reviewCheckbox": "আমি উপরের সারাংশ পর্যালোচনা.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "পিকআপ এবং ড্রপ-অফ",

@@ -699,18 +699,22 @@
     "search": "Rechercher",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "Tarifs journaliers indicatifs",
-    "cardSubtitle": "Motos / scooters",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ jour",
-    "beforeExtras": "Par jour calendaire, avant suppléments",
-    "footnote": "Le prix final dépend du véhicule, de la saison et de la disponibilité — contactez-nous pour un devis.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 jour",
     "rowTwoDays": "2 jours",
     "rowThreeTo21": "3 jours – 3 semaines",
-    "rowThreeWeeksPlus": "3 semaines ou plus"
+    "rowThreeWeeksPlus": "3 semaines ou plus",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "Filtre rapide par cylindrée",
@@ -749,7 +753,9 @@
     "submitSearching": "Recherche…",
     "submitIdle": "Rechercher les véhicules disponibles",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "Date de prise en charge invalide",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "La caution sera payée lors de la prise en charge et n'est pas incluse dans le total en ligne.",
       "depositOnlineNote": "La caution est incluse dans le montant payable en ligne.",
       "reviewCheckbox": "J'ai vérifié le résumé ci-dessus.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "Prise en charge & Retour",

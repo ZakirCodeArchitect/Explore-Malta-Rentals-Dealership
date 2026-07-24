@@ -699,18 +699,22 @@
     "search": "Fittex",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "Rati indikattivi ta' kuljum",
-    "cardSubtitle": "Muturi / skutters",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ jum",
-    "beforeExtras": "Kull jum tal-kalendarju, qabel l-extras",
-    "footnote": "Il-prezz finali jiddependi fuq il-vettura, is-stagħun, u d-disponibilità — ibgħatilna messaġġ għal kwotazzjon.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 jum",
     "rowTwoDays": "2 ijiem",
     "rowThreeTo21": "3 ijiem – 3 ġimgħat",
-    "rowThreeWeeksPlus": "3 ġimgħat jew aktar"
+    "rowThreeWeeksPlus": "3 ġimgħat jew aktar",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "Filtru malajr skont id-daqs tal-magna",
@@ -749,7 +753,9 @@
     "submitSearching": "Qed ifittex…",
     "submitIdle": "Fittex vetturi disponibbli",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "Data tal-irkupru invalida",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "Id-depożitu jitħallas mal-irkupru u mhuwiex inkluż fit-total online.",
       "depositOnlineNote": "Id-depożitu huwa inkluż fl-ammont pagabbli online.",
       "reviewCheckbox": "Irrevedejt is-sommarju hawn fuq.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "Irkupru u Drop-off",

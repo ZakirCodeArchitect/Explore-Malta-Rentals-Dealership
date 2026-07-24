@@ -24,8 +24,6 @@ import {
   type BookingPricingInput,
   type PricingCdwOption,
 } from "@/lib/pricing/calculate-booking-price";
-import { getDurationPricingRules } from "@/lib/pricing/get-duration-pricing-rules";
-import type { DurationPricingRuleDto } from "@/lib/pricing/duration-pricing";
 import { validateHotelCode, type ValidatedHotelCode } from "@/lib/hotel-codes";
 
 import { validateBookingPayload } from "./validateBookingPayload";
@@ -195,7 +193,6 @@ function toPricingInput(
 function computePricing(
   payload: NormalizedBookingPayload,
   vehicle: ResolvedBookingVehicle,
-  durationRules: DurationPricingRuleDto[],
   validatedHotelCode: ValidatedHotelCode | null,
 ): PricingComputation | null {
   const breakdown = calculateBookingPrice({
@@ -203,7 +200,6 @@ function computePricing(
     vehiclePricing: {
       baseDailyRate: vehicle.baseDailyRate,
       vehicleType: vehicle.vehicleType,
-      durationRules,
       supportsStorageBox: vehicle.supportsStorageBox,
     },
     hotelDiscount: validatedHotelCode
@@ -845,12 +841,6 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     return idempotentResult;
   }
 
-  const durationRules = await getDurationPricingRules();
-  if (durationRules.length === 0) {
-    throw new SubmitBookingValidationError([
-      { path: "pricing", message: "Duration pricing rules are not configured" },
-    ]);
-  }
   const requireHoldReference = Boolean(validation.data.holdReference);
   if (!requireHoldReference) {
     await assertBookingStillAvailable(
@@ -871,7 +861,7 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     validatedHotelCode = hotelResult.data;
   }
 
-  const pricing = computePricing(validation.data, resolvedVehicle, durationRules, validatedHotelCode);
+  const pricing = computePricing(validation.data, resolvedVehicle, validatedHotelCode);
   if (!pricing) {
     throw new SubmitBookingValidationError([
       { path: "pricing", message: "Unable to calculate booking price" },

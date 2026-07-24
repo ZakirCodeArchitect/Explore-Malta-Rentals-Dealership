@@ -699,18 +699,22 @@
     "search": "Aramak",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "Gösterge niteliğindeki günlük oranlar",
-    "cardSubtitle": "Motosikletler / scooterlar",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ gün",
-    "beforeExtras": "Ekstralardan önce takvim günü başına",
-    "footnote": "Nihai fiyat araca, sezona ve stok durumuna bağlıdır; fiyat teklifi için bize mesaj gönderin.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 gün",
     "rowTwoDays": "2 gün",
     "rowThreeTo21": "3 gün – 3 hafta",
-    "rowThreeWeeksPlus": "3 hafta veya daha fazla"
+    "rowThreeWeeksPlus": "3 hafta veya daha fazla",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "Motor boyutuna göre hızlı filtreleme",
@@ -749,7 +753,9 @@
     "submitSearching": "Arama…",
     "submitIdle": "Mevcut araçları arayın",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "Geçersiz teslim alma tarihi",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "Depozito teslim alırken ödenecektir ve çevrimiçi toplam tutara dahil edilmeyecektir.",
       "depositOnlineNote": "Depozito, çevrimiçi ödeme tutarına dahildir.",
       "reviewCheckbox": "Yukarıdaki özeti inceledim.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "Teslim alma ve bırakma",

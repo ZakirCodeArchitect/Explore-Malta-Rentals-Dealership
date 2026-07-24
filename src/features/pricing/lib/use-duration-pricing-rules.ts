@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import type { DurationPricingRuleDto } from "@/lib/pricing/duration-pricing";
+import { PRICING_TIERS } from "@/lib/pricing/pricing-tiers";
+import type { DurationPricingRuleDto } from "@/lib/pricing/get-duration-pricing-rules";
 
 type UseDurationPricingRulesResult = {
   rules: DurationPricingRuleDto[];
@@ -10,75 +9,18 @@ type UseDurationPricingRulesResult = {
   error: string | null;
 };
 
-let cachedRules: DurationPricingRuleDto[] | null = null;
-let cachedPromise: Promise<DurationPricingRuleDto[]> | null = null;
+const STATIC_RULES: DurationPricingRuleDto[] = PRICING_TIERS.map((tier, index) => ({
+  key: tier.key,
+  minDays: tier.minDays,
+  maxDays: tier.maxDays,
+  discountPercent: tier.discountPercent,
+  displayOrder: (index + 1) * 10,
+}));
 
-async function loadDurationPricingRules(): Promise<DurationPricingRuleDto[]> {
-  if (cachedRules) {
-    return cachedRules;
-  }
-
-  if (!cachedPromise) {
-    cachedPromise = fetch("/api/pricing/duration-rules", {
-      method: "GET",
-      cache: "force-cache",
-      next: { revalidate: 60 },
-    })
-      .then(async (response) => {
-        const body = (await response.json()) as {
-          success?: boolean;
-          rules?: DurationPricingRuleDto[];
-          message?: string;
-        };
-        if (!response.ok || !body.success || !Array.isArray(body.rules)) {
-          throw new Error(body.message ?? "Unable to load duration pricing rules.");
-        }
-        cachedRules = body.rules;
-        return body.rules;
-      })
-      .finally(() => {
-        cachedPromise = null;
-      });
-  }
-
-  return cachedPromise;
-}
-
-export function useDurationPricingRules(enabled = true): UseDurationPricingRulesResult {
-  const [rules, setRules] = useState<DurationPricingRuleDto[]>(cachedRules ?? []);
-  const [isLoading, setIsLoading] = useState(enabled && !cachedRules);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
-    let cancelled = false;
-    setIsLoading(true);
-    setError(null);
-
-    loadDurationPricingRules()
-      .then((loaded) => {
-        if (!cancelled) {
-          setRules(loaded);
-        }
-      })
-      .catch((caught) => {
-        if (!cancelled) {
-          setError(caught instanceof Error ? caught.message : "Unable to load duration pricing rules.");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [enabled]);
-
-  return { rules, isLoading, error };
+export function useDurationPricingRules(_enabled = true): UseDurationPricingRulesResult {
+  return {
+    rules: STATIC_RULES,
+    isLoading: false,
+    error: null,
+  };
 }

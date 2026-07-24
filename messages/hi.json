@@ -699,18 +699,22 @@
     "search": "खोजें",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "सांकेतिक दैनिक दरें",
-    "cardSubtitle": "मोटरसाइकिल / स्कूटर",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ दिन",
-    "beforeExtras": "प्रति कैलेंडर दिन, एक्स्ट्रा से पहले",
-    "footnote": "अंतिम मूल्य वाहन, मौसम और उपलब्धता पर निर्भर करता है — उद्धरण के लिए हमें संदेश दें।",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 दिन",
     "rowTwoDays": "2 दिन",
     "rowThreeTo21": "3 दिन – 3 सप्ताह",
-    "rowThreeWeeksPlus": "3 सप्ताह या अधिक"
+    "rowThreeWeeksPlus": "3 सप्ताह या अधिक",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "इंजन साइज़ के आधार पर त्वरित फ़िल्टर",
@@ -749,7 +753,9 @@
     "submitSearching": "खोज हो रही है…",
     "submitIdle": "उपलब्ध वाहन खोजें",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "अमान्य पिकअप तारीख",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "जमा राशि पिकअप पर दी जाएगी और ऑनलाइन कुल में शामिल नहीं है।",
       "depositOnlineNote": "जमा राशि ऑनलाइन देय राशि में शामिल है।",
       "reviewCheckbox": "मैंने उपरोक्त सारांश की समीक्षा की है।",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "पिकअप और ड्रॉप-ऑफ",

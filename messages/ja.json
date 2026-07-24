@@ -699,18 +699,22 @@
     "search": "検索",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "参考日額料金",
-    "cardSubtitle": "バイク / スクーター",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ 日",
-    "beforeExtras": "1暦日あたり、追加料金前",
-    "footnote": "最終価格は車両、シーズン、空き状況によって異なります — お見積もりはメッセージをお送りください。",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1日",
     "rowTwoDays": "2日",
     "rowThreeTo21": "3日 〜 3週間",
-    "rowThreeWeeksPlus": "3週間以上"
+    "rowThreeWeeksPlus": "3週間以上",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "エンジンサイズで素早くフィルター",
@@ -749,7 +753,9 @@
     "submitSearching": "検索中…",
     "submitIdle": "利用可能な車両を検索",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "無効な受け取り日",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "デポジットは受け取り時に支払われ、オンライン合計には含まれません。",
       "depositOnlineNote": "デポジットはオンライン支払い金額に含まれています。",
       "reviewCheckbox": "上記の概要を確認しました。",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "受け取りと返却",

@@ -699,18 +699,22 @@
     "search": "Tìm kiếm",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "Tỷ lệ hàng ngày chỉ định",
-    "cardSubtitle": "Xe máy/xe tay ga",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ ngày",
-    "beforeExtras": "Mỗi ngày theo lịch, trước các ngày bổ sung",
-    "footnote": "Giá cuối cùng phụ thuộc vào loại xe, mùa và tình trạng sẵn có - hãy nhắn tin cho chúng tôi để báo giá.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 ngày",
     "rowTwoDays": "2 ngày",
     "rowThreeTo21": "3 ngày – 3 tuần",
-    "rowThreeWeeksPlus": "3 tuần trở lên"
+    "rowThreeWeeksPlus": "3 tuần trở lên",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "Lọc nhanh theo kích thước động cơ",
@@ -749,7 +753,9 @@
     "submitSearching": "Đang tìm kiếm…",
     "submitIdle": "Tìm kiếm xe có sẵn",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "Ngày nhận hàng không hợp lệ",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "Tiền đặt cọc sẽ được thanh toán khi nhận hàng và không được bao gồm trong tổng số tiền trực tuyến.",
       "depositOnlineNote": "Tiền đặt cọc được bao gồm trong số tiền phải trả trực tuyến.",
       "reviewCheckbox": "Tôi đã xem lại bản tóm tắt ở trên.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "Đón và trả khách",

@@ -699,18 +699,22 @@
     "search": "Buscar",
     "brand": "Brand",
     "allBrands": "All brands",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountLine": "{count} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountLineMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "IndicativeRates": {
-    "cardTitle": "Tarifas diarias orientativas",
-    "cardSubtitle": "Motos / scooters",
+    "cardTitle": "Duration discounts",
+    "cardSubtitle": "Longer rentals save more",
     "perDaySuffix": "/ día",
-    "beforeExtras": "Por día natural, antes de extras",
-    "footnote": "El precio final depende del vehículo, la temporada y la disponibilidad — escríbenos para un presupuesto.",
+    "beforeExtras": "Applied to vehicle rental before extras",
+    "footnote": "Final price depends on vehicle base rate, season, and availability — message us for a quote.",
     "rowOneDay": "1 día",
     "rowTwoDays": "2 días",
     "rowThreeTo21": "3 días – 3 semanas",
-    "rowThreeWeeksPlus": "3 semanas o más"
+    "rowThreeWeeksPlus": "3 semanas o más",
+    "noDiscount": "0% Discount",
+    "percentOff": "{percent}% Off"
   },
   "BookingSearch": {
     "quickFilterTitle": "Filtro rápido por cilindrada",
@@ -749,7 +753,9 @@
     "submitSearching": "Buscando…",
     "submitIdle": "Buscar vehículos disponibles",
     "brandLabel": "Brand",
-    "brandAria": "Vehicle brand"
+    "brandAria": "Vehicle brand",
+    "durationDiscountSummary": "{days} {dayLabel}: {percent}% duration discount applies · Final price depends on vehicle and add-ons.",
+    "durationDiscountSummaryMax": "Rent 7+ days and save up to {percent}% · Final price depends on vehicle and add-ons."
   },
   "BookingForm": {
     "invalidPickupDate": "Fecha de recogida no válida",
@@ -862,7 +868,10 @@
       "depositAtPickupNote": "La fianza se paga al recoger y no entra en el total en línea.",
       "depositOnlineNote": "La fianza está incluida en el importe pagable en línea.",
       "reviewCheckbox": "He revisado el resumen anterior.",
-      "insuranceNotSelected": "Not selected yet"
+      "insuranceNotSelected": "Not selected yet",
+      "baseDailyRate": "Base daily rate:",
+      "rentalDuration": "Rental duration:",
+      "durationDiscount": "Duration discount: {percent}% → {rate}/day"
     },
     "pickupDropoff": {
       "shellTitle": "Recogida y devolución",

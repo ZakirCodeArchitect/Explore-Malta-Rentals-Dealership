@@ -21,11 +21,8 @@ import {
 } from "@/features/vehicles/components/vehicle-pickup-fields";
 import { TripDateSelector } from "@/features/vehicles/components/trip-date-selector";
 import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-params";
-import {
-  getIndicativeMotorcycleScooterDailyRateEur,
-  getIndicativeMotorcycleScooterTripTotalEur,
-} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
 import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
+import { getPricingTierForDays } from "@/lib/pricing/pricing-tiers";
 
 type VehicleFiltersProps = Readonly<{
   pickupLocation: BookingOption | null;
@@ -224,10 +221,7 @@ export function VehicleFilters({
     return calculateCalendarRentalDays(pickupDate, returnDate) ?? 0;
   }, [tripStart, tripEnd]);
 
-  const indicativeDailyEur =
-    getIndicativeMotorcycleScooterDailyRateEur(durationDays);
-  const indicativeTripTotalEur =
-    getIndicativeMotorcycleScooterTripTotalEur(durationDays);
+  const matchedTier = durationDays > 0 ? getPricingTierForDays(durationDays) : null;
 
   const dayWord = durationDays === 1 ? tCommon("day") : tCommon("days");
   const durationSummary = t("durationLine", { count: durationDays });
@@ -400,12 +394,13 @@ export function VehicleFilters({
               {pickupSuffix}
             </p>
             <p className="mt-0.5 text-xs text-slate-600 sm:text-sm">
-              {t("indicativeLine", {
-                tripEur: indicativeTripTotalEur,
-                dailyEur: indicativeDailyEur,
-                count: durationDays,
-                dayLabel: dayWord,
-              })}
+              {matchedTier
+                ? t("durationDiscountLine", {
+                    count: durationDays,
+                    dayLabel: dayWord,
+                    percent: matchedTier.discountPercent,
+                  })
+                : t("durationDiscountLineMax", { percent: 40 })}
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">

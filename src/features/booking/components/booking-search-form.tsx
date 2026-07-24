@@ -41,10 +41,7 @@ import {
 } from "@/features/booking/lib/time-slots";
 import { TimeSlotSelect } from "@/features/booking/components/time-slot-select";
 import { buildVehiclesSearchUrl } from "@/features/booking/lib/build-vehicles-url";
-import {
-  getIndicativeMotorcycleScooterDailyRateEur,
-  getIndicativeMotorcycleScooterTripTotalEur,
-} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
+import { getPricingTierForDays } from "@/lib/pricing/pricing-tiers";
 import { pricingService } from "@/lib/pricing/service";
 import { SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 
@@ -156,6 +153,7 @@ export function BookingSearchForm({
     initialBrands: brandOptions,
   });
   const brandChoices = brandOptions ?? fetchedBrands;
+  const [isMounted, setIsMounted] = useState(false);
   const [calOpen, setCalOpen] = useState(false);
   const [calendarMonths, setCalendarMonths] = useState(1);
   const minFrom = useMemo(() => startOfDay(new Date()), []);
@@ -216,6 +214,10 @@ export function BookingSearchForm({
   } = form;
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const sync = () => setCalendarMonths(mq.matches ? 2 : 1);
     sync();
@@ -246,10 +248,7 @@ export function BookingSearchForm({
 
   const durationDays = calculateCalendarRentalDays(pickupDate, dropoffDate) ?? 0;
 
-  const indicativeDailyEur =
-    getIndicativeMotorcycleScooterDailyRateEur(durationDays);
-  const indicativeTripTotalEur =
-    getIndicativeMotorcycleScooterTripTotalEur(durationDays);
+  const matchedTier = durationDays > 0 ? getPricingTierForDays(durationDays) : null;
 
   const offSiteQuote = pricingService.quoteOffSiteService({
     pickupOffSite: alternatePickupRequested,
@@ -558,25 +557,30 @@ export function BookingSearchForm({
                 render={({ field }) => (
                   <div className={inputShell}>
                     <Tag className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-                    <Select<BookingOption, false>
-                      inputId="booking-search-brand"
-                      instanceId="booking-search-brand"
-                      aria-label={tSearch("brandAria")}
-                      value={optionByValue(brandSelectOptions, field.value ?? "all")}
-                      onChange={(option) => field.onChange(option?.value ?? "all")}
-                      onBlur={field.onBlur}
-                      options={brandSelectOptions}
-                      isSearchable={false}
-                      isDisabled={isBrandsLoading && brandChoices.length === 0}
-                      styles={vehicleFilterReactSelectStyles}
-                      components={brandSelectComponents}
-                      menuPortalTarget={
-                        typeof document !== "undefined" ? document.body : null
-                      }
-                      menuPosition="fixed"
-                      className="min-w-0 flex-1"
-                      classNamePrefix="booking-search-brand"
-                    />
+                    {isMounted ? (
+                      <Select<BookingOption, false>
+                        inputId="booking-search-brand"
+                        instanceId="booking-search-brand"
+                        aria-label={tSearch("brandAria")}
+                        value={optionByValue(brandSelectOptions, field.value ?? "all")}
+                        onChange={(option) => field.onChange(option?.value ?? "all")}
+                        onBlur={field.onBlur}
+                        options={brandSelectOptions}
+                        isSearchable={false}
+                        isDisabled={isBrandsLoading && brandChoices.length === 0}
+                        styles={vehicleFilterReactSelectStyles}
+                        components={brandSelectComponents}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        className="min-w-0 flex-1"
+                        classNamePrefix="booking-search-brand"
+                      />
+                    ) : (
+                      <div
+                        className="min-h-[2.5rem] min-w-0 flex-1 rounded-md border border-slate-200/90 bg-white/80"
+                        aria-hidden
+                      />
+                    )}
                   </div>
                 )}
               />
@@ -705,12 +709,13 @@ export function BookingSearchForm({
               })}
             </p>
             <p className="mt-0.5 text-xs text-slate-600">
-              {tSearch("indicativeSummary", {
-                tripEur: indicativeTripTotalEur,
-                dailyEur: indicativeDailyEur,
-                days: durationDays,
-                dayLabel: summaryDayLabel,
-              })}
+              {matchedTier
+                ? tSearch("durationDiscountSummary", {
+                    days: durationDays,
+                    dayLabel: summaryDayLabel,
+                    percent: matchedTier.discountPercent,
+                  })
+                : tSearch("durationDiscountSummaryMax", { percent: 40 })}
             </p>
           </div>
           <button

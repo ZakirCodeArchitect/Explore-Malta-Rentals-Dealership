@@ -15,28 +15,30 @@ import { calculateBookingPrice, type BookingPricingInput } from "../src/lib/pric
 import { calculateHotelDiscount } from "../src/lib/hotel-codes/calculate-hotel-discount";
 import {
   calculateVehicleRentalPricing,
-  resolveDurationPricingRule,
-  type DurationPricingRuleDto,
+  resolveDurationPricingTier,
 } from "../src/lib/pricing/duration-pricing";
+import { PRICING_TIERS } from "../src/lib/pricing/pricing-tiers";
 import { calculateCalendarRentalDays, calculateRentalDuration } from "../src/lib/pricing/rental-duration";
 import { validateStorageBoxSelection } from "../src/lib/booking/validateStorageBoxSelection";
 
 type BookingPayload = z.input<typeof bookingSubmissionSchema>;
 
-const scooterDurationRules: DurationPricingRuleDto[] = [
-  { vehicleType: "Scooter", minDays: 1, maxDays: 1, discountPercent: 0, displayOrder: 10 },
-  { vehicleType: "Scooter", minDays: 2, maxDays: 2, discountPercent: 10, displayOrder: 20 },
-  { vehicleType: "Scooter", minDays: 3, maxDays: 20, discountPercent: 20, displayOrder: 30 },
-  { vehicleType: "Scooter", minDays: 21, maxDays: null, discountPercent: 40, displayOrder: 40 },
-];
+const PICKUP_DATE = "2026-05-10";
+
+function returnDateForRentalDays(rentalDays: number): string {
+  const [year, month, day] = PICKUP_DATE.split("-").map(Number);
+  const start = new Date(Date.UTC(year!, month! - 1, day!));
+  start.setUTCDate(start.getUTCDate() + rentalDays - 1);
+  return start.toISOString().slice(0, 10);
+}
 
 const basePricingInput = {
   rental: {
     vehicle: { type: "Scooter" },
-    pickupDate: "2026-05-10",
-    returnDate: "2026-05-11",
-    pickupTime: "10:00",
-    returnTime: "10:00",
+    pickupDate: PICKUP_DATE,
+    returnDate: returnDateForRentalDays(1),
+    pickupTime: "09:00",
+    returnTime: "18:00",
   },
   delivery: {
     pickupOption: "office" as const,
@@ -52,7 +54,6 @@ const basePricingInput = {
   vehiclePricing: {
     baseDailyRate: 25,
     vehicleType: "Scooter" as const,
-    durationRules: scooterDurationRules,
   },
 } satisfies BookingPricingInput;
 
@@ -63,26 +64,30 @@ function assertApprox(name: string, actual: number, expected: number, tolerance 
 }
 
 function runDurationRuleAssertions(): void {
-  const fiveDayRule = resolveDurationPricingRule(scooterDurationRules, "Scooter", 5);
-  if (!fiveDayRule || fiveDayRule.minDays !== 3 || fiveDayRule.maxDays !== 20) {
-    throw new Error("5-day booking should match the 3–20 day duration rule");
+  const fiveDayTier = resolveDurationPricingTier(5);
+  if (!fiveDayTier || fiveDayTier.key !== "TIER_1") {
+    throw new Error("5-day booking should match TIER_1 (1–6 days, 0% discount)");
   }
 
-  const flatTierPricing = calculateVehicleRentalPricing(25, "Scooter", 5, scooterDurationRules);
+  const flatTierPricing = calculateVehicleRentalPricing(25, 5);
   if (!flatTierPricing) {
     throw new Error("5-day flat tier pricing returned null");
   }
-  assertApprox("5-day flat tier applied rate", flatTierPricing.appliedDailyRate, 20);
-  assertApprox("5-day flat tier subtotal", flatTierPricing.rentalSubtotal, 100);
+  assertApprox("5-day flat tier applied rate", flatTierPricing.appliedDailyRate, 25);
+  assertApprox("5-day flat tier subtotal", flatTierPricing.rentalSubtotal, 125);
   assertApprox(
     "5-day flat tier uses same rate for all days",
     flatTierPricing.rentalSubtotal,
     flatTierPricing.appliedDailyRate * 5,
   );
 
-  const noRule = resolveDurationPricingRule(scooterDurationRules, "Scooter", 0);
-  if (noRule !== null) {
-    throw new Error("0 billable days should not match a duration rule");
+  const noTier = resolveDurationPricingTier(0);
+  if (noTier !== null) {
+    throw new Error("0 billable days should not match a duration tier");
+  }
+
+  if (PRICING_TIERS.length !== 4) {
+    throw new Error("Expected exactly 4 pricing tiers");
   }
 }
 
@@ -223,47 +228,68 @@ function runBillableDaysConsistencyAssertions(): void {
   }
 }
 
+function pricingInputForDays(rentalDays: number, baseDailyRate = 25): BookingPricingInput {
+  const returnDate = returnDateForRentalDays(rentalDays);
+  const sameDay = returnDate === PICKUP_DATE;
+  return {
+    ...basePricingInput,
+    rental: {
+      ...basePricingInput.rental,
+      returnDate,
+      pickupTime: sameDay ? "09:00" : "10:00",
+      returnTime: sameDay ? "18:00" : "10:00",
+    },
+    vehiclePricing: {
+      ...basePricingInput.vehiclePricing,
+      baseDailyRate,
+    },
+  };
+}
+
 function runPricingAssertions(): void {
-  const twoDayBooking = calculateBookingPrice(basePricingInput);
-  if (!twoDayBooking) {
-    throw new Error("2-day pricing returned null");
-  }
-
-  assertApprox("2-day applied rate", twoDayBooking.appliedDailyRate, 22.5);
-  assertApprox("2-day rentalCost", twoDayBooking.rentalCost, 45);
-  assertApprox("2-day discount percent", twoDayBooking.durationDiscountPercent, 10);
-
-  const fiveDayBooking = calculateBookingPrice({
-    ...basePricingInput,
-    rental: {
-      ...basePricingInput.rental,
-      returnDate: "2026-05-14",
+  const cases: Array<{
+    name: string;
+    rentalDays: number;
+    baseDailyRate?: number;
+    discountPercent: number;
+    appliedDailyRate: number;
+    rentalCost: number;
+    tierKey?: string;
+  }> = [
+    { name: "1 day €25", rentalDays: 1, discountPercent: 0, appliedDailyRate: 25, rentalCost: 25, tierKey: "TIER_1" },
+    { name: "6 days €25", rentalDays: 6, discountPercent: 0, appliedDailyRate: 25, rentalCost: 150, tierKey: "TIER_1" },
+    { name: "7 days €25", rentalDays: 7, discountPercent: 20, appliedDailyRate: 20, rentalCost: 140, tierKey: "TIER_2" },
+    { name: "13 days €25", rentalDays: 13, discountPercent: 20, appliedDailyRate: 20, rentalCost: 260, tierKey: "TIER_2" },
+    { name: "14 days €25", rentalDays: 14, discountPercent: 28, appliedDailyRate: 18, rentalCost: 252, tierKey: "TIER_3" },
+    { name: "20 days €25", rentalDays: 20, discountPercent: 28, appliedDailyRate: 18, rentalCost: 360, tierKey: "TIER_3" },
+    { name: "21 days €25", rentalDays: 21, discountPercent: 40, appliedDailyRate: 15, rentalCost: 315, tierKey: "TIER_4" },
+    { name: "30 days €25", rentalDays: 30, discountPercent: 40, appliedDailyRate: 15, rentalCost: 450, tierKey: "TIER_4" },
+    {
+      name: "14 days €20",
+      rentalDays: 14,
+      baseDailyRate: 20,
+      discountPercent: 28,
+      appliedDailyRate: 14.4,
+      rentalCost: 201.6,
+      tierKey: "TIER_3",
     },
-  });
-  if (!fiveDayBooking) {
-    throw new Error("5-day pricing returned null");
-  }
-  assertApprox("5-day applied rate", fiveDayBooking.appliedDailyRate, 20);
-  assertApprox("5-day rentalCost", fiveDayBooking.rentalCost, 100);
+  ];
 
-  const twentyOneDayBooking = calculateBookingPrice({
-    ...basePricingInput,
-    rental: {
-      ...basePricingInput.rental,
-      returnDate: "2026-05-30",
-    },
-  });
-  if (!twentyOneDayBooking) {
-    throw new Error("21-day pricing returned null");
+  for (const testCase of cases) {
+    const priced = calculateBookingPrice(pricingInputForDays(testCase.rentalDays, testCase.baseDailyRate));
+    if (!priced) {
+      throw new Error(`${testCase.name}: pricing returned null`);
+    }
+    assertApprox(`${testCase.name} rental days`, priced.rentalDays, testCase.rentalDays);
+    assertApprox(`${testCase.name} discount percent`, priced.durationDiscountPercent, testCase.discountPercent);
+    assertApprox(`${testCase.name} applied rate`, priced.appliedDailyRate, testCase.appliedDailyRate);
+    assertApprox(`${testCase.name} rental cost`, priced.rentalCost, testCase.rentalCost);
+    if (testCase.tierKey && priced.tierKey !== testCase.tierKey) {
+      throw new Error(`${testCase.name}: expected tier ${testCase.tierKey}, got ${priced.tierKey}`);
+    }
   }
-  assertApprox("21-day applied rate", twentyOneDayBooking.appliedDailyRate, 15);
-  assertApprox("21-day rentalCost", twentyOneDayBooking.rentalCost, 315);
 
-  console.log("Pricing assertions passed:", {
-    twoDayRentalCost: twoDayBooking.rentalCost,
-    fiveDayRentalCost: fiveDayBooking.rentalCost,
-    twentyOneDayRentalCost: twentyOneDayBooking.rentalCost,
-  });
+  console.log("Pricing assertions passed for all milestone tier cases");
 }
 
 function expectSchemaFailure(
@@ -537,28 +563,20 @@ function runHotelDiscountAssertions(): void {
   assertApprox("rental after hotel discount", hotelDiscountOnly.rentalCostAfterDiscount, 90);
 
   const fiveDayWithHotel = calculateBookingPrice({
-    ...basePricingInput,
-    rental: {
-      ...basePricingInput.rental,
-      returnDate: "2026-05-14",
-    },
+    ...pricingInputForDays(5),
     hotelDiscount: { discountPercent: 10 },
   });
   if (!fiveDayWithHotel) {
     throw new Error("5-day booking with hotel discount returned null");
   }
 
-  assertApprox("5-day rental before hotel", fiveDayWithHotel.rentalCost, 100);
-  assertApprox("5-day hotel discount", fiveDayWithHotel.hotelDiscountAmount, 10);
-  assertApprox("5-day rental after hotel", fiveDayWithHotel.rentalCostAfterHotelDiscount, 90);
-  assertApprox("5-day subtotal with hotel only on rental", fiveDayWithHotel.subtotal, 90);
+  assertApprox("5-day rental before hotel", fiveDayWithHotel.rentalCost, 125);
+  assertApprox("5-day hotel discount", fiveDayWithHotel.hotelDiscountAmount, 12.5);
+  assertApprox("5-day rental after hotel", fiveDayWithHotel.rentalCostAfterHotelDiscount, 112.5);
+  assertApprox("5-day subtotal with hotel only on rental", fiveDayWithHotel.subtotal, 112.5);
 
   const fiveDayWithHotelAndDelivery = calculateBookingPrice({
-    ...basePricingInput,
-    rental: {
-      ...basePricingInput.rental,
-      returnDate: "2026-05-14",
-    },
+    ...pricingInputForDays(5),
     delivery: {
       pickupOption: "delivery",
       dropoffOption: "dropoff",
@@ -573,7 +591,7 @@ function runHotelDiscountAssertions(): void {
   assertApprox(
     "subtotal applies hotel discount only to rental",
     fiveDayWithHotelAndDelivery.subtotal,
-    120,
+    142.5,
   );
 }
 
@@ -665,22 +683,18 @@ function runInsurancePlanAssertions(): void {
 
   // Insurance is added after rental discount — not discounted by duration rules.
   const discountedWithInsurance = calculateBookingPrice({
-    ...basePricingInput,
-    rental: {
-      ...basePricingInput.rental,
-      returnDate: "2026-05-14",
-    },
+    ...pricingInputForDays(5),
     addons: { ...basePricingInput.addons, cdwOption: "FULL_COVERAGE" },
   });
   if (!discountedWithInsurance) {
     throw new Error("discounted rental + insurance pricing returned null");
   }
-  assertApprox("5-day rental with duration discount", discountedWithInsurance.rentalCost, 100);
+  assertApprox("5-day rental with duration discount", discountedWithInsurance.rentalCost, 125);
   assertApprox("5-day full insurance not discounted", discountedWithInsurance.cdwCost, 40);
   assertApprox(
     "5-day subtotal rental + insurance",
     discountedWithInsurance.subtotal,
-    140,
+    165,
   );
 
   const invalidLegacyAtv = bookingSubmissionSchema.safeParse({

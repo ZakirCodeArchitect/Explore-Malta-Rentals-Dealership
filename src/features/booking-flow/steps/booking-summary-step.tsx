@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   calculateBookingPrice,
@@ -18,7 +17,6 @@ export function BookingSummaryStep() {
   const tCommon = useTranslations("Common");
   const { state, updateSection } = useBookingFlow();
   const { vehicles } = useVehicles();
-  const { rules: durationRules } = useDurationPricingRules();
   const selectedVehicle = useMemo(() => {
     if (!state.rental.vehicleId) {
       return null;
@@ -28,7 +26,7 @@ export function BookingSummaryStep() {
 
   const pricing = useMemo(
     () => {
-      if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0 || durationRules.length === 0) {
+      if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0) {
         return null;
       }
 
@@ -67,7 +65,6 @@ export function BookingSummaryStep() {
         vehiclePricing: {
           baseDailyRate: selectedVehicle.baseDailyRate,
           vehicleType: selectedVehicle.apiVehicleType,
-          durationRules,
           supportsStorageBox: selectedVehicle.supportsStorageBox,
         },
         hotelDiscount:
@@ -76,7 +73,7 @@ export function BookingSummaryStep() {
             : undefined,
       });
     },
-    [durationRules, selectedVehicle, state],
+    [selectedVehicle, state],
   );
 
   const paymentSummary = useMemo(() => {
@@ -155,6 +152,20 @@ export function BookingSummaryStep() {
           {pricing ? (
             <>
               <ul className="mt-2 list-disc space-y-1 pl-5">
+                <li>
+                  {t("baseDailyRate")} {formatEur(pricing.baseDailyRate)}/day
+                </li>
+                <li>
+                  {t("rentalDuration")} {t("dayCount", { count: pricing.rentalDays })} ({pricing.tierRange})
+                </li>
+                {pricing.durationDiscountPercent > 0 ? (
+                  <li>
+                    {t("durationDiscount", {
+                      percent: pricing.durationDiscountPercent,
+                      rate: formatEur(pricing.appliedDailyRate),
+                    })}
+                  </li>
+                ) : null}
                 <li>
                   {t("rentalCost")} {formatEur(pricing.rentalCost)}
                 </li>

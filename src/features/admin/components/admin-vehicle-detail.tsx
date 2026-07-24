@@ -11,14 +11,12 @@ import type { AdminVehicleBookingCalendarItem } from "@/lib/admin/vehicles/getAd
 import {
   buildDurationPricingPreview,
   roundPricingAmount,
-  type DurationPricingRuleDto,
 } from "@/lib/pricing/duration-pricing";
 
 type AdminVehicleDetailViewProps = Readonly<{
   locale: string;
   vehicle: AdminVehicleDetail;
   bookings: AdminVehicleBookingCalendarItem[];
-  durationRules: DurationPricingRuleDto[];
 }>;
 
 function formatPrice(value: number | null): string {
@@ -52,14 +50,9 @@ export async function AdminVehicleDetailView({
   locale,
   vehicle,
   bookings,
-  durationRules,
 }: AdminVehicleDetailViewProps) {
   const t = await getTranslations({ locale, namespace: "Admin.vehicles" });
-  const durationPreview = buildDurationPricingPreview(
-    vehicle.baseDailyRate,
-    vehicle.vehicleType,
-    durationRules,
-  );
+  const durationPreview = buildDurationPricingPreview(vehicle.baseDailyRate);
 
   return (
     <div className="space-y-5">

@@ -14,7 +14,6 @@ import { VEHICLE_CATALOG_STATUSES, VEHICLE_TYPES } from "@/lib/admin/vehicles/ty
 import {
   buildDurationPricingPreview,
   roundPricingAmount,
-  type DurationPricingRuleDto,
 } from "@/lib/pricing/duration-pricing";
 import type { VehicleCatalogStatus, VehicleType } from "@/generated/prisma/client";
 
@@ -29,7 +28,6 @@ type AdminVehicleFormProps = Readonly<{
   locale: string;
   mode: "create" | "edit";
   vehicle?: AdminVehicleDetail;
-  durationRules: DurationPricingRuleDto[];
 }>;
 
 type PricingState = {
@@ -63,7 +61,7 @@ function inputClassName(): string {
   return "w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#3a7ca5]/40 focus:bg-white focus:ring-2 focus:ring-[#3a7ca5]/15";
 }
 
-export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: AdminVehicleFormProps) {
+export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProps) {
   const t = useTranslations("Admin.vehicles");
   const router = useRouter();
 
@@ -114,8 +112,8 @@ export function AdminVehicleForm({ locale, mode, vehicle, durationRules }: Admin
     if (baseRate == null) {
       return null;
     }
-    return buildDurationPricingPreview(baseRate, vehicleType, durationRules);
-  }, [durationRules, pricing.baseDailyRate, vehicleType]);
+    return buildDurationPricingPreview(baseRate);
+  }, [pricing.baseDailyRate]);
 
   const cancelHref = `/${locale}/admin/vehicles`;
 

@@ -1,9 +1,7 @@
 import type { VehicleType } from "@/generated/prisma/client";
 import { calculateHotelDiscount } from "@/lib/hotel-codes/calculate-hotel-discount";
-import {
-  calculateVehicleRentalPricing,
-  type DurationPricingRuleDto,
-} from "@/lib/pricing/duration-pricing";
+import { calculateVehicleRentalPricing } from "@/lib/pricing/duration-pricing";
+import type { PricingTierKey } from "@/lib/pricing/pricing-tiers";
 import {
   calculateInsuranceTotal,
   INSURANCE_PLANS,
@@ -78,7 +76,6 @@ export type BookingPricingInput = Readonly<{
   vehiclePricing: Readonly<{
     baseDailyRate: number;
     vehicleType: VehicleType;
-    durationRules: readonly DurationPricingRuleDto[];
     supportsStorageBox?: boolean;
   }>;
   hotelDiscount?: Readonly<{
@@ -111,8 +108,13 @@ export type BookingPriceBreakdown = Readonly<{
   actualDurationHours: number;
   rentalCost: number;
   baseDailyRate: number;
+  tierKey: PricingTierKey;
+  tierRange: string;
   durationDiscountPercent: number;
+  discountAmountPerDay: number;
   appliedDailyRate: number;
+  undiscountedRentalSubtotal: number;
+  totalDiscountAmount: number;
   sundayDaysCharged: number;
   deliveryFee: number;
   dropoffFee: number;
@@ -183,23 +185,31 @@ export function normalizeVehicleCategory(type: string): PricingVehicleCategory |
 
 export function calculateVehicleRentalCost(
   baseDailyRate: number,
-  vehicleType: VehicleType,
   rentalDays: number,
-  durationRules: readonly DurationPricingRuleDto[],
 ): {
   rentalCost: number;
   baseDailyRate: number;
+  tierKey: PricingTierKey;
+  tierRange: string;
   durationDiscountPercent: number;
+  discountAmountPerDay: number;
   appliedDailyRate: number;
+  undiscountedRentalSubtotal: number;
+  totalDiscountAmount: number;
   sundayDaysCharged: number;
 } {
-  const pricing = calculateVehicleRentalPricing(baseDailyRate, vehicleType, rentalDays, durationRules);
+  const pricing = calculateVehicleRentalPricing(baseDailyRate, rentalDays);
   if (!pricing) {
     return {
       rentalCost: 0,
       baseDailyRate: 0,
+      tierKey: "TIER_1",
+      tierRange: "",
       durationDiscountPercent: 0,
+      discountAmountPerDay: 0,
       appliedDailyRate: 0,
+      undiscountedRentalSubtotal: 0,
+      totalDiscountAmount: 0,
       sundayDaysCharged: 0,
     };
   }
@@ -207,8 +217,13 @@ export function calculateVehicleRentalCost(
   return {
     rentalCost: pricing.rentalSubtotal,
     baseDailyRate: pricing.baseDailyRate,
+    tierKey: pricing.tierKey,
+    tierRange: pricing.tierRange,
     durationDiscountPercent: pricing.durationDiscountPercent,
+    discountAmountPerDay: pricing.discountAmountPerDay,
     appliedDailyRate: pricing.appliedDailyRate,
+    undiscountedRentalSubtotal: pricing.undiscountedRentalSubtotal,
+    totalDiscountAmount: pricing.totalDiscountAmount,
     sundayDaysCharged: 0,
   };
 }
@@ -337,9 +352,7 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
 
   const rentalPricing = calculateVehicleRentalCost(
     input.vehiclePricing.baseDailyRate,
-    input.vehiclePricing.vehicleType,
     duration.billableDays,
-    input.vehiclePricing.durationRules,
   );
   if (rentalPricing.rentalCost <= 0) {
     return null;
@@ -348,8 +361,13 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
   const {
     rentalCost,
     baseDailyRate,
+    tierKey,
+    tierRange,
     durationDiscountPercent,
+    discountAmountPerDay,
     appliedDailyRate,
+    undiscountedRentalSubtotal,
+    totalDiscountAmount,
     sundayDaysCharged,
   } = rentalPricing;
   const deliveryBreakdown = calculateDeliveryFees(
@@ -415,8 +433,13 @@ export function calculateBookingPrice(input: BookingPricingInput): BookingPriceB
     actualDurationHours: duration.actualDurationHours,
     rentalCost,
     baseDailyRate,
+    tierKey,
+    tierRange,
     durationDiscountPercent,
+    discountAmountPerDay,
     appliedDailyRate,
+    undiscountedRentalSubtotal,
+    totalDiscountAmount,
     sundayDaysCharged,
     deliveryFee: deliveryBreakdown.deliveryFee,
     dropoffFee: deliveryBreakdown.dropoffFee,
