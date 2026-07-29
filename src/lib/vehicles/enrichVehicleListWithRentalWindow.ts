@@ -1,6 +1,7 @@
 import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 import { batchCheckVehicleAvailabilityForList } from "@/lib/availability/batchCheckVehicleAvailabilityForList";
 import type { VehicleAvailabilityResult } from "@/lib/availability/types";
+import { batchGetAvailableColorsForVehicles } from "@/lib/vehicle-units";
 import type { VehicleListItemDto, VehicleRentalWindowStatus } from "@/lib/vehicles/types";
 
 function holdsOnlyConflict(result: VehicleAvailabilityResult): boolean {
@@ -62,6 +63,13 @@ export async function enrichVehicleListWithRentalWindow(
     requestedEnd,
   );
 
+  const colorsByVehicleId = await batchGetAvailableColorsForVehicles({
+    vehicleIds: vehicles.map((v) => v.id),
+    requestedStart,
+    requestedEnd,
+    excludeSessionKey: viewerSessionKey,
+  });
+
   return vehicles.map((vehicle) => {
     const result = availabilityById.get(vehicle.id) ?? {
       isAvailable: false,
@@ -73,6 +81,7 @@ export async function enrichVehicleListWithRentalWindow(
     return {
       ...vehicle,
       rentalWindowStatus: classifyRentalWindow(result, viewerSessionKey),
+      availableColors: colorsByVehicleId.get(vehicle.id) ?? [],
     };
   });
 }

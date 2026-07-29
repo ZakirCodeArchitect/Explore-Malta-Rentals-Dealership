@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { BookingFlowProvider, useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import { BookingStepper } from "@/features/booking-flow/components/booking-stepper";
 import { ReservationBanner } from "@/features/booking-flow/components/reservation-banner";
 import { HoldExpiredNotice } from "@/features/booking-flow/components/hold-expired-notice";
@@ -48,6 +49,7 @@ function BookingFlowBody({
 }: BookingFlowBodyProps) {
   const router = useRouter();
   const t = useTranslations("BookingFlow");
+  const tColor = useTranslations("BookingSteps.color");
   const tLookup = useTranslations("BookingPage.lookup");
   const [termsModalOpen, setTermsModalOpen] = useState(false);
   const [insuranceModalOpen, setInsuranceModalOpen] = useState(false);
@@ -89,7 +91,30 @@ function BookingFlowBody({
     resetBookingForm,
     validateCurrentStep,
     validateAllBookingFields,
+    setManualFieldError,
   } = useBookingFlow();
+
+  const rentalWindow = useMemo(() => {
+    const { pickupDate, pickupTime, returnDate, returnTime } = state.rental;
+    if (!pickupDate.trim() || !pickupTime.trim() || !returnDate.trim() || !returnTime.trim()) {
+      return null;
+    }
+    return {
+      pickupDate: pickupDate.trim(),
+      pickupTime: pickupTime.trim(),
+      returnDate: returnDate.trim(),
+      returnTime: returnTime.trim(),
+      sessionKey: reservationHold.sessionKey?.trim() || undefined,
+    };
+  }, [
+    reservationHold.sessionKey,
+    state.rental.pickupDate,
+    state.rental.pickupTime,
+    state.rental.returnDate,
+    state.rental.returnTime,
+  ]);
+
+  const { vehicles } = useVehicles({ rentalWindow });
 
   const holdIsActive =
     reservationHold.status === "ACTIVE" &&
@@ -185,6 +210,16 @@ function BookingFlowBody({
         if (!validStep) {
           return;
         }
+        const selectedVehicle = vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId);
+        if (
+          selectedVehicle?.availableColors &&
+          selectedVehicle.availableColors.length > 0 &&
+          !state.rental.selectedColor
+        ) {
+          setManualFieldError("rental.selectedColor", tColor("required"));
+          setSubmitError(tColor("required"));
+          return;
+        }
         const holdResult = await createOrRefreshReservationHold();
         if (!holdResult.ok) {
           setSubmitError(holdResult.message ?? t("unableReserve"));
@@ -224,9 +259,14 @@ function BookingFlowBody({
     getBookingValues,
     goNext,
     isLastStep,
+    setManualFieldError,
+    state.rental.selectedColor,
+    state.rental.vehicleId,
     t,
+    tColor,
     validateCurrentStep,
     validateAllBookingFields,
+    vehicles,
   ]);
 
   const handleInsuranceConfirm = useCallback(

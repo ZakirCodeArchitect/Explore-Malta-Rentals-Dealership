@@ -102,6 +102,7 @@ function loadStoredReservationHold(): ReservationHoldState {
       vehicleId: parsed.vehicleId ?? null,
       vehicleSlug: parsed.vehicleSlug ?? null,
       vehicleType: parsed.vehicleType ?? null,
+      selectedColor: parsed.selectedColor ?? null,
       pickupDate: parsed.pickupDate ?? null,
       pickupTime: parsed.pickupTime ?? null,
       returnDate: parsed.returnDate ?? null,
@@ -150,6 +151,7 @@ type BookingFlowContextValue = {
   resetBookingForm: () => void;
   validateCurrentStep: () => Promise<boolean>;
   validateAllBookingFields: () => Promise<boolean>;
+  setManualFieldError: (path: FieldPath<BookingFlowState>, message: string) => void;
 };
 
 const BookingFlowContext = createContext<BookingFlowContextValue | null>(null);
@@ -202,6 +204,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       passportUploadDelivery: tVal("passportUploadDelivery"),
       confirmDocumentsPickup: tVal("confirmDocumentsPickup"),
       depositMethodRequired: tVal("depositMethodRequired"),
+      colorRequired: tVal("colorRequired"),
       reviewFields: tVal("reviewFields"),
     }),
     [tVal],
@@ -614,6 +617,13 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
 
   const validateAllBookingFields = useCallback(() => form.trigger(), [form]);
 
+  const setManualFieldError = useCallback(
+    (path: FieldPath<BookingFlowState>, message: string) => {
+      form.setError(path, { type: "manual", message });
+    },
+    [form],
+  );
+
   const value = useMemo<BookingFlowContextValue>(
     () => ({
       bookingFlowSchema,
@@ -649,6 +659,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       resetBookingForm,
       validateCurrentStep,
       validateAllBookingFields,
+      setManualFieldError,
     }),
     [
       bookingFlowSchema,
@@ -684,6 +695,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       resetBookingForm,
       validateCurrentStep,
       validateAllBookingFields,
+      setManualFieldError,
     ],
   );
 

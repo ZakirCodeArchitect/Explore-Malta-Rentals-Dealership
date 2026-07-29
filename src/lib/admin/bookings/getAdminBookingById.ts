@@ -32,10 +32,12 @@ export async function getAdminBookingById(id: string): Promise<AdminBookingDetai
       vehicleUnit: {
         select: {
           status: true,
+          color: true,
         },
       },
       vehicleNameSnapshot: true,
       vehicleLicensePlateSnapshot: true,
+      vehicleColorSnapshot: true,
       vehicleType: true,
       vehicleTypeSnapshot: true,
       pickupDateTime: true,
@@ -148,6 +150,7 @@ export async function getAdminBookingById(id: string): Promise<AdminBookingDetai
     vehicleUnitStatus: booking.vehicleUnit?.status ?? null,
     vehicleName: booking.vehicleNameSnapshot ?? "—",
     vehicleLicensePlate: booking.vehicleLicensePlateSnapshot,
+    vehicleColor: booking.vehicleColorSnapshot ?? booking.vehicleUnit?.color ?? null,
     vehicleType: booking.vehicleType,
     vehicleTypeSnapshot: booking.vehicleTypeSnapshot,
     pickupDateTime: booking.pickupDateTime.toISOString(),

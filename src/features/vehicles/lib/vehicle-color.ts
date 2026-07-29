@@ -26,3 +26,30 @@ export function parseVehicleColorValue(
 export function isVehicleColor(value: string): value is VehicleColor {
   return (VEHICLE_COLORS as readonly string[]).includes(value);
 }
+
+/** Normalize user input to canonical storage label (e.g. "black" → "Black"). */
+export function normalizeVehicleColorForStorage(
+  raw: string | null | undefined,
+): VehicleColor | null {
+  return parseVehicleColorValue(raw);
+}
+
+/** Lowercase API/URL value from canonical color (e.g. "Black" → "black"). */
+export function vehicleColorToValue(color: VehicleColor | string): string {
+  const parsed = parseVehicleColorValue(color);
+  return parsed ? parsed.toLowerCase() : color.trim().toLowerCase();
+}
+
+/** Display label from API value or raw string (e.g. "black" → "Black"). */
+export function formatVehicleColorLabel(value: string | null | undefined): string {
+  const parsed = parseVehicleColorValue(value);
+  return parsed ?? (value?.trim() || "");
+}
+
+export function colorsMatch(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): boolean {
+  if (!a?.trim() || !b?.trim()) return false;
+  return vehicleColorToValue(a) === vehicleColorToValue(b);
+}

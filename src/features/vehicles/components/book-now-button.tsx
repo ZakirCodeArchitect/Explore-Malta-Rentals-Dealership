@@ -78,6 +78,11 @@ export function BookNowButton({
       return;
     }
 
+    if (vehicle.availableColors && vehicle.availableColors.length > 0) {
+      router.push(nextUrl);
+      return;
+    }
+
     setIsReserving(true);
     const result = await createReservationHoldWithRetry({
       vehicleId: vehicle.id,

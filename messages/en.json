@@ -496,6 +496,7 @@
     "passportUploadDelivery": "Passport/ID upload required for delivery",
     "confirmDocumentsPickup": "Please confirm you will present documents at pickup",
     "depositMethodRequired": "Deposit method is required",
+    "colorRequired": "Please select a color to continue",
     "reviewFields": "Please review the highlighted fields."
   },
   "PrivacyPage": {
@@ -623,6 +624,13 @@
     "rentalDates": {
       "title": "Rental Dates",
       "description": "Choose pickup and return dates and times for your rental window."
+    },
+    "color": {
+      "title": "Choose a color",
+      "description": "Select the color you want for your rental. Only colors available for your dates are shown.",
+      "required": "Please select a color to continue",
+      "unavailable": "The selected color is no longer available. Please choose another color.",
+      "conflict": "That color was just reserved by another customer. Please choose another available color."
     },
     "pickupDropoff": {
       "title": "Pickup & Drop-off",
@@ -1321,6 +1329,9 @@
         "cancelEdit": "Cancel edit",
         "licensePlate": "License plate",
         "licensePlatePlaceholder": "ABC-123",
+        "color": "Color",
+        "colorNone": "No color selected",
+        "colorMissing": "Needs color",
         "status": "Unit status",
         "isActive": "Active unit",
         "notes": "Notes (optional)",
@@ -1340,6 +1351,7 @@
         },
         "table": {
           "licensePlate": "License plate",
+          "color": "Color",
           "status": "Status",
           "active": "Active",
           "notes": "Notes",
@@ -1520,6 +1532,7 @@
           "notes": "Special notes / requests",
           "vehicleName": "Vehicle",
           "licensePlate": "License plate",
+          "vehicleColor": "Vehicle color",
           "vehicleType": "Vehicle type",
           "vehicleTypeSnapshot": "Vehicle type (snapshot)",
           "pickup": "Pickup date/time",

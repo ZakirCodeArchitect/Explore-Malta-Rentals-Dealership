@@ -86,6 +86,7 @@ export type AdminBookingDetail = {
   vehicleUnitStatus: VehicleUnitStatus | null;
   vehicleName: string;
   vehicleLicensePlate: string | null;
+  vehicleColor: string | null;
   vehicleType: string;
   vehicleTypeSnapshot: string | null;
 

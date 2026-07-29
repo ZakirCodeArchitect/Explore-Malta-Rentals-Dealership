@@ -39,6 +39,7 @@ export type BookingValidationMessages = Readonly<{
   additionalDriverLicense: string;
   additionalPassportDelivery: string;
   additionalOfficeConfirm: string;
+  colorRequired: string;
   licenseCategoryRequired: string;
   licenseInvalidForVehicle: string;
   licenseUploadDelivery: string;
@@ -71,6 +72,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       vehicleName: z.string(),
       vehicleLicensePlate: z.string(),
       vehicleType: requiredText(m.vehicleTypeRequired),
+      selectedColor: z.string().nullable(),
       pickupDate: requiredText(m.pickupDateRequired),
       pickupTime: requiredText(m.pickupTimeRequired),
       returnDate: requiredText(m.returnDateRequired),
@@ -321,6 +323,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
 export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowState>[]> = {
   rental_details: [
     "rental.vehicleType",
+    "rental.selectedColor",
     "rental.pickupDate",
     "rental.pickupTime",
     "rental.returnDate",

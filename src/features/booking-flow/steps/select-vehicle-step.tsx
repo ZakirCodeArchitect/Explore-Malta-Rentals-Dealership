@@ -95,6 +95,7 @@ export function SelectVehicleStep() {
         vehicleName: resolved.name,
         vehicleLicensePlate: "",
         vehicleType: resolved.apiVehicleType,
+        selectedColor: null,
       });
       if (!resolved.supportsStorageBox && getBookingValues().addons.storageBox) {
         updateSection("addons", { storageBox: false });
@@ -133,6 +134,7 @@ export function SelectVehicleStep() {
       vehicleName: slugVehicle.name,
       vehicleLicensePlate: "",
       vehicleType: slugVehicle.apiVehicleType,
+      selectedColor: null,
     });
     if (!slugVehicle.supportsStorageBox && getBookingValues().addons.storageBox) {
       updateSection("addons", { storageBox: false });

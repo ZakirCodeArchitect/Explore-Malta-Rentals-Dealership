@@ -223,6 +223,11 @@ export const bookingSubmissionSchema = z
         returnDate: DATE_ONLY_SCHEMA,
         pickupTime: TIME_ONLY_SCHEMA,
         returnTime: TIME_ONLY_SCHEMA,
+        selectedColor: z
+          .string()
+          .trim()
+          .optional()
+          .transform((value) => (value && value.length > 0 ? value : undefined)),
       })
       .strict(),
     vehicleId: OPTIONAL_VEHICLE_ID,

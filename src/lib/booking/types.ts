@@ -26,6 +26,7 @@ export type NormalizedBookingPayload = {
   idempotencyKey: string | null;
   hotelCode: string | null;
   vehicleId: string | null;
+  selectedColor: string | null;
   vehicleType: VehicleType;
   pickupDateTime: Date;
   returnDateTime: Date;

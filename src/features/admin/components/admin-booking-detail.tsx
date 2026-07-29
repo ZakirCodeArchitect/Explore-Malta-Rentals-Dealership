@@ -250,6 +250,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
           <dl>
             <DetailRow label={t("details.fields.vehicleName")} value={booking.vehicleName} />
             <DetailRow label={t("details.fields.licensePlate")} value={booking.vehicleLicensePlate ?? "—"} />
+            <DetailRow label={t("details.fields.vehicleColor")} value={booking.vehicleColor ?? "—"} />
             <DetailRow
               label={t("details.fields.vehicleUnitStatus")}
               value={

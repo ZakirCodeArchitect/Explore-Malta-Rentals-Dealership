@@ -5,6 +5,7 @@ import type { ReservationHoldStatus } from "@/features/booking-flow/lib/types";
 export type CreateReservationHoldPayload = {
   vehicleId: string;
   vehicleType?: string;
+  color?: string;
   pickupDate: string;
   pickupTime: string;
   returnDate: string;

@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { format } from "date-fns";
 
 import { Prisma, type VehicleType } from "@/generated/prisma/index";
+import { colorsMatch, parseVehicleColorValue } from "@/features/vehicles/lib/vehicle-color";
 import {
   checkVehicleAvailability,
   type AvailabilityDbClient,
@@ -51,6 +52,7 @@ type ResolvedBookingVehicle = {
   vehicleUnitId?: string;
   vehicleNameSnapshot: string;
   vehicleLicensePlateSnapshot: string;
+  vehicleColorSnapshot: string | null;
   vehicleType: VehicleType;
   vehicleTypeSnapshot: VehicleType;
   baseDailyRate: number;
@@ -316,6 +318,7 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
     vehicleId: vehicle.id,
     vehicleNameSnapshot: vehicle.name,
     vehicleLicensePlateSnapshot: "",
+    vehicleColorSnapshot: payload.selectedColor,
     vehicleType: vehicle.vehicleType,
     vehicleTypeSnapshot: vehicle.vehicleType,
     baseDailyRate: vehicle.baseDailyRate.toNumber(),
@@ -339,12 +342,17 @@ async function assertBookingStillAvailable(
   db: AvailabilityDbClient,
   holdContext?: HoldAvailabilityContext,
 ): Promise<void> {
+  const availabilityColor = payload.selectedColor
+    ? parseVehicleColorValue(payload.selectedColor) ?? undefined
+    : undefined;
+
   const availability = await checkVehicleAvailability(
     {
       vehicleId: vehicle.vehicleId,
       vehicleType: vehicle.vehicleType,
       requestedStart: payload.pickupDateTime,
       requestedEnd: payload.returnDateTime,
+      color: availabilityColor,
       excludeHoldReference: holdContext?.excludeHoldReference,
       excludeSessionKey: holdContext?.excludeSessionKey,
     },
@@ -353,9 +361,10 @@ async function assertBookingStillAvailable(
   );
 
   if (!availability.isAvailable) {
-    throw new AvailabilityConflictError(
-      "Selected vehicle is not available for the chosen dates",
-      {
+    const message = payload.selectedColor
+      ? "The selected color is not available for the chosen dates"
+      : "Selected vehicle is not available for the chosen dates";
+    throw new AvailabilityConflictError(message, {
         vehicleId: vehicle.vehicleId,
         vehicleType: vehicle.vehicleType,
         requestedStart: payload.pickupDateTime,
@@ -381,6 +390,7 @@ function mapBookingCreateData(
     vehicleUnitId: vehicle.vehicleUnitId ?? null,
     vehicleNameSnapshot: vehicle.vehicleNameSnapshot,
     vehicleLicensePlateSnapshot: vehicle.vehicleLicensePlateSnapshot,
+    vehicleColorSnapshot: vehicle.vehicleColorSnapshot,
     vehicleTypeSnapshot: vehicle.vehicleTypeSnapshot,
     termsVersionId,
     vehicleType: vehicle.vehicleType,
@@ -479,6 +489,7 @@ async function validateHoldForBooking(
       vehicleType: true,
       pickupDateTime: true,
       returnDateTime: true,
+      selectedColor: true,
       status: true,
       expiresAt: true,
     },
@@ -541,6 +552,28 @@ async function validateHoldForBooking(
       {
         path: "rental.pickupDate",
         message: "Booking date range must match the held reservation window",
+      },
+    ]);
+  }
+
+  if (
+    hold.selectedColor &&
+    payload.selectedColor &&
+    !colorsMatch(hold.selectedColor, payload.selectedColor)
+  ) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "rental.selectedColor",
+        message: "Booking color does not match the held reservation",
+      },
+    ]);
+  }
+
+  if (hold.selectedColor && !payload.selectedColor) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "rental.selectedColor",
+        message: "Color selection is required to match the held reservation",
       },
     ]);
   }
@@ -619,11 +652,15 @@ async function createBookingWithUniqueReference(
             }
 
             if (!assignedUnitId) {
+              const availabilityColor = payload.selectedColor
+                ? parseVehicleColorValue(payload.selectedColor) ?? undefined
+                : undefined;
               const assigned = await assignAvailableVehicleUnit(
                 {
                   vehicleId: vehicle.vehicleId,
                   requestedStart: payload.pickupDateTime,
                   requestedEnd: payload.returnDateTime,
+                  color: availabilityColor,
                   excludeHoldReference: holdForFinalization?.holdReference,
                   excludeSessionKey: holdForFinalization?.sessionKey,
                 },

@@ -11,6 +11,7 @@ export type ReservationHoldState = {
   vehicleId: string | null;
   vehicleSlug: string | null;
   vehicleType: string | null;
+  selectedColor: string | null;
   pickupDate: string | null;
   pickupTime: string | null;
   returnDate: string | null;
@@ -24,6 +25,7 @@ export type BookingFlowState = {
     vehicleName: string;
     vehicleLicensePlate: string;
     vehicleType: string;
+    selectedColor: string | null;
     pickupDate: string;
     pickupTime: string;
     returnDate: string;
@@ -97,6 +99,7 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     vehicleName: "",
     vehicleLicensePlate: "",
     vehicleType: "",
+    selectedColor: null,
     pickupDate: "",
     pickupTime: "",
     returnDate: "",
@@ -166,6 +169,7 @@ export const INITIAL_RESERVATION_HOLD_STATE: ReservationHoldState = {
   vehicleId: null,
   vehicleSlug: null,
   vehicleType: null,
+  selectedColor: null,
   pickupDate: null,
   pickupTime: null,
   returnDate: null,

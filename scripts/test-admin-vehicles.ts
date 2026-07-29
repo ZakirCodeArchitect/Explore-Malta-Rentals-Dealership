@@ -49,6 +49,7 @@ async function run() {
 
     const unit = await createAdminVehicleUnit(vehicle.id, {
       licensePlate: "TST-9001",
+      color: "Black",
       status: "AVAILABLE",
       isActive: true,
       notes: null,
@@ -64,6 +65,7 @@ async function run() {
     try {
       await createAdminVehicleUnit(vehicle.id, {
         licensePlate: "TST-9001",
+        color: "Black",
         status: "AVAILABLE",
         isActive: true,
         notes: null,

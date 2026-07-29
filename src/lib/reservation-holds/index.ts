@@ -3,8 +3,14 @@ import { format } from "date-fns";
 import { z } from "zod";
 
 import { Prisma, VehicleType, type ReservationHoldStatus } from "@/generated/prisma/index";
+import {
+  colorsMatch,
+  normalizeVehicleColorForStorage,
+  parseVehicleColorValue,
+} from "@/features/vehicles/lib/vehicle-color";
 import { checkVehicleAvailability } from "@/lib/availability";
 import { assignAvailableVehicleUnit } from "@/lib/vehicle-units";
+import { vehicleHasColoredUnits } from "@/lib/vehicle-units/getAvailableColorsForVehicle";
 import {
   deleteOccupancyForHold,
   insertHoldOccupancy,
@@ -27,6 +33,7 @@ type ReservationHoldRecord = {
   holdReference: string;
   vehicleId: string;
   vehicleUnitId: string | null;
+  selectedColor: string | null;
   vehicleType: VehicleType;
   sessionKey: string;
   customerEmail: string | null;
@@ -48,6 +55,11 @@ const createReservationHoldSchema = z
     pickupTime: z.string().trim().min(1, "pickupTime is required"),
     returnDate: z.string().trim().min(1, "returnDate is required"),
     returnTime: z.string().trim().min(1, "returnTime is required"),
+    color: z
+      .string()
+      .trim()
+      .optional()
+      .transform((value) => (value && value.length > 0 ? value : undefined)),
     sessionKey: z.string().trim().min(1).max(120).optional(),
     customerEmail: z
       .string()
@@ -62,6 +74,7 @@ const createReservationHoldSchema = z
 type CreateReservationHoldInput = z.infer<typeof createReservationHoldSchema> & {
   pickupDateTime: Date;
   returnDateTime: Date;
+  selectedColor: string | null;
 };
 
 function formatIssuePath(path: (string | number)[]): string {
@@ -137,6 +150,9 @@ function normalizeCreateInput(payload: unknown): CreateReservationHoldInput {
     ...parsed.data,
     pickupDateTime,
     returnDateTime,
+    selectedColor: parsed.data.color
+      ? normalizeVehicleColorForStorage(parsed.data.color)
+      : null,
   };
 }
 
@@ -155,6 +171,7 @@ function toReservationHoldResponse(hold: ReservationHoldRecord, now = new Date()
     returnDateTime: hold.returnDateTime,
     vehicleId: hold.vehicleId,
     vehicleType: hold.vehicleType,
+    selectedColor: hold.selectedColor,
     remainingSeconds: Math.ceil(remainingMs / 1000),
   };
 }
@@ -178,6 +195,7 @@ const holdSelect = {
   holdReference: true,
   vehicleId: true,
   vehicleUnitId: true,
+  selectedColor: true,
   vehicleType: true,
   sessionKey: true,
   customerEmail: true,
@@ -196,6 +214,7 @@ async function createHoldWithUniqueReference(
   sessionKey: string,
   vehicleUnitId: string,
   vehicleType: VehicleType,
+  selectedColor: string | null,
   db: Prisma.TransactionClient,
 ): Promise<ReservationHoldRecord> {
   let lastError: unknown = null;
@@ -208,6 +227,7 @@ async function createHoldWithUniqueReference(
           holdReference,
           vehicleId: input.vehicleId,
           vehicleUnitId,
+          selectedColor,
           vehicleType,
           sessionKey,
           customerEmail: input.customerEmail ?? null,
@@ -264,6 +284,19 @@ async function runCreateReservationHoldTransaction(
       }
 
       const resolvedVehicleType = vehicle.vehicleType;
+      const hasColoredUnits = await vehicleHasColoredUnits(input.vehicleId, tx);
+
+      if (hasColoredUnits && !input.selectedColor) {
+        throw new ReservationHoldValidationError([
+          { path: "color", message: "Color selection is required for this vehicle" },
+        ]);
+      }
+
+      if (input.selectedColor && !parseVehicleColorValue(input.selectedColor)) {
+        throw new ReservationHoldValidationError([
+          { path: "color", message: "Invalid color selection" },
+        ]);
+      }
 
       const reusableHold = await tx.reservationHold.findFirst({
         where: {
@@ -277,18 +310,36 @@ async function runCreateReservationHoldTransaction(
         orderBy: { createdAt: "desc" },
         select: holdSelect,
       });
+
       if (reusableHold) {
-        return tx.reservationHold.update({
+        const colorMatches =
+          !input.selectedColor && !reusableHold.selectedColor
+            ? true
+            : colorsMatch(input.selectedColor, reusableHold.selectedColor);
+
+        if (colorMatches) {
+          return tx.reservationHold.update({
+            where: { id: reusableHold.id },
+            data: {
+              expiresAt: getExpiryFrom(),
+              lastHeartbeatAt: new Date(),
+              customerEmail: input.customerEmail ?? reusableHold.customerEmail,
+              customerName: input.customerName ?? reusableHold.customerName,
+            },
+            select: holdSelect,
+          });
+        }
+
+        await tx.reservationHold.update({
           where: { id: reusableHold.id },
-          data: {
-            expiresAt: getExpiryFrom(),
-            lastHeartbeatAt: new Date(),
-            customerEmail: input.customerEmail ?? reusableHold.customerEmail,
-            customerName: input.customerName ?? reusableHold.customerName,
-          },
-          select: holdSelect,
+          data: { status: "RELEASED" },
         });
+        await deleteOccupancyForHold(tx, reusableHold.id);
       }
+
+      const availabilityColor = input.selectedColor
+        ? parseVehicleColorValue(input.selectedColor) ?? undefined
+        : undefined;
 
       const availability = await checkVehicleAvailability(
         {
@@ -296,15 +347,17 @@ async function runCreateReservationHoldTransaction(
           vehicleType: resolvedVehicleType,
           requestedStart: input.pickupDateTime,
           requestedEnd: input.returnDateTime,
+          color: availabilityColor,
           excludeSessionKey: sessionKey,
         },
         tx,
         tx,
       );
       if (!availability.isAvailable) {
-        throw new ReservationHoldConflictError(
-          availability.reason ?? "Selected vehicle is not available for the chosen dates",
-        );
+        const message = input.selectedColor
+          ? `The selected color is no longer available for the chosen dates`
+          : (availability.reason ?? "Selected vehicle is not available for the chosen dates");
+        throw new ReservationHoldConflictError(message);
       }
 
       const assignedUnit = await assignAvailableVehicleUnit(
@@ -312,6 +365,7 @@ async function runCreateReservationHoldTransaction(
           vehicleId: input.vehicleId,
           requestedStart: input.pickupDateTime,
           requestedEnd: input.returnDateTime,
+          color: availabilityColor,
           excludeSessionKey: sessionKey,
         },
         tx,
@@ -322,6 +376,7 @@ async function runCreateReservationHoldTransaction(
         sessionKey,
         assignedUnit.vehicleUnitId,
         resolvedVehicleType,
+        input.selectedColor,
         tx,
       ).then(async (hold) => {
         try {
@@ -333,9 +388,10 @@ async function runCreateReservationHoldTransaction(
           });
         } catch (occupancyError) {
           if (isVehicleUnitOccupancyExclusionError(occupancyError)) {
-            throw new ReservationHoldConflictError(
-              "Selected vehicle is not available for the chosen dates",
-            );
+            const message = input.selectedColor
+              ? "The selected color is no longer available for the chosen dates"
+              : "Selected vehicle is not available for the chosen dates";
+            throw new ReservationHoldConflictError(message);
           }
           throw occupancyError;
         }

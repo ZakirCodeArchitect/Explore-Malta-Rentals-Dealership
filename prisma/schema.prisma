@@ -43,6 +43,7 @@ model VehicleUnit {
   id               String                 @id @default(cuid())
   vehicleId        String
   licensePlate     String                 @unique
+  color            String?
   status           VehicleUnitStatus      @default(AVAILABLE)
   isActive         Boolean                @default(true)
   notes            String?
@@ -55,6 +56,7 @@ model VehicleUnit {
 
   @@index([vehicleId, isActive, status])
   @@index([vehicleId, createdAt])
+  @@index([vehicleId, color, isActive, status])
 }
 
 model VehicleImage {
@@ -290,6 +292,7 @@ model Booking {
   vehicleTypeSnapshot                        VehicleType?
   termsVersionId                             String?
   vehicleLicensePlateSnapshot                String?
+  vehicleColorSnapshot                       String?
   baseDailyRateSnapshot                      Decimal?                @db.Decimal(10, 2)
   durationDiscountPercentSnapshot            Decimal?                @db.Decimal(5, 2)
   appliedDailyRateSnapshot                   Decimal?                @db.Decimal(10, 2)
@@ -408,6 +411,7 @@ model ReservationHold {
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
   vehicleUnitId   String?
+  selectedColor   String?
   booking         Booking?              @relation(fields: [bookingId], references: [id])
   vehicle         Vehicle               @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   vehicleUnit     VehicleUnit?          @relation(fields: [vehicleUnitId], references: [id])

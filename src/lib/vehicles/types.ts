@@ -3,6 +3,12 @@ import type { VehicleType } from "@/generated/prisma/client";
 /** When listing is scoped to a rental window + optional viewer session (holds). */
 export type VehicleRentalWindowStatus = "available" | "unavailable" | "reserved_other" | "reserved_you";
 
+export type AvailableColorDto = {
+  value: string;
+  label: string;
+  availableUnitCount?: number;
+};
+
 const RENTAL_WINDOW_STATUSES: readonly VehicleRentalWindowStatus[] = [
   "available",
   "unavailable",
@@ -38,6 +44,7 @@ export type VehicleListItemDto = {
   helmetIncludedCount: number;
   supportsStorageBox: boolean;
   rentalWindowStatus?: VehicleRentalWindowStatus;
+  availableColors?: AvailableColorDto[];
 };
 
 export type VehicleDetailDto = VehicleListItemDto & {

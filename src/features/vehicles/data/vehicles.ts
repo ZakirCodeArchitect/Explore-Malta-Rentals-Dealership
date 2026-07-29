@@ -1,5 +1,5 @@
 import { parseVehicleColorValue } from "@/features/vehicles/lib/vehicle-color";
-import type { VehicleRentalWindowStatus } from "@/lib/vehicles/types";
+import type { VehicleRentalWindowStatus, AvailableColorDto } from "@/lib/vehicles/types";
 
 export const VEHICLE_TYPES = ["Scooter", "Motorcycle", "Bicycle", "ATV"] as const;
 
@@ -42,6 +42,7 @@ export type VehicleListApiItem = Readonly<{
   supportsStorageBox: boolean;
   baseDailyRate: number;
   rentalWindowStatus?: VehicleRentalWindowStatus;
+  availableColors?: readonly AvailableColorDto[];
 }>;
 
 export type VehicleImageApiItem = Readonly<{
@@ -86,6 +87,7 @@ export type Vehicle = Readonly<{
   addOns: readonly VehicleAddOn[];
   /** Present when listing was fetched with full pickup/return date+time (holds). */
   rentalWindowStatus?: VehicleRentalWindowStatus;
+  availableColors?: readonly AvailableColorDto[];
 }>;
 
 const PLACEHOLDER_ADDONS: readonly VehicleAddOn[] = [
@@ -183,6 +185,7 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
       ? [{ id: "storage-box", name: "Storage box", priceOnce: 10 }, ...PLACEHOLDER_ADDONS]
       : PLACEHOLDER_ADDONS,
     ...(item.rentalWindowStatus ? { rentalWindowStatus: item.rentalWindowStatus } : {}),
+    ...(item.availableColors ? { availableColors: item.availableColors } : {}),
   };
 }
 

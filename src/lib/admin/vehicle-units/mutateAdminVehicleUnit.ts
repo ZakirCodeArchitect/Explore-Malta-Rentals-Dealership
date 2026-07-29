@@ -1,7 +1,10 @@
 import { Prisma } from "@/generated/prisma/client";
 
 import type { AdminVehicleUnitDto } from "@/lib/admin/vehicle-units/types";
-import type { AdminVehicleUnitWriteInput } from "@/lib/admin/vehicle-units/vehicle-unit-schema";
+import type {
+  AdminVehicleUnitCreateInput,
+  AdminVehicleUnitUpdateInput,
+} from "@/lib/admin/vehicle-units/vehicle-unit-schema";
 import { BLOCKING_BOOKING_STATUSES } from "@/lib/availability/types";
 import { prisma } from "@/lib/prisma";
 
@@ -40,6 +43,7 @@ const unitSelect = {
   id: true,
   vehicleId: true,
   licensePlate: true,
+  color: true,
   status: true,
   isActive: true,
   notes: true,
@@ -57,7 +61,7 @@ async function ensureVehicleExists(vehicleId: string): Promise<boolean> {
 
 async function assertUnitNotBlockingStatusChange(
   unitId: string,
-  input: AdminVehicleUnitWriteInput,
+  input: AdminVehicleUnitCreateInput | AdminVehicleUnitUpdateInput,
 ): Promise<void> {
   const becomingUnavailable =
     !input.isActive ||
@@ -83,7 +87,7 @@ async function assertUnitNotBlockingStatusChange(
 
 export async function createAdminVehicleUnit(
   vehicleId: string,
-  input: AdminVehicleUnitWriteInput,
+  input: AdminVehicleUnitCreateInput,
 ): Promise<AdminVehicleUnitDto | null> {
   if (!(await ensureVehicleExists(vehicleId))) {
     return null;
@@ -94,6 +98,7 @@ export async function createAdminVehicleUnit(
       data: {
         vehicleId,
         licensePlate: input.licensePlate,
+        color: input.color,
         status: input.status,
         isActive: input.isActive,
         notes: input.notes ?? null,
@@ -117,7 +122,7 @@ export async function createAdminVehicleUnit(
 export async function updateAdminVehicleUnit(
   vehicleId: string,
   unitId: string,
-  input: AdminVehicleUnitWriteInput,
+  input: AdminVehicleUnitUpdateInput,
 ): Promise<AdminVehicleUnitDto | null> {
   const existing = await prisma.vehicleUnit.findFirst({
     where: { id: unitId, vehicleId },
@@ -135,6 +140,7 @@ export async function updateAdminVehicleUnit(
       where: { id: unitId },
       data: {
         licensePlate: input.licensePlate,
+        ...(input.color !== undefined ? { color: input.color } : {}),
         status: input.status,
         isActive: input.isActive,
         notes: input.notes ?? null,

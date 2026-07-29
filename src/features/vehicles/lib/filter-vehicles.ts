@@ -15,6 +15,7 @@ import {
   type EngineCcFilter,
 } from "@/features/vehicles/lib/booking-search-params";
 import { brandsMatch } from "@/lib/vehicles/brand-utils";
+import { colorsMatch } from "@/features/vehicles/lib/vehicle-color";
 
 type FilterVehiclesInput = Readonly<{
   vehicles: readonly Vehicle[];
@@ -50,7 +51,12 @@ export function filterVehicles({
   const colorFiltered =
     color === "All"
       ? transmissionFiltered
-      : transmissionFiltered.filter((vehicle) => vehicle.color === color);
+      : transmissionFiltered.filter((vehicle) => {
+          if (vehicle.availableColors && vehicle.availableColors.length > 0) {
+            return vehicle.availableColors.some((option) => colorsMatch(option.label, color));
+          }
+          return vehicle.color === color;
+        });
   const seatsFiltered =
     seats === "All"
       ? colorFiltered

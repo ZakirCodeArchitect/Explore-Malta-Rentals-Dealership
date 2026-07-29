@@ -90,6 +90,7 @@ export function mapBookingFlowStateToSubmission(
       returnDate: state.rental.returnDate.trim(),
       pickupTime: state.rental.pickupTime.trim(),
       returnTime: state.rental.returnTime.trim(),
+      ...(state.rental.selectedColor ? { selectedColor: state.rental.selectedColor } : {}),
     },
     delivery: {
       pickupOption,
