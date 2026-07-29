@@ -36,6 +36,7 @@ import {
   type BookingFormValues,
 } from "@/features/booking/lib/booking-schema";
 import {
+  BOOKING_PICKUP_TIME_FALLBACK,
   BOOKING_TIME_SLOTS,
   nextBookingSlotWithinHours,
 } from "@/features/booking/lib/time-slots";
@@ -159,7 +160,7 @@ export function BookingSearchForm({
   const minFrom = useMemo(() => startOfDay(new Date()), []);
 
   const { pickupDate: defPu, dropoffDate: defDo } = defaultDates();
-  const defaultPickupTime = nextBookingSlotWithinHours(90);
+  const defaultPickupTime = BOOKING_PICKUP_TIME_FALLBACK;
   const defaultDropoffTime = "19:00";
 
   const bookingFormSchema = useMemo(
@@ -216,6 +217,12 @@ export function BookingSearchForm({
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!initialValues?.pickupTime) {
+      setValue("pickupTime", nextBookingSlotWithinHours(90), { shouldValidate: true });
+    }
+  }, [initialValues?.pickupTime, setValue]);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
