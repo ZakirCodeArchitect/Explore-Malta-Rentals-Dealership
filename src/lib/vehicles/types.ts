@@ -6,7 +6,7 @@ export type VehicleRentalWindowStatus = "available" | "unavailable" | "reserved_
 export type AvailableColorDto = {
   value: string;
   label: string;
-  availableUnitCount?: number;
+  availableUnitCount: number;
 };
 
 const RENTAL_WINDOW_STATUSES: readonly VehicleRentalWindowStatus[] = [
