@@ -6,6 +6,7 @@ import type { Vehicle } from "@/features/vehicles/data/vehicles";
 import { buildBookingUrlWithVehicle } from "@/features/vehicles/lib/build-booking-url-with-vehicle";
 import { createReservationHoldWithRetry } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RESERVATION_HOLD_STORAGE_KEY } from "@/features/booking-flow/lib/reservation-hold-storage";
+import type { AvailableColorDto } from "@/lib/vehicle-units/types";
 
 export const VEHICLE_TRIP_SEARCH_ANCHOR_ID = "vehicle-trip-search";
 
@@ -19,6 +20,10 @@ type BookNowButtonProps = {
   returnDate?: string | null;
   pickupTime?: string | null;
   returnTime?: string | null;
+  /** Colors available for the selected trip window (from availability API). */
+  availableColors?: readonly AvailableColorDto[];
+  selectedColor?: string | null;
+  onColorRequired?: () => void;
   className: string;
   busyClassName?: string;
   /**
@@ -28,6 +33,8 @@ type BookNowButtonProps = {
   allowHold?: boolean;
   /** When set (and allowHold is false), button shows this message instead of the error. */
   holdBlockedMessage?: string | null;
+  /** Disable while availability is still being checked. */
+  disabled?: boolean;
 };
 
 export function BookNowButton({
@@ -39,18 +46,27 @@ export function BookNowButton({
   returnDate,
   pickupTime,
   returnTime,
+  availableColors,
+  selectedColor,
+  onColorRequired,
   className,
   busyClassName,
   allowHold,
   holdBlockedMessage,
+  disabled = false,
 }: BookNowButtonProps) {
   const router = useRouter();
   const [isReserving, setIsReserving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const resolvedColors = useMemo(
+    () => availableColors ?? vehicle.availableColors ?? [],
+    [availableColors, vehicle.availableColors],
+  );
+
   const nextUrl = useMemo(
-    () => buildBookingUrlWithVehicle(bookingHref, vehicle.slug),
-    [bookingHref, vehicle.slug],
+    () => buildBookingUrlWithVehicle(bookingHref, vehicle.slug, selectedColor),
+    [bookingHref, selectedColor, vehicle.slug],
   );
   const canCreateHold = Boolean(
     pickupDate?.trim() &&
@@ -58,8 +74,12 @@ export function BookNowButton({
       pickupTime?.trim() &&
       returnTime?.trim(),
   );
+  const isDisabled = disabled || isReserving;
 
   const handleClick = async () => {
+    if (isDisabled) {
+      return;
+    }
     setError(null);
     if (!tripDatesCommitted) {
       document
@@ -78,8 +98,9 @@ export function BookNowButton({
       return;
     }
 
-    if (vehicle.availableColors && vehicle.availableColors.length > 0) {
-      router.push(nextUrl);
+    if (resolvedColors.length > 0 && !selectedColor?.trim()) {
+      onColorRequired?.();
+      setError("Please select a color to continue");
       return;
     }
 
@@ -87,6 +108,7 @@ export function BookNowButton({
     const result = await createReservationHoldWithRetry({
       vehicleId: vehicle.id,
       vehicleType: vehicle.apiVehicleType,
+      ...(selectedColor?.trim() ? { color: selectedColor.trim() } : {}),
       pickupDate: pickupDate!.trim(),
       pickupTime: pickupTime!.trim(),
       returnDate: returnDate!.trim(),
@@ -109,6 +131,7 @@ export function BookNowButton({
         vehicleId: vehicle.id,
         vehicleSlug: vehicle.slug,
         vehicleType: vehicle.apiVehicleType,
+        selectedColor: selectedColor?.trim() || null,
         pickupDate: pickupDate!.trim(),
         pickupTime: pickupTime!.trim(),
         returnDate: returnDate!.trim(),
@@ -125,10 +148,20 @@ export function BookNowButton({
         onClick={() => {
           void handleClick();
         }}
-        disabled={isReserving}
-        className={isReserving && busyClassName ? busyClassName : className}
+        disabled={isDisabled}
+        aria-busy={isReserving || disabled || undefined}
+        className={
+          isDisabled && busyClassName
+            ? busyClassName
+            : [
+                className,
+                disabled ? "cursor-not-allowed opacity-60" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")
+        }
       >
-        {isReserving ? "Reserving..." : "Book now"}
+        {isReserving ? "Reserving..." : disabled ? "Checking…" : "Book now"}
       </button>
       {error ? (
         <span className="max-w-56 text-right text-[11px] font-medium text-rose-700">{error}</span>

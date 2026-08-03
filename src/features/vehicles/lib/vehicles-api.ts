@@ -27,7 +27,6 @@ type CacheEntry<T> = Readonly<{
 
 const VEHICLES_CACHE_TTL_MS = 60_000;
 const vehiclesCache = new Map<string, CacheEntry<Vehicle[]>>();
-const vehicleBySlugCache = new Map<string, CacheEntry<Vehicle | null>>();
 
 function getFromCache<T>(cache: Map<string, CacheEntry<T>>, key: string): T | null {
   const entry = cache.get(key);
@@ -151,21 +150,15 @@ export async function fetchVehicleBySlug(slug: string, signal?: AbortSignal): Pr
   if (!safeSlug) {
     return null;
   }
-  const cached = getFromCache(vehicleBySlugCache, safeSlug);
-  if (cached !== null) {
-    return cached;
-  }
 
   const response = await fetch(`/api/vehicles/${encodeURIComponent(safeSlug)}`, {
     method: "GET",
-    cache: "force-cache",
-    next: { revalidate: 60 },
+    cache: "no-store",
     signal,
   });
   const body = await parseJsonBody<VehicleApiResponse>(response);
 
   if (response.status === 404) {
-    setCache(vehicleBySlugCache, safeSlug, null);
     return null;
   }
 
@@ -177,7 +170,5 @@ export async function fetchVehicleBySlug(slug: string, signal?: AbortSignal): Pr
     throw new Error("Unexpected vehicle response shape.");
   }
 
-  const mapped = mapVehicleDetailItemToVehicle(body.vehicle);
-  setCache(vehicleBySlugCache, safeSlug, mapped);
-  return mapped;
+  return mapVehicleDetailItemToVehicle(body.vehicle);
 }

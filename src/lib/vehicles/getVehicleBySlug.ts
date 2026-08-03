@@ -1,25 +1,29 @@
 import { prisma } from "@/lib/prisma";
+import { getUnitColorsForVehicle } from "@/lib/vehicle-units/getAvailableColorsForVehicle";
 
-import type { GetVehicleBySlugResult, VehicleDetailDto } from "./types";
+import type { AvailableColorDto, GetVehicleBySlugResult, VehicleDetailDto } from "./types";
 
-function mapVehicleDetail(vehicle: {
-  id: string;
-  name: string;
-  slug: string;
-  vehicleType: VehicleDetailDto["vehicleType"];
-  brand: string | null;
-  model: string | null;
-  color: string | null;
-  shortDescription: string | null;
-  description: string | null;
-  mainImageUrl: string | null;
-  isActive: boolean;
-  displayOrder: number;
-  baseDailyRate: { toNumber(): number };
-  helmetIncludedCount: number;
-  supportsStorageBox: boolean;
-  images: VehicleDetailDto["images"];
-}): VehicleDetailDto {
+function mapVehicleDetail(
+  vehicle: {
+    id: string;
+    name: string;
+    slug: string;
+    vehicleType: VehicleDetailDto["vehicleType"];
+    brand: string | null;
+    model: string | null;
+    color: string | null;
+    shortDescription: string | null;
+    description: string | null;
+    mainImageUrl: string | null;
+    isActive: boolean;
+    displayOrder: number;
+    baseDailyRate: { toNumber(): number };
+    helmetIncludedCount: number;
+    supportsStorageBox: boolean;
+    images: VehicleDetailDto["images"];
+  },
+  availableColors: AvailableColorDto[],
+): VehicleDetailDto {
   return {
     id: vehicle.id,
     name: vehicle.name,
@@ -42,6 +46,7 @@ function mapVehicleDetail(vehicle: {
       sortOrder: image.sortOrder,
       isPrimary: image.isPrimary,
     })),
+    ...(availableColors.length > 0 ? { availableColors } : {}),
   };
 }
 
@@ -83,7 +88,9 @@ export async function getVehicleBySlug(slug: string): Promise<GetVehicleBySlugRe
     return { vehicle: null };
   }
 
+  const availableColors = await getUnitColorsForVehicle(vehicle.id);
+
   return {
-    vehicle: mapVehicleDetail(vehicle),
+    vehicle: mapVehicleDetail(vehicle, availableColors),
   };
 }

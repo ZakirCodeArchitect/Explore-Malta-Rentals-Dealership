@@ -78,3 +78,20 @@ export async function vehicleHasColoredUnits(
   });
   return count > 0;
 }
+
+/** Distinct colors on active units — not filtered by rental dates. */
+export async function getUnitColorsForVehicle(
+  vehicleId: string,
+  db: VehicleUnitDbClient = prisma as unknown as VehicleUnitDbClient,
+): Promise<AvailableColorDto[]> {
+  const units = await db.vehicleUnit.findMany({
+    where: {
+      vehicleId,
+      isActive: true,
+      color: { not: null },
+    },
+    select: { color: true },
+  });
+
+  return groupUnitsByColor(units);
+}

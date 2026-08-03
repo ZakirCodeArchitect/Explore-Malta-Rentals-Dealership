@@ -5,7 +5,11 @@ import { useTranslations } from "next-intl";
 
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { colorsMatch } from "@/features/vehicles/lib/vehicle-color";
+import {
+  colorsMatch,
+  formatVehicleColorLabel,
+  parseVehicleColorValue,
+} from "@/features/vehicles/lib/vehicle-color";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 
 export function ColorSelectorStep() {
@@ -32,7 +36,7 @@ export function ColorSelectorStep() {
     state.rental.returnTime,
   ]);
 
-  const { vehicles } = useVehicles({ rentalWindow });
+  const { vehicles, isLoading } = useVehicles({ rentalWindow });
 
   const selectedVehicle = useMemo(() => {
     if (!state.rental.vehicleId) {
@@ -45,7 +49,26 @@ export function ColorSelectorStep() {
   const showSelector = Boolean(state.rental.vehicleId && rentalWindow && availableColors.length > 0);
   const colorError = getFieldError("rental.selectedColor");
 
+  // Normalize incoming color (URL / hold) to the canonical label once options are known.
   useEffect(() => {
+    if (!showSelector || !state.rental.selectedColor) {
+      return;
+    }
+    const match = availableColors.find((option) =>
+      colorsMatch(option.label, state.rental.selectedColor),
+    );
+    if (match && match.label !== state.rental.selectedColor) {
+      updateSection("rental", { selectedColor: match.label });
+    }
+  }, [availableColors, showSelector, state.rental.selectedColor, updateSection]);
+
+  useEffect(() => {
+    // Wait until the rental window vehicle list has loaded — clearing while loading
+    // would wipe a color carried from the vehicle details page.
+    if (isLoading || !rentalWindow || !state.rental.vehicleId) {
+      return;
+    }
+
     if (!showSelector) {
       if (state.rental.selectedColor) {
         updateSection("rental", { selectedColor: null });
@@ -62,7 +85,28 @@ export function ColorSelectorStep() {
     if (!stillAvailable) {
       updateSection("rental", { selectedColor: null });
     }
-  }, [availableColors, showSelector, state.rental.selectedColor, updateSection]);
+  }, [
+    availableColors,
+    isLoading,
+    rentalWindow,
+    showSelector,
+    state.rental.selectedColor,
+    state.rental.vehicleId,
+    updateSection,
+  ]);
+
+  // Prefer hold/URL color even before vehicle list finishes loading (for display readiness).
+  useEffect(() => {
+    if (state.rental.selectedColor || !reservationHold.selectedColor) {
+      return;
+    }
+    const canonical =
+      parseVehicleColorValue(reservationHold.selectedColor) ??
+      formatVehicleColorLabel(reservationHold.selectedColor);
+    if (canonical) {
+      updateSection("rental", { selectedColor: canonical });
+    }
+  }, [reservationHold.selectedColor, state.rental.selectedColor, updateSection]);
 
   if (!showSelector) {
     return null;

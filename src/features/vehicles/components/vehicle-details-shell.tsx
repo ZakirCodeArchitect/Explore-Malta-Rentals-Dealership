@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   CalendarRange,
   CheckCircle2,
@@ -38,6 +38,7 @@ import {
   holdBlockedMessageForTrip,
 } from "@/features/vehicles/lib/use-vehicle-availability-check";
 import { BookNowButton } from "@/features/vehicles/components/book-now-button";
+import { colorsMatch } from "@/features/vehicles/lib/vehicle-color";
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 
@@ -268,6 +269,8 @@ function BookingSidebar({
   const [pickupTime, setPickupTime] = useState(initialPickupTime || defaultTime);
   const [returnTime, setReturnTime] = useState(initialReturnTime || defaultTime);
   const [showDateWarning, setShowDateWarning] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [showColorWarning, setShowColorWarning] = useState(false);
 
   /* When dates arrive from the URL they're already committed — skip the picker */
   const datesFromUrl = isTripCommitted(initialPickupDate, initialReturnDate);
@@ -289,6 +292,26 @@ function BookingSidebar({
 
   const allowHold = tripCommitted && vehicleIsBookableForTrip(availability);
   const holdBlocked = holdBlockedMessageForTrip(tripCommitted, availability);
+  const unitColors = vehicle.availableColors ?? [];
+  const availableColors =
+    availability.kind === "ready" ? availability.availableColors : unitColors;
+
+  useEffect(() => {
+    if (!selectedColor || availability.kind !== "ready") {
+      return;
+    }
+    // Once trip availability is known, drop a color that is not free for those dates.
+    if (availability.availableColors.length === 0) {
+      setSelectedColor(null);
+      return;
+    }
+    const stillAvailable = availability.availableColors.some((option) =>
+      colorsMatch(option.label, selectedColor),
+    );
+    if (!stillAvailable) {
+      setSelectedColor(null);
+    }
+  }, [availability, selectedColor]);
 
   const bookingHref = useMemo(() => {
     const p = new URLSearchParams();
@@ -493,6 +516,41 @@ function BookingSidebar({
         </div>
       ) : null}
 
+      {availableColors.length > 0 ? (
+        <div className="mt-4 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color</p>
+          <div className="flex flex-wrap gap-2">
+            {availableColors.map((option) => {
+              const isSelected = colorsMatch(selectedColor, option.label);
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => {
+                    setSelectedColor(option.label);
+                    setShowColorWarning(false);
+                  }}
+                  className={[
+                    "rounded-full border px-3 py-1.5 text-xs font-semibold transition",
+                    isSelected
+                      ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+                      : "border-slate-200 bg-white text-slate-800 hover:border-[var(--brand-blue)]/40",
+                  ].join(" ")}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+          {showColorWarning ? (
+            <p className="text-xs font-medium text-rose-600" role="alert">
+              Please select a color to continue
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {/* price breakdown */}
       {estimatedTotal !== null && estimatedTierDailyRate !== null ? (
         <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
@@ -515,12 +573,16 @@ function BookingSidebar({
           onTripDatesRequired={() => setShowDateWarning(true)}
           allowHold={allowHold}
           holdBlockedMessage={holdBlocked}
+          disabled={tripCommitted && availability.kind === "loading"}
+          availableColors={availableColors}
+          selectedColor={selectedColor}
+          onColorRequired={() => setShowColorWarning(true)}
           pickupDate={tripCommitted ? pickupDate : null}
           returnDate={tripCommitted ? returnDate : null}
           pickupTime={tripCommitted ? pickupTime : null}
           returnTime={tripCommitted ? returnTime : null}
           className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)] px-5 py-3 text-sm font-bold text-slate-950 shadow-[0_12px_32px_-14px_rgba(255,147,15,0.8)] transition hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
-          busyClassName="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)]/80 px-5 py-3 text-sm font-bold text-slate-950 transition disabled:cursor-wait"
+          busyClassName="inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-full bg-[var(--brand-orange)]/60 px-5 py-3 text-sm font-bold text-slate-950 opacity-70 transition disabled:cursor-wait"
         />
       </div>
 
@@ -740,7 +802,13 @@ export function VehicleDetailsShell({
                     { label: "Transmission", value: vehicle.transmission },
                     { label: "Fuel", value: vehicle.fuel },
                     { label: "Seats", value: String(vehicle.seats) },
-                    { label: "Color", value: vehicle.color },
+                    {
+                      label: "Color",
+                      value:
+                        vehicle.availableColors && vehicle.availableColors.length > 0
+                          ? vehicle.availableColors.map((c) => c.label).join(", ")
+                          : vehicle.color ?? "—",
+                    },
                     { label: "Storage box", value: vehicle.supportsStorageBox ? "Supported (optional add-on)" : "Not supported" },
                     { label: "Helmets included", value: String(vehicle.helmetIncludedCount) },
                     { label: "Pickup location", value: vehicle.location },

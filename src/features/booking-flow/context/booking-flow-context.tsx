@@ -163,6 +163,7 @@ type BookingFlowProviderProps = PropsWithChildren<{
     pickupTime?: string;
     returnDate?: string;
     returnTime?: string;
+    selectedColor?: string;
   };
 }>;
 
@@ -311,6 +312,9 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       if (restored.returnTime && !rental.returnTime) {
         rentalPatch.returnTime = restored.returnTime;
       }
+      if (restored.selectedColor && !rental.selectedColor) {
+        rentalPatch.selectedColor = restored.selectedColor;
+      }
 
       if (holdStillActive && holdMatchesVehicle) {
         if (restored.vehicleId) {
@@ -333,6 +337,9 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
         }
         if (restored.returnTime) {
           rentalPatch.returnTime = restored.returnTime;
+        }
+        if (restored.selectedColor) {
+          rentalPatch.selectedColor = restored.selectedColor;
         }
       }
 

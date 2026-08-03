@@ -577,6 +577,7 @@ type BookingFlowProps = {
     pickupTime?: string;
     returnDate?: string;
     returnTime?: string;
+    selectedColor?: string;
   };
   bookingLookupReference?: string;
   bookingLookupEmail?: string;

@@ -3,6 +3,7 @@ export { batchGetAvailableColorsForVehicles } from "@/lib/vehicle-units/batchGet
 export { findAvailableVehicleUnits } from "@/lib/vehicle-units/findAvailableVehicleUnits";
 export {
   getAvailableColorsForVehicle,
+  getUnitColorsForVehicle,
   vehicleHasColoredUnits,
 } from "@/lib/vehicle-units/getAvailableColorsForVehicle";
 export { isAssignableVehicleUnit } from "@/lib/vehicle-units/isAssignableVehicleUnit";
