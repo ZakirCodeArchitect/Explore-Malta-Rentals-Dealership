@@ -16,6 +16,7 @@ const colorFieldSchema = z
   .string()
   .trim()
   .min(1, "Color is required")
+  .max(50, "Color must be at most 50 characters")
   .transform((value) => normalizeVehicleColorForStorage(value))
   .refine((value) => value !== null, { message: "Invalid color selection" });
 
@@ -27,6 +28,9 @@ const optionalColorFieldSchema = z
     }
     const trimmed = value.trim();
     if (trimmed.length === 0) {
+      return null;
+    }
+    if (trimmed.length > 50) {
       return null;
     }
     return normalizeVehicleColorForStorage(trimmed);

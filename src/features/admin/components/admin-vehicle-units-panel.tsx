@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { AdminRowActionsMenu } from "@/features/admin/components/admin-row-actions-menu";
-import { VEHICLE_COLOR_OPTIONS } from "@/features/vehicles/lib/vehicle-color";
+import { VehicleColorSelect } from "@/features/admin/components/vehicle-color-select";
 import type { AdminVehicleUnitDto } from "@/lib/admin/vehicle-units/types";
 import { VEHICLE_UNIT_STATUSES } from "@/lib/admin/vehicle-units/vehicle-unit-schema";
 import type { VehicleUnitStatus } from "@/generated/prisma/client";
@@ -230,19 +230,16 @@ export function AdminVehicleUnitsPanel({ vehicleId, initialUnits }: AdminVehicle
           </label>
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("color")}</span>
-            <select
-              required={!isEditing}
+            <VehicleColorSelect
               value={form.color}
-              onChange={(event) => setForm((current) => ({ ...current, color: event.target.value }))}
-              className={inputClassName()}
-            >
-              <option value="">{t("colorNone")}</option>
-              {VEHICLE_COLOR_OPTIONS.map((color) => (
-                <option key={color} value={color}>
-                  {color}
-                </option>
-              ))}
-            </select>
+              onChange={(color) => setForm((current) => ({ ...current, color }))}
+              allowEmpty={isEditing}
+              emptyLabel={t("colorNone")}
+              customColorLabel={t("colorCustom")}
+              customColorPlaceholder={t("colorCustomPlaceholder")}
+              applyCustomLabel={t("colorCustomApply")}
+              required={!isEditing}
+            />
           </label>
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("status")}</span>

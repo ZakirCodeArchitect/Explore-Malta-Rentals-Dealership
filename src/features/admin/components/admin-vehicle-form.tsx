@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { VEHICLE_COLOR_OPTIONS } from "@/features/vehicles/lib/vehicle-color";
+import { VehicleColorSelect } from "@/features/admin/components/vehicle-color-select";
 import { defaultBaseDailyRateForVehicleType } from "@/lib/admin/vehicles/pricing-defaults";
 import { slugifyVehicleName } from "@/lib/admin/vehicles/slugify-name";
 import type { AdminVehicleDetail } from "@/lib/admin/vehicles/types";
@@ -325,18 +325,15 @@ export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProp
           </label>
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.color")}</span>
-            <select
+            <VehicleColorSelect
               value={color}
-              onChange={(event) => setColor(event.target.value)}
-              className={inputClassName()}
-            >
-              <option value="">{t("form.colorNone")}</option>
-              {VEHICLE_COLOR_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              onChange={setColor}
+              allowEmpty
+              emptyLabel={t("form.colorNone")}
+              customColorLabel={t("form.colorCustom")}
+              customColorPlaceholder={t("form.colorCustomPlaceholder")}
+              applyCustomLabel={t("form.colorCustomApply")}
+            />
           </label>
         </div>
       </section>

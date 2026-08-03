@@ -67,7 +67,7 @@ const vehicles = [
     name: "Inactive Honda",
     brand: "Honda",
     model: "Inactive",
-    color: "Gray",
+    color: "Grey",
   }),
 ];
 

@@ -14,11 +14,13 @@ export type VehicleSeatsFilter = 1 | 2 | 3 | "All";
 export type VehicleColor =
   | "Black"
   | "White"
-  | "Gray"
+  | "Grey"
   | "Red"
   | "Blue"
   | "Silver"
-  | "Orange";
+  | "Orange"
+  | "Green"
+  | "Cream";
 
 export type VehicleAddOn = Readonly<{
   id: string;
