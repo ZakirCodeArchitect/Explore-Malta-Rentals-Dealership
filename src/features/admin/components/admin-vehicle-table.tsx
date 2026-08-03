@@ -61,6 +61,11 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
     }
 
     const { vehicle, mode } = dialogTarget;
+
+    if (mode === "delete" && !vehicle.canDelete) {
+      return;
+    }
+
     setActionVehicleId(vehicle.id);
     setFeedback(null);
 
@@ -281,7 +286,7 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
                             {
                               key: "delete",
                               label: t("table.delete"),
-                              disabled: !vehicle.canDelete || actionVehicleId === vehicle.id,
+                              disabled: actionVehicleId === vehicle.id,
                               tone: "danger",
                               onClick: () => setDialogTarget({ vehicle, mode: "delete" }),
                             },
@@ -325,6 +330,10 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
         mode={dialogTarget?.mode ?? "deactivate"}
         vehicleName={dialogTarget?.vehicle.name ?? ""}
         bookingCount={dialogTarget?.vehicle.bookingCount ?? 0}
+        reservationHoldCount={dialogTarget?.vehicle.reservationHoldCount ?? 0}
+        availabilityBlockCount={dialogTarget?.vehicle.availabilityBlockCount ?? 0}
+        canDelete={dialogTarget?.vehicle.canDelete ?? true}
+        deleteBlockedReasons={dialogTarget?.vehicle.deleteBlockedReasons ?? []}
         isSubmitting={actionVehicleId !== null}
         onCancel={() => setDialogTarget(null)}
         onConfirm={handleDialogConfirm}

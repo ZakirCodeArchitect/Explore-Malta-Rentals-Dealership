@@ -7,20 +7,16 @@ import type {
   AdminVehicleListResult,
 } from "@/lib/admin/vehicles/types";
 import { prisma } from "@/lib/prisma";
+import {
+  vehicleCanDelete,
+  vehicleDeleteBlockedReasons,
+} from "@/lib/admin/vehicles/vehicle-delete-errors";
 
 const vehicleRelationCountSelect = {
   bookings: true,
   reservationHolds: true,
   availabilityBlocks: true,
 } as const;
-
-function canDeleteVehicle(counts: {
-  bookings: number;
-  reservationHolds: number;
-  availabilityBlocks: number;
-}): boolean {
-  return counts.bookings === 0 && counts.reservationHolds === 0 && counts.availabilityBlocks === 0;
-}
 
 function normalizeSearchTerm(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
@@ -101,7 +97,10 @@ export async function listAdminVehicles(filters: AdminVehicleListFilters = {}): 
         totalUnits: counts.totalUnits,
         availableUnits: counts.availableUnits,
         bookingCount: vehicle._count.bookings,
-        canDelete: canDeleteVehicle(vehicle._count),
+        reservationHoldCount: vehicle._count.reservationHolds,
+        availabilityBlockCount: vehicle._count.availabilityBlocks,
+        canDelete: vehicleCanDelete(vehicle._count),
+        deleteBlockedReasons: vehicleDeleteBlockedReasons(vehicle._count),
       };
     }),
   };
@@ -175,7 +174,10 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetai
     helmetIncludedCount: vehicle.helmetIncludedCount,
     supportsStorageBox: vehicle.supportsStorageBox,
     bookingCount: vehicle._count.bookings,
-    canDelete: canDeleteVehicle(vehicle._count),
+    reservationHoldCount: vehicle._count.reservationHolds,
+    availabilityBlockCount: vehicle._count.availabilityBlocks,
+    canDelete: vehicleCanDelete(vehicle._count),
+    deleteBlockedReasons: vehicleDeleteBlockedReasons(vehicle._count),
     images: vehicle.images.map((image) => ({
       id: image.id,
       imageUrl: image.imageUrl,

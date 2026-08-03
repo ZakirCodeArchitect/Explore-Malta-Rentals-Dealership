@@ -1247,7 +1247,12 @@
         "title": "Delete vehicle permanently?",
         "description": "Are you sure you want to permanently delete this vehicle listing? This action cannot be undone.",
         "confirm": "Delete permanently",
-        "deleting": "Deleting…"
+        "deleting": "Deleting…",
+        "blockedReasons": {
+          "HAS_BOOKINGS": "This vehicle has {count, plural, one {# booking} other {# bookings}} linked to it. Remove or reassign them before deleting.",
+          "HAS_RESERVATION_HOLDS": "This vehicle has {count, plural, one {# active reservation hold} other {# active reservation holds}}. Wait for them to expire or convert before deleting.",
+          "HAS_AVAILABILITY_BLOCKS": "This vehicle has {count, plural, one {# availability block} other {# availability blocks}}. Remove them before deleting."
+        }
       },
       "vehicleTypes": {
         "Scooter": "Scooter",
