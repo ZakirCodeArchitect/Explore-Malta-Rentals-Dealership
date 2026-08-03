@@ -6,6 +6,7 @@ import type {
   AdminVehicleUnitUpdateInput,
 } from "@/lib/admin/vehicle-units/vehicle-unit-schema";
 import { BLOCKING_BOOKING_STATUSES } from "@/lib/availability/types";
+import { vehicleUnitDeleteRelationCountSelect } from "@/lib/admin/vehicles/vehicle-delete-errors";
 import { prisma } from "@/lib/prisma";
 
 export class DuplicateVehicleUnitLicensePlateError extends Error {
@@ -174,10 +175,7 @@ export async function deleteAdminVehicleUnit(
     select: {
       id: true,
       _count: {
-        select: {
-          bookings: true,
-          reservationHolds: true,
-        },
+        select: vehicleUnitDeleteRelationCountSelect(),
       },
     },
   });

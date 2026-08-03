@@ -4,6 +4,7 @@ import { ensureUniqueVehicleSlug } from "@/lib/admin/vehicles/slug";
 import type { AdminVehicleDetail } from "@/lib/admin/vehicles/types";
 import type { AdminVehicleWriteInput } from "@/lib/admin/vehicles/vehicle-schema";
 import { getAdminVehicleById } from "@/lib/admin/vehicles/listAdminVehicles";
+import { vehicleDeleteRelationCountSelect } from "@/lib/admin/vehicles/vehicle-delete-errors";
 import { prisma } from "@/lib/prisma";
 
 export class DuplicateLicensePlateError extends Error {
@@ -228,11 +229,7 @@ export async function deleteAdminVehicle(id: string): Promise<DeleteAdminVehicle
     select: {
       id: true,
       _count: {
-        select: {
-          bookings: true,
-          reservationHolds: true,
-          availabilityBlocks: true,
-        },
+        select: vehicleDeleteRelationCountSelect(),
       },
     },
   });

@@ -10,13 +10,8 @@ import { prisma } from "@/lib/prisma";
 import {
   vehicleCanDelete,
   vehicleDeleteBlockedReasons,
+  vehicleDeleteRelationCountSelect,
 } from "@/lib/admin/vehicles/vehicle-delete-errors";
-
-const vehicleRelationCountSelect = {
-  bookings: true,
-  reservationHolds: true,
-  availabilityBlocks: true,
-} as const;
 
 function normalizeSearchTerm(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
@@ -68,7 +63,7 @@ export async function listAdminVehicles(filters: AdminVehicleListFilters = {}): 
           select: { imageUrl: true },
         },
         _count: {
-          select: vehicleRelationCountSelect,
+          select: vehicleDeleteRelationCountSelect(),
         },
       },
     }),
@@ -139,7 +134,7 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetai
         },
       },
       _count: {
-        select: vehicleRelationCountSelect,
+        select: vehicleDeleteRelationCountSelect(),
       },
     },
   });

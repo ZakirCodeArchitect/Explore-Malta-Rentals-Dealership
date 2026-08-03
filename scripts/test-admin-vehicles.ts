@@ -83,6 +83,53 @@ async function run() {
     await prisma.vehicle.deleteMany({ where: { slug: { startsWith: basePayload.slug } } }).catch(() => undefined);
   }
 
+  const expiredHoldVehicle = await prisma.vehicle.create({
+    data: {
+      name: "Expired Hold Guard Test Vehicle",
+      slug: `expired-hold-guard-test-${Date.now()}`,
+      vehicleType: "Scooter",
+      baseDailyRate: 25,
+      catalogStatus: "AVAILABLE",
+      isActive: true,
+      reservationHolds: {
+        create: [
+          {
+            holdReference: `HLD-TEST-EXP-${Date.now()}-1`,
+            vehicleType: "Scooter",
+            sessionKey: "test-session",
+            pickupDateTime: new Date("2026-07-01T10:00:00.000Z"),
+            returnDateTime: new Date("2026-07-02T10:00:00.000Z"),
+            status: "EXPIRED",
+            expiresAt: new Date("2026-06-01T10:00:00.000Z"),
+          },
+          {
+            holdReference: `HLD-TEST-EXP-${Date.now()}-2`,
+            vehicleType: "Scooter",
+            sessionKey: "test-session",
+            pickupDateTime: new Date("2026-07-03T10:00:00.000Z"),
+            returnDateTime: new Date("2026-07-04T10:00:00.000Z"),
+            status: "RELEASED",
+            expiresAt: new Date("2026-06-02T10:00:00.000Z"),
+          },
+        ],
+      },
+    },
+  });
+
+  try {
+    const loadedExpiredHoldVehicle = await getAdminVehicleById(expiredHoldVehicle.id);
+    assert.ok(loadedExpiredHoldVehicle);
+    assert.equal(loadedExpiredHoldVehicle.reservationHoldCount, 0);
+    assert.equal(loadedExpiredHoldVehicle.canDelete, true);
+
+    const deleteResult = await deleteAdminVehicle(expiredHoldVehicle.id);
+    assert.equal(deleteResult.ok, true);
+    assert.equal(await getAdminVehicleById(expiredHoldVehicle.id), null);
+  } finally {
+    await prisma.reservationHold.deleteMany({ where: { vehicleId: expiredHoldVehicle.id } }).catch(() => undefined);
+    await prisma.vehicle.deleteMany({ where: { id: expiredHoldVehicle.id } }).catch(() => undefined);
+  }
+
   const bookedVehicle = await prisma.vehicle.create({
     data: {
       name: "Booked Guard Test Vehicle",
