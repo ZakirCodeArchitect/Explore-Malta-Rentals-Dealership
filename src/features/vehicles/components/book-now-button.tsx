@@ -23,6 +23,10 @@ type BookNowButtonProps = {
   /** Colors available for the selected trip window (from availability API). */
   availableColors?: readonly AvailableColorDto[];
   selectedColor?: string | null;
+  /**
+   * When provided (vehicle details), color must be chosen before creating a hold.
+   * Listing cards omit this — Book now only navigates into the booking flow.
+   */
   onColorRequired?: () => void;
   className: string;
   busyClassName?: string;
@@ -59,11 +63,6 @@ export function BookNowButton({
   const [isReserving, setIsReserving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const resolvedColors = useMemo(
-    () => availableColors ?? vehicle.availableColors ?? [],
-    [availableColors, vehicle.availableColors],
-  );
-
   const nextUrl = useMemo(
     () => buildBookingUrlWithVehicle(bookingHref, vehicle.slug, selectedColor),
     [bookingHref, selectedColor, vehicle.slug],
@@ -81,6 +80,13 @@ export function BookNowButton({
       return;
     }
     setError(null);
+
+    // Listing cards (no color/hold UI): always open the booking flow for this vehicle.
+    if (!onColorRequired) {
+      router.push(nextUrl);
+      return;
+    }
+
     if (!tripDatesCommitted) {
       document
         .getElementById(VEHICLE_TRIP_SEARCH_ANCHOR_ID)
@@ -98,8 +104,9 @@ export function BookNowButton({
       return;
     }
 
-    if (resolvedColors.length > 0 && !selectedColor?.trim()) {
-      onColorRequired?.();
+    const colorsNeedingSelection = availableColors ?? [];
+    if (colorsNeedingSelection.length > 0 && !selectedColor?.trim()) {
+      onColorRequired();
       setError("Please select a color to continue");
       return;
     }

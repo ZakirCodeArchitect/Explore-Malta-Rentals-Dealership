@@ -40,6 +40,7 @@ export type BookingValidationMessages = Readonly<{
   additionalPassportDelivery: string;
   additionalOfficeConfirm: string;
   colorRequired: string;
+  pricingAcknowledgedRequired: string;
   licenseCategoryRequired: string;
   licenseInvalidForVehicle: string;
   licenseUploadDelivery: string;
@@ -139,6 +140,14 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
   });
 
   return bookingBaseSchema.superRefine((state, context) => {
+    if (!state.rental.pricingAcknowledged) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: m.pricingAcknowledgedRequired,
+        path: ["rental", "pricingAcknowledged"],
+      });
+    }
+
     const pickup = parseDateTime(state.rental.pickupDate, state.rental.pickupTime);
     const dropoff = parseDateTime(state.rental.returnDate, state.rental.returnTime);
 
@@ -328,6 +337,7 @@ export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowSt
     "rental.pickupTime",
     "rental.returnDate",
     "rental.returnTime",
+    "rental.pricingAcknowledged",
   ],
   options_delivery: [
     "delivery.pickupOption",

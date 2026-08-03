@@ -497,6 +497,7 @@
     "confirmDocumentsPickup": "Please confirm you will present documents at pickup",
     "depositMethodRequired": "Deposit method is required",
     "colorRequired": "Please select a color to continue",
+    "pricingAcknowledgedRequired": "Please confirm you reviewed the estimated pricing summary",
     "reviewFields": "Please review the highlighted fields."
   },
   "PrivacyPage": {

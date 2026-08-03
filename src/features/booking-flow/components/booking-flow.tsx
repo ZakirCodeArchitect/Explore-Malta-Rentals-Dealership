@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { BookingFlowProvider, useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
@@ -552,17 +553,31 @@ function BookingFlowBody({
             disabled={
               submitting ||
               isCreatingHold ||
+              (activeStepId === "rental_details" && !state.rental.pricingAcknowledged) ||
               (isLastStep && (!holdIsActive || !holdMatchesCurrentRental || holdIsExpired))
             }
-            className="min-h-11 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isCreatingHold
-              ? t("reserving")
-              : isLastStep
-                ? (submitting ? t("submitting") : t("confirmBooking"))
-                : activeStepId === "rental_details"
-                  ? t("bookNow")
-                  : t("next")}
+            {(() => {
+              if (isCreatingHold) {
+                return t("reserving");
+              }
+              if (isLastStep) {
+                return submitting ? t("submitting") : t("confirmBooking");
+              }
+              if (
+                activeStepId === "rental_details" &&
+                !(holdIsActive && holdMatchesCurrentRental && !holdIsExpired)
+              ) {
+                return t("bookNow");
+              }
+              return (
+                <>
+                  {t("next")}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </>
+              );
+            })()}
           </button>
         </div>
       </div>

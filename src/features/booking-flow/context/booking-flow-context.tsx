@@ -206,6 +206,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       confirmDocumentsPickup: tVal("confirmDocumentsPickup"),
       depositMethodRequired: tVal("depositMethodRequired"),
       colorRequired: tVal("colorRequired"),
+      pricingAcknowledgedRequired: tVal("pricingAcknowledgedRequired"),
       reviewFields: tVal("reviewFields"),
     }),
     [tVal],

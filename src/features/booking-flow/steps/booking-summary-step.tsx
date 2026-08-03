@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
+import { useVehicle, useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   calculateBookingPrice,
   formatEur,
@@ -15,14 +15,47 @@ import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-
 export function BookingSummaryStep() {
   const t = useTranslations("BookingWizard.bookingSummary");
   const tCommon = useTranslations("Common");
-  const { state, updateSection } = useBookingFlow();
-  const { vehicles } = useVehicles();
-  const selectedVehicle = useMemo(() => {
-    if (!state.rental.vehicleId) {
+  const { state, reservationHold, updateSection } = useBookingFlow();
+
+  const rentalWindow = useMemo(() => {
+    const { pickupDate, pickupTime, returnDate, returnTime } = state.rental;
+    if (!pickupDate.trim() || !pickupTime.trim() || !returnDate.trim() || !returnTime.trim()) {
       return null;
     }
-    return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
-  }, [state.rental.vehicleId, vehicles]);
+    return {
+      pickupDate: pickupDate.trim(),
+      pickupTime: pickupTime.trim(),
+      returnDate: returnDate.trim(),
+      returnTime: returnTime.trim(),
+      sessionKey: reservationHold.sessionKey?.trim() || undefined,
+    };
+  }, [
+    reservationHold.sessionKey,
+    state.rental.pickupDate,
+    state.rental.pickupTime,
+    state.rental.returnDate,
+    state.rental.returnTime,
+  ]);
+
+  const { vehicles } = useVehicles({ rentalWindow });
+  const incomingSlug = state.rental.vehicleSlug?.trim() ?? "";
+  const { vehicle: slugVehicle } = useVehicle(incomingSlug);
+
+  const selectedVehicle = useMemo(() => {
+    if (state.rental.vehicleId) {
+      const byId = vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId);
+      if (byId) {
+        return byId;
+      }
+    }
+    if (incomingSlug) {
+      const bySlug = vehicles.find((vehicle) => vehicle.slug === incomingSlug);
+      if (bySlug) {
+        return bySlug;
+      }
+    }
+    return slugVehicle;
+  }, [incomingSlug, slugVehicle, state.rental.vehicleId, vehicles]);
 
   const pricing = useMemo(
     () => {
@@ -30,13 +63,18 @@ export function BookingSummaryStep() {
         return null;
       }
 
+      const vehicleType = state.rental.vehicleType || selectedVehicle.apiVehicleType;
+      if (!vehicleType) {
+        return null;
+      }
+
       return calculateBookingPrice({
         rental: {
           vehicle: {
-            id: state.rental.vehicleId ?? undefined,
-            slug: state.rental.vehicleSlug,
-            name: state.rental.vehicleName,
-            type: state.rental.vehicleType,
+            id: state.rental.vehicleId || selectedVehicle.id,
+            slug: state.rental.vehicleSlug || selectedVehicle.slug,
+            name: state.rental.vehicleName || selectedVehicle.name,
+            type: vehicleType,
           },
           pickupDate: state.rental.pickupDate,
           returnDate: state.rental.returnDate,

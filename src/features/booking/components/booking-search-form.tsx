@@ -310,7 +310,11 @@ export function BookingSearchForm({
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+    <form
+      id="vehicle-trip-search"
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex scroll-mt-28 flex-col gap-6"
+    >
       <div className={`${quickFilterGroupClass} mx-auto`}>
         <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
           <Image
