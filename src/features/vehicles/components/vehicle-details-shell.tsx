@@ -86,18 +86,18 @@ function KeyInfoBar({ vehicle }: { vehicle: Vehicle }) {
   ];
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex min-w-max divide-x divide-slate-100">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="grid grid-cols-2 gap-px bg-slate-100">
         {specs.map((s) => (
           <div
             key={s.label}
-            className="flex flex-col items-center gap-1.5 px-5 py-4 text-center"
+            className="flex flex-col items-center gap-1.5 bg-white px-3 py-4 text-center last:col-span-2"
           >
             <span className="text-slate-500">{s.icon}</span>
-            <span className="text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400 whitespace-nowrap">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400">
               {s.label}
             </span>
-            <span className="text-sm font-semibold text-slate-900 whitespace-nowrap">{s.value}</span>
+            <span className="text-sm font-semibold text-slate-900">{s.value}</span>
           </div>
         ))}
       </div>
@@ -752,20 +752,9 @@ export function VehicleDetailsShell({
             </div>
           </div>
 
-          {/* gallery */}
-          <VehicleDetailGallery name={vehicle.name} images={vehicle.images} />
-
-          {/* key info bar */}
-          <div className="mt-6">
-            <KeyInfoBar vehicle={vehicle} />
-          </div>
-
-          {/* main 2-col grid */}
-          <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-10">
-            {/* ── LEFT column — content sections ──────────── */}
-            <div className="order-2 space-y-10 md:order-none md:col-span-7">
-
-              {/* About */}
+          {/* About + specs (left) | gallery (right) */}
+          <div className="grid items-start gap-6 md:grid-cols-12 md:gap-8">
+            <div className="order-2 space-y-5 md:order-none md:col-span-5">
               <section aria-labelledby="v-about-h">
                 <h2 id="v-about-h" className="text-xl font-bold tracking-[-0.02em] text-slate-950">
                   About this vehicle
@@ -775,7 +764,18 @@ export function VehicleDetailsShell({
                 </div>
               </section>
 
-              <hr className="border-slate-100" />
+              <KeyInfoBar vehicle={vehicle} />
+            </div>
+
+            <div className="order-1 md:order-none md:col-span-7">
+              <VehicleDetailGallery name={vehicle.name} images={vehicle.images} />
+            </div>
+          </div>
+
+          {/* main 2-col grid */}
+          <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-10">
+            {/* ── LEFT column — content sections ──────────── */}
+            <div className="order-2 space-y-10 md:order-none md:col-span-7">
 
               {/* What's included */}
               <section aria-labelledby="v-features-h">

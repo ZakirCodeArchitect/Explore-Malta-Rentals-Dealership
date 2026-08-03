@@ -174,7 +174,7 @@ export function VehicleDetailGallery({ name, images }: VehicleDetailGalleryProps
   /* ── empty state ─────────────────────────────────────────── */
   if (safeImages.length === 0) {
     return (
-      <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-slate-100 sm:aspect-[21/9]">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
         <div className="flex h-full items-center justify-center text-sm font-medium text-slate-400">
           Images coming soon
         </div>
@@ -190,12 +190,12 @@ export function VehicleDetailGallery({ name, images }: VehicleDetailGalleryProps
     <>
       {/* ════════════════════════════════════════════════════════
           MAIN IMAGE
-          Uses aspect-ratio to give Next.js <Image fill> a
-          calculable height — this is what was broken before.
+          Fills its column — aspect-ratio gives Next.js
+          <Image fill> a calculable height.
       ════════════════════════════════════════════════════════ */}
       <div className="relative overflow-hidden rounded-2xl bg-slate-100">
         {/* aspect-ratio wrapper — guarantees height is never 0 */}
-        <div className="relative aspect-[4/3] sm:aspect-[16/9]">
+        <div className="relative aspect-[4/3]">
           {/* skeleton — fades out once image loads */}
           <div
             aria-hidden
@@ -210,9 +210,9 @@ export function VehicleDetailGallery({ name, images }: VehicleDetailGalleryProps
             src={mainSrc}
             alt={`${name} — main photo`}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 80vw, 60vw"
+            sizes="(max-width: 768px) 100vw, 55vw"
             className={[
-              "object-cover transition-all duration-500",
+              "object-contain transition-all duration-500",
               mainLoaded ? "opacity-100 scale-100" : "opacity-0 scale-[1.02]",
             ].join(" ")}
             priority
