@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import type { Vehicle } from "@/features/vehicles/data/vehicles";
 import { buildBookingUrlWithVehicle } from "@/features/vehicles/lib/build-booking-url-with-vehicle";
@@ -63,6 +63,12 @@ export function BookNowButton({
   const [isReserving, setIsReserving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (tripDatesCommitted) {
+      setError(null);
+    }
+  }, [tripDatesCommitted]);
+
   const nextUrl = useMemo(
     () => buildBookingUrlWithVehicle(bookingHref, vehicle.slug, selectedColor),
     [bookingHref, selectedColor, vehicle.slug],
@@ -81,19 +87,26 @@ export function BookNowButton({
     }
     setError(null);
 
-    // Listing cards (no color/hold UI): always open the booking flow for this vehicle.
-    if (!onColorRequired) {
-      router.push(nextUrl);
-      return;
-    }
-
     if (!tripDatesCommitted) {
       document
         .getElementById(VEHICLE_TRIP_SEARCH_ANCHOR_ID)
         ?.scrollIntoView({ behavior: "smooth", block: "center" });
       onTripDatesRequired?.();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("vehicle-trip-dates-required"));
+      }
+      setError(
+        "Select trip dates and click Search available vehicles before booking.",
+      );
       return;
     }
+
+    // Listing cards (no color/hold UI): open booking for this vehicle + dates.
+    if (!onColorRequired) {
+      router.push(nextUrl);
+      return;
+    }
+
     // If availability was checked and vehicle is not available, block the hold.
     if (allowHold === false && holdBlockedMessage) {
       setError(holdBlockedMessage);

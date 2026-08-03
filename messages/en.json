@@ -674,7 +674,7 @@
   },
   "VehicleListing": {
     "showing": "Showing {count} vehicles",
-    "tripDatesHint": "Set your trip dates in the search bar, then click Search to load availability. After that, Book now will reserve the vehicle for those dates.",
+    "tripDatesHint": "Select your trip dates in the search bar, then click Search available vehicles. After that, Book now will open booking for that vehicle.",
     "loadErrorTitle": "Unable to load vehicles",
     "emptyTitle": "No vehicles available right now",
     "emptyBody": "Please check back shortly for newly listed rentals.",

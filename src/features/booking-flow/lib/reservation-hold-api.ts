@@ -156,6 +156,33 @@ export async function heartbeatReservationHold(
   return { ok: true, data: body };
 }
 
+/** Extends an active hold so the customer has ~15 minutes for review / terms / payment. */
+export async function extendReservationHoldForCheckout(
+  holdReference: string,
+): Promise<{ ok: true; data: HeartbeatHoldSuccess } | { ok: false; status: number; message: string; holdStatus?: ReservationHoldStatus }> {
+  const response = await fetch(
+    `/api/reservation-holds/${encodeURIComponent(holdReference)}/extend-checkout`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+  const body = (await parseJson(response)) as HeartbeatHoldSuccess | HoldFailure | null;
+
+  if (!response.ok || !body || body.success !== true) {
+    return {
+      ok: false,
+      status: response.status,
+      message:
+        (body && "message" in body && typeof body.message === "string" && body.message) ||
+        "Unable to extend reservation hold for checkout.",
+      holdStatus: body && "status" in body ? body.status : undefined,
+    };
+  }
+
+  return { ok: true, data: body };
+}
+
 export async function releaseReservationHold(
   holdReference: string,
 ): Promise<{ ok: true; status?: ReservationHoldStatus } | { ok: false; message: string }> {

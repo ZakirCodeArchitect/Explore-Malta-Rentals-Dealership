@@ -28,6 +28,7 @@ import {
   summarizeApiBookingErrors,
 } from "@/features/booking-flow/lib/map-api-booking-error-to-form";
 import { submitBooking } from "@/features/booking-flow/lib/submit-booking-api";
+import { extendReservationHoldForCheckout } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RentalDetailsStep } from "@/features/booking-flow/steps/rental-details-step";
 import { OptionsDeliveryStep } from "@/features/booking-flow/steps/options-delivery-step";
 import { YourInformationStep } from "@/features/booking-flow/steps/your-information-step";
@@ -132,6 +133,43 @@ function BookingFlowBody({
 
   const countdown = useHoldCountdown(reservationHold.expiresAt, holdIsActive);
   const holdIsExpired = reservationHold.status === "EXPIRED" || (reservationHold.status === "ACTIVE" && countdown.isExpired);
+  const checkoutHoldExtendedForRef = useRef<string | null>(null);
+
+  const ensureCheckoutHoldExtension = useCallback(async () => {
+    const holdReference = reservationHold.holdReference?.trim();
+    if (!holdReference || !holdIsActive || holdIsExpired) {
+      return;
+    }
+    if (checkoutHoldExtendedForRef.current === holdReference) {
+      return;
+    }
+    checkoutHoldExtendedForRef.current = holdReference;
+
+    const result = await extendReservationHoldForCheckout(holdReference);
+    if (!result.ok) {
+      // Allow a retry on the next trigger if the extension failed.
+      checkoutHoldExtendedForRef.current = null;
+      return;
+    }
+
+    const expiresAt =
+      typeof result.data.expiresAt === "string"
+        ? result.data.expiresAt
+        : new Date(result.data.expiresAt).toISOString();
+    updateReservationHold({ expiresAt, status: result.data.status });
+  }, [
+    holdIsActive,
+    holdIsExpired,
+    reservationHold.holdReference,
+    updateReservationHold,
+  ]);
+
+  useEffect(() => {
+    if (activeStepId !== "review_confirm") {
+      return;
+    }
+    void ensureCheckoutHoldExtension();
+  }, [activeStepId, ensureCheckoutHoldExtension]);
 
   useHoldHeartbeat({
     holdReference: reservationHold.holdReference,
@@ -247,16 +285,19 @@ function BookingFlowBody({
     const currentValues = getBookingValues();
     if (currentValues.addons.cdwPlan === null) {
       setInsuranceModalKey((key) => key + 1);
+      void ensureCheckoutHoldExtension();
       setInsuranceModalOpen(true);
       return;
     }
 
+    void ensureCheckoutHoldExtension();
     setTermsModalOpen(true);
   }, [
     activeStepId,
     bookingFlowSchema,
     clearServerFieldErrors,
     createOrRefreshReservationHold,
+    ensureCheckoutHoldExtension,
     getBookingValues,
     goNext,
     isLastStep,
@@ -277,9 +318,10 @@ function BookingFlowBody({
         cdw: plan !== "NO_INSURANCE",
       });
       setInsuranceModalOpen(false);
+      void ensureCheckoutHoldExtension();
       setTermsModalOpen(true);
     },
-    [updateSection],
+    [ensureCheckoutHoldExtension, updateSection],
   );
 
   const handleTermsAgree = useCallback(async () => {
@@ -293,6 +335,10 @@ function BookingFlowBody({
       markReservationHoldExpired();
       return;
     }
+
+    // Refresh checkout grace window before uploads + booking submit.
+    checkoutHoldExtendedForRef.current = null;
+    await ensureCheckoutHoldExtension();
 
     const acceptedAt = new Date().toISOString();
     applyConsentFromTermsModal(acceptedAt);
@@ -426,6 +472,7 @@ function BookingFlowBody({
     bookingSessionId,
     clearServerFieldErrors,
     clearReservationHold,
+    ensureCheckoutHoldExtension,
     getBookingValues,
     holdIsActive,
     holdMatchesCurrentRental,

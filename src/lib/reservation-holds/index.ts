@@ -20,6 +20,8 @@ import { combineDateAndTime } from "@/lib/booking/bookingSubmissionSchema";
 import { prisma } from "@/lib/prisma";
 
 export const HOLD_DURATION_MS = 15 * 60 * 1000;
+/** Extra hold time once the customer reaches review / terms / payment. */
+export const CHECKOUT_HOLD_EXTENSION_MS = 15 * 60 * 1000;
 const HOLD_REFERENCE_PREFIX = "HLD";
 const HOLD_REFERENCE_RETRY_LIMIT = 5;
 
@@ -462,6 +464,36 @@ export async function heartbeatReservationHold(holdReference: string) {
   const updated = await prisma.reservationHold.update({
     where: { id: hold.id },
     data: { lastHeartbeatAt: new Date() },
+    select: holdSelect,
+  });
+
+  return toReservationHoldResponse(updated);
+}
+
+/**
+ * Guarantees ~15 more minutes on an active hold when the customer reaches
+ * review / terms / payment so checkout is not cut off mid-flow.
+ */
+export async function extendReservationHoldForCheckout(holdReference: string) {
+  const hold = await getReservationHoldByReference(holdReference);
+  if (!hold) {
+    throw new ReservationHoldStateError("Reservation hold was not found", "EXPIRED");
+  }
+  if (hold.status !== "ACTIVE") {
+    throw new ReservationHoldStateError("Reservation hold is no longer active", hold.status);
+  }
+
+  const now = new Date();
+  const checkoutExpiresAt = new Date(now.getTime() + CHECKOUT_HOLD_EXTENSION_MS);
+  const expiresAt =
+    hold.expiresAt.getTime() > checkoutExpiresAt.getTime() ? hold.expiresAt : checkoutExpiresAt;
+
+  const updated = await prisma.reservationHold.update({
+    where: { id: hold.id },
+    data: {
+      expiresAt,
+      lastHeartbeatAt: now,
+    },
     select: holdSelect,
   });
 

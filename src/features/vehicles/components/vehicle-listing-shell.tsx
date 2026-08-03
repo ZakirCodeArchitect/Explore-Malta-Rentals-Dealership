@@ -242,6 +242,14 @@ export function VehicleListingShell({
     return () => window.clearTimeout(timer);
   }, [tripDatesPrompt]);
 
+  useEffect(() => {
+    const onTripDatesRequired = () => setTripDatesPrompt(true);
+    window.addEventListener("vehicle-trip-dates-required", onTripDatesRequired);
+    return () => {
+      window.removeEventListener("vehicle-trip-dates-required", onTripDatesRequired);
+    };
+  }, []);
+
   const replaceQuery = useCallback(
     (mutate: (params: URLSearchParams) => void) => {
       const next = new URLSearchParams(searchParams.toString());
