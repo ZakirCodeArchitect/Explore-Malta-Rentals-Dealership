@@ -65,6 +65,9 @@ const nextConfig: NextConfig = {
   images: {
     /* Default in Next 16 is [75]; `quality={80}` in components must be listed here */
     qualities: [75, 80],
+    /* Bypass optimizer for absolute remote URLs — avoids hard 7s upstream timeout on slow S3 */
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
     remotePatterns: [
       /* Unsplash stock photos */
       {
