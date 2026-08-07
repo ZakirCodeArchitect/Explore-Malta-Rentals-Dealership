@@ -77,6 +77,8 @@ const SERVER_VALIDATED_PATHS = [
   "addons.helmetSize2",
   "addons.cdwPlan",
   "deposit.depositMethod",
+  "payment.mode",
+  "payment.proofPath",
   "consent.termsAccepted",
 ] as const satisfies readonly FieldPath<BookingFlowState>[];
 
@@ -205,6 +207,7 @@ export function BookingFlowProvider({ children, initialVehicleSlug, initialRenta
       passportUploadDelivery: tVal("passportUploadDelivery"),
       confirmDocumentsPickup: tVal("confirmDocumentsPickup"),
       depositMethodRequired: tVal("depositMethodRequired"),
+      paymentProofRequired: tVal("paymentProofRequired"),
       colorRequired: tVal("colorRequired"),
       pricingAcknowledgedRequired: tVal("pricingAcknowledgedRequired"),
       reviewFields: tVal("reviewFields"),

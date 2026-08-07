@@ -306,6 +306,7 @@ model Booking {
   vehicleUnitId                              String?
   paymentStatus                              PaymentStatus           @default(PENDING)
   securityDepositStatus                      SecurityDepositStatus   @default(PENDING)
+  paymentProofUploadPath                     String?
   paymentReceivedAmount                      Decimal?                @db.Decimal(10, 2)
   paymentMethod                              PaymentMethod?
   securityDepositCollectedAmount             Decimal?                @db.Decimal(10, 2)

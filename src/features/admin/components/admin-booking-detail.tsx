@@ -201,6 +201,12 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
             label={t("details.fields.securityDepositMethod")}
             value={t(`depositMethod.${booking.depositMethod}` as "depositMethod.ONLINE")}
           />
+          {booking.paymentProofUploadPath ? (
+            <DetailRow
+              label={t("details.fields.paymentProofUpload")}
+              value={formatUploadPath(booking.paymentProofUploadPath)}
+            />
+          ) : null}
           <DetailRow
             label={t("details.fields.confirmationEmailStatus")}
             value={t(
@@ -394,6 +400,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
       {(booking.handoverDateTime ||
         booking.returnRecordedAt ||
         booking.paymentReceivedAmount !== null ||
+        booking.paymentProofUploadPath ||
         booking.securityDepositCollectedAmount !== null ||
         booking.depositRefundAmount !== null ||
         booking.depositDeductionAmount !== null) ? (
@@ -409,6 +416,12 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
               <DetailRow
                 label={t("details.fields.paymentMethod")}
                 value={t(`paymentMethod.${booking.paymentMethod}` as "paymentMethod.CASH")}
+              />
+            ) : null}
+            {booking.paymentProofUploadPath ? (
+              <DetailRow
+                label={t("details.fields.paymentProofUpload")}
+                value={formatUploadPath(booking.paymentProofUploadPath)}
               />
             ) : null}
             {booking.securityDepositCollectedAmount !== null ? (

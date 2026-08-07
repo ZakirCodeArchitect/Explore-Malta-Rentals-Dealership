@@ -489,7 +489,8 @@
     "confirmDocumentsPickup": "कृपया पुष्टि करें कि आप पिकअप पर दस्तावेज़ प्रस्तुत करेंगे",
     "depositMethodRequired": "जमा विधि आवश्यक है",
     "reviewFields": "कृपया हाइलाइट किए गए फ़ील्ड की समीक्षा करें।",
-    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup."
+    "deliveryUnavailableSunday": "Delivery is unavailable on Sundays. Please select Office Pickup.",
+    "paymentProofRequired": "Payment proof is required when selecting Already paid"
   },
   "PrivacyPage": {
     "legalKicker": "कानूनी",
@@ -869,7 +870,22 @@
       "insuranceNotSelected": "Not selected yet",
       "baseDailyRate": "आधार दैनिक दर:",
       "rentalDuration": "किराये की अवधि:",
-      "durationDiscount": "अवधि छूट: {percent}% → {rate}/दिन"
+      "durationDiscount": "अवधि छूट: {percent}% → {rate}/दिन",
+      "payAtPickupDescription": "Hand over the security deposit in person when collecting the vehicle.",
+      "payOnlineDescription": "Include the security deposit in your Stripe payment — fully refundable after the rental.",
+      "alreadyPaid": "Already paid",
+      "alreadyPaidDescription": "I already paid the full amount outside this website. Upload proof of payment.",
+      "alreadyPaidModalTitle": "Upload payment proof",
+      "alreadyPaidModalDescription": "Upload an image or PDF showing proof that this booking was already paid.",
+      "alreadyPaidUploadLabel": "Payment proof",
+      "alreadyPaidUploadHint": "Accepted formats: JPEG, PNG, or PDF (max 2 MB).",
+      "alreadyPaidModalCancel": "Cancel",
+      "alreadyPaidModalConfirm": "Confirm proof",
+      "alreadyPaidProofRequired": "Please upload payment proof to continue.",
+      "alreadyPaidProofAttached": "Proof attached: {name}",
+      "alreadyPaidSummaryLabel": "Already paid (no Stripe)",
+      "alreadyPaidNote": "Booking and security deposit are marked as paid. No online Stripe payment will be charged.",
+      "payNowOnlineStripe": "Pay now online (Stripe)"
     },
     "pickupDropoff": {
       "shellTitle": "पिकअप और ड्रॉप-ऑफ",
@@ -998,6 +1014,13 @@
       "form": {
         "color": "Color",
         "colorNone": "No color specified"
+      }
+    },
+    "bookings": {
+      "details": {
+        "fields": {
+          "paymentProofUpload": "Payment proof"
+        }
       }
     }
   }

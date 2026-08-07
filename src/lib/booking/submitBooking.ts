@@ -381,11 +381,19 @@ function mapBookingCreateData(
   vehicle: ResolvedBookingVehicle,
   termsVersionId: string | null,
 ): Prisma.BookingUncheckedCreateInput {
+  const isAlreadyPaid = payload.payment.mode === "ALREADY_PAID";
+  const depositAmount = pricing.breakdown.depositAmount;
+  const payableAmount = pricing.breakdown.subtotal + depositAmount;
+
   return {
     bookingReference,
     status: "CONFIRMED",
-    paymentStatus: "PENDING",
-    securityDepositStatus: "PENDING",
+    paymentStatus: isAlreadyPaid ? "PAID" : "PENDING",
+    securityDepositStatus: isAlreadyPaid ? "COLLECTED" : "PENDING",
+    paymentProofUploadPath: isAlreadyPaid ? payload.payment.proofPath : null,
+    paymentMethod: isAlreadyPaid ? "OTHER" : null,
+    paymentReceivedAmount: isAlreadyPaid ? payableAmount : null,
+    securityDepositCollectedAmount: isAlreadyPaid ? depositAmount : null,
     vehicleId: vehicle.vehicleId,
     vehicleUnitId: vehicle.vehicleUnitId ?? null,
     vehicleNameSnapshot: vehicle.vehicleNameSnapshot,
@@ -455,10 +463,10 @@ function mapBookingCreateData(
     dropoffFee: pricing.breakdown.dropoffFee,
     deliveryTotal: pricing.breakdown.deliveryTotal,
     subtotal: pricing.breakdown.subtotal,
-    depositAmount: pricing.breakdown.depositAmount,
-    depositMethod: payload.deposit.depositMethod,
-    totalDueOnline: pricing.breakdown.totalDueOnline,
-    totalDueLater: pricing.breakdown.totalDueLater,
+    depositAmount,
+    depositMethod: isAlreadyPaid ? "IN_PERSON" : payload.deposit.depositMethod,
+    totalDueOnline: isAlreadyPaid ? 0 : pricing.breakdown.totalDueOnline,
+    totalDueLater: isAlreadyPaid ? 0 : pricing.breakdown.totalDueLater,
     termsAccepted: payload.consent.termsAccepted,
     termsAcceptedAt: payload.consent.termsAcceptedAt,
     idempotencyKey: payload.idempotencyKey,
@@ -914,7 +922,8 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     requireHoldReference,
   );
 
-  const totalDueOnline = pricing.breakdown.totalDueOnline;
+  const totalDueOnline =
+    validation.data.payment.mode === "ALREADY_PAID" ? 0 : pricing.breakdown.totalDueOnline;
 
   // Only send confirmation email immediately when no online payment is required.
   // When Stripe payment is involved, the webhook fires the email after payment succeeds.

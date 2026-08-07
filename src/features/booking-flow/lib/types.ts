@@ -78,6 +78,10 @@ export type BookingFlowState = {
   deposit: {
     depositMethod: "online" | "in_person" | "";
   };
+  payment: {
+    mode: "stripe" | "already_paid";
+    proofPath: string;
+  };
   consent: {
     summaryReviewed: boolean;
     termsAccepted: boolean;
@@ -146,6 +150,10 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
   },
   deposit: {
     depositMethod: "in_person",
+  },
+  payment: {
+    mode: "stripe",
+    proofPath: "",
   },
   consent: {
     summaryReviewed: false,

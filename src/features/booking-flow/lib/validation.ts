@@ -47,6 +47,7 @@ export type BookingValidationMessages = Readonly<{
   passportUploadDelivery: string;
   confirmDocumentsPickup: string;
   depositMethodRequired: string;
+  paymentProofRequired: string;
   reviewFields: string;
 }>;
 
@@ -124,6 +125,10 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
     }),
     deposit: z.object({
       depositMethod: z.enum(["", "online", "in_person"]),
+    }),
+    payment: z.object({
+      mode: z.enum(["stripe", "already_paid"]),
+      proofPath: z.string(),
     }),
     consent: z.object({
       summaryReviewed: z.boolean(),
@@ -319,7 +324,15 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       });
     }
 
-    if (!hasText(state.deposit.depositMethod)) {
+    if (state.payment.mode === "already_paid") {
+      if (!hasText(state.payment.proofPath)) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: m.paymentProofRequired,
+          path: ["payment", "proofPath"],
+        });
+      }
+    } else if (!hasText(state.deposit.depositMethod)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: m.depositMethodRequired,
@@ -367,7 +380,7 @@ export const STEP_FIELD_PATHS: Record<BookingFlowStepId, FieldPath<BookingFlowSt
     "customer.licenseConfirmationCheckbox",
     "customer.idConfirmationCheckbox",
   ],
-  review_confirm: ["deposit.depositMethod"],
+  review_confirm: ["deposit.depositMethod", "payment.mode", "payment.proofPath"],
 };
 
 function issuePathToString(path: (string | number)[]) {

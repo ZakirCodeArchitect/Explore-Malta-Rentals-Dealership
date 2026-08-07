@@ -78,6 +78,7 @@ export type AdminBookingDetail = {
   customerSpecialNotes: string | null;
   customerLicenseUploadPath: string | null;
   customerPassportUploadPath: string | null;
+  paymentProofUploadPath: string | null;
   customerWillPresentLicenseAtPickup: boolean;
   customerWillPresentIdAtPickup: boolean;
 

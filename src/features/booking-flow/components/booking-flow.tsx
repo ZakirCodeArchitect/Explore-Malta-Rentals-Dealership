@@ -384,6 +384,12 @@ function BookingFlowBody({
           payload.additionalDriver.passportUploadPath = uploaded.relativePath;
         } else if (pendingUpload.category === "additional_driver_license") {
           payload.additionalDriver.licenseUploadPath = uploaded.relativePath;
+        } else if (pendingUpload.category === "payment_proof") {
+          if (!payload.payment) {
+            payload.payment = { mode: "ALREADY_PAID", proofPath: uploaded.relativePath };
+          } else {
+            payload.payment.proofPath = uploaded.relativePath;
+          }
         }
       }
 

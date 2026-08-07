@@ -97,6 +97,10 @@ export function normalizeBookingPayload(payload: BookingSubmission): NormalizedB
     deposit: {
       depositMethod: payload.deposit.depositMethod,
     },
+    payment: {
+      mode: payload.payment.mode,
+      proofPath: normalizeText(payload.payment.proofPath),
+    },
     consent: {
       termsAccepted: payload.consent.termsAccepted === true,
       termsAcceptedAt: payload.consent.termsAcceptedAt

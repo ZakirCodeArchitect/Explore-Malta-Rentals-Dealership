@@ -29,6 +29,7 @@ export const CDW_OPTIONS = [
 ] as const;
 export const HELMET_SIZES = ["S", "M", "L"] as const;
 export const DEPOSIT_METHODS = ["ONLINE", "IN_PERSON"] as const;
+export const PAYMENT_MODES = ["STRIPE", "ALREADY_PAID"] as const;
 
 const EMPTY_TO_NULL_TEXT = z.preprocess(
   (value) => {
@@ -297,6 +298,14 @@ export const bookingSubmissionSchema = z
         depositMethod: z.enum(DEPOSIT_METHODS, { required_error: "Deposit method is required" }),
       })
       .strict(),
+    payment: z
+      .object({
+        mode: z.enum(PAYMENT_MODES).default("STRIPE"),
+        proofPath: EMPTY_TO_NULL_TEXT,
+      })
+      .strict()
+      .optional()
+      .default({ mode: "STRIPE", proofPath: null }),
     consent: z
       .object({
         termsAccepted: STRICT_BOOLEAN,
@@ -323,6 +332,14 @@ export const bookingSubmissionSchema = z
         code: z.ZodIssueCode.custom,
         path: ["vehicleId"],
         message: "Vehicle ID must match rental.vehicleId when both are provided",
+      });
+    }
+
+    if (payload.payment.mode === "ALREADY_PAID" && !payload.payment.proofPath) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["payment", "proofPath"],
+        message: "Payment proof is required when payment mode is Already paid",
       });
     }
 

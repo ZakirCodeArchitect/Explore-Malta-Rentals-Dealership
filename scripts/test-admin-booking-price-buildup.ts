@@ -22,6 +22,7 @@ function baseBooking(overrides: Partial<AdminBookingDetail> = {}): AdminBookingD
     customerSpecialNotes: null,
     customerLicenseUploadPath: null,
     customerPassportUploadPath: null,
+    paymentProofUploadPath: null,
     customerWillPresentLicenseAtPickup: false,
     customerWillPresentIdAtPickup: false,
     vehicleId: "vehicle-1",
