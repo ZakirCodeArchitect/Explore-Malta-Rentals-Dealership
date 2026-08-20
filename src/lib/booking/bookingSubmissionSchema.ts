@@ -12,6 +12,7 @@ import {
 import {
   BOOKABLE_STORED_CDW_OPTIONS,
 } from "@/lib/pricing/insurance-plans";
+import { isLicenseAllowedForEngine } from "@/lib/vehicles/engine-cc";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^\d{2}:\d{2}$/;
@@ -192,13 +193,6 @@ export function combineDateAndTime(date: string, time: string): Date | null {
   return parsed;
 }
 
-const ALLOWED_LICENSE_BY_VEHICLE: Record<string, ReadonlySet<string> | null> = {
-  Scooter: new Set(["B", "AM"]),
-  Motorcycle: new Set(["A", "A1", "A2"]),
-  Bicycle: null,
-  ATV: null,
-};
-
 const ALLOWED_CDW_BY_VEHICLE: Record<(typeof VEHICLE_TYPES)[number], ReadonlySet<string>> = {
   Scooter: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
   Motorcycle: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
@@ -206,12 +200,12 @@ const ALLOWED_CDW_BY_VEHICLE: Record<(typeof VEHICLE_TYPES)[number], ReadonlySet
   Bicycle: BOOKABLE_STORED_CDW_OPTIONS as ReadonlySet<string>,
 };
 
-function isLicenseAllowed(vehicleType: string, licenseCategory: string): boolean {
-  const allowedLicenses = ALLOWED_LICENSE_BY_VEHICLE[vehicleType];
-  if (allowedLicenses === null) {
-    return true;
-  }
-  return Boolean(allowedLicenses?.has(licenseCategory));
+function isLicenseAllowed(
+  vehicleType: string,
+  licenseCategory: string,
+  engineCc?: number | null,
+): boolean {
+  return isLicenseAllowedForEngine(vehicleType, licenseCategory, engineCc);
 }
 
 export const bookingSubmissionSchema = z
@@ -220,6 +214,7 @@ export const bookingSubmissionSchema = z
       .object({
         vehicleId: OPTIONAL_VEHICLE_ID,
         vehicleType: z.enum(VEHICLE_TYPES, { required_error: "Vehicle type is required" }),
+        engineCc: z.union([z.literal(50), z.literal(125)]).optional(),
         pickupDate: DATE_ONLY_SCHEMA,
         returnDate: DATE_ONLY_SCHEMA,
         pickupTime: TIME_ONLY_SCHEMA,
@@ -413,7 +408,7 @@ export const bookingSubmissionSchema = z
       });
     }
 
-    if (!isLicenseAllowed(payload.rental.vehicleType, payload.customer.licenseCategory)) {
+    if (!isLicenseAllowed(payload.rental.vehicleType, payload.customer.licenseCategory, payload.rental.engineCc)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["customer", "licenseCategory"],
@@ -506,7 +501,7 @@ export const bookingSubmissionSchema = z
         });
       } else if (
         additionalDriverLicenseCategory !== null &&
-        !isLicenseAllowed(payload.rental.vehicleType, additionalDriverLicenseCategory)
+        !isLicenseAllowed(payload.rental.vehicleType, additionalDriverLicenseCategory, payload.rental.engineCc)
       ) {
         context.addIssue({
           code: z.ZodIssueCode.custom,

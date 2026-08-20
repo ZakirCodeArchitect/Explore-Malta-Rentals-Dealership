@@ -75,12 +75,13 @@ export function AddonsStep() {
   const allowedLicenseOptions = getAllowedLicenseCategories(
     state.rental.vehicleType,
     state.rental.vehicleId,
+    state.rental.engineCc,
   );
   const allowedLicenseCategoryOptions = licenseCategoryOptions.filter(
     (option) =>
       option.value === "" || allowedLicenseOptions.includes(option.value as LicenseCategory),
   );
-  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType);
+  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType, state.rental.engineCc);
   const selectedHelmetSize1Option =
     helmetSizeOptions.find((option) => option.value === state.addons.helmetSize1) ??
     helmetSizeOptions[0];

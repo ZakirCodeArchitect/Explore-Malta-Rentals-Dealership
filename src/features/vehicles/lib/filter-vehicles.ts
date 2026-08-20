@@ -67,7 +67,9 @@ export function filterVehicles({
   }
 
   return seatsFiltered.filter((vehicle) =>
-    cc === "50" ? /\b50cc\b/i.test(vehicle.engine) : /\b125cc\b/i.test(vehicle.engine),
+    cc === "50"
+      ? vehicle.engineCc === 50 || /\b50cc\b/i.test(vehicle.engine)
+      : vehicle.engineCc === 125 || /\b125cc\b/i.test(vehicle.engine),
   );
 }
 

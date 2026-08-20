@@ -9,6 +9,7 @@ function mapVehicleDetail(
     name: string;
     slug: string;
     vehicleType: VehicleDetailDto["vehicleType"];
+    engineCc: number | null;
     brand: string | null;
     model: string | null;
     color: string | null;
@@ -29,6 +30,7 @@ function mapVehicleDetail(
     name: vehicle.name,
     slug: vehicle.slug,
     vehicleType: vehicle.vehicleType,
+    engineCc: vehicle.engineCc,
     brand: vehicle.brand,
     model: vehicle.model,
     color: vehicle.color,
@@ -61,6 +63,7 @@ export async function getVehicleBySlug(slug: string): Promise<GetVehicleBySlugRe
       name: true,
       slug: true,
       vehicleType: true,
+      engineCc: true,
       brand: true,
       model: true,
       color: true,

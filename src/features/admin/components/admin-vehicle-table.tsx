@@ -209,7 +209,12 @@ export function AdminVehicleTable({ locale, vehicles }: AdminVehicleTableProps) 
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-700">{t(`vehicleTypes.${vehicle.vehicleType}`)}</td>
+                    <td className="px-4 py-3 text-slate-700">
+                      {t(`vehicleTypes.${vehicle.vehicleType}`)}
+                      {vehicle.engineCc === 50 || vehicle.engineCc === 125
+                        ? ` · ${vehicle.engineCc}cc`
+                        : null}
+                    </td>
                     <td className="px-4 py-3 font-semibold text-slate-800">€{vehicle.baseDailyRate.toFixed(2)}</td>
                     <td className="px-4 py-3 text-slate-700">{vehicle.totalUnits}</td>
                     <td className="px-4 py-3 text-slate-700">{vehicle.availableUnits}</td>

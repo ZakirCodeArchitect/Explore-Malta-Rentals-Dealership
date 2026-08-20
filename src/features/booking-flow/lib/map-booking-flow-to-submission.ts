@@ -91,6 +91,9 @@ export function mapBookingFlowStateToSubmission(
     rental: {
       vehicleId: state.rental.vehicleId ?? undefined,
       vehicleType: apiVehicle,
+      ...(state.rental.engineCc === 50 || state.rental.engineCc === 125
+        ? { engineCc: state.rental.engineCc }
+        : {}),
       pickupDate: state.rental.pickupDate.trim(),
       returnDate: state.rental.returnDate.trim(),
       pickupTime: state.rental.pickupTime.trim(),

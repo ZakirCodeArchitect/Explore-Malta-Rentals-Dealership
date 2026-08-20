@@ -51,6 +51,10 @@ function isVehicleListItem(value: unknown): value is VehicleListApiItem {
     typeof candidate.slug === "string" &&
     typeof candidate.vehicleType === "string" &&
     isApiVehicleType(candidate.vehicleType) &&
+    (candidate.engineCc === undefined ||
+      candidate.engineCc === null ||
+      candidate.engineCc === 50 ||
+      candidate.engineCc === 125) &&
     (candidate.brand === null || typeof candidate.brand === "string") &&
     (candidate.model === null || typeof candidate.model === "string") &&
     (candidate.color === null || typeof candidate.color === "string") &&

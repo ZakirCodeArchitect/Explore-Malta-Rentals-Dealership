@@ -9,6 +9,7 @@ function mapVehicleListItem(
     name: string;
     slug: string;
     vehicleType: VehicleListItemDto["vehicleType"];
+    engineCc: number | null;
     brand: string | null;
     model: string | null;
     color: string | null;
@@ -28,6 +29,7 @@ function mapVehicleListItem(
     name: vehicle.name,
     slug: vehicle.slug,
     vehicleType: vehicle.vehicleType,
+    engineCc: vehicle.engineCc,
     brand: vehicle.brand,
     model: vehicle.model,
     color: vehicle.color,
@@ -59,6 +61,7 @@ export async function getVehicles(filters: GetVehiclesFilters = {}): Promise<Get
       name: true,
       slug: true,
       vehicleType: true,
+      engineCc: true,
       brand: true,
       model: true,
       color: true,

@@ -74,6 +74,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
       vehicleName: z.string(),
       vehicleLicensePlate: z.string(),
       vehicleType: requiredText(m.vehicleTypeRequired),
+      engineCc: z.union([z.literal(50), z.literal(125), z.null()]),
       selectedColor: z.string().nullable(),
       pickupDate: requiredText(m.pickupDateRequired),
       pickupTime: requiredText(m.pickupTimeRequired),
@@ -293,7 +294,7 @@ export function createBookingFlowSchema(m: BookingValidationMessages): z.ZodType
         message: m.licenseCategoryRequired,
         path: ["customer", "licenseCategory"],
       });
-    } else if (!isLicenseAllowedForVehicle(state.customer.licenseCategory, state.rental.vehicleType, state.rental.vehicleId)) {
+    } else if (!isLicenseAllowedForVehicle(state.customer.licenseCategory, state.rental.vehicleType, state.rental.vehicleId, state.rental.engineCc)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: m.licenseInvalidForVehicle,

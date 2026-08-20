@@ -123,7 +123,8 @@ export function SelectVehicleStep() {
       rentalId !== resolved.id ||
       slug !== resolved.slug ||
       state.rental.vehicleName !== resolved.name ||
-      state.rental.vehicleType !== resolved.apiVehicleType
+      state.rental.vehicleType !== resolved.apiVehicleType ||
+      state.rental.engineCc !== resolved.engineCc
     ) {
       updateSection("rental", {
         vehicleId: resolved.id,
@@ -131,6 +132,7 @@ export function SelectVehicleStep() {
         vehicleName: resolved.name,
         vehicleLicensePlate: "",
         vehicleType: resolved.apiVehicleType,
+        engineCc: resolved.engineCc,
       });
       if (!resolved.supportsStorageBox && getBookingValues().addons.storageBox) {
         updateSection("addons", { storageBox: false });
@@ -143,6 +145,7 @@ export function SelectVehicleStep() {
     state.rental.vehicleName,
     state.rental.vehicleSlug,
     state.rental.vehicleType,
+    state.rental.engineCc,
     updateSection,
     vehicles,
   ]);
@@ -158,7 +161,8 @@ export function SelectVehicleStep() {
       rentalId === slugVehicle.id &&
       slug === slugVehicle.slug &&
       state.rental.vehicleName === slugVehicle.name &&
-      state.rental.vehicleType === slugVehicle.apiVehicleType
+      state.rental.vehicleType === slugVehicle.apiVehicleType &&
+      state.rental.engineCc === slugVehicle.engineCc
     ) {
       return;
     }
@@ -169,6 +173,7 @@ export function SelectVehicleStep() {
       vehicleName: slugVehicle.name,
       vehicleLicensePlate: "",
       vehicleType: slugVehicle.apiVehicleType,
+      engineCc: slugVehicle.engineCc,
     });
     if (!slugVehicle.supportsStorageBox && getBookingValues().addons.storageBox) {
       updateSection("addons", { storageBox: false });
@@ -180,6 +185,7 @@ export function SelectVehicleStep() {
     state.rental.vehicleName,
     state.rental.vehicleSlug,
     state.rental.vehicleType,
+    state.rental.engineCc,
     updateSection,
   ]);
 

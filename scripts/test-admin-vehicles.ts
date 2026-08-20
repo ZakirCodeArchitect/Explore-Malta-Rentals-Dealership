@@ -11,6 +11,7 @@ const basePayload = {
   name: "Vehicle Listing Test",
   slug: `vehicle-listing-test-${Date.now()}`,
   vehicleType: "Scooter" as const,
+  engineCc: 50,
   brand: null,
   model: null,
   shortDescription: null,

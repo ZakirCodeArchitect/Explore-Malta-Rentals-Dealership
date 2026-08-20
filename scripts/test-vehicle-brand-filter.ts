@@ -34,6 +34,7 @@ function sampleVehicle(overrides: Partial<Vehicle> = {}): Vehicle {
     transmission: "Automatic",
     fuel: "Petrol",
     color: "Red",
+    engineCc: 125,
     engine: "125cc",
     rating: 0,
     reviewCount: 0,

@@ -6,11 +6,17 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { AdminSelect } from "@/features/admin/components/admin-select";
 import { VehicleColorSelect } from "@/features/admin/components/vehicle-color-select";
 import { defaultBaseDailyRateForVehicleType } from "@/lib/admin/vehicles/pricing-defaults";
 import { slugifyVehicleName } from "@/lib/admin/vehicles/slugify-name";
 import type { AdminVehicleDetail } from "@/lib/admin/vehicles/types";
 import { VEHICLE_CATALOG_STATUSES, VEHICLE_TYPES } from "@/lib/admin/vehicles/types";
+import {
+  defaultEngineCcForVehicleType,
+  vehicleTypeUsesEngineCc,
+  type EngineCcValue,
+} from "@/lib/vehicles/engine-cc";
 import {
   buildDurationPricingPreview,
   roundPricingAmount,
@@ -69,6 +75,13 @@ export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProp
   const [slug, setSlug] = useState(vehicle?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [vehicleType, setVehicleType] = useState<VehicleType>(vehicle?.vehicleType ?? "Scooter");
+  const [engineCc, setEngineCc] = useState<EngineCcValue | null>(
+    vehicleTypeUsesEngineCc(vehicle?.vehicleType ?? "Scooter")
+      ? ((vehicle?.engineCc === 50 || vehicle?.engineCc === 125
+          ? vehicle.engineCc
+          : defaultEngineCcForVehicleType(vehicle?.vehicleType ?? "Scooter")) ?? 50)
+      : null,
+  );
   const [brand, setBrand] = useState(vehicle?.brand ?? "");
   const [model, setModel] = useState(vehicle?.model ?? "");
   const [color, setColor] = useState(vehicle?.color ?? "");
@@ -122,6 +135,7 @@ export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProp
       name,
       slug,
       vehicleType,
+      engineCc,
       brand: brand.trim() || null,
       model: model.trim() || null,
       color: color.trim() || null,
@@ -142,6 +156,7 @@ export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProp
       catalogStatus,
       description,
       displayOrder,
+      engineCc,
       helmetIncludedCount,
       images,
       isActive,
@@ -305,7 +320,19 @@ export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProp
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.vehicleType")}</span>
             <select
               value={vehicleType}
-              onChange={(event) => setVehicleType(event.target.value as VehicleType)}
+              onChange={(event) => {
+                const nextType = event.target.value as VehicleType;
+                setVehicleType(nextType);
+                if (vehicleTypeUsesEngineCc(nextType)) {
+                  setEngineCc((current) =>
+                    current === 50 || current === 125
+                      ? current
+                      : (defaultEngineCcForVehicleType(nextType) ?? 50),
+                  );
+                } else {
+                  setEngineCc(null);
+                }
+              }}
               className={inputClassName()}
             >
               {VEHICLE_TYPES.map((type) => (
@@ -315,6 +342,21 @@ export function AdminVehicleForm({ locale, mode, vehicle }: AdminVehicleFormProp
               ))}
             </select>
           </label>
+          {vehicleTypeUsesEngineCc(vehicleType) ? (
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.engineCc")}</span>
+              <AdminSelect
+                value={engineCc ?? 50}
+                onChange={setEngineCc}
+                required
+                aria-label={t("form.engineCc")}
+                options={[
+                  { value: 50, label: t("form.engineCc50") },
+                  { value: 125, label: t("form.engineCc125") },
+                ]}
+              />
+            </label>
+          ) : null}
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t("form.brand")}</span>
             <input type="text" value={brand} onChange={(event) => setBrand(event.target.value)} className={inputClassName()} />

@@ -18,6 +18,7 @@ import {
 } from "@/lib/vehicle-unit-occupancy";
 import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
 import { prisma } from "@/lib/prisma";
+import { isLicenseAllowedForEngine } from "@/lib/vehicles/engine-cc";
 import {
   calculateBookingPrice,
   pricingConfig,
@@ -284,6 +285,7 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
       id: true,
       name: true,
       vehicleType: true,
+      engineCc: true,
       baseDailyRate: true,
       isActive: true,
       supportsStorageBox: true,
@@ -305,6 +307,35 @@ async function resolveBookingVehicle(payload: NormalizedBookingPayload): Promise
   if (vehicle.vehicleType !== payload.vehicleType) {
     throw new SubmitBookingValidationError([
       { path: "rental.vehicleType", message: "Vehicle type does not match selected vehicle" },
+    ]);
+  }
+
+  if (
+    !isLicenseAllowedForEngine(
+      vehicle.vehicleType,
+      payload.customer.licenseCategory,
+      vehicle.engineCc,
+    )
+  ) {
+    throw new SubmitBookingValidationError([
+      { path: "customer.licenseCategory", message: "Invalid license category for selected vehicle" },
+    ]);
+  }
+
+  if (
+    payload.additionalDriver.enabled &&
+    payload.additionalDriver.licenseCategory &&
+    !isLicenseAllowedForEngine(
+      vehicle.vehicleType,
+      payload.additionalDriver.licenseCategory,
+      vehicle.engineCc,
+    )
+  ) {
+    throw new SubmitBookingValidationError([
+      {
+        path: "additionalDriver.licenseCategory",
+        message: "Invalid license category for selected vehicle",
+      },
     ]);
   }
 

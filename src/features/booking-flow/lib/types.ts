@@ -25,6 +25,7 @@ export type BookingFlowState = {
     vehicleName: string;
     vehicleLicensePlate: string;
     vehicleType: string;
+    engineCc: number | null;
     selectedColor: string | null;
     pickupDate: string;
     pickupTime: string;
@@ -103,6 +104,7 @@ export const INITIAL_BOOKING_FLOW_STATE: BookingFlowState = {
     vehicleName: "",
     vehicleLicensePlate: "",
     vehicleType: "",
+    engineCc: null,
     selectedColor: null,
     pickupDate: "",
     pickupTime: "",

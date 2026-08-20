@@ -16,6 +16,7 @@ export type AdminVehicleListItem = {
   name: string;
   slug: string;
   vehicleType: VehicleType;
+  engineCc: number | null;
   brand: string | null;
   model: string | null;
   color: string | null;

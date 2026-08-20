@@ -1,5 +1,11 @@
 import { parseVehicleColorValue } from "@/features/vehicles/lib/vehicle-color";
 import type { VehicleRentalWindowStatus, AvailableColorDto } from "@/lib/vehicles/types";
+import {
+  formatEngineCcLabel,
+  isEngineCcValue,
+  normalizeEngineCc,
+  type EngineCcValue,
+} from "@/lib/vehicles/engine-cc";
 
 export const VEHICLE_TYPES = ["Scooter", "Motorcycle", "Bicycle", "ATV"] as const;
 
@@ -34,6 +40,7 @@ export type VehicleListApiItem = Readonly<{
   name: string;
   slug: string;
   vehicleType: ApiVehicleType;
+  engineCc?: number | null;
   brand: string | null;
   model: string | null;
   color: string | null;
@@ -80,6 +87,7 @@ export type Vehicle = Readonly<{
   transmission: Transmission;
   fuel: string;
   color: VehicleColor | null;
+  engineCc: EngineCcValue | null;
   engine: string;
   rating: number;
   reviewCount: number;
@@ -105,11 +113,10 @@ function mapApiTypeToListingType(type: ApiVehicleType): VehicleType {
   return type;
 }
 
-function engineByApiType(type: ApiVehicleType): string {
-  if (type === "Scooter") return "50cc";
-  if (type === "Motorcycle") return "125cc";
-  if (type === "ATV") return "ATV";
-  return "Bicycle";
+function engineLabelForVehicle(type: ApiVehicleType, engineCc: number | null | undefined): string {
+  const normalized = normalizeEngineCc(type, engineCc);
+  const label = formatEngineCcLabel(normalized, type);
+  return label || formatEngineCcLabel(null, type);
 }
 
 function supportsStorageFeatureLabel(supportsStorageBox: boolean): string {
@@ -148,6 +155,7 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
   const inferredType = mapApiTypeToListingType(item.vehicleType);
   const supportsStorageBox = item.supportsStorageBox === true;
   const baseDailyRate = mapApiPricingToBaseDailyRate(item);
+  const engineCc = isEngineCcValue(item.engineCc) ? item.engineCc : normalizeEngineCc(item.vehicleType, item.engineCc);
 
   return {
     id: item.id,
@@ -170,7 +178,8 @@ export function mapVehicleListItemToVehicle(item: VehicleListApiItem): Vehicle {
     transmission: item.vehicleType === "Bicycle" ? "Manual" : "Automatic",
     fuel: item.vehicleType === "Bicycle" ? "Human powered" : "Petrol",
     color: parseVehicleColorValue(item.color),
-    engine: engineByApiType(item.vehicleType),
+    engineCc,
+    engine: engineLabelForVehicle(item.vehicleType, item.engineCc),
     rating: 0,
     reviewCount: 0,
     location: "Pieta, Malta",

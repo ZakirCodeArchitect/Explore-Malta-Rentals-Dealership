@@ -6,6 +6,7 @@ import type { AdminVehicleWriteInput } from "@/lib/admin/vehicles/vehicle-schema
 import { getAdminVehicleById } from "@/lib/admin/vehicles/listAdminVehicles";
 import { vehicleDeleteRelationCountSelect } from "@/lib/admin/vehicles/vehicle-delete-errors";
 import { prisma } from "@/lib/prisma";
+import { normalizeEngineCc } from "@/lib/vehicles/engine-cc";
 
 export class DuplicateLicensePlateError extends Error {
   constructor() {
@@ -66,6 +67,7 @@ export async function createAdminVehicle(input: AdminVehicleWriteInput): Promise
         name: input.name.trim(),
         slug,
         vehicleType: input.vehicleType as VehicleType,
+        engineCc: normalizeEngineCc(input.vehicleType, input.engineCc),
         baseDailyRate: input.baseDailyRate,
         brand: input.brand?.trim() || null,
         model: input.model?.trim() || null,
@@ -127,6 +129,7 @@ export async function updateAdminVehicle(
           name: input.name.trim(),
           slug,
           vehicleType: input.vehicleType as VehicleType,
+          engineCc: normalizeEngineCc(input.vehicleType, input.engineCc),
           baseDailyRate: input.baseDailyRate,
           brand: input.brand?.trim() || null,
           model: input.model?.trim() || null,

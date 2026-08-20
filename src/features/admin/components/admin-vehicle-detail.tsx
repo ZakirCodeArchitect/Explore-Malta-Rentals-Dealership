@@ -104,6 +104,16 @@ export async function AdminVehicleDetailView({
                 <DetailField label={t("form.slug")} value={vehicle.slug} />
                 <DetailField label={t("form.vehicleType")} value={t(`vehicleTypes.${vehicle.vehicleType}`)} />
                 <DetailField
+                  label={t("form.engineCc")}
+                  value={
+                    vehicle.engineCc === 50
+                      ? t("form.engineCc50")
+                      : vehicle.engineCc === 125
+                        ? t("form.engineCc125")
+                        : "—"
+                  }
+                />
+                <DetailField
                   label={t("table.totalUnits")}
                   value={t("units.counts", { total: vehicle.totalUnits, available: vehicle.availableUnits })}
                 />

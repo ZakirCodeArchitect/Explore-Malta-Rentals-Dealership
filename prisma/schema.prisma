@@ -12,6 +12,8 @@ model Vehicle {
   name                String
   slug                String               @unique
   vehicleType         VehicleType
+  /// Engine displacement in cc. Required for Scooter and Motorcycle (50 or 125). Null for Bicycle and ATV.
+  engineCc            Int?
   brand               String?
   model               String?
   color               String?
