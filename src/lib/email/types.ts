@@ -39,5 +39,5 @@ export type SendBookingConfirmationFailureReason =
   | SendEmailFailureReason;
 
 export type SendBookingConfirmationResult =
-  | { success: true; deliveryMode: "resend" | "development_console" }
+  | { success: true; deliveryMode: "resend" | "development_console" | "already_sent" }
   | { success: false; reason: SendBookingConfirmationFailureReason; cause?: unknown };

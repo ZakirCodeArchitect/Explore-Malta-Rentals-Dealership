@@ -3,7 +3,7 @@ import { Prisma } from "@/generated/prisma";
 import { stripe } from "./stripe-client";
 import { prisma } from "@/lib/prisma";
 import { writePaymentAuditLog } from "./audit-service";
-import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
+import { deliverBookingConfirmationIfNeeded } from "@/lib/email/deliverBookingConfirmation";
 import type { ProcessWebhookResult } from "./types";
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -179,16 +179,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session):
 
   // Send confirmation email now that payment is confirmed
   try {
-    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-    if (booking) {
-      const emailResult = await sendBookingConfirmation(booking);
-      await prisma.booking.update({
-        where: { id: bookingId },
-        data: emailResult.success
-          ? { confirmationEmailStatus: "SENT", confirmationEmailSentAt: new Date() }
-          : { confirmationEmailStatus: "FAILED" },
-      });
-    }
+    await deliverBookingConfirmationIfNeeded(bookingId);
   } catch (emailError) {
     // Email failure must not roll back the payment confirmation
     console.error("[webhook] Confirmation email failed after payment", { bookingId, emailError });
@@ -212,29 +203,42 @@ async function handlePaymentIntentSucceeded(intent: Stripe.PaymentIntent): Promi
 
   // checkout.session.completed fires first in most flows — this is a safety net
   const stripePayment = await prisma.stripePayment.findUnique({ where: { bookingId } });
-  if (!stripePayment || stripePayment.stripeStatus === "SUCCEEDED") {
-    return "already_succeeded";
+  if (!stripePayment) {
+    return "no_payment_record";
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.stripePayment.update({
-      where: { bookingId },
-      data: { stripeStatus: "SUCCEEDED", stripePaymentIntentId: intent.id },
+  if (stripePayment.stripeStatus !== "SUCCEEDED") {
+    await prisma.$transaction(async (tx) => {
+      await tx.stripePayment.update({
+        where: { bookingId },
+        data: { stripeStatus: "SUCCEEDED", stripePaymentIntentId: intent.id },
+      });
+      await tx.booking.update({
+        where: { id: bookingId },
+        data: { paymentStatus: "PAID" },
+      });
     });
-    await tx.booking.update({
-      where: { id: bookingId },
-      data: { paymentStatus: "PAID" },
+
+    await writePaymentAuditLog({
+      bookingId,
+      action: "payment_succeeded",
+      actor: "stripe-webhook",
+      newValue: { paymentIntentId: intent.id },
     });
-  });
+  }
 
-  await writePaymentAuditLog({
-    bookingId,
-    action: "payment_succeeded",
-    actor: "stripe-webhook",
-    newValue: { paymentIntentId: intent.id },
-  });
+  try {
+    await deliverBookingConfirmationIfNeeded(bookingId);
+  } catch (emailError) {
+    console.error("[webhook] Confirmation email failed after payment_intent.succeeded", {
+      bookingId,
+      emailError,
+    });
+  }
 
-  return "payment_intent_succeeded";
+  return stripePayment.stripeStatus === "SUCCEEDED"
+    ? "already_succeeded"
+    : "payment_intent_succeeded";
 }
 
 async function handlePaymentIntentFailed(intent: Stripe.PaymentIntent): Promise<string> {

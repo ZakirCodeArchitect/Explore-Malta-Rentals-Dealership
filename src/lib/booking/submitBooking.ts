@@ -16,7 +16,7 @@ import {
   insertBookingOccupancy,
   isVehicleUnitOccupancyExclusionError,
 } from "@/lib/vehicle-unit-occupancy";
-import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
+import { deliverBookingConfirmationIfNeeded } from "@/lib/email/deliverBookingConfirmation";
 import { prisma } from "@/lib/prisma";
 import { isLicenseAllowedForEngine } from "@/lib/vehicles/engine-cc";
 import {
@@ -871,29 +871,6 @@ async function resolveIdempotentBooking(
   return null;
 }
 
-async function updateEmailStatus(bookingId: string, wasSent: boolean) {
-  try {
-    await prisma.booking.update({
-      where: { id: bookingId },
-      data: wasSent
-        ? {
-            confirmationEmailStatus: "SENT",
-            confirmationEmailSentAt: new Date(),
-          }
-        : {
-            confirmationEmailStatus: "FAILED",
-            confirmationEmailSentAt: null,
-          },
-    });
-  } catch (statusError) {
-    console.error("[bookings] Failed to persist confirmation email status", {
-      bookingId,
-      status: wasSent ? "SENT" : "FAILED",
-      error: statusError,
-    });
-  }
-}
-
 export async function submitBooking(payload: BookingSubmissionInput): Promise<SubmitBookingResponse> {
   const validation = validateBookingPayload(payload);
   if (!validation.success) {
@@ -957,19 +934,10 @@ export async function submitBooking(payload: BookingSubmissionInput): Promise<Su
     validation.data.payment.mode === "ALREADY_PAID" ? 0 : pricing.breakdown.totalDueOnline;
 
   // Only send confirmation email immediately when no online payment is required.
-  // When Stripe payment is involved, the webhook fires the email after payment succeeds.
+  // When Stripe payment is involved, the webhook or success-page verifier
+  // sends the email after payment succeeds.
   if (totalDueOnline <= 0) {
-    const emailResult = await sendBookingConfirmation(booking);
-    if (emailResult.success) {
-      await updateEmailStatus(booking.id, true);
-    } else {
-      console.error("[bookings] Confirmation email was not sent", {
-        bookingId: booking.id,
-        bookingReference: booking.bookingReference,
-        reason: emailResult.reason,
-      });
-      await updateEmailStatus(booking.id, false);
-    }
+    await deliverBookingConfirmationIfNeeded(booking.id);
   }
 
   return {
