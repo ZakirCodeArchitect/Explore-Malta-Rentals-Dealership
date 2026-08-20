@@ -33,6 +33,7 @@ export type AdminBookingListItem = {
   pickupDateTime: string;
   returnDateTime: string;
   status: BookingStatus;
+  paymentStatus: PaymentStatus;
   depositMethod: DepositMethod;
   depositAmount: number;
   totalDueOnline: number;

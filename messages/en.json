@@ -1489,6 +1489,7 @@
         "return": "Return",
         "status": "Status",
         "deposit": "Deposit",
+        "paymentStatus": "Payment status",
         "securityDepositMethod": "Security deposit method",
         "amountPayableOnline": "Amount payable online",
         "amountDueAtPickupLater": "Amount due at pickup / later",
