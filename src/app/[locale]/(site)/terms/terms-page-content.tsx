@@ -118,7 +118,7 @@ export function TermsPageContent() {
           <>
             <ul className="list-disc space-y-1 pl-5">
               <li>
-                Minimum age: <strong>18 years</strong> for 50cc, <strong>21 years</strong> for 125cc and ATV/Quad.
+                Minimum age: <strong>21 years</strong> for all vehicles (50cc, 125cc, and ATV/Quad).
               </li>
               <li>
                 Valid driving licence required: <strong>AM</strong> for 50cc, <strong>A1/A2</strong> for 125cc.
