@@ -1775,7 +1775,16 @@
           "depositUnchanged": "Leave deposit status unchanged",
           "note": "Cancellation note",
           "dismiss": "Keep booking",
-          "confirm": "Cancel booking"
+          "continue": "Continue to email",
+          "back": "Back",
+          "confirm": "Cancel booking",
+          "emailTitle": "Review cancellation email",
+          "emailDescription": "This message will be sent to {email}. Edit it before confirming the cancellation.",
+          "emailRecipient": "Send to",
+          "emailSubject": "Subject",
+          "emailBody": "Email message",
+          "confirmAndSend": "Cancel booking and send email",
+          "emailFailed": "The booking was cancelled, but the customer email could not be sent. Please contact the customer directly."
         },
         "paymentMethod": {
           "CASH": "Cash",

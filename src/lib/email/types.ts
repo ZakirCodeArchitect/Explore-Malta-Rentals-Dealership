@@ -41,3 +41,13 @@ export type SendBookingConfirmationFailureReason =
 export type SendBookingConfirmationResult =
   | { success: true; deliveryMode: "resend" | "development_console" | "already_sent" }
   | { success: false; reason: SendBookingConfirmationFailureReason; cause?: unknown };
+
+export type BookingCancellationEmailContent = {
+  subject: string;
+  html: string;
+  text: string;
+};
+
+export type SendBookingCancellationResult =
+  | { success: true; deliveryMode: "resend" | "development_console" }
+  | { success: false; reason: SendBookingConfirmationFailureReason; cause?: unknown };

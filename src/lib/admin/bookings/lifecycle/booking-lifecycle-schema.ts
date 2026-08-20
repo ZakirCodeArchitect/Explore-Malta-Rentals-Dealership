@@ -57,6 +57,8 @@ export const cancelBookingSchema = z.object({
   depositDeductionAmount: z.coerce.number().min(0).optional(),
   depositDeductionReason: z.string().trim().max(500).optional(),
   note: optionalNoteSchema,
+  emailSubject: z.string().trim().min(1).max(200),
+  emailBody: z.string().trim().min(1).max(8000),
 });
 
 export type HandOverVehicleInput = z.infer<typeof handOverVehicleSchema>;
