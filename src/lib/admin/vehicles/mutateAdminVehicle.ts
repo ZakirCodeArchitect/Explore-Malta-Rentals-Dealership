@@ -227,26 +227,39 @@ export type DeleteAdminVehicleResult =
   | { ok: false; reason: "not_found" | "has_related_records" };
 
 export async function deleteAdminVehicle(id: string): Promise<DeleteAdminVehicleResult> {
-  const existing = await prisma.vehicle.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      _count: {
-        select: vehicleDeleteRelationCountSelect(),
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.vehicle.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        _count: {
+          select: vehicleDeleteRelationCountSelect(),
+        },
       },
-    },
+    });
+
+    if (!existing) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const { bookings, reservationHolds, availabilityBlocks } = existing._count;
+    if (bookings > 0 || reservationHolds > 0 || availabilityBlocks > 0) {
+      return { ok: false, reason: "has_related_records" };
+    }
+
+    await tx.booking.updateMany({
+      where: {
+        status: "CANCELLED",
+        OR: [{ vehicleId: id }, { vehicleUnit: { vehicleId: id } }],
+      },
+      data: {
+        vehicleId: null,
+        vehicleUnitId: null,
+      },
+    });
+
+    await tx.vehicle.delete({ where: { id } });
+
+    return { ok: true };
   });
-
-  if (!existing) {
-    return { ok: false, reason: "not_found" };
-  }
-
-  const { bookings, reservationHolds, availabilityBlocks } = existing._count;
-  if (bookings > 0 || reservationHolds > 0 || availabilityBlocks > 0) {
-    return { ok: false, reason: "has_related_records" };
-  }
-
-  await prisma.vehicle.delete({ where: { id } });
-
-  return { ok: true };
 }

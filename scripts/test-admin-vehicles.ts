@@ -186,6 +186,69 @@ async function run() {
     await prisma.vehicle.delete({ where: { id: bookedVehicle.id } });
   }
 
+  const cancelledBookingReference = `TEST-CXL-${Date.now()}`;
+  const cancelledVehicle = await prisma.vehicle.create({
+    data: {
+      name: "Cancelled Booking Guard Test Vehicle",
+      slug: `cancelled-booking-guard-test-${Date.now()}`,
+      vehicleType: "Scooter",
+      baseDailyRate: 25,
+      catalogStatus: "AVAILABLE",
+      isActive: true,
+      units: {
+        create: {
+          licensePlate: `CXL-${Date.now()}`,
+          status: "AVAILABLE",
+          isActive: true,
+        },
+      },
+      bookings: {
+        create: {
+          bookingReference: cancelledBookingReference,
+          status: "CANCELLED",
+          vehicleType: "Scooter",
+          pickupDateTime: new Date("2026-07-01T10:00:00.000Z"),
+          returnDateTime: new Date("2026-07-02T10:00:00.000Z"),
+          actualDurationHours: 24,
+          billableDays: 1,
+          pickupOption: "OFFICE",
+          dropoffOption: "OFFICE",
+          customerFullName: "Test User",
+          customerPhone: "+35600000000",
+          customerEmail: "test@example.com",
+          customerNationality: "Malta",
+          customerDateOfBirth: new Date("1990-01-01T00:00:00.000Z"),
+          customerLicenseCategory: "B",
+          depositMethod: "IN_PERSON",
+        },
+      },
+    },
+  });
+
+  try {
+    const loadedCancelled = await getAdminVehicleById(cancelledVehicle.id);
+    assert.ok(loadedCancelled);
+    assert.equal(loadedCancelled.bookingCount, 0);
+    assert.equal(loadedCancelled.canDelete, true);
+
+    const deleteResult = await deleteAdminVehicle(cancelledVehicle.id);
+    assert.equal(deleteResult.ok, true);
+    assert.equal(await getAdminVehicleById(cancelledVehicle.id), null);
+
+    const preservedBooking = await prisma.booking.findUnique({
+      where: { bookingReference: cancelledBookingReference },
+      select: { vehicleId: true, vehicleUnitId: true, status: true },
+    });
+    assert.ok(preservedBooking);
+    assert.equal(preservedBooking.status, "CANCELLED");
+    assert.equal(preservedBooking.vehicleId, null);
+    assert.equal(preservedBooking.vehicleUnitId, null);
+  } finally {
+    await prisma.booking.deleteMany({ where: { bookingReference: cancelledBookingReference } });
+    await prisma.vehicleUnit.deleteMany({ where: { vehicleId: cancelledVehicle.id } }).catch(() => undefined);
+    await prisma.vehicle.deleteMany({ where: { id: cancelledVehicle.id } }).catch(() => undefined);
+  }
+
   console.log("Admin vehicle listing + unit checks passed.");
 }
 

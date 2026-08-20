@@ -14,9 +14,18 @@ export function activeReservationHoldWhere(now = new Date()): Prisma.Reservation
   };
 }
 
+/** Cancelled bookings keep snapshots and must not block vehicle or unit deletion. */
+export function vehicleDeleteBlockingBookingWhere(): Prisma.BookingWhereInput {
+  return {
+    status: { not: "CANCELLED" },
+  };
+}
+
 export function vehicleDeleteRelationCountSelect(now = new Date()) {
   return {
-    bookings: true,
+    bookings: {
+      where: vehicleDeleteBlockingBookingWhere(),
+    },
     availabilityBlocks: true,
     reservationHolds: {
       where: activeReservationHoldWhere(now),
@@ -26,7 +35,9 @@ export function vehicleDeleteRelationCountSelect(now = new Date()) {
 
 export function vehicleUnitDeleteRelationCountSelect(now = new Date()) {
   return {
-    bookings: true,
+    bookings: {
+      where: vehicleDeleteBlockingBookingWhere(),
+    },
     reservationHolds: {
       where: activeReservationHoldWhere(now),
     },
