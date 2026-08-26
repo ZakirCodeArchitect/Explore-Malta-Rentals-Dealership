@@ -55,6 +55,7 @@ export async function VideoHero() {
       ──────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="sticky top-[var(--site-header-offset)] h-[calc(100svh-var(--site-header-offset))] overflow-hidden">
+          <div className="relative h-full w-full">
 
           {/* Poster image — fast SSR paint target before video/JS */}
           <Image
@@ -87,6 +88,7 @@ export async function VideoHero() {
             }}
           />
 
+          </div>
         </div>
       </div>
 

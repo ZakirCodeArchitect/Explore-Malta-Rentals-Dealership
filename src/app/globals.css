@@ -15,13 +15,10 @@
   /* Hero booking inputs */
   --hero-field-bg: #f5faff;
   /*
-   * Fixed `SiteNavbar` stack height: safe-area + red bar + logo row + booking notice banner.
+   * Fixed `SiteNavbar` stack height: safe-area + logo/nav row.
    * Use for spacing page columns so content does not sit under the header.
    */
-  --site-banner-height: 2.625rem;
-  --site-header-offset: calc(
-    env(safe-area-inset-top, 0px) + 3.125rem + var(--site-banner-height)
-  );
+  --site-header-offset: calc(env(safe-area-inset-top, 0px) + 3.125rem);
 }
 
 @theme inline {

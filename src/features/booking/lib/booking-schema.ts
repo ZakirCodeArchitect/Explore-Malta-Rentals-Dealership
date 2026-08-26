@@ -31,6 +31,7 @@ export function createBookingFormSchema(m: BookingFormMessages) {
   return z
     .object({
       vehicleType: z.string().optional(),
+      brand: z.string().optional(),
       alternatePickupRequested: z.boolean(),
       alternatePickupAddress: z.string().optional(),
       differentDropoff: z.boolean(),

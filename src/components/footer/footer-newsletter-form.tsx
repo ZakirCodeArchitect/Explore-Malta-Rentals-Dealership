@@ -42,6 +42,7 @@ export function FooterNewsletterForm() {
         />
         <button
           type="submit"
+          suppressHydrationWarning
           className={joinClasses(
             "inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl px-5 text-sm font-semibold tracking-[-0.02em] text-slate-950 transition-all duration-200",
             "bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-strong)]",

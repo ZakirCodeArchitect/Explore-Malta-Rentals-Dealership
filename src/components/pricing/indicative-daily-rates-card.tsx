@@ -2,7 +2,8 @@
 
 import { Euro } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { INDICATIVE_MOTORCYCLE_SCOOTER_TIERS } from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
+import { PRICING_TIERS } from "@/lib/pricing/pricing-tiers";
+import { formatDurationRuleLabel } from "@/lib/pricing/duration-pricing";
 
 function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -38,17 +39,18 @@ export function IndicativeDailyRatesCard({
         </p>
       </div>
       <dl className="grid gap-px bg-slate-200/80 sm:grid-cols-2">
-        {INDICATIVE_MOTORCYCLE_SCOOTER_TIERS.map((tier) => (
+        {PRICING_TIERS.map((tier) => (
           <div
-            key={tier.rowLabelKey}
+            key={tier.key}
             className="flex items-baseline justify-between gap-4 bg-[var(--surface-card)] px-6 py-3.5 sm:px-7 sm:py-4"
           >
-            <dt className="text-sm font-medium text-slate-800">{t(tier.rowLabelKey)}</dt>
-            <dd className="shrink-0 text-right text-sm tabular-nums">
-              <span className="font-semibold text-slate-900">
-                €{tier.dailyRateEur}
-              </span>{" "}
-              <span className="text-xs font-normal text-slate-500">{t("perDaySuffix")}</span>
+            <dt className="text-sm font-medium text-slate-800">
+              {formatDurationRuleLabel(tier.minDays, tier.maxDays)}
+            </dt>
+            <dd className="shrink-0 text-right text-sm font-semibold tabular-nums text-slate-900">
+              {tier.discountPercent <= 0
+                ? t("noDiscount")
+                : t("percentOff", { percent: tier.discountPercent })}
             </dd>
           </div>
         ))}

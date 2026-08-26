@@ -17,7 +17,6 @@ import {
   type BookingSubmissionInput,
 } from "../src/lib/booking";
 import { calculateBookingPrice } from "../src/lib/pricing/calculate-booking-price";
-import { getDurationPricingRules } from "../src/lib/pricing/get-duration-pricing-rules";
 import { prisma } from "../src/lib/prisma";
 import {
   assignAvailableVehicleUnit,
@@ -798,9 +797,6 @@ async function runUnitStatusTests(): Promise<void> {
 }
 
 async function runIdempotencyTests(): Promise<void> {
-  const durationRules = await getDurationPricingRules();
-  assert.ok(durationRules.length > 0, "Duration pricing rules required for submitBooking tests");
-
   const { vehicleId } = await createTestVehicle(2);
   const pickup = baseDate(15, 10);
   const returnAt = baseDate(17, 10);
@@ -837,9 +833,6 @@ async function runIdempotencyTests(): Promise<void> {
 }
 
 async function runSubmitDoesNotGloballyReserveUnitTests(): Promise<void> {
-  const durationRules = await getDurationPricingRules();
-  assert.ok(durationRules.length > 0, "Duration pricing rules required for submitBooking tests");
-
   const ABC_PLATE = `SUB${testSuffix.slice(-4)}`;
   const { vehicleId, unitIds } = await createSingleUnitVehicle(ABC_PLATE);
   const unitId = unitIds[0]!;
@@ -1077,7 +1070,6 @@ async function runAdminUnitLifecycleTests(): Promise<void> {
 }
 
 async function runPricingConsistencyTests(): Promise<void> {
-  const durationRules = await getDurationPricingRules();
   const { vehicleId } = await createTestVehicle(2);
   const vehicle = await prisma.vehicle.findUniqueOrThrow({
     where: { id: vehicleId },
@@ -1103,7 +1095,6 @@ async function runPricingConsistencyTests(): Promise<void> {
     vehiclePricing: {
       baseDailyRate: baseRate,
       vehicleType: vehicle.vehicleType,
-      durationRules,
       supportsStorageBox: vehicle.supportsStorageBox,
     },
   });

@@ -3,11 +3,13 @@
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { isPickupDeliveryAllowedForDate } from "@/lib/booking/delivery-availability";
 import { calculateDeliveryFees, formatEur } from "@/lib/pricing/calculate-booking-price";
 
 export function PickupDropoffStep() {
   const t = useTranslations("BookingWizard.pickupDropoff");
   const { state, updateSection, getFieldError, isFieldInvalid } = useBookingFlow();
+  const pickupDeliveryBlocked = !isPickupDeliveryAllowedForDate(state.rental.pickupDate);
   const pickupDeliverySelected = state.delivery.pickupOption === "delivery";
   const dropoffDeliverySelected = state.delivery.dropoffOption === "dropoff";
   const pickupAddress = state.delivery.pickupAddress ?? "";
@@ -38,17 +40,25 @@ export function PickupDropoffStep() {
             />
             {t("officePickup")}
           </label>
-          <label className="mt-2 flex items-center gap-2 text-sm text-slate-700">
+          <label
+            className={`mt-2 flex items-center gap-2 text-sm ${
+              pickupDeliveryBlocked ? "cursor-not-allowed text-slate-400" : "text-slate-700"
+            }`}
+          >
             <input
               type="radio"
               name="pickupType"
               data-field="delivery.pickupOption"
               value="delivery"
               checked={state.delivery.pickupOption === "delivery"}
+              disabled={pickupDeliveryBlocked}
               onChange={() => updateSection("delivery", { pickupOption: "delivery" })}
             />
             {t("requestDelivery")}
           </label>
+          {pickupDeliveryBlocked ? (
+            <p className="mt-2 text-xs text-amber-800">{t("deliveryUnavailableSunday")}</p>
+          ) : null}
 
           {pickupDeliverySelected ? (
             <div className="mt-3 rounded-md border border-slate-200 bg-slate-50/60 p-3">

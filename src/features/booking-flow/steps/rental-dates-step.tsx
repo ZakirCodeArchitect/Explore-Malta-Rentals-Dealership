@@ -4,6 +4,7 @@ import { addDays, differenceInHours, format, parse } from "date-fns";
 import { useTranslations } from "next-intl";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { getBillableRentalDays } from "@/lib/pricing/rental-duration";
 
 const inputClass =
   "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
@@ -20,7 +21,7 @@ export function RentalDatesStep() {
   const pickupBaseDate =
     parsedPickupDate && !Number.isNaN(parsedPickupDate.getTime()) ? parsedPickupDate : today;
   const returnMinDate = format(addDays(pickupBaseDate, 1), "yyyy-MM-dd");
-  const returnMaxDate = format(addDays(pickupBaseDate, 28), "yyyy-MM-dd");
+  const returnMaxDate = format(addDays(pickupBaseDate, 27), "yyyy-MM-dd");
   const pickup = pickupDate && pickupTime
     ? parse(`${pickupDate} ${pickupTime}`, "yyyy-MM-dd HH:mm", new Date())
     : null;
@@ -31,7 +32,10 @@ export function RentalDatesStep() {
     pickup && dropoff && !Number.isNaN(pickup.getTime()) && !Number.isNaN(dropoff.getTime())
       ? Math.max(0, differenceInHours(dropoff, pickup))
       : 0;
-  const rentalDays = Math.max(0, Math.ceil(rentalHours / 24));
+  const rentalDays =
+    pickupDate && returnDate && pickupTime && returnTime
+      ? getBillableRentalDays(pickupDate, pickupTime, returnDate, returnTime)
+      : 0;
   const hasDateTimeRange = Boolean(pickup && dropoff);
 
   return (

@@ -25,7 +25,7 @@ import {
 import { Container } from "@/components/ui/container";
 import { SITE_CONTACT, SITE_LOCATION_KICKER } from "@/lib/site-brand-copy";
 
-const LAST_UPDATED = "09 April 2026";
+const LAST_UPDATED = "20 August 2026";
 const WEBSITE_URL = "https://exploremaltarentals.com";
 
 type TermsSection = Readonly<{
@@ -118,7 +118,7 @@ export function TermsPageContent() {
           <>
             <ul className="list-disc space-y-1 pl-5">
               <li>
-                Minimum age: <strong>18 years</strong> for 50cc, <strong>21 years</strong> for 125cc and ATV/Quad.
+                Minimum age: <strong>21 years</strong> for all vehicles (50cc, 125cc, and ATV/Quad).
               </li>
               <li>
                 Valid driving licence required: <strong>AM</strong> for 50cc, <strong>A1/A2</strong> for 125cc.
@@ -161,12 +161,7 @@ export function TermsPageContent() {
         icon: <HandCoins className="h-5 w-5" />,
         content: (
           <>
-            <p>Deposit is required at pickup (cash or card hold):</p>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>50cc scooter: EUR 150</li>
-              <li>125cc scooter: EUR 250</li>
-              <li>ATV / Quad: EUR 250</li>
-            </ul>
+            <p>A refundable security deposit of <strong>EUR 250</strong> is required for all vehicles (cash or card hold at pickup).</p>
             <p>Deposit may be held for up to 7-10 days after return.</p>
           </>
         ),

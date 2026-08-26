@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
@@ -35,12 +36,6 @@ export function SelectVehicleStep() {
   ]);
 
   const { vehicles, isLoading, error } = useVehicles({ rentalWindow });
-  const {
-    vehicle: slugVehicle,
-    isLoading: slugVehicleLoading,
-    error: slugVehicleError,
-  } = useVehicle(incomingSlug);
-  const vehicleError = getFieldError("rental.vehicleType");
 
   const selectedVehicle = useMemo(() => {
     if (!state.rental.vehicleId) {
@@ -49,11 +44,52 @@ export function SelectVehicleStep() {
     return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
   }, [state.rental.vehicleId, vehicles]);
 
+  // Detail endpoint includes the full image gallery; list only returns the main image.
+  const detailSlug = incomingSlug || selectedVehicle?.slug || "";
+  const {
+    vehicle: slugVehicle,
+    isLoading: slugVehicleLoading,
+    error: slugVehicleError,
+  } = useVehicle(detailSlug);
+  const vehicleError = getFieldError("rental.vehicleType");
+
   const displayVehicle = selectedVehicle ?? slugVehicle;
 
-  const selectedVehicleImageSrc = displayVehicle
-    ? (displayVehicle.mainImageUrl ?? displayVehicle.images[0] ?? null)
-    : null;
+  const galleryImages = useMemo(() => {
+    if (!displayVehicle) {
+      return [] as string[];
+    }
+
+    const detailMatches =
+      slugVehicle &&
+      (slugVehicle.id === displayVehicle.id || slugVehicle.slug === displayVehicle.slug);
+
+    const fromDetail = detailMatches ? slugVehicle.images : [];
+    const fromList = displayVehicle.images;
+    const fallback = displayVehicle.mainImageUrl ? [displayVehicle.mainImageUrl] : [];
+    const source =
+      fromDetail.length > 0 ? fromDetail : fromList.length > 0 ? fromList : fallback;
+
+    return Array.from(new Set(source.filter(Boolean)));
+  }, [displayVehicle, slugVehicle]);
+
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  useEffect(() => {
+    setActiveImageIdx(0);
+  }, [displayVehicle?.id, galleryImages]);
+
+  const showGalleryNav = galleryImages.length > 1;
+  const selectedVehicleImageSrc = galleryImages[activeImageIdx] ?? galleryImages[0] ?? null;
+
+  const goToPrevImage = useCallback(() => {
+    setActiveImageIdx((i) => (i === 0 ? galleryImages.length - 1 : i - 1));
+  }, [galleryImages.length]);
+
+  const goToNextImage = useCallback(() => {
+    setActiveImageIdx((i) => (i === galleryImages.length - 1 ? 0 : i + 1));
+  }, [galleryImages.length]);
+
   const selectedVehicleBrandModel = displayVehicle
     ? [displayVehicle.brand, displayVehicle.model].filter(Boolean).join(" ")
     : "";
@@ -87,7 +123,8 @@ export function SelectVehicleStep() {
       rentalId !== resolved.id ||
       slug !== resolved.slug ||
       state.rental.vehicleName !== resolved.name ||
-      state.rental.vehicleType !== resolved.apiVehicleType
+      state.rental.vehicleType !== resolved.apiVehicleType ||
+      state.rental.engineCc !== resolved.engineCc
     ) {
       updateSection("rental", {
         vehicleId: resolved.id,
@@ -95,6 +132,7 @@ export function SelectVehicleStep() {
         vehicleName: resolved.name,
         vehicleLicensePlate: "",
         vehicleType: resolved.apiVehicleType,
+        engineCc: resolved.engineCc,
       });
       if (!resolved.supportsStorageBox && getBookingValues().addons.storageBox) {
         updateSection("addons", { storageBox: false });
@@ -107,6 +145,7 @@ export function SelectVehicleStep() {
     state.rental.vehicleName,
     state.rental.vehicleSlug,
     state.rental.vehicleType,
+    state.rental.engineCc,
     updateSection,
     vehicles,
   ]);
@@ -122,7 +161,8 @@ export function SelectVehicleStep() {
       rentalId === slugVehicle.id &&
       slug === slugVehicle.slug &&
       state.rental.vehicleName === slugVehicle.name &&
-      state.rental.vehicleType === slugVehicle.apiVehicleType
+      state.rental.vehicleType === slugVehicle.apiVehicleType &&
+      state.rental.engineCc === slugVehicle.engineCc
     ) {
       return;
     }
@@ -133,6 +173,7 @@ export function SelectVehicleStep() {
       vehicleName: slugVehicle.name,
       vehicleLicensePlate: "",
       vehicleType: slugVehicle.apiVehicleType,
+      engineCc: slugVehicle.engineCc,
     });
     if (!slugVehicle.supportsStorageBox && getBookingValues().addons.storageBox) {
       updateSection("addons", { storageBox: false });
@@ -144,6 +185,7 @@ export function SelectVehicleStep() {
     state.rental.vehicleName,
     state.rental.vehicleSlug,
     state.rental.vehicleType,
+    state.rental.engineCc,
     updateSection,
   ]);
 
@@ -235,8 +277,13 @@ export function SelectVehicleStep() {
             {selectedVehicleImageSrc ? (
               <>
                 <Image
+                  key={selectedVehicleImageSrc}
                   src={selectedVehicleImageSrc}
-                  alt={displayVehicle.name}
+                  alt={
+                    showGalleryNav
+                      ? `${displayVehicle.name} — photo ${activeImageIdx + 1} of ${galleryImages.length}`
+                      : displayVehicle.name
+                  }
                   fill
                   className="object-contain p-6 drop-shadow-md transition-transform duration-500 hover:scale-[1.02]"
                   sizes="(max-width: 768px) 100vw, 42rem"
@@ -247,6 +294,30 @@ export function SelectVehicleStep() {
                   aria-hidden
                   className="pointer-events-none absolute bottom-0 left-1/2 h-1/3 w-2/3 -translate-x-1/2 rounded-full bg-slate-200/60 blur-2xl"
                 />
+
+                {showGalleryNav ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={goToPrevImage}
+                      aria-label="Previous photo"
+                      className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-md ring-1 ring-slate-200/80 transition hover:bg-white hover:shadow-lg sm:left-4 sm:h-11 sm:w-11"
+                    >
+                      <ChevronLeft className="h-5 w-5" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goToNextImage}
+                      aria-label="Next photo"
+                      className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-md ring-1 ring-slate-200/80 transition hover:bg-white hover:shadow-lg sm:right-4 sm:h-11 sm:w-11"
+                    >
+                      <ChevronRight className="h-5 w-5" aria-hidden />
+                    </button>
+                    <span className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-slate-900/55 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+                      {activeImageIdx + 1} / {galleryImages.length}
+                    </span>
+                  </>
+                ) : null}
               </>
             ) : (
               <div className="flex h-full items-center justify-center text-sm font-medium text-slate-400">

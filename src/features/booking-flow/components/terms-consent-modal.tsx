@@ -15,7 +15,7 @@ const TERMS_SUMMARY_SECTIONS = [
   {
     heading: "Driver Requirements",
     points: [
-      "Minimum age is 18 years for 50cc and 21 years for 125cc/ATV rentals.",
+      "Minimum age is 21 years for all rentals, including 50cc, 125cc, and ATV.",
       "A valid driving licence and passport/ID must be presented at pickup.",
       "Non-EU licence holders may need an International Driving Permit (IDP).",
     ],
@@ -39,7 +39,7 @@ const TERMS_SUMMARY_SECTIONS = [
   {
     heading: "Security Deposit",
     points: [
-      "A refundable security deposit is collected at pickup based on vehicle type.",
+      "A refundable security deposit of EUR 250 is collected at pickup for all vehicles.",
       "Deposit release may take up to 7-10 days after return checks.",
     ],
   },

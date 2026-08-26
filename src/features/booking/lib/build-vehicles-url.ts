@@ -1,5 +1,6 @@
 import type { BookingFormValues } from "@/features/booking/lib/booking-schema";
 import { BOOKING_SHOP_LABEL } from "@/features/booking/lib/booking-schema";
+import { brandToUrlParam } from "@/features/vehicles/lib/booking-search-params";
 
 function buildPickupLabel(values: BookingFormValues): string {
   if (values.alternatePickupRequested && values.alternatePickupAddress?.trim()) {
@@ -33,6 +34,11 @@ export function buildVehiclesSearchUrl(values: BookingFormValues): string {
   const type = values.vehicleType?.trim();
   if (type && type !== "all") {
     params.set("type", type);
+  }
+
+  const brand = values.brand?.trim();
+  if (brand && brand !== "all") {
+    params.set("brand", brandToUrlParam(brand));
   }
 
   return `/vehicles?${params.toString()}`;

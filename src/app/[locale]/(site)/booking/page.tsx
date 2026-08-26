@@ -17,6 +17,7 @@ type BookingPageProps = Readonly<{
     pickupTime?: string;
     dropoffTime?: string;
     returnTime?: string;
+    color?: string;
     ref?: string;
     email?: string;
     submitted?: string;
@@ -48,6 +49,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
     pickupTime,
     dropoffTime,
     returnTime,
+    color,
     ref,
     email,
     submitted,
@@ -101,6 +103,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
                   returnDate: resolvedReturnDate,
                   pickupTime,
                   returnTime: returnTime ?? dropoffTime,
+                  selectedColor: typeof color === "string" ? color : undefined,
                 }}
                 bookingLookupReference={bookingLookupReference}
                 bookingLookupEmail={bookingLookupEmail}

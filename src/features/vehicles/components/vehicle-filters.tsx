@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { differenceInCalendarDays, startOfDay } from "date-fns";
 import { Car, Gauge, Palette, Users } from "lucide-react";
 import Select, {
   components as selectComponents,
@@ -21,10 +20,9 @@ import {
   vehicleFilterReactSelectStyles,
 } from "@/features/vehicles/components/vehicle-pickup-fields";
 import { TripDateSelector } from "@/features/vehicles/components/trip-date-selector";
-import {
-  getIndicativeMotorcycleScooterDailyRateEur,
-  getIndicativeMotorcycleScooterTripTotalEur,
-} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
+import { formatPickupDateParam } from "@/features/vehicles/lib/booking-search-params";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
+import { getPricingTierForDays } from "@/lib/pricing/pricing-tiers";
 
 type VehicleFiltersProps = Readonly<{
   pickupLocation: BookingOption | null;
@@ -150,6 +148,11 @@ export function VehicleFilters({
 }: VehicleFiltersProps) {
   const t = useTranslations("VehicleFilters");
   const tCommon = useTranslations("Common");
+  const [selectMenuPortalTarget, setSelectMenuPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setSelectMenuPortalTarget(document.body);
+  }, []);
 
   const filterSelectComponents = useMemo(
     () => ({
@@ -217,22 +220,13 @@ export function VehicleFilters({
     return "grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4";
   })();
 
-  const durationDays = useMemo(
-    () =>
-      Math.max(
-        1,
-        differenceInCalendarDays(
-          startOfDay(tripEnd),
-          startOfDay(tripStart),
-        ),
-      ),
-    [tripStart, tripEnd],
-  );
+  const durationDays = useMemo(() => {
+    const pickupDate = formatPickupDateParam(tripStart);
+    const returnDate = formatPickupDateParam(tripEnd);
+    return calculateCalendarRentalDays(pickupDate, returnDate) ?? 0;
+  }, [tripStart, tripEnd]);
 
-  const indicativeDailyEur =
-    getIndicativeMotorcycleScooterDailyRateEur(durationDays);
-  const indicativeTripTotalEur =
-    getIndicativeMotorcycleScooterTripTotalEur(durationDays);
+  const matchedTier = durationDays > 0 ? getPricingTierForDays(durationDays) : null;
 
   const dayWord = durationDays === 1 ? tCommon("day") : tCommon("days");
   const durationSummary = t("durationLine", { count: durationDays });
@@ -279,9 +273,7 @@ export function VehicleFilters({
                 isSearchable={false}
                 styles={vehicleFilterReactSelectStyles}
                 components={filterSelectComponents}
-                menuPortalTarget={
-                  typeof document !== "undefined" ? document.body : null
-                }
+                menuPortalTarget={selectMenuPortalTarget}
                 menuPosition="fixed"
                 className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-type"
@@ -315,9 +307,7 @@ export function VehicleFilters({
                 isSearchable={false}
                 styles={vehicleFilterReactSelectStyles}
                 components={filterSelectComponents}
-                menuPortalTarget={
-                  typeof document !== "undefined" ? document.body : null
-                }
+                menuPortalTarget={selectMenuPortalTarget}
                 menuPosition="fixed"
                 className="min-w-0 flex-1"
                 classNamePrefix="vehicle-filter-transmission"
@@ -351,9 +341,7 @@ export function VehicleFilters({
                   isSearchable={false}
                   styles={vehicleFilterReactSelectStyles}
                   components={filterSelectComponents}
-                  menuPortalTarget={
-                    typeof document !== "undefined" ? document.body : null
-                  }
+                  menuPortalTarget={selectMenuPortalTarget}
                   menuPosition="fixed"
                   className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-seats"
@@ -386,9 +374,7 @@ export function VehicleFilters({
                   isSearchable={false}
                   styles={vehicleFilterReactSelectStyles}
                   components={filterSelectComponents}
-                  menuPortalTarget={
-                    typeof document !== "undefined" ? document.body : null
-                  }
+                  menuPortalTarget={selectMenuPortalTarget}
                   menuPosition="fixed"
                   className="min-w-0 flex-1"
                   classNamePrefix="vehicle-filter-color"
@@ -405,12 +391,13 @@ export function VehicleFilters({
               {pickupSuffix}
             </p>
             <p className="mt-0.5 text-xs text-slate-600 sm:text-sm">
-              {t("indicativeLine", {
-                tripEur: indicativeTripTotalEur,
-                dailyEur: indicativeDailyEur,
-                count: durationDays,
-                dayLabel: dayWord,
-              })}
+              {matchedTier
+                ? t("durationDiscountLine", {
+                    count: durationDays,
+                    dayLabel: dayWord,
+                    percent: matchedTier.discountPercent,
+                  })
+                : t("durationDiscountLineMax", { percent: 40 })}
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">

@@ -17,8 +17,17 @@ import {
   parse,
   startOfDay,
 } from "date-fns";
-import { CalendarDays, Loader2, MapPin, Search, SlidersHorizontal } from "lucide-react";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
+import Select, {
+  components as selectComponents,
+  type DropdownIndicatorProps,
+} from "react-select";
+import { CalendarDays, Loader2, MapPin, Search, SlidersHorizontal, Tag } from "lucide-react";
+import type { BookingOption } from "@/features/home/data/hero-booking-options";
 import { VEHICLE_TYPES } from "@/features/vehicles/data/vehicles";
+import { vehicleFilterReactSelectStyles } from "@/features/vehicles/components/vehicle-pickup-fields";
+import { resolveBrandFilterLabel } from "@/lib/vehicles/brand-utils";
+import { useVehicleBrands } from "@/features/vehicles/lib/use-vehicle-brands";
 import { GoogleMapEmbed } from "@/components/google-map-embed";
 import {
   createBookingFormSchema,
@@ -27,15 +36,13 @@ import {
   type BookingFormValues,
 } from "@/features/booking/lib/booking-schema";
 import {
+  BOOKING_PICKUP_TIME_FALLBACK,
   BOOKING_TIME_SLOTS,
   nextBookingSlotWithinHours,
 } from "@/features/booking/lib/time-slots";
 import { TimeSlotSelect } from "@/features/booking/components/time-slot-select";
 import { buildVehiclesSearchUrl } from "@/features/booking/lib/build-vehicles-url";
-import {
-  getIndicativeMotorcycleScooterDailyRateEur,
-  getIndicativeMotorcycleScooterTripTotalEur,
-} from "@/features/booking/lib/indicative-motorcycle-scooter-rates";
+import { getPricingTierForDays } from "@/lib/pricing/pricing-tiers";
 import { pricingService } from "@/lib/pricing/service";
 import { SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 
@@ -91,14 +98,38 @@ function defaultDates() {
   };
 }
 
+function optionByValue(
+  options: readonly BookingOption[],
+  value: string,
+): BookingOption {
+  return options.find((option) => option.value === value) ?? options[0]!;
+}
+
+function makeBrandDropdownIndicator(changeLabel: string) {
+  return function BrandDropdownIndicator(
+    props: DropdownIndicatorProps<BookingOption, false>,
+  ) {
+    return (
+      <selectComponents.DropdownIndicator {...props}>
+        <span className="shrink-0 text-xs font-semibold text-slate-500">
+          {changeLabel}
+        </span>
+      </selectComponents.DropdownIndicator>
+    );
+  };
+}
+
 type BookingSearchFormProps = Readonly<{
   initialValues?: Partial<{
     vehicleType: string;
+    brand: string;
     pickupDate: string;
     dropoffDate: string;
     pickupTime: string;
     dropoffTime: string;
   }>;
+  /** Preloaded active listing brands (skips client fetch when set). */
+  brandOptions?: readonly string[];
   quickFilterTone?: "default" | "hero";
 }>;
 
@@ -109,17 +140,27 @@ type VehicleTypeCard = Readonly<{
   imageClassName?: string;
 }>;
 
-export function BookingSearchForm({ initialValues, quickFilterTone = "default" }: BookingSearchFormProps = {}) {
+export function BookingSearchForm({
+  initialValues,
+  brandOptions,
+  quickFilterTone = "default",
+}: BookingSearchFormProps = {}) {
   const router = useRouter();
   const tSearch = useTranslations("BookingSearch");
   const tForm = useTranslations("BookingForm");
   const tCommon = useTranslations("Common");
+  const tFilters = useTranslations("VehicleFilters");
+  const { brands: fetchedBrands, isLoading: isBrandsLoading } = useVehicleBrands({
+    initialBrands: brandOptions,
+  });
+  const brandChoices = brandOptions ?? fetchedBrands;
+  const [isMounted, setIsMounted] = useState(false);
   const [calOpen, setCalOpen] = useState(false);
   const [calendarMonths, setCalendarMonths] = useState(1);
   const minFrom = useMemo(() => startOfDay(new Date()), []);
 
   const { pickupDate: defPu, dropoffDate: defDo } = defaultDates();
-  const defaultPickupTime = nextBookingSlotWithinHours(90);
+  const defaultPickupTime = BOOKING_PICKUP_TIME_FALLBACK;
   const defaultDropoffTime = "19:00";
 
   const bookingFormSchema = useMemo(
@@ -149,6 +190,10 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     resolver: formResolver,
     defaultValues: {
       vehicleType: initialValues?.vehicleType ?? "all",
+      brand:
+        initialValues?.brand && initialValues.brand !== "all"
+          ? resolveBrandFilterLabel(initialValues.brand, brandChoices)
+          : "all",
       alternatePickupRequested: false,
       alternatePickupAddress: "",
       differentDropoff: false,
@@ -170,12 +215,29 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
   } = form;
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!initialValues?.pickupTime) {
+      setValue("pickupTime", nextBookingSlotWithinHours(90), { shouldValidate: true });
+    }
+  }, [initialValues?.pickupTime, setValue]);
+
+  useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const sync = () => setCalendarMonths(mq.matches ? 2 : 1);
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    if (!initialValues?.brand || initialValues.brand === "all") {
+      return;
+    }
+    setValue("brand", resolveBrandFilterLabel(initialValues.brand, brandChoices));
+  }, [brandChoices, initialValues?.brand, setValue]);
 
   /* eslint-disable react-hooks/incompatible-library -- react-hook-form watch() */
   const pickupDate = watch("pickupDate");
@@ -191,18 +253,9 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     to: parse(dropoffDate, "yyyy-MM-dd", new Date()),
   };
 
-  const durationDays = Math.max(
-    1,
-    differenceInCalendarDays(
-      parse(dropoffDate, "yyyy-MM-dd", new Date()),
-      parse(pickupDate, "yyyy-MM-dd", new Date()),
-    ),
-  );
+  const durationDays = calculateCalendarRentalDays(pickupDate, dropoffDate) ?? 0;
 
-  const indicativeDailyEur =
-    getIndicativeMotorcycleScooterDailyRateEur(durationDays);
-  const indicativeTripTotalEur =
-    getIndicativeMotorcycleScooterTripTotalEur(durationDays);
+  const matchedTier = durationDays > 0 ? getPricingTierForDays(durationDays) : null;
 
   const offSiteQuote = pricingService.quoteOffSiteService({
     pickupOffSite: alternatePickupRequested,
@@ -241,8 +294,27 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
     [],
   );
 
+  const brandSelectOptions = useMemo((): BookingOption[] => {
+    return [
+      { value: "all", label: tFilters("allBrands") },
+      ...brandChoices.map((brand) => ({ value: brand, label: brand })),
+    ];
+  }, [brandChoices, tFilters]);
+
+  const brandSelectComponents = useMemo(
+    () => ({
+      DropdownIndicator: makeBrandDropdownIndicator(tCommon("change")),
+      IndicatorSeparator: () => null,
+    }),
+    [tCommon],
+  );
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+    <form
+      id="vehicle-trip-search"
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex scroll-mt-28 flex-col gap-6"
+    >
       <div className={`${quickFilterGroupClass} mx-auto`}>
         <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
           <Image
@@ -482,6 +554,50 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
             />
           </fieldset>
 
+          {brandChoices.length > 0 ? (
+            <div className="min-w-0">
+              <label
+                htmlFor="booking-search-brand"
+                className="mb-1.5 block text-xs font-semibold text-slate-500"
+              >
+                {tSearch("brandLabel")}
+              </label>
+              <Controller
+                name="brand"
+                control={control}
+                render={({ field }) => (
+                  <div className={inputShell}>
+                    <Tag className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
+                    {isMounted ? (
+                      <Select<BookingOption, false>
+                        inputId="booking-search-brand"
+                        instanceId="booking-search-brand"
+                        aria-label={tSearch("brandAria")}
+                        value={optionByValue(brandSelectOptions, field.value ?? "all")}
+                        onChange={(option) => field.onChange(option?.value ?? "all")}
+                        onBlur={field.onBlur}
+                        options={brandSelectOptions}
+                        isSearchable={false}
+                        isDisabled={isBrandsLoading && brandChoices.length === 0}
+                        styles={vehicleFilterReactSelectStyles}
+                        components={brandSelectComponents}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        className="min-w-0 flex-1"
+                        classNamePrefix="booking-search-brand"
+                      />
+                    ) : (
+                      <div
+                        className="min-h-[2.5rem] min-w-0 flex-1 rounded-md border border-slate-200/90 bg-white/80"
+                        aria-hidden
+                      />
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+          ) : null}
+
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">
               <label className="mb-1.5 block text-xs font-semibold text-slate-500">{tSearch("tripDatesLabel")}</label>
@@ -604,12 +720,13 @@ export function BookingSearchForm({ initialValues, quickFilterTone = "default" }
               })}
             </p>
             <p className="mt-0.5 text-xs text-slate-600">
-              {tSearch("indicativeSummary", {
-                tripEur: indicativeTripTotalEur,
-                dailyEur: indicativeDailyEur,
-                days: durationDays,
-                dayLabel: summaryDayLabel,
-              })}
+              {matchedTier
+                ? tSearch("durationDiscountSummary", {
+                    days: durationDays,
+                    dayLabel: summaryDayLabel,
+                    percent: matchedTier.discountPercent,
+                  })
+                : tSearch("durationDiscountSummaryMax", { percent: 40 })}
             </p>
           </div>
           <button

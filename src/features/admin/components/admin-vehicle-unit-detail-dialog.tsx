@@ -194,6 +194,16 @@ export function AdminVehicleUnitDetailDialog({
                 </div>
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {tUnits("table.color")}
+                  </dt>
+                  <dd className="mt-1 text-sm font-medium text-slate-900">
+                    {unit.color ?? (
+                      <span className="text-xs font-semibold text-amber-700">{tUnits("colorMissing")}</span>
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {tUnits("table.status")}
                   </dt>
                   <dd className="mt-1">

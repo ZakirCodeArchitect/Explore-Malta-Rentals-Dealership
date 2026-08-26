@@ -1,13 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { BookingFlowProvider, useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
+import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import { BookingStepper } from "@/features/booking-flow/components/booking-stepper";
 import { ReservationBanner } from "@/features/booking-flow/components/reservation-banner";
 import { HoldExpiredNotice } from "@/features/booking-flow/components/hold-expired-notice";
 import { TermsConsentModal } from "@/features/booking-flow/components/terms-consent-modal";
+import { InsurancePromptModal } from "@/features/booking-flow/components/insurance-prompt-modal";
 import { NoVehicleModal } from "@/features/booking-flow/components/no-vehicle-modal";
 import { BookingLookupPanel } from "@/features/booking-flow/components/booking-lookup-panel";
 import { useHoldHeartbeat } from "@/features/booking-flow/hooks/use-hold-heartbeat";
@@ -25,10 +28,13 @@ import {
   summarizeApiBookingErrors,
 } from "@/features/booking-flow/lib/map-api-booking-error-to-form";
 import { submitBooking } from "@/features/booking-flow/lib/submit-booking-api";
+import { extendReservationHoldForCheckout } from "@/features/booking-flow/lib/reservation-hold-api";
 import { RentalDetailsStep } from "@/features/booking-flow/steps/rental-details-step";
 import { OptionsDeliveryStep } from "@/features/booking-flow/steps/options-delivery-step";
 import { YourInformationStep } from "@/features/booking-flow/steps/your-information-step";
 import { ReviewConfirmStep } from "@/features/booking-flow/steps/review-confirm-step";
+import type { InsurancePlanCode } from "@/lib/pricing/insurance-plans";
+import { calculateCalendarRentalDays } from "@/lib/pricing/rental-duration";
 
 type BookingFlowBodyProps = {
   bookingLookupReference?: string;
@@ -45,8 +51,11 @@ function BookingFlowBody({
 }: BookingFlowBodyProps) {
   const router = useRouter();
   const t = useTranslations("BookingFlow");
+  const tColor = useTranslations("BookingSteps.color");
   const tLookup = useTranslations("BookingPage.lookup");
   const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [insuranceModalOpen, setInsuranceModalOpen] = useState(false);
+  const [insuranceModalKey, setInsuranceModalKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [heartbeatWarning, setHeartbeatWarning] = useState<string | null>(null);
@@ -84,7 +93,30 @@ function BookingFlowBody({
     resetBookingForm,
     validateCurrentStep,
     validateAllBookingFields,
+    setManualFieldError,
   } = useBookingFlow();
+
+  const rentalWindow = useMemo(() => {
+    const { pickupDate, pickupTime, returnDate, returnTime } = state.rental;
+    if (!pickupDate.trim() || !pickupTime.trim() || !returnDate.trim() || !returnTime.trim()) {
+      return null;
+    }
+    return {
+      pickupDate: pickupDate.trim(),
+      pickupTime: pickupTime.trim(),
+      returnDate: returnDate.trim(),
+      returnTime: returnTime.trim(),
+      sessionKey: reservationHold.sessionKey?.trim() || undefined,
+    };
+  }, [
+    reservationHold.sessionKey,
+    state.rental.pickupDate,
+    state.rental.pickupTime,
+    state.rental.returnDate,
+    state.rental.returnTime,
+  ]);
+
+  const { vehicles } = useVehicles({ rentalWindow });
 
   const holdIsActive =
     reservationHold.status === "ACTIVE" &&
@@ -101,6 +133,43 @@ function BookingFlowBody({
 
   const countdown = useHoldCountdown(reservationHold.expiresAt, holdIsActive);
   const holdIsExpired = reservationHold.status === "EXPIRED" || (reservationHold.status === "ACTIVE" && countdown.isExpired);
+  const checkoutHoldExtendedForRef = useRef<string | null>(null);
+
+  const ensureCheckoutHoldExtension = useCallback(async () => {
+    const holdReference = reservationHold.holdReference?.trim();
+    if (!holdReference || !holdIsActive || holdIsExpired) {
+      return;
+    }
+    if (checkoutHoldExtendedForRef.current === holdReference) {
+      return;
+    }
+    checkoutHoldExtendedForRef.current = holdReference;
+
+    const result = await extendReservationHoldForCheckout(holdReference);
+    if (!result.ok) {
+      // Allow a retry on the next trigger if the extension failed.
+      checkoutHoldExtendedForRef.current = null;
+      return;
+    }
+
+    const expiresAt =
+      typeof result.data.expiresAt === "string"
+        ? result.data.expiresAt
+        : new Date(result.data.expiresAt).toISOString();
+    updateReservationHold({ expiresAt, status: result.data.status });
+  }, [
+    holdIsActive,
+    holdIsExpired,
+    reservationHold.holdReference,
+    updateReservationHold,
+  ]);
+
+  useEffect(() => {
+    if (activeStepId !== "review_confirm") {
+      return;
+    }
+    void ensureCheckoutHoldExtension();
+  }, [activeStepId, ensureCheckoutHoldExtension]);
 
   useHoldHeartbeat({
     holdReference: reservationHold.holdReference,
@@ -115,6 +184,7 @@ function BookingFlowBody({
       markReservationHoldExpired(message);
       setHeartbeatWarning(null);
       setTermsModalOpen(false);
+      setInsuranceModalOpen(false);
     },
     onHeartbeatTransientError: (message) => {
       setHeartbeatWarning(message);
@@ -179,6 +249,16 @@ function BookingFlowBody({
         if (!validStep) {
           return;
         }
+        const selectedVehicle = vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId);
+        if (
+          selectedVehicle?.availableColors &&
+          selectedVehicle.availableColors.length > 0 &&
+          !state.rental.selectedColor
+        ) {
+          setManualFieldError("rental.selectedColor", tColor("required"));
+          setSubmitError(tColor("required"));
+          return;
+        }
         const holdResult = await createOrRefreshReservationHold();
         if (!holdResult.ok) {
           setSubmitError(holdResult.message ?? t("unableReserve"));
@@ -202,19 +282,47 @@ function BookingFlowBody({
       return;
     }
 
+    const currentValues = getBookingValues();
+    if (currentValues.addons.cdwPlan === null) {
+      setInsuranceModalKey((key) => key + 1);
+      void ensureCheckoutHoldExtension();
+      setInsuranceModalOpen(true);
+      return;
+    }
+
+    void ensureCheckoutHoldExtension();
     setTermsModalOpen(true);
   }, [
     activeStepId,
     bookingFlowSchema,
     clearServerFieldErrors,
     createOrRefreshReservationHold,
+    ensureCheckoutHoldExtension,
     getBookingValues,
     goNext,
     isLastStep,
+    setManualFieldError,
+    state.rental.selectedColor,
+    state.rental.vehicleId,
     t,
+    tColor,
     validateCurrentStep,
     validateAllBookingFields,
+    vehicles,
   ]);
+
+  const handleInsuranceConfirm = useCallback(
+    (plan: InsurancePlanCode) => {
+      updateSection("addons", {
+        cdwPlan: plan,
+        cdw: plan !== "NO_INSURANCE",
+      });
+      setInsuranceModalOpen(false);
+      void ensureCheckoutHoldExtension();
+      setTermsModalOpen(true);
+    },
+    [ensureCheckoutHoldExtension, updateSection],
+  );
 
   const handleTermsAgree = useCallback(async () => {
     if (submitInFlightRef.current) {
@@ -227,6 +335,10 @@ function BookingFlowBody({
       markReservationHoldExpired();
       return;
     }
+
+    // Refresh checkout grace window before uploads + booking submit.
+    checkoutHoldExtendedForRef.current = null;
+    await ensureCheckoutHoldExtension();
 
     const acceptedAt = new Date().toISOString();
     applyConsentFromTermsModal(acceptedAt);
@@ -272,6 +384,12 @@ function BookingFlowBody({
           payload.additionalDriver.passportUploadPath = uploaded.relativePath;
         } else if (pendingUpload.category === "additional_driver_license") {
           payload.additionalDriver.licenseUploadPath = uploaded.relativePath;
+        } else if (pendingUpload.category === "payment_proof") {
+          if (!payload.payment) {
+            payload.payment = { mode: "ALREADY_PAID", proofPath: uploaded.relativePath };
+          } else {
+            payload.payment.proofPath = uploaded.relativePath;
+          }
         }
       }
 
@@ -360,6 +478,7 @@ function BookingFlowBody({
     bookingSessionId,
     clearServerFieldErrors,
     clearReservationHold,
+    ensureCheckoutHoldExtension,
     getBookingValues,
     holdIsActive,
     holdMatchesCurrentRental,
@@ -435,6 +554,15 @@ function BookingFlowBody({
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">{submitError}</p>
       ) : null}
 
+      <InsurancePromptModal
+        key={insuranceModalKey}
+        isOpen={insuranceModalOpen}
+        rentalDays={calculateCalendarRentalDays(state.rental.pickupDate, state.rental.returnDate)}
+        initialPlan={state.addons.cdwPlan}
+        onCancel={() => setInsuranceModalOpen(false)}
+        onConfirm={handleInsuranceConfirm}
+      />
+
       <TermsConsentModal
         isOpen={termsModalOpen}
         isSubmitting={submitting}
@@ -478,17 +606,31 @@ function BookingFlowBody({
             disabled={
               submitting ||
               isCreatingHold ||
+              (activeStepId === "rental_details" && !state.rental.pricingAcknowledged) ||
               (isLastStep && (!holdIsActive || !holdMatchesCurrentRental || holdIsExpired))
             }
-            className="min-h-11 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isCreatingHold
-              ? t("reserving")
-              : isLastStep
-                ? (submitting ? t("submitting") : t("confirmBooking"))
-                : activeStepId === "rental_details"
-                  ? t("bookNow")
-                  : t("next")}
+            {(() => {
+              if (isCreatingHold) {
+                return t("reserving");
+              }
+              if (isLastStep) {
+                return submitting ? t("submitting") : t("confirmBooking");
+              }
+              if (
+                activeStepId === "rental_details" &&
+                !(holdIsActive && holdMatchesCurrentRental && !holdIsExpired)
+              ) {
+                return t("bookNow");
+              }
+              return (
+                <>
+                  {t("next")}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </>
+              );
+            })()}
           </button>
         </div>
       </div>
@@ -503,6 +645,7 @@ type BookingFlowProps = {
     pickupTime?: string;
     returnDate?: string;
     returnTime?: string;
+    selectedColor?: string;
   };
   bookingLookupReference?: string;
   bookingLookupEmail?: string;

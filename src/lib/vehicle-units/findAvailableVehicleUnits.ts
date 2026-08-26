@@ -2,6 +2,7 @@ import type { Prisma } from "@/generated/prisma/index";
 
 import { BLOCKING_BOOKING_STATUSES, buildOverlappingRangeWhere } from "@/lib/availability/types";
 import { cleanupUnpaidPendingPaymentBookings } from "@/lib/booking/cleanupUnpaidPendingPaymentBookings";
+import { colorsMatch } from "@/features/vehicles/lib/vehicle-color";
 import { prisma } from "@/lib/prisma";
 import { cleanupExpiredHolds } from "@/lib/reservation-holds/cleanupExpiredHolds";
 import { releaseStaleHoldOccupancy } from "@/lib/reservation-holds/releaseStaleHoldOccupancy";
@@ -14,6 +15,7 @@ const unitSelect = {
   id: true,
   vehicleId: true,
   licensePlate: true,
+  color: true,
   status: true,
   isActive: true,
   notes: true,
@@ -127,7 +129,17 @@ export async function findAvailableVehicleUnits(
     return [];
   }
 
-  const unitIds = assignableUnits.map((unit) => unit.id);
+  const colorFilteredUnits = input.color
+    ? assignableUnits.filter(
+        (unit) => unit.color != null && colorsMatch(unit.color, input.color),
+      )
+    : assignableUnits;
+
+  if (colorFilteredUnits.length === 0) {
+    return [];
+  }
+
+  const unitIds = colorFilteredUnits.map((unit) => unit.id);
   const overlapWhere = buildOverlappingRangeWhere(input.requestedStart, input.requestedEnd);
 
   const excludedHoldOwners: Prisma.ReservationHoldWhereInput[] = [];
@@ -202,7 +214,7 @@ export async function findAvailableVehicleUnits(
     }
   }
 
-  const freeUnits = assignableUnits.filter((unit) => {
+  const freeUnits = colorFilteredUnits.filter((unit) => {
     if (input.excludeVehicleUnitId && unit.id === input.excludeVehicleUnitId) {
       return false;
     }

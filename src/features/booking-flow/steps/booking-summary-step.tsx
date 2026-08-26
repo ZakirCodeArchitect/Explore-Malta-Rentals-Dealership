@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AlreadyPaidProofModal } from "@/features/booking-flow/components/already-paid-proof-modal";
 import { StepShell } from "@/features/booking-flow/components/step-shell";
 import { useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
-import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
-import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
+import { useVehicle, useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   calculateBookingPrice,
   formatEur,
@@ -16,29 +16,70 @@ import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-
 export function BookingSummaryStep() {
   const t = useTranslations("BookingWizard.bookingSummary");
   const tCommon = useTranslations("Common");
-  const { state, updateSection } = useBookingFlow();
-  const { vehicles } = useVehicles();
-  const { rules: durationRules } = useDurationPricingRules();
-  const selectedVehicle = useMemo(() => {
-    if (!state.rental.vehicleId) {
+  const { state, reservationHold, updateSection, bookingSessionId, getFieldError } = useBookingFlow();
+  const [proofModalOpen, setProofModalOpen] = useState(false);
+
+  const isAlreadyPaid = state.payment.mode === "already_paid";
+  const paymentProofError = getFieldError("payment.proofPath");
+
+  const rentalWindow = useMemo(() => {
+    const { pickupDate, pickupTime, returnDate, returnTime } = state.rental;
+    if (!pickupDate.trim() || !pickupTime.trim() || !returnDate.trim() || !returnTime.trim()) {
       return null;
     }
-    return vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId) ?? null;
-  }, [state.rental.vehicleId, vehicles]);
+    return {
+      pickupDate: pickupDate.trim(),
+      pickupTime: pickupTime.trim(),
+      returnDate: returnDate.trim(),
+      returnTime: returnTime.trim(),
+      sessionKey: reservationHold.sessionKey?.trim() || undefined,
+    };
+  }, [
+    reservationHold.sessionKey,
+    state.rental.pickupDate,
+    state.rental.pickupTime,
+    state.rental.returnDate,
+    state.rental.returnTime,
+  ]);
+
+  const { vehicles } = useVehicles({ rentalWindow });
+  const incomingSlug = state.rental.vehicleSlug?.trim() ?? "";
+  const { vehicle: slugVehicle } = useVehicle(incomingSlug);
+
+  const selectedVehicle = useMemo(() => {
+    if (state.rental.vehicleId) {
+      const byId = vehicles.find((vehicle) => vehicle.id === state.rental.vehicleId);
+      if (byId) {
+        return byId;
+      }
+    }
+    if (incomingSlug) {
+      const bySlug = vehicles.find((vehicle) => vehicle.slug === incomingSlug);
+      if (bySlug) {
+        return bySlug;
+      }
+    }
+    return slugVehicle;
+  }, [incomingSlug, slugVehicle, state.rental.vehicleId, vehicles]);
 
   const pricing = useMemo(
     () => {
-      if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0 || durationRules.length === 0) {
+      if (!selectedVehicle || selectedVehicle.baseDailyRate <= 0) {
+        return null;
+      }
+
+      const vehicleType = state.rental.vehicleType || selectedVehicle.apiVehicleType;
+      if (!vehicleType) {
         return null;
       }
 
       return calculateBookingPrice({
         rental: {
           vehicle: {
-            id: state.rental.vehicleId ?? undefined,
-            slug: state.rental.vehicleSlug,
-            name: state.rental.vehicleName,
-            type: state.rental.vehicleType,
+            id: state.rental.vehicleId || selectedVehicle.id,
+            slug: state.rental.vehicleSlug || selectedVehicle.slug,
+            name: state.rental.vehicleName || selectedVehicle.name,
+            type: vehicleType,
           },
           pickupDate: state.rental.pickupDate,
           returnDate: state.rental.returnDate,
@@ -67,7 +108,6 @@ export function BookingSummaryStep() {
         vehiclePricing: {
           baseDailyRate: selectedVehicle.baseDailyRate,
           vehicleType: selectedVehicle.apiVehicleType,
-          durationRules,
           supportsStorageBox: selectedVehicle.supportsStorageBox,
         },
         hotelDiscount:
@@ -76,12 +116,23 @@ export function BookingSummaryStep() {
             : undefined,
       });
     },
-    [durationRules, selectedVehicle, state],
+    [selectedVehicle, state],
   );
 
   const paymentSummary = useMemo(() => {
     if (!pricing) {
       return null;
+    }
+
+    if (isAlreadyPaid) {
+      return {
+        bookingChargesTotal: pricing.subtotal,
+        securityDeposit: pricing.depositAmount,
+        securityDepositDueAtPickup: false,
+        amountPayableOnline: 0,
+        amountDueAtPickupLater: 0,
+        totalCustomerLiability: pricing.subtotal + pricing.depositAmount,
+      };
     }
 
     return buildBookingPaymentSummary({
@@ -91,9 +142,14 @@ export function BookingSummaryStep() {
       totalDueOnline: pricing.totalDueOnline,
       totalDueLater: pricing.totalDueLater,
     });
-  }, [pricing, state.deposit.depositMethod]);
+  }, [pricing, state.deposit.depositMethod, isAlreadyPaid]);
 
-  const cdwLabel = pricing ? getCdwLabel(pricing.cdwOptionApplied) : "-";
+  const cdwLabel =
+    state.addons.cdwPlan === null
+      ? t("insuranceNotSelected")
+      : pricing
+        ? getCdwLabel(pricing.cdwOptionApplied)
+        : "-";
   const addOnList = [
     t("cdwLine", { label: cdwLabel }),
     t("addDriverLine", {
@@ -107,6 +163,16 @@ export function BookingSummaryStep() {
         : tCommon("no")
     }`,
   ];
+
+  function selectStripeDeposit(method: "in_person" | "online") {
+    updateSection("deposit", { depositMethod: method });
+    updateSection("payment", { mode: "stripe", proofPath: "" });
+  }
+
+  function selectAlreadyPaid() {
+    updateSection("payment", { mode: "already_paid" });
+    setProofModalOpen(true);
+  }
 
   return (
     <StepShell title={t("shellTitle")} description={t("shellDescription")}>
@@ -150,6 +216,20 @@ export function BookingSummaryStep() {
           {pricing ? (
             <>
               <ul className="mt-2 list-disc space-y-1 pl-5">
+                <li>
+                  {t("baseDailyRate")} {formatEur(pricing.baseDailyRate)}/day
+                </li>
+                <li>
+                  {t("rentalDuration")} {t("dayCount", { count: pricing.rentalDays })} ({pricing.tierRange})
+                </li>
+                {pricing.durationDiscountPercent > 0 ? (
+                  <li>
+                    {t("durationDiscount", {
+                      percent: pricing.durationDiscountPercent,
+                      rate: formatEur(pricing.appliedDailyRate),
+                    })}
+                  </li>
+                ) : null}
                 <li>
                   {t("rentalCost")} {formatEur(pricing.rentalCost)}
                 </li>
@@ -198,49 +278,63 @@ export function BookingSummaryStep() {
 
           <div className="mt-3">
             <p className="font-semibold text-slate-900">{t("securityDepositMethod")}</p>
-            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
               <button
                 type="button"
-                onClick={() => updateSection("deposit", { depositMethod: "in_person" })}
+                onClick={() => selectStripeDeposit("in_person")}
                 className={
-                  state.deposit.depositMethod !== "online"
+                  !isAlreadyPaid && state.deposit.depositMethod !== "online"
                     ? "flex flex-col gap-1 rounded-xl border-2 border-blue-500 bg-blue-50 p-3 text-left transition-colors"
                     : "flex flex-col gap-1 rounded-xl border-2 border-slate-200 bg-white p-3 text-left transition-colors hover:border-slate-300"
                 }
               >
-                <span className="text-sm font-semibold text-slate-900">Pay at pickup</span>
-                <span className="text-xs text-slate-500">
-                  Hand over the security deposit in person when collecting the vehicle.
-                </span>
+                <span className="text-sm font-semibold text-slate-900">{t("payInPersonPickup")}</span>
+                <span className="text-xs text-slate-500">{t("payAtPickupDescription")}</span>
               </button>
               <button
                 type="button"
-                onClick={() => updateSection("deposit", { depositMethod: "online" })}
+                onClick={() => selectStripeDeposit("online")}
                 className={
-                  state.deposit.depositMethod === "online"
+                  !isAlreadyPaid && state.deposit.depositMethod === "online"
                     ? "flex flex-col gap-1 rounded-xl border-2 border-blue-500 bg-blue-50 p-3 text-left transition-colors"
                     : "flex flex-col gap-1 rounded-xl border-2 border-slate-200 bg-white p-3 text-left transition-colors hover:border-slate-300"
                 }
               >
-                <span className="text-sm font-semibold text-slate-900">Pay online now</span>
-                <span className="text-xs text-slate-500">
-                  Include the security deposit in your Stripe payment — fully refundable after the rental.
-                </span>
+                <span className="text-sm font-semibold text-slate-900">{t("payOnlineNow")}</span>
+                <span className="text-xs text-slate-500">{t("payOnlineDescription")}</span>
+              </button>
+              <button
+                type="button"
+                onClick={selectAlreadyPaid}
+                className={
+                  isAlreadyPaid
+                    ? "flex flex-col gap-1 rounded-xl border-2 border-blue-500 bg-blue-50 p-3 text-left transition-colors"
+                    : "flex flex-col gap-1 rounded-xl border-2 border-slate-200 bg-white p-3 text-left transition-colors hover:border-slate-300"
+                }
+              >
+                <span className="text-sm font-semibold text-slate-900">{t("alreadyPaid")}</span>
+                <span className="text-xs text-slate-500">{t("alreadyPaidDescription")}</span>
               </button>
             </div>
+            {isAlreadyPaid && state.payment.proofPath ? (
+              <p className="mt-2 text-xs font-medium text-emerald-700">
+                {t("alreadyPaidProofAttached", { name: state.payment.proofPath })}
+              </p>
+            ) : null}
+            {paymentProofError ? (
+              <p className="mt-2 text-xs font-medium text-red-600">{paymentProofError}</p>
+            ) : null}
           </div>
 
           {paymentSummary ? (
             <div className="mt-4 space-y-2 rounded-lg border border-slate-200 bg-white px-3 py-3">
               <p className="font-semibold text-slate-900">{t("paymentSummaryTitle")}</p>
-              {/* Rental charges */}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
                 <span>{t("bookingChargesTotal")}</span>
                 <span className="font-medium tabular-nums text-slate-900">
                   {formatEur(paymentSummary.bookingChargesTotal)}
                 </span>
               </div>
-              {/* Security deposit */}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
                 <span>
                   {paymentSummary.securityDepositDueAtPickup
@@ -252,24 +346,35 @@ export function BookingSummaryStep() {
                 </span>
               </div>
               <div className="border-t border-slate-100" />
-              {/* Pay now online */}
-              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 font-medium text-emerald-700">
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                  Pay now online (Stripe)
-                </span>
-                <span className="tabular-nums">
-                  {formatEur(paymentSummary.amountPayableOnline ?? 0)}
-                </span>
-              </div>
-              {/* Pay at pickup */}
-              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-                <span>{t("amountDueAtPickupLater")}</span>
-                <span className="font-medium tabular-nums text-slate-900">
-                  {formatEur(paymentSummary.amountDueAtPickupLater)}
-                </span>
-              </div>
-              {/* Total */}
+              {isAlreadyPaid ? (
+                <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 font-medium text-emerald-700">
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                    {t("alreadyPaidSummaryLabel")}
+                  </span>
+                  <span className="tabular-nums">
+                    {formatEur(paymentSummary.totalCustomerLiability)}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 font-medium text-emerald-700">
+                    <span className="flex items-center gap-1.5">
+                      <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                      {t("payNowOnlineStripe")}
+                    </span>
+                    <span className="tabular-nums">
+                      {formatEur(paymentSummary.amountPayableOnline ?? 0)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                    <span>{t("amountDueAtPickupLater")}</span>
+                    <span className="font-medium tabular-nums text-slate-900">
+                      {formatEur(paymentSummary.amountDueAtPickupLater)}
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 border-t border-slate-200 pt-2 font-semibold text-slate-900">
                 <span>{t("totalCustomerLiability")}</span>
                 <span className="tabular-nums">{formatEur(paymentSummary.totalCustomerLiability)}</span>
@@ -278,13 +383,17 @@ export function BookingSummaryStep() {
           ) : null}
 
           <p className="mt-3 text-xs text-slate-600">{t("securityDepositHelperText")}</p>
-          {state.deposit.depositMethod !== "online" ? (
+          {isAlreadyPaid ? (
+            <p className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              {t("alreadyPaidNote")}
+            </p>
+          ) : state.deposit.depositMethod !== "online" ? (
             <p className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
               {t("depositAtPickupNote")}
             </p>
           ) : (
             <p className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-              Your security deposit will be charged with your booking and refunded after the vehicle is returned in good condition.
+              {t("depositOnlineNote")}
             </p>
           )}
         </div>
@@ -299,6 +408,21 @@ export function BookingSummaryStep() {
         />
         <span>{t("reviewCheckbox")}</span>
       </label>
+
+      <AlreadyPaidProofModal
+        isOpen={proofModalOpen}
+        bookingSessionId={bookingSessionId}
+        proofPath={state.payment.proofPath}
+        onProofPathChange={(path) => updateSection("payment", { proofPath: path })}
+        onCancel={() => {
+          setProofModalOpen(false);
+          if (!state.payment.proofPath.trim()) {
+            updateSection("payment", { mode: "stripe", proofPath: "" });
+            updateSection("deposit", { depositMethod: state.deposit.depositMethod || "in_person" });
+          }
+        }}
+        onConfirm={() => setProofModalOpen(false)}
+      />
     </StepShell>
   );
 }

@@ -7,6 +7,7 @@ import { BookingSearchFormSkeleton } from "@/features/booking/components/booking
 import { VehicleGridServer } from "@/features/vehicles/components/vehicle-grid-server";
 import { VehicleListingShell } from "@/features/vehicles/components/vehicle-listing-shell";
 import { filterVehiclesFromSearchParams } from "@/features/vehicles/lib/filter-vehicles";
+import { getDistinctActiveVehicleBrands } from "@/lib/vehicles/getDistinctActiveVehicleBrands";
 import { getInitialVehiclesForListing } from "@/lib/vehicles/getInitialVehiclesForListing";
 
 const BookingSearchFormFromUrl = dynamic(
@@ -67,6 +68,7 @@ export default async function VehiclesPage({ params, searchParams }: VehiclesPag
     : null;
 
   const initialVehicles = await getInitialVehiclesForListing(rentalWindow);
+  const brandOptions = await getDistinctActiveVehicleBrands();
   const filteredVehicles = filterVehiclesFromSearchParams(
     initialVehicles,
     resolvedSearchParams,
@@ -113,13 +115,14 @@ export default async function VehiclesPage({ params, searchParams }: VehiclesPag
         <VehicleListingShell
           heroIntro={heroIntro}
           vehicles={initialVehicles}
+          brandOptions={brandOptions}
           searchPanel={
             <Suspense
               fallback={
                 <BookingSearchFormSkeleton />
               }
             >
-              <BookingSearchFormFromUrl />
+              <BookingSearchFormFromUrl brandOptions={brandOptions} />
             </Suspense>
           }
         >

@@ -31,6 +31,14 @@ export function VehicleCard({
   const t = useTranslations("VehicleCard");
   const mainImage = vehicle.mainImageUrl ?? vehicle.images[0] ?? null;
   const brandModel = [vehicle.brand, vehicle.model].filter(Boolean).join(" ");
+  const availableColorLabels =
+    vehicle.availableColors && vehicle.availableColors.length > 0
+      ? vehicle.availableColors.map((option) => option.label)
+      : vehicle.color
+        ? [vehicle.color]
+        : [];
+  const colorLabel =
+    availableColorLabels.length > 0 ? ` · ${availableColorLabels.join(", ")}` : "";
   const status = vehicle.rentalWindowStatus;
   const completeBookingHref = buildBookingUrlWithVehicle(bookingHref, vehicle.slug);
 
@@ -76,7 +84,14 @@ export function VehicleCard({
         <div>
           <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-950">{vehicle.name}</h3>
           <p className="mt-1 text-sm text-slate-600">{vehicle.shortDescription ?? vehicle.tagline}</p>
-          {brandModel ? <p className="mt-1 text-xs text-slate-500">{brandModel}</p> : null}
+          {brandModel ? (
+            <p className="mt-1 text-xs text-slate-500">
+              {brandModel}
+              {colorLabel}
+            </p>
+          ) : availableColorLabels.length > 0 ? (
+            <p className="mt-1 text-xs text-slate-500">{availableColorLabels.join(", ")}</p>
+          ) : null}
           {status === "reserved_you" ? (
             <p className="mt-2 text-xs font-medium text-emerald-800">{t("holdNotice")}</p>
           ) : null}

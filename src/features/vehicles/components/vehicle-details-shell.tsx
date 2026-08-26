@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   CalendarRange,
   CheckCircle2,
@@ -24,11 +24,11 @@ import { Container } from "@/components/ui/container";
 import { VehicleDetailGallery } from "@/features/vehicles/components/vehicle-detail-gallery";
 import { VehicleRelatedSlider } from "@/features/vehicles/components/vehicle-related-slider";
 import { formatVehicleTypeLabel, type Vehicle } from "@/features/vehicles/data/vehicles";
-import { useDurationPricingRules } from "@/features/pricing/lib/use-duration-pricing-rules";
 import { useVehicle, useVehicles } from "@/features/vehicles/lib/use-vehicles";
 import {
   buildDurationPricingPreview,
   calculateVehicleRentalPricing,
+  roundPricingAmount,
 } from "@/lib/pricing/duration-pricing";
 import { getBillableRentalDays } from "@/lib/pricing/rental-duration";
 import { BOOKING_TIME_SLOTS } from "@/features/booking/lib/time-slots";
@@ -38,11 +38,16 @@ import {
   holdBlockedMessageForTrip,
 } from "@/features/vehicles/lib/use-vehicle-availability-check";
 import { BookNowButton } from "@/features/vehicles/components/book-now-button";
+import { colorsMatch } from "@/features/vehicles/lib/vehicle-color";
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function formatTierRateEur(value: number): string {
+  return roundPricingAmount(value).toFixed(2).replace(/\.00$/, "");
 }
 
 function isTripCommitted(pd: string, rd: string): boolean {
@@ -81,18 +86,18 @@ function KeyInfoBar({ vehicle }: { vehicle: Vehicle }) {
   ];
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex min-w-max divide-x divide-slate-100">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="grid grid-cols-2 gap-px bg-slate-100">
         {specs.map((s) => (
           <div
             key={s.label}
-            className="flex flex-col items-center gap-1.5 px-5 py-4 text-center"
+            className="flex flex-col items-center gap-1.5 bg-white px-3 py-4 text-center last:col-span-2"
           >
             <span className="text-slate-500">{s.icon}</span>
-            <span className="text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400 whitespace-nowrap">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-widest text-slate-400">
               {s.label}
             </span>
-            <span className="text-sm font-semibold text-slate-900 whitespace-nowrap">{s.value}</span>
+            <span className="text-sm font-semibold text-slate-900">{s.value}</span>
           </div>
         ))}
       </div>
@@ -257,7 +262,6 @@ function BookingSidebar({
   initialPickupTime,
   initialReturnTime,
 }: BookingSidebarProps) {
-  const { rules: durationRules } = useDurationPricingRules();
   const minDate = todayISO();
   const defaultTime = BOOKING_TIME_SLOTS[0] ?? "09:30";
   const [pickupDate, setPickupDate] = useState(initialPickupDate);
@@ -265,6 +269,8 @@ function BookingSidebar({
   const [pickupTime, setPickupTime] = useState(initialPickupTime || defaultTime);
   const [returnTime, setReturnTime] = useState(initialReturnTime || defaultTime);
   const [showDateWarning, setShowDateWarning] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [showColorWarning, setShowColorWarning] = useState(false);
 
   /* When dates arrive from the URL they're already committed — skip the picker */
   const datesFromUrl = isTripCommitted(initialPickupDate, initialReturnDate);
@@ -286,6 +292,26 @@ function BookingSidebar({
 
   const allowHold = tripCommitted && vehicleIsBookableForTrip(availability);
   const holdBlocked = holdBlockedMessageForTrip(tripCommitted, availability);
+  const unitColors = vehicle.availableColors ?? [];
+  const availableColors =
+    availability.kind === "ready" ? availability.availableColors : unitColors;
+
+  useEffect(() => {
+    if (!selectedColor || availability.kind !== "ready") {
+      return;
+    }
+    // Once trip availability is known, drop a color that is not free for those dates.
+    if (availability.availableColors.length === 0) {
+      setSelectedColor(null);
+      return;
+    }
+    const stillAvailable = availability.availableColors.some((option) =>
+      colorsMatch(option.label, selectedColor),
+    );
+    if (!stillAvailable) {
+      setSelectedColor(null);
+    }
+  }, [availability, selectedColor]);
 
   const bookingHref = useMemo(() => {
     const p = new URLSearchParams();
@@ -298,18 +324,13 @@ function BookingSidebar({
   }, [pickupDate, returnDate, pickupTime, returnTime]);
 
   const durationPreview = useMemo(
-    () => buildDurationPricingPreview(vehicle.baseDailyRate, vehicle.apiVehicleType, durationRules),
-    [durationRules, vehicle.apiVehicleType, vehicle.baseDailyRate],
+    () => buildDurationPricingPreview(vehicle.baseDailyRate),
+    [vehicle.baseDailyRate],
   );
 
   const estimatedPricing =
-    vehicle.baseDailyRate > 0 && days > 0 && durationRules.length > 0
-      ? calculateVehicleRentalPricing(
-          vehicle.baseDailyRate,
-          vehicle.apiVehicleType,
-          days,
-          durationRules,
-        )
+    vehicle.baseDailyRate > 0 && days > 0
+      ? calculateVehicleRentalPricing(vehicle.baseDailyRate, days)
       : null;
   const estimatedTotal = estimatedPricing?.rentalSubtotal ?? null;
   const estimatedTierDailyRate = estimatedPricing?.appliedDailyRate ?? null;
@@ -342,7 +363,7 @@ function BookingSidebar({
             <ul className="mt-3 space-y-1 text-xs text-slate-600">
               {durationPreview.map((row) => (
                 <li key={`${row.minDays}-${row.maxDays ?? "plus"}`}>
-                  {row.label}: {row.discountPercent}% off → €{row.appliedDailyRate}/day
+                  {row.label}: {row.discountPercent}% off → €{formatTierRateEur(row.appliedDailyRate)}/day
                 </li>
               ))}
             </ul>
@@ -495,12 +516,47 @@ function BookingSidebar({
         </div>
       ) : null}
 
+      {availableColors.length > 0 ? (
+        <div className="mt-4 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color</p>
+          <div className="flex flex-wrap gap-2">
+            {availableColors.map((option) => {
+              const isSelected = colorsMatch(selectedColor, option.label);
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => {
+                    setSelectedColor(option.label);
+                    setShowColorWarning(false);
+                  }}
+                  className={[
+                    "rounded-full border px-3 py-1.5 text-xs font-semibold transition",
+                    isSelected
+                      ? "border-[var(--brand-blue)] bg-[var(--brand-blue)] text-white"
+                      : "border-slate-200 bg-white text-slate-800 hover:border-[var(--brand-blue)]/40",
+                  ].join(" ")}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+          {showColorWarning ? (
+            <p className="text-xs font-medium text-rose-600" role="alert">
+              Please select a color to continue
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {/* price breakdown */}
       {estimatedTotal !== null && estimatedTierDailyRate !== null ? (
         <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
           <div className="flex justify-between text-sm text-slate-600">
-            <span>€{estimatedTierDailyRate} × {days} day{days !== 1 ? "s" : ""}</span>
-            <span className="font-semibold text-slate-900">€{estimatedTotal}</span>
+            <span>€{formatTierRateEur(estimatedTierDailyRate)} × {days} day{days !== 1 ? "s" : ""}</span>
+            <span className="font-semibold text-slate-900">€{formatTierRateEur(estimatedTotal)}</span>
           </div>
           <p className="mt-1 text-[0.65rem] text-slate-400">
             Flat tier rate applied to the full trip duration. Final price confirmed before you pay — no card taken online.
@@ -517,12 +573,16 @@ function BookingSidebar({
           onTripDatesRequired={() => setShowDateWarning(true)}
           allowHold={allowHold}
           holdBlockedMessage={holdBlocked}
+          disabled={tripCommitted && availability.kind === "loading"}
+          availableColors={availableColors}
+          selectedColor={selectedColor}
+          onColorRequired={() => setShowColorWarning(true)}
           pickupDate={tripCommitted ? pickupDate : null}
           returnDate={tripCommitted ? returnDate : null}
           pickupTime={tripCommitted ? pickupTime : null}
           returnTime={tripCommitted ? returnTime : null}
           className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)] px-5 py-3 text-sm font-bold text-slate-950 shadow-[0_12px_32px_-14px_rgba(255,147,15,0.8)] transition hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
-          busyClassName="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--brand-orange)]/80 px-5 py-3 text-sm font-bold text-slate-950 transition disabled:cursor-wait"
+          busyClassName="inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-full bg-[var(--brand-orange)]/60 px-5 py-3 text-sm font-bold text-slate-950 opacity-70 transition disabled:cursor-wait"
         />
       </div>
 
@@ -692,20 +752,9 @@ export function VehicleDetailsShell({
             </div>
           </div>
 
-          {/* gallery */}
-          <VehicleDetailGallery name={vehicle.name} images={vehicle.images} />
-
-          {/* key info bar */}
-          <div className="mt-6">
-            <KeyInfoBar vehicle={vehicle} />
-          </div>
-
-          {/* main 2-col grid */}
-          <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-10">
-            {/* ── LEFT column — content sections ──────────── */}
-            <div className="order-2 space-y-10 md:order-none md:col-span-7">
-
-              {/* About */}
+          {/* About + specs (left) | gallery (right) */}
+          <div className="grid items-start gap-6 md:grid-cols-12 md:gap-8">
+            <div className="order-2 space-y-5 md:order-none md:col-span-5">
               <section aria-labelledby="v-about-h">
                 <h2 id="v-about-h" className="text-xl font-bold tracking-[-0.02em] text-slate-950">
                   About this vehicle
@@ -715,7 +764,18 @@ export function VehicleDetailsShell({
                 </div>
               </section>
 
-              <hr className="border-slate-100" />
+              <KeyInfoBar vehicle={vehicle} />
+            </div>
+
+            <div className="order-1 md:order-none md:col-span-7">
+              <VehicleDetailGallery name={vehicle.name} images={vehicle.images} />
+            </div>
+          </div>
+
+          {/* main 2-col grid */}
+          <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-10">
+            {/* ── LEFT column — content sections ──────────── */}
+            <div className="order-2 space-y-10 md:order-none md:col-span-7">
 
               {/* What's included */}
               <section aria-labelledby="v-features-h">
@@ -742,7 +802,13 @@ export function VehicleDetailsShell({
                     { label: "Transmission", value: vehicle.transmission },
                     { label: "Fuel", value: vehicle.fuel },
                     { label: "Seats", value: String(vehicle.seats) },
-                    { label: "Color", value: vehicle.color },
+                    {
+                      label: "Color",
+                      value:
+                        vehicle.availableColors && vehicle.availableColors.length > 0
+                          ? vehicle.availableColors.map((c) => c.label).join(", ")
+                          : vehicle.color ?? "—",
+                    },
                     { label: "Storage box", value: vehicle.supportsStorageBox ? "Supported (optional add-on)" : "Not supported" },
                     { label: "Helmets included", value: String(vehicle.helmetIncludedCount) },
                     { label: "Pickup location", value: vehicle.location },

@@ -24,8 +24,9 @@ export function CustomerDetailsStep() {
   const allowedLicenseOptions = getAllowedLicenseCategories(
     state.rental.vehicleType,
     state.rental.vehicleId,
+    state.rental.engineCc,
   );
-  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType);
+  const licenseCategoryHint = getLicenseCategoryHint(state.rental.vehicleType, state.rental.engineCc);
   const licenseCategoryOptions = [
     { value: "", label: t("selectCategory") },
     ...allowedLicenseOptions.map((option) => ({ value: option, label: option })),

@@ -49,6 +49,13 @@ function statusBadgeClass(status: string): string {
   return "bg-slate-100 text-slate-600";
 }
 
+function paymentStatusBadgeClass(status: string): string {
+  if (status === "PAID") return "bg-emerald-50 text-emerald-700";
+  if (status === "REFUNDED") return "bg-blue-50 text-blue-700";
+  if (status === "FAILED") return "bg-red-50 text-red-700";
+  return "bg-amber-50 text-amber-800";
+}
+
 function buildPageUrl(
   locale: string,
   searchParams: Record<string, string | undefined>,
@@ -95,7 +102,7 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
               <th className="px-3 py-2.5 font-semibold">{t("table.pickup")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.return")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.status")}</th>
-              <th className="px-3 py-2.5 font-semibold">{t("table.securityDepositMethod")}</th>
+              <th className="px-3 py-2.5 font-semibold">{t("table.paymentStatus")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.amountDueAtPickupLater")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.hotelCode")}</th>
               <th className="px-3 py-2.5 font-semibold">{t("table.created")}</th>
@@ -142,8 +149,15 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
                       {t(`status.${booking.status}` as "status.CONFIRMED")}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-slate-700">
-                    {t(`depositMethod.${booking.depositMethod}` as "depositMethod.ONLINE")}
+                  <td className="px-3 py-2.5">
+                    <span
+                      className={[
+                        "inline-flex rounded-full px-2 py-0.5 text-xs font-semibold",
+                        paymentStatusBadgeClass(booking.paymentStatus),
+                      ].join(" ")}
+                    >
+                      {t(`paymentStatus.${booking.paymentStatus}` as "paymentStatus.PENDING")}
+                    </span>
                   </td>
                   <td className="px-3 py-2.5 font-medium text-slate-800">
                     {formatPaymentSummaryAmount(booking)}

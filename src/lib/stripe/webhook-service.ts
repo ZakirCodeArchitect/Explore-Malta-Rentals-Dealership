@@ -4,7 +4,7 @@ import { Prisma } from "@/generated/prisma";
 import { stripe } from "./stripe-client";
 import { prisma } from "@/lib/prisma";
 import { writePaymentAuditLog } from "./audit-service";
-import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
+import { deliverBookingConfirmationIfNeeded } from "@/lib/email/deliverBookingConfirmation";
 import { releaseUnpaidBooking } from "@/lib/booking/releaseUnpaidBooking";
 import type { ProcessWebhookResult } from "./types";
 
@@ -230,16 +230,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session):
   }
 
   try {
-    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-    if (booking) {
-      const emailResult = await sendBookingConfirmation(booking);
-      await prisma.booking.update({
-        where: { id: bookingId },
-        data: emailResult.success
-          ? { confirmationEmailStatus: "SENT", confirmationEmailSentAt: new Date() }
-          : { confirmationEmailStatus: "FAILED" },
-      });
-    }
+    await deliverBookingConfirmationIfNeeded(bookingId);
   } catch (emailError) {
     console.error("[webhook] Confirmation email failed after payment", { bookingId, emailError });
   }
@@ -291,18 +282,25 @@ async function handlePaymentIntentSucceeded(intent: Stripe.PaymentIntent): Promi
 
   const result = await confirmBookingPayment(bookingId, intent.id);
 
-  if (result === "already_succeeded") {
-    return "already_succeeded";
+  if (result !== "already_succeeded") {
+    await writePaymentAuditLog({
+      bookingId,
+      action: "payment_succeeded",
+      actor: "stripe-webhook",
+      newValue: { paymentIntentId: intent.id },
+    });
   }
 
-  await writePaymentAuditLog({
-    bookingId,
-    action: "payment_succeeded",
-    actor: "stripe-webhook",
-    newValue: { paymentIntentId: intent.id },
-  });
+  try {
+    await deliverBookingConfirmationIfNeeded(bookingId);
+  } catch (emailError) {
+    console.error("[webhook] Confirmation email failed after payment_intent.succeeded", {
+      bookingId,
+      emailError,
+    });
+  }
 
-  return "payment_intent_succeeded";
+  return result === "already_succeeded" ? "already_succeeded" : "payment_intent_succeeded";
 }
 
 async function handlePaymentIntentFailed(intent: Stripe.PaymentIntent): Promise<string> {

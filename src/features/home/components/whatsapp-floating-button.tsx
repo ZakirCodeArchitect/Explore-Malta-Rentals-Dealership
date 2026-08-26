@@ -83,6 +83,7 @@ export function WhatsAppFloatingButton() {
 
         <button
           type="button"
+          suppressHydrationWarning
           aria-label={t("openContact")}
           title={t("faqLabel")}
           aria-expanded={open}
