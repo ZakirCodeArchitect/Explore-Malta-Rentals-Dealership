@@ -7,7 +7,7 @@ import { RetryPaymentButton } from "./retry-payment-button";
 
 export const metadata: Metadata = {
   title: "Payment Cancelled | Explore Malta Rentals",
-  description: "Your payment was cancelled. Your booking is still pending — retry to confirm it.",
+  description: "Your payment was cancelled. Retry within the checkout window to confirm your rental.",
 };
 
 type Props = {
@@ -19,7 +19,6 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
   const { locale } = await params;
   const { ref: bookingReference } = await searchParams;
 
-  // Fetch booking details so we can show useful info
   const booking = bookingReference
     ? await prisma.booking.findUnique({
         where: { bookingReference },
@@ -33,6 +32,7 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
           billableDays: true,
           totalDueOnline: true,
           paymentStatus: true,
+          status: true,
         },
       })
     : null;
@@ -58,15 +58,38 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
     );
   }
 
+  // Checkout window expired / payment failed — vehicle already released
+  if (booking?.status === "CANCELLED") {
+    return (
+      <main className="flex min-h-[calc(100dvh-var(--site-header-offset))] items-center justify-center bg-[var(--surface-elevated)] px-4 py-16">
+        <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+          <XCircle className="mx-auto h-12 w-12 text-slate-400" />
+          <h1 className="mt-4 text-xl font-bold text-slate-900">Payment window expired</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Booking <span className="font-mono font-bold">{bookingReference}</span> was cancelled
+            because payment was not completed in time. The vehicle has been released for other customers.
+          </p>
+          <Link
+            href={`/${locale}/vehicles`}
+            className="mt-6 flex items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)]"
+          >
+            Browse vehicles
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const amountDue = booking ? Number(booking.totalDueOnline).toFixed(2) : null;
+  const canRetry =
+    !!booking &&
+    (booking.status === "PENDING_PAYMENT" || booking.status === "CONFIRMED");
 
   return (
     <main className="min-h-[calc(100dvh-var(--site-header-offset))] bg-gradient-to-b from-red-50/60 via-[var(--surface-elevated)] to-[var(--background)] px-4 py-10 sm:py-16">
       <div className="mx-auto max-w-xl space-y-5">
 
-        {/* ── Header card ─────────────────────────────────────────────────── */}
         <div className="overflow-hidden rounded-3xl border border-red-200/60 bg-white shadow-sm">
-          {/* Red top bar */}
           <div className="flex items-center gap-4 bg-gradient-to-r from-red-500 to-red-600 px-6 py-5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20">
               <XCircle className="h-7 w-7 text-white" strokeWidth={2} />
@@ -81,27 +104,26 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
 
           <div className="p-6">
             <p className="text-sm text-slate-600">
-              You left the payment page before completing the transaction. Your booking details are
-              saved — you can retry payment now to confirm your rental.
+              You left the payment page before completing the transaction. Your booking is held
+              temporarily — complete payment now to confirm your rental.
             </p>
 
-            {/* Urgency warning */}
             <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" strokeWidth={2} />
               <p className="text-sm text-amber-900">
-                <span className="font-semibold">Your vehicle is not yet secured.</span>{" "}
-                Another customer can book it until your payment is complete.
+                <span className="font-semibold">Vehicle held for 30 minutes.</span>{" "}
+                If payment is not completed within the checkout window, this booking is cancelled
+                automatically and the vehicle is released.
               </p>
             </div>
           </div>
         </div>
 
-        {/* ── Booking details card ─────────────────────────────────────────── */}
         {booking && (
           <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-                Your Pending Booking
+                Awaiting Payment
               </p>
               <p className="mt-0.5 font-mono text-xl font-bold text-slate-900">
                 {booking.bookingReference}
@@ -143,15 +165,14 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
           </div>
         )}
 
-        {/* ── Actions ──────────────────────────────────────────────────────── */}
         <div className="space-y-3">
-          {bookingReference && (
+          {canRetry && bookingReference ? (
             <RetryPaymentButton
               bookingReference={bookingReference}
               locale={locale}
               amountDue={amountDue}
             />
-          )}
+          ) : null}
 
           <Link
             href={`/${locale}/vehicles`}
@@ -162,11 +183,10 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
           </Link>
         </div>
 
-        {/* ── Help section ─────────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
           <p className="text-sm font-semibold text-slate-900">Need help?</p>
           <p className="mt-1 text-sm text-slate-600">
-            If your card was declined or you hit an issue, contact us and we'll sort it out.
+            If your card was declined or you hit an issue, contact us and we&apos;ll sort it out.
           </p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <a

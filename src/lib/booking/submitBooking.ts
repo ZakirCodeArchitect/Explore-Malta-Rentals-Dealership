@@ -376,9 +376,13 @@ function mapBookingCreateData(
   vehicle: ResolvedBookingVehicle,
   termsVersionId: string | null,
 ): Prisma.BookingUncheckedCreateInput {
+  const requiresOnlinePayment = pricing.breakdown.totalDueOnline > 0;
+
   return {
     bookingReference,
-    status: "CONFIRMED",
+    // Online Stripe checkout soft-reserves the vehicle until payment succeeds.
+    // Pay-later / zero online due still creates a confirmed booking immediately.
+    status: requiresOnlinePayment ? "PENDING_PAYMENT" : "CONFIRMED",
     paymentStatus: "PENDING",
     securityDepositStatus: "PENDING",
     vehicleId: vehicle.vehicleId,

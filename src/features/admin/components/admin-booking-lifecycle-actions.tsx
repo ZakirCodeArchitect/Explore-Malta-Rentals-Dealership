@@ -43,6 +43,12 @@ type LifecycleActionVariant = "primary" | "danger" | "orange" | "sky";
 
 function stageGuidelineTheme(status: AdminBookingDetail["status"]) {
   switch (status) {
+    case "PENDING_PAYMENT":
+      return {
+        box: "border-amber-300/60 bg-amber-50",
+        label: "text-amber-700",
+        divider: "border-amber-200",
+      };
     case "CONFIRMED":
       return {
         box: "border-emerald-300/60 bg-emerald-50",
@@ -186,6 +192,7 @@ function LifecycleGuideline({
   t: ReturnType<typeof useTranslations<"Admin.bookings.lifecycle">>;
 }>) {
   const stepStatuses = [
+    "PENDING_PAYMENT",
     "CONFIRMED",
     "VEHICLE_HANDED_OVER",
     "RETURNED",
@@ -356,8 +363,10 @@ export function AdminBookingLifecycleActions({
     }
   }
 
-  const showHandOver = booking.status === "CONFIRMED";
-  const showCancel = booking.status === "CONFIRMED";
+  const showHandOver =
+    booking.status === "CONFIRMED" &&
+    (Number(booking.totalDueOnline) <= 0 || booking.paymentStatus === "PAID");
+  const showCancel = booking.status === "CONFIRMED" || booking.status === "PENDING_PAYMENT";
   const showMarkReturned = booking.status === "VEHICLE_HANDED_OVER";
   const showComplete = booking.status === "RETURNED";
   const readOnlyLifecycle =

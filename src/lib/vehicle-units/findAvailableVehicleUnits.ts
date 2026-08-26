@@ -1,6 +1,7 @@
 import type { Prisma } from "@/generated/prisma/index";
 
 import { BLOCKING_BOOKING_STATUSES, buildOverlappingRangeWhere } from "@/lib/availability/types";
+import { cleanupUnpaidPendingPaymentBookings } from "@/lib/booking/cleanupUnpaidPendingPaymentBookings";
 import { prisma } from "@/lib/prisma";
 import { cleanupExpiredHolds } from "@/lib/reservation-holds/cleanupExpiredHolds";
 import { releaseStaleHoldOccupancy } from "@/lib/reservation-holds/releaseStaleHoldOccupancy";
@@ -38,6 +39,7 @@ async function prepareAvailabilityData(db: VehicleUnitDbClient): Promise<void> {
 
   if (isTopLevelPrismaClient(db)) {
     await cleanupExpiredHolds({ db, now });
+    await cleanupUnpaidPendingPaymentBookings({ db, now });
   }
 }
 

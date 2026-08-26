@@ -553,6 +553,7 @@ model WebhookEvent {
 }
 
 enum BookingStatus {
+  PENDING_PAYMENT
   CONFIRMED
   VEHICLE_HANDED_OVER
   RETURNED

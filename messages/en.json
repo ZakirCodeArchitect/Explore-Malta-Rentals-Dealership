@@ -1317,6 +1317,7 @@
       "statusUpdateSuccess": "Booking status was updated.",
       "statusUpdateError": "Unable to update booking status. Please try again.",
       "status": {
+        "PENDING_PAYMENT": "Awaiting Payment",
         "CONFIRMED": "Confirmed",
         "VEHICLE_HANDED_OVER": "Vehicle Handed Over",
         "RETURNED": "Returned",
@@ -1357,6 +1358,7 @@
         "searchPlaceholder": "Name, email, phone, or reference…",
         "status": "Status",
         "allStatuses": "All statuses",
+        "pendingPayment": "Awaiting Payment",
         "confirmed": "Confirmed",
         "vehicleHandedOver": "Vehicle handed over",
         "returned": "Returned",
@@ -1424,6 +1426,7 @@
         "destructiveTitle": "Confirm status change",
         "destructiveDescription": "You are about to change booking {reference} from {from} to {to}. This may affect availability and customer expectations.",
         "statusLabel": {
+          "PENDING_PAYMENT": "Awaiting Payment",
           "CONFIRMED": "Confirmed",
           "VEHICLE_HANDED_OVER": "Vehicle Handed Over",
           "RETURNED": "Returned",
@@ -1599,9 +1602,14 @@
             "completed": "Completed"
           },
           "steps": {
+            "PENDING_PAYMENT": {
+              "title": "Awaiting payment — soft reservation",
+              "description": "The customer started checkout but Stripe has not confirmed payment yet. The vehicle is temporarily held for the checkout window. If payment is not completed, this booking is cancelled automatically and the vehicle is released.",
+              "nextStep": "Wait for payment to succeed, or cancel this booking to release the unit immediately."
+            },
             "CONFIRMED": {
               "title": "Confirmed: reservation active",
-              "description": "The booking is accepted and a physical unit is reserved internally. Payment and security deposit are still pending, confirmed does not mean the customer has paid or collected the vehicle.",
+              "description": "The booking is accepted and a physical unit is reserved. For online payments, money has already been confirmed by Stripe. Security deposit may still be collected at pickup depending on the customer's choice.",
               "nextStep": "When the customer arrives for pickup or the vehicle is delivered, record the handover. If the booking will not go ahead, cancel it to release the unit."
             },
             "VEHICLE_HANDED_OVER": {
@@ -1988,6 +1996,7 @@
         "inactiveHotel": "inactive",
         "status": "Status",
         "allStatuses": "All statuses",
+        "pendingPayment": "Awaiting Payment",
         "confirmed": "Confirmed",
         "vehicleHandedOver": "Vehicle handed over",
         "returned": "Returned",
@@ -2097,8 +2106,12 @@
         "PARTIALLY_PAID": "Partially paid"
       },
       "bookingStatus": {
+        "PENDING_PAYMENT": "Awaiting Payment",
         "PENDING": "Pending",
         "CONFIRMED": "Confirmed",
+        "VEHICLE_HANDED_OVER": "Vehicle Handed Over",
+        "RETURNED": "Returned",
+        "COMPLETED": "Completed",
         "CANCELLED": "Cancelled",
         "FAILED": "Failed"
       },

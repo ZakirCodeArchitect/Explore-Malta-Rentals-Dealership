@@ -40,12 +40,13 @@ function formatDate(iso: string): string {
 }
 
 function statusBadgeClass(status: string): string {
+  if (status === "PENDING_PAYMENT") return "bg-amber-50 text-amber-700";
   if (status === "CONFIRMED") return "bg-emerald-50 text-emerald-700";
-  if (status === "VEHICLE_HANDED_OVER") return "bg-blue-50 text-blue-700";
-  if (status === "RETURNED") return "bg-violet-50 text-violet-700";
+  if (status === "VEHICLE_HANDED_OVER") return "bg-sky-50 text-sky-700";
+  if (status === "RETURNED") return "bg-indigo-50 text-indigo-700";
   if (status === "COMPLETED") return "bg-slate-100 text-slate-700";
-  if (status === "CANCELLED") return "bg-slate-100 text-slate-600";
-  return "bg-amber-50 text-amber-800";
+  if (status === "CANCELLED") return "bg-rose-50 text-rose-700";
+  return "bg-slate-100 text-slate-600";
 }
 
 function buildPageUrl(

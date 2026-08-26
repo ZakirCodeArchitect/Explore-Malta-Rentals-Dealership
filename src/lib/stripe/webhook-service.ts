@@ -1,9 +1,11 @@
 import type Stripe from "stripe";
+import { randomUUID } from "node:crypto";
 import { Prisma } from "@/generated/prisma";
 import { stripe } from "./stripe-client";
 import { prisma } from "@/lib/prisma";
 import { writePaymentAuditLog } from "./audit-service";
 import { sendBookingConfirmation } from "@/lib/email/sendBookingConfirmation";
+import { releaseUnpaidBooking } from "@/lib/booking/releaseUnpaidBooking";
 import type { ProcessWebhookResult } from "./types";
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -41,7 +43,7 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<ProcessW
   const webhookRecord = await prisma.webhookEvent.upsert({
     where: { stripeEventId },
     create: {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       stripeEventId,
       eventType,
       processed: false,
@@ -62,6 +64,10 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<ProcessW
     switch (eventType) {
       case "checkout.session.completed":
         action = await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
+        break;
+
+      case "checkout.session.expired":
+        action = await handleCheckoutSessionExpired(event.data.object as Stripe.Checkout.Session);
         break;
 
       case "payment_intent.succeeded":
@@ -122,6 +128,81 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<ProcessW
 
 // ─── Event Handlers ────────────────────────────────────────────────────────────
 
+async function confirmBookingPayment(
+  bookingId: string,
+  paymentIntentId: string | null,
+  checkoutSessionId?: string,
+  amountCents?: number | null,
+  currency?: string | null,
+): Promise<"payment_confirmed" | "already_succeeded"> {
+  return prisma.$transaction(async (tx) => {
+    const stripePayment = await tx.stripePayment.findUnique({ where: { bookingId } });
+    if (!stripePayment) {
+      throw new Error(`No StripePayment record found for bookingId=${bookingId}`);
+    }
+
+    if (stripePayment.stripeStatus === "SUCCEEDED") {
+      return "already_succeeded";
+    }
+
+    await tx.stripePayment.update({
+      where: { bookingId },
+      data: {
+        stripeStatus: "SUCCEEDED",
+        stripePaymentIntentId: paymentIntentId ?? stripePayment.stripePaymentIntentId,
+        ...(checkoutSessionId ? { stripeCheckoutSessionId: checkoutSessionId } : {}),
+      },
+    });
+
+    const booking = await tx.booking.findUnique({
+      where: { id: bookingId },
+      select: { status: true },
+    });
+
+    if (booking?.status === "CANCELLED") {
+      throw new Error(`Cannot confirm payment for cancelled booking ${bookingId}`);
+    }
+
+    await tx.booking.update({
+      where: { id: bookingId },
+      data: {
+        paymentStatus: "PAID",
+        // Soft-reserve becomes a real confirmed booking only after money clears.
+        ...(booking?.status === "PENDING_PAYMENT" ? { status: "CONFIRMED" as const } : {}),
+      },
+    });
+
+    if (booking?.status === "PENDING_PAYMENT") {
+      await tx.bookingStatusHistory.create({
+        data: {
+          bookingId,
+          oldStatus: "PENDING_PAYMENT",
+          newStatus: "CONFIRMED",
+          note: "[stripe-webhook] Payment succeeded — booking confirmed",
+          changedByAdminId: null,
+        },
+      });
+    }
+
+    if (checkoutSessionId) {
+      await tx.stripeTransaction.create({
+        data: {
+          id: randomUUID(),
+          stripePaymentId: stripePayment.id,
+          transactionType: "charge",
+          stripeTransactionId: checkoutSessionId,
+          amountCents: amountCents ?? stripePayment.amountCents,
+          currency: currency ?? stripePayment.currency,
+          status: "succeeded",
+          metadata: { checkoutSessionId, paymentIntentId },
+        },
+      });
+    }
+
+    return "payment_confirmed";
+  });
+}
+
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session): Promise<string> {
   const bookingId = session.metadata?.bookingId;
   const bookingReference = session.metadata?.bookingReference;
@@ -131,53 +212,23 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session):
   }
 
   if (session.payment_status !== "paid") {
-    // Some payment methods (e.g. bank transfers) are async — handle separately
     console.log(`[webhook] Checkout session ${session.id} completed but payment_status=${session.payment_status}`);
     return "checkout_completed_payment_pending";
   }
 
   const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : null;
+  const result = await confirmBookingPayment(
+    bookingId,
+    paymentIntentId,
+    session.id,
+    session.amount_total,
+    session.currency,
+  );
 
-  await prisma.$transaction(async (tx) => {
-    const stripePayment = await tx.stripePayment.findUnique({ where: { bookingId } });
-    if (!stripePayment) {
-      throw new Error(`No StripePayment record found for bookingId=${bookingId}`);
-    }
+  if (result === "already_succeeded") {
+    return "already_succeeded";
+  }
 
-    // Guard: already succeeded (second webhook delivery)
-    if (stripePayment.stripeStatus === "SUCCEEDED") {
-      return;
-    }
-
-    await tx.stripePayment.update({
-      where: { bookingId },
-      data: {
-        stripeStatus: "SUCCEEDED",
-        stripePaymentIntentId: paymentIntentId ?? stripePayment.stripePaymentIntentId,
-        stripeCheckoutSessionId: session.id,
-      },
-    });
-
-    await tx.booking.update({
-      where: { id: bookingId },
-      data: { paymentStatus: "PAID" },
-    });
-
-    await tx.stripeTransaction.create({
-      data: {
-        id: crypto.randomUUID(),
-        stripePaymentId: stripePayment.id,
-        transactionType: "charge",
-        stripeTransactionId: session.id,
-        amountCents: session.amount_total ?? stripePayment.amountCents,
-        currency: session.currency ?? "eur",
-        status: "succeeded",
-        metadata: { checkoutSessionId: session.id, paymentIntentId },
-      },
-    });
-  });
-
-  // Send confirmation email now that payment is confirmed
   try {
     const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
     if (booking) {
@@ -190,7 +241,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session):
       });
     }
   } catch (emailError) {
-    // Email failure must not roll back the payment confirmation
     console.error("[webhook] Confirmation email failed after payment", { bookingId, emailError });
   }
 
@@ -204,28 +254,46 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session):
   return "payment_confirmed";
 }
 
+async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session): Promise<string> {
+  const bookingId = session.metadata?.bookingId;
+  if (!bookingId) {
+    return "no_booking_metadata";
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.stripePayment.updateMany({
+      where: { bookingId, stripeStatus: { not: "SUCCEEDED" } },
+      data: { stripeStatus: "EXPIRED" },
+    });
+
+    await releaseUnpaidBooking(tx, bookingId, {
+      actorLabel: "stripe-webhook",
+      note: `Checkout session expired (${session.id}) — unpaid booking released`,
+      allowConfirmedUnpaid: true,
+    });
+  });
+
+  await writePaymentAuditLog({
+    bookingId,
+    action: "payment_cancelled",
+    actor: "stripe-webhook",
+    newValue: { sessionId: session.id, reason: "checkout_session_expired" },
+  });
+
+  return "checkout_session_expired_released";
+}
+
 async function handlePaymentIntentSucceeded(intent: Stripe.PaymentIntent): Promise<string> {
   const bookingId = intent.metadata?.bookingId;
   if (!bookingId) {
     return "no_booking_metadata";
   }
 
-  // checkout.session.completed fires first in most flows — this is a safety net
-  const stripePayment = await prisma.stripePayment.findUnique({ where: { bookingId } });
-  if (!stripePayment || stripePayment.stripeStatus === "SUCCEEDED") {
+  const result = await confirmBookingPayment(bookingId, intent.id);
+
+  if (result === "already_succeeded") {
     return "already_succeeded";
   }
-
-  await prisma.$transaction(async (tx) => {
-    await tx.stripePayment.update({
-      where: { bookingId },
-      data: { stripeStatus: "SUCCEEDED", stripePaymentIntentId: intent.id },
-    });
-    await tx.booking.update({
-      where: { id: bookingId },
-      data: { paymentStatus: "PAID" },
-    });
-  });
 
   await writePaymentAuditLog({
     bookingId,
@@ -248,12 +316,12 @@ async function handlePaymentIntentFailed(intent: Stripe.PaymentIntent): Promise<
       where: { bookingId, stripeStatus: { not: "SUCCEEDED" } },
       data: { stripeStatus: "FAILED" },
     });
-    await tx.booking.updateMany({
-      where: { id: bookingId, paymentStatus: "PENDING" },
-      data: { paymentStatus: "FAILED" },
+
+    await releaseUnpaidBooking(tx, bookingId, {
+      actorLabel: "stripe-webhook",
+      note: `Payment failed — ${intent.last_payment_error?.message ?? "card declined"}`,
+      allowConfirmedUnpaid: true,
     });
-    // Release the vehicle unit reservation so others can book
-    await releaseVehicleUnitForBooking(bookingId, tx);
   });
 
   await writePaymentAuditLog({
@@ -280,11 +348,12 @@ async function handlePaymentIntentCancelled(intent: Stripe.PaymentIntent): Promi
       where: { bookingId, stripeStatus: { not: "SUCCEEDED" } },
       data: { stripeStatus: "CANCELLED" },
     });
-    await tx.booking.updateMany({
-      where: { id: bookingId, paymentStatus: "PENDING" },
-      data: { paymentStatus: "FAILED" },
+
+    await releaseUnpaidBooking(tx, bookingId, {
+      actorLabel: "stripe-webhook",
+      note: "Payment intent cancelled — unpaid booking released",
+      allowConfirmedUnpaid: true,
     });
-    await releaseVehicleUnitForBooking(bookingId, tx);
   });
 
   await writePaymentAuditLog({
@@ -322,7 +391,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<string> {
 
   await writePaymentAuditLog({
     bookingId,
-    action: isFullRefund ? "refund_succeeded" : "refund_succeeded",
+    action: "refund_succeeded",
     actor: "stripe-webhook",
     newValue: {
       chargeId: charge.id,
@@ -337,7 +406,6 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<string> {
 async function handleDisputeCreated(dispute: Stripe.Dispute): Promise<string> {
   const chargeId = typeof dispute.charge === "string" ? dispute.charge : dispute.charge?.id;
 
-  // Try to find the booking via payment intent or charge
   const stripePayment = chargeId
     ? await prisma.stripePayment.findFirst({
         where: {
@@ -403,7 +471,7 @@ async function handleRefundCreated(refund: Stripe.Refund): Promise<string> {
   await prisma.stripeRefund.upsert({
     where: { stripeRefundId: refund.id },
     create: {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       stripePaymentId: stripePayment.id,
       stripeRefundId: refund.id,
       amountCents: refund.amount,
@@ -425,24 +493,6 @@ async function handleRefundUpdated(refund: Stripe.Refund): Promise<string> {
     data: { status: refund.status ?? "unknown" },
   });
   return "refund_updated";
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function releaseVehicleUnitForBooking(
-  bookingId: string,
-  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
-): Promise<void> {
-  const booking = await tx.booking.findUnique({
-    where: { id: bookingId },
-    select: { vehicleUnitId: true },
-  });
-  if (booking?.vehicleUnitId) {
-    await tx.vehicleUnit.update({
-      where: { id: booking.vehicleUnitId },
-      data: { status: "AVAILABLE" },
-    }).catch(() => null);
-  }
 }
 
 function mapStripeRefundReason(reason: Stripe.Refund["reason"] | null | undefined): import("@/generated/prisma").RefundReason {
