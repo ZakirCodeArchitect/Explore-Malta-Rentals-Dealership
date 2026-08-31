@@ -23,7 +23,7 @@ const TERMS_SUMMARY_SECTIONS = [
   {
     heading: "Rental Period",
     points: [
-      "Rentals are calculated on a 24-hour basis.",
+      "Rentals are calculated by day.",
       "Late return may incur an additional fee and extra rental day charge.",
       "No-show or delays above one hour may result in cancellation.",
     ],

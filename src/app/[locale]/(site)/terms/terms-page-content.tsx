@@ -135,7 +135,7 @@ export function TermsPageContent() {
         icon: <CalendarClock className="h-5 w-5" />,
         content: (
           <ul className="list-disc space-y-1 pl-5">
-            <li>Rentals are calculated on a 24-hour basis.</li>
+            <li>Rentals are calculated by day.</li>
             <li>
               Late return incurs <strong>EUR 20</strong> plus a <strong>full extra rental day</strong>.
             </li>
