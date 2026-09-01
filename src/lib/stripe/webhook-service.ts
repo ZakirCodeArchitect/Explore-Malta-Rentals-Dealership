@@ -4,6 +4,7 @@ import { Prisma } from "@/generated/prisma";
 import { stripe } from "./stripe-client";
 import { prisma } from "@/lib/prisma";
 import { writePaymentAuditLog } from "./audit-service";
+import { markBookingPaidAndConfirmIfPending } from "./confirm-paid-booking";
 import { deliverBookingConfirmationIfNeeded } from "@/lib/email/deliverBookingConfirmation";
 import { releaseUnpaidBooking } from "@/lib/booking/releaseUnpaidBooking";
 import type { ProcessWebhookResult } from "./types";
@@ -142,6 +143,13 @@ async function confirmBookingPayment(
     }
 
     if (stripePayment.stripeStatus === "SUCCEEDED") {
+      // Success-page fallback may have marked Stripe/payment paid without confirming
+      // the booking. Still promote PENDING_PAYMENT → CONFIRMED if needed.
+      await markBookingPaidAndConfirmIfPending(
+        tx,
+        bookingId,
+        "[stripe-webhook] Payment succeeded — booking confirmed",
+      );
       return "already_succeeded";
     }
 
@@ -163,26 +171,11 @@ async function confirmBookingPayment(
       throw new Error(`Cannot confirm payment for cancelled booking ${bookingId}`);
     }
 
-    await tx.booking.update({
-      where: { id: bookingId },
-      data: {
-        paymentStatus: "PAID",
-        // Soft-reserve becomes a real confirmed booking only after money clears.
-        ...(booking?.status === "PENDING_PAYMENT" ? { status: "CONFIRMED" as const } : {}),
-      },
-    });
-
-    if (booking?.status === "PENDING_PAYMENT") {
-      await tx.bookingStatusHistory.create({
-        data: {
-          bookingId,
-          oldStatus: "PENDING_PAYMENT",
-          newStatus: "CONFIRMED",
-          note: "[stripe-webhook] Payment succeeded — booking confirmed",
-          changedByAdminId: null,
-        },
-      });
-    }
+    await markBookingPaidAndConfirmIfPending(
+      tx,
+      bookingId,
+      "[stripe-webhook] Payment succeeded — booking confirmed",
+    );
 
     if (checkoutSessionId) {
       await tx.stripeTransaction.create({

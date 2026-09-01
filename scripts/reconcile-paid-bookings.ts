@@ -6,8 +6,8 @@ import { stripe } from "../src/lib/stripe/stripe-client";
 
 /**
  * Finds bookings Stripe has already collected payment for, but the app still
- * has as PENDING / confirmation email NOT_SENT, then marks them paid and sends
- * the confirmation email.
+ * has as PENDING / Awaiting Payment / confirmation email NOT_SENT, then marks
+ * them paid, confirms the booking, and sends the confirmation email.
  *
  * Usage: npx tsx scripts/reconcile-paid-bookings.ts
  */
@@ -17,6 +17,7 @@ async function main() {
       OR: [
         { stripeStatus: { not: "SUCCEEDED" } },
         { Booking: { confirmationEmailStatus: { not: "SENT" } } },
+        { Booking: { status: "PENDING_PAYMENT", paymentStatus: "PAID" } },
       ],
     },
     select: {
@@ -26,6 +27,7 @@ async function main() {
       Booking: {
         select: {
           bookingReference: true,
+          status: true,
           paymentStatus: true,
           confirmationEmailStatus: true,
         },
@@ -74,7 +76,7 @@ async function main() {
         checkoutSessionId: sessionId,
       });
       reconciled += 1;
-      console.log(`[ok] ${ref}: marked PAID and attempted confirmation email`);
+      console.log(`[ok] ${ref}: marked PAID/CONFIRMED and attempted confirmation email`);
     } catch (error) {
       failed += 1;
       const message = error instanceof Error ? error.message : String(error);
