@@ -33,6 +33,7 @@ import {
   updateAdminVehicleUnit,
   VehicleUnitHasActiveBookingError,
 } from "../src/lib/admin/vehicle-units";
+import { cancelBooking, restoreCancelledBooking } from "../src/lib/admin/bookings/lifecycle";
 import { cleanupExpiredHolds } from "../src/lib/reservation-holds/cleanupExpiredHolds";
 
 const TEST_EMAIL = "availability-audit@test.local";
@@ -1198,6 +1199,113 @@ async function runDbExclusionSmokeTest(): Promise<void> {
   logPass("H) PostgreSQL EXCLUDE constraint smoke test");
 }
 
+async function runRestoreCancelledBookingTests(): Promise<void> {
+  const { vehicleId, unitIds } = await createTestVehicle(1);
+  const unitId = unitIds[0]!;
+  const unit = await prisma.vehicleUnit.findUniqueOrThrow({
+    where: { id: unitId },
+    select: { licensePlate: true },
+  });
+
+  const pickup = baseDate(22, 10);
+  const returnAt = baseDate(24, 10);
+  const bookingId = await createBlockingBooking({
+    vehicleId,
+    vehicleUnitId: unitId,
+    pickup,
+    returnAt,
+    licensePlate: unit.licensePlate,
+  });
+
+  const admin = await prisma.adminUser.create({
+    data: {
+      name: "Restore Audit Admin",
+      email: `restore-audit-${testSuffix}@test.local`,
+      role: "STAFF",
+      isActive: true,
+    },
+  });
+
+  try {
+    const cancelled = await cancelBooking(
+      bookingId,
+      {
+        refundPayment: false,
+        depositOutcome: "UNCHANGED",
+        emailSubject: "Cancelled",
+        emailBody: "Cancelled for audit.",
+        note: "Accidental cancel in audit",
+      },
+      admin.id,
+    );
+    assert.equal(cancelled.ok, true);
+    const occupancyAfterCancel = await prisma.vehicleUnitOccupancy.findUnique({
+      where: { bookingId },
+    });
+    assert.equal(occupancyAfterCancel, null);
+
+    const restored = await restoreCancelledBooking(
+      bookingId,
+      { note: "Undo accidental cancellation" },
+      admin.id,
+    );
+    assert.equal(restored.ok, true);
+    if (restored.ok) {
+      assert.equal(restored.booking.status, "CONFIRMED");
+    }
+
+    const occupancyAfterRestore = await prisma.vehicleUnitOccupancy.findUnique({
+      where: { bookingId },
+    });
+    assert.ok(occupancyAfterRestore);
+    assert.equal(occupancyAfterRestore?.vehicleUnitId, unitId);
+
+    const restoreAgain = await restoreCancelledBooking(bookingId, {}, admin.id);
+    assert.equal(restoreAgain.ok, false);
+    if (!restoreAgain.ok) {
+      assert.equal(restoreAgain.reason, "invalid_status");
+    }
+
+    const cancelledAgain = await cancelBooking(
+      bookingId,
+      {
+        refundPayment: false,
+        depositOutcome: "UNCHANGED",
+        emailSubject: "Cancelled",
+        emailBody: "Cancelled for conflict audit.",
+      },
+      admin.id,
+    );
+    assert.equal(cancelledAgain.ok, true);
+
+    const overlappingId = await createBlockingBooking({
+      vehicleId,
+      vehicleUnitId: unitId,
+      pickup: addHours(pickup, 2),
+      returnAt: addHours(returnAt, 2),
+      licensePlate: unit.licensePlate,
+    });
+    assert.ok(overlappingId);
+
+    const conflicted = await restoreCancelledBooking(bookingId, {}, admin.id);
+    assert.equal(conflicted.ok, false);
+    if (!conflicted.ok) {
+      assert.equal(conflicted.reason, "occupancy_conflict");
+    }
+
+    const stillCancelled = await prisma.booking.findUniqueOrThrow({
+      where: { id: bookingId },
+      select: { status: true },
+    });
+    assert.equal(stillCancelled.status, "CANCELLED");
+  } finally {
+    await prisma.bookingStatusHistory.deleteMany({ where: { changedByAdminId: admin.id } });
+    await prisma.adminUser.delete({ where: { id: admin.id } }).catch(() => undefined);
+  }
+
+  logPass("J) Restore cancelled booking");
+}
+
 async function main(): Promise<void> {
   await cleanup();
 
@@ -1238,6 +1346,9 @@ async function main(): Promise<void> {
   await cleanup();
 
   await runDbExclusionSmokeTest();
+  await cleanup();
+
+  await runRestoreCancelledBookingTests();
   await cleanup();
 
   console.log("All booking/availability audit tests passed.");

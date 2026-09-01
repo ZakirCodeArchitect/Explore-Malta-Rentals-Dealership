@@ -1681,7 +1681,7 @@
         "cancel": "Cancel",
         "confirm": "Confirm",
         "readOnlyCompleted": "This booking is completed. No further lifecycle actions are available.",
-        "readOnlyCancelled": "This booking was cancelled. No lifecycle actions are available.",
+        "readOnlyCancelled": "This booking was cancelled. Restore it if it was cancelled by mistake.",
         "guidelines": {
           "currentStage": "Current Stage",
           "whatToDoNext": "What to do next",
@@ -1719,7 +1719,8 @@
             },
             "CANCELLED": {
               "title": "Cancelled — booking voided",
-              "description": "This booking was cancelled. The assigned unit was released for future bookings. Payment and deposit statuses reflect what was recorded at cancellation."
+              "description": "This booking was cancelled. The assigned unit was released for future bookings. Payment and deposit statuses reflect what was recorded at cancellation.",
+              "nextStep": "If this was cancelled by mistake, restore it to put the reservation back on the calendar. If a cancellation email was already sent, contact the customer."
             }
           },
           "actions": {
@@ -1738,6 +1739,10 @@
             "cancel": {
               "summary": "Cancel a confirmed booking that will not proceed.",
               "effects": "Sets booking to Cancelled and releases the reserved unit back to Available. Payment stays Pending unless already paid/refunded."
+            },
+            "restore": {
+              "summary": "Undo a cancellation and put the reservation back on the calendar.",
+              "effects": "Restores the previous booking status and reserves the original vehicle unit for the original dates. Payment status is left unchanged."
             }
           },
           "effectsLabel": "Result"
@@ -1746,7 +1751,8 @@
           "handOver": "Hand over the vehicle",
           "markReturned": "Mark vehicle returned",
           "complete": "Complete booking",
-          "cancel": "Cancel booking"
+          "cancel": "Cancel booking",
+          "restore": "Restore booking"
         },
         "handOver": {
           "title": "Hand over vehicle",
@@ -1793,6 +1799,17 @@
           "emailBody": "Email message",
           "confirmAndSend": "Cancel booking and send email",
           "emailFailed": "The booking was cancelled, but the customer email could not be sent. Please contact the customer directly."
+        },
+        "restoreDialog": {
+          "title": "Restore booking",
+          "description": "Restore booking {reference} to {status}. The original vehicle unit will be reserved again for the original dates.",
+          "emailWarning": "If a cancellation email was already sent, contact the customer to confirm the booking is still active.",
+          "note": "Note (optional)",
+          "confirm": "Restore booking",
+          "status": {
+            "CONFIRMED": "Confirmed",
+            "PENDING_PAYMENT": "Awaiting payment"
+          }
         },
         "paymentMethod": {
           "CASH": "Cash",

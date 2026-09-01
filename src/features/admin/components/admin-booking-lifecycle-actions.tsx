@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, KeyRound, Loader2, RotateCcw, XCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, KeyRound, Loader2, RotateCcw, Undo2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -14,7 +14,17 @@ type AdminBookingLifecycleActionsProps = Readonly<{
   vehicleUnits: AdminVehicleUnitDto[];
 }>;
 
-type ActiveDialog = "handOver" | "markReturned" | "complete" | "cancel" | null;
+type ActiveDialog = "handOver" | "markReturned" | "complete" | "cancel" | "restore" | null;
+
+function previousStatusBeforeCancel(booking: AdminBookingDetail): "CONFIRMED" | "PENDING_PAYMENT" {
+  const cancelled = booking.statusHistory.find(
+    (entry) =>
+      entry.newStatus === "CANCELLED" &&
+      (entry.oldStatus === "CONFIRMED" || entry.oldStatus === "PENDING_PAYMENT"),
+  );
+  return cancelled?.oldStatus === "PENDING_PAYMENT" ? "PENDING_PAYMENT" : "CONFIRMED";
+}
+
 type CancelDialogStep = "details" | "email";
 
 function toLocalDateTimeInputValue(iso: string | null | undefined): string {
@@ -221,7 +231,7 @@ function LifecycleGuideline({
         <p className="mt-1 text-sm leading-relaxed text-slate-600">
           {t(`guidelines.steps.${status}.description` as "guidelines.steps.CONFIRMED.description")}
         </p>
-        {status !== "COMPLETED" && status !== "CANCELLED" ? (
+        {status !== "COMPLETED" ? (
           <p className={["mt-3 border-t pt-3 text-sm leading-relaxed text-slate-700", theme.divider].join(" ")}>
             <span className="font-semibold text-slate-800">{t("guidelines.whatToDoNext")}: </span>
             {t(`guidelines.steps.${status}.nextStep` as "guidelines.steps.CONFIRMED.nextStep")}
@@ -335,6 +345,8 @@ export function AdminBookingLifecycleActions({
     emailBody: "",
     emailCustomized: false,
   });
+  const [restoreNote, setRestoreNote] = useState("");
+  const restoreTargetStatus = previousStatusBeforeCancel(booking);
 
   const selectableUnits = useMemo(
     () =>
@@ -412,16 +424,22 @@ export function AdminBookingLifecycleActions({
     setError(null);
   }
 
+  function openRestoreDialog() {
+    setError(null);
+    setRestoreNote("");
+    setActiveDialog("restore");
+  }
+
   const showHandOver =
     booking.status === "CONFIRMED" &&
     (Number(booking.totalDueOnline) <= 0 || booking.paymentStatus === "PAID");
   const showCancel = booking.status === "CONFIRMED" || booking.status === "PENDING_PAYMENT";
   const showMarkReturned = booking.status === "VEHICLE_HANDED_OVER";
   const showComplete = booking.status === "RETURNED";
-  const readOnlyLifecycle =
-    booking.status === "COMPLETED" || booking.status === "CANCELLED";
+  const showRestore = booking.status === "CANCELLED";
+  const readOnlyLifecycle = booking.status === "COMPLETED";
 
-  if (!showHandOver && !showCancel && !showMarkReturned && !showComplete && !readOnlyLifecycle) {
+  if (!showHandOver && !showCancel && !showMarkReturned && !showComplete && !showRestore && !readOnlyLifecycle) {
     return null;
   }
 
@@ -432,9 +450,7 @@ export function AdminBookingLifecycleActions({
       <LifecycleGuideline status={booking.status} t={t} />
 
       {readOnlyLifecycle ? (
-        <p className="mt-4 text-sm text-slate-600">
-          {booking.status === "COMPLETED" ? t("readOnlyCompleted") : t("readOnlyCancelled")}
-        </p>
+        <p className="mt-4 text-sm text-slate-600">{t("readOnlyCompleted")}</p>
       ) : (
         <div className="mt-4 space-y-3">
           <p className="text-sm font-semibold text-slate-700">
@@ -470,6 +486,16 @@ export function AdminBookingLifecycleActions({
               icon={CheckCircle2}
               variant="sky"
               onAction={() => setActiveDialog("complete")}
+            />
+          ) : null}
+          {showRestore ? (
+            <LifecycleActionCard
+              title={t("actions.restore")}
+              summary={t("guidelines.actions.restore.summary")}
+              effects={t("guidelines.actions.restore.effects")}
+              effectsLabel={t("guidelines.effectsLabel")}
+              icon={Undo2}
+              onAction={openRestoreDialog}
             />
           ) : null}
           {showCancel ? (
@@ -991,6 +1017,56 @@ export function AdminBookingLifecycleActions({
                 </div>
               </>
             )}
+          </div>
+        </div>
+      ) : null}
+
+      {activeDialog === "restore" ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
+          <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+            <h4 className="text-lg font-bold text-slate-950">{t("restoreDialog.title")}</h4>
+            <p className="mt-1 text-sm text-slate-600">
+              {t("restoreDialog.description", {
+                reference: booking.bookingReference,
+                status: t(`restoreDialog.status.${restoreTargetStatus}` as "restoreDialog.status.CONFIRMED"),
+              })}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">{t("restoreDialog.emailWarning")}</p>
+            <div className="mt-4">
+              <label>
+                <span className={labelClassName()}>{t("restoreDialog.note")}</span>
+                <textarea
+                  rows={3}
+                  value={restoreNote}
+                  onChange={(event) => setRestoreNote(event.target.value)}
+                  className={inputClassName()}
+                />
+              </label>
+            </div>
+            {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={closeLifecycleDialog}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
+              >
+                {t("cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => submitAction("restore", { note: restoreNote })}
+                className={lifecycleConfirmButtonClassName}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                ) : (
+                  <Undo2 className="size-4 shrink-0" aria-hidden />
+                )}
+                {t("restoreDialog.confirm")}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
