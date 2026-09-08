@@ -33,7 +33,7 @@ import {
   updateAdminVehicleUnit,
   VehicleUnitHasActiveBookingError,
 } from "../src/lib/admin/vehicle-units";
-import { cancelBooking, restoreCancelledBooking } from "../src/lib/admin/bookings/lifecycle";
+import { cancelBooking, handOverVehicle, restoreCancelledBooking } from "../src/lib/admin/bookings/lifecycle";
 import { cleanupExpiredHolds } from "../src/lib/reservation-holds/cleanupExpiredHolds";
 
 const TEST_EMAIL = "availability-audit@test.local";
@@ -164,9 +164,9 @@ async function cleanup(): Promise<void> {
   await prisma.booking.deleteMany({ where: { customerEmail: TEST_EMAIL } });
   await prisma.reservationHold.deleteMany({ where: { customerEmail: TEST_EMAIL } });
   await prisma.vehicleUnit.deleteMany({
-    where: { vehicle: { slug: { startsWith: `audit-test-${testSuffix}` } } },
+    where: { vehicle: { slug: { startsWith: "audit-test-" } } },
   });
-  await prisma.vehicle.deleteMany({ where: { slug: { startsWith: `audit-test-${testSuffix}` } } });
+  await prisma.vehicle.deleteMany({ where: { slug: { startsWith: "audit-test-" } } });
 }
 
 async function createSingleUnitVehicle(licensePlate: string): Promise<TestVehicle & { licensePlate: string }> {
@@ -1306,6 +1306,127 @@ async function runRestoreCancelledBookingTests(): Promise<void> {
   logPass("J) Restore cancelled booking");
 }
 
+async function runHandoverUnitChangeTests(): Promise<void> {
+  const { vehicleId, unitIds } = await createTestVehicle(2);
+  const unitA = unitIds[0]!;
+  const unitB = unitIds[1]!;
+  const [plateA, plateB] = await Promise.all([
+    prisma.vehicleUnit.findUniqueOrThrow({ where: { id: unitA }, select: { licensePlate: true } }),
+    prisma.vehicleUnit.findUniqueOrThrow({ where: { id: unitB }, select: { licensePlate: true } }),
+  ]);
+
+  const pickup = baseDate(80, 10);
+  const returnAt = baseDate(82, 10);
+  const bookingId = await createBlockingBooking({
+    vehicleId,
+    vehicleUnitId: unitA,
+    pickup,
+    returnAt,
+    licensePlate: plateA.licensePlate,
+  });
+
+  const admin = await prisma.adminUser.create({
+    data: {
+      name: "Handover Audit Admin",
+      email: `handover-audit-${testSuffix}@test.local`,
+      role: "STAFF",
+      isActive: true,
+    },
+  });
+
+  try {
+    const handedOver = await handOverVehicle(
+      bookingId,
+      {
+        paymentReceivedAmount: 25,
+        paymentMethod: "CASH",
+        paymentConfirmed: true,
+        securityDepositCollectedAmount: 0,
+        depositCollectedConfirmed: true,
+        handoverDateTime: pickup,
+        vehicleUnitId: unitB,
+      },
+      admin.id,
+    );
+    assert.equal(handedOver.ok, true);
+
+    const booking = await prisma.booking.findUniqueOrThrow({
+      where: { id: bookingId },
+      select: { vehicleUnitId: true, status: true },
+    });
+    assert.equal(booking.vehicleUnitId, unitB);
+    assert.equal(booking.status, "VEHICLE_HANDED_OVER");
+
+    const occupancy = await prisma.vehicleUnitOccupancy.findUnique({
+      where: { bookingId },
+      select: { vehicleUnitId: true },
+    });
+    assert.equal(occupancy?.vehicleUnitId, unitB);
+
+    const available = await findAvailableVehicleUnits({
+      vehicleId,
+      requestedStart: pickup,
+      requestedEnd: returnAt,
+    });
+    assert.equal(available.length, 1);
+    assert.equal(available[0]?.id, unitA);
+  } finally {
+    await prisma.bookingStatusHistory.deleteMany({ where: { changedByAdminId: admin.id } });
+    await prisma.adminUser.delete({ where: { id: admin.id } }).catch(() => undefined);
+  }
+
+  const adminForConflict = await prisma.adminUser.create({
+    data: {
+      name: "Handover Conflict Admin",
+      email: `handover-conflict-${testSuffix}@test.local`,
+      role: "STAFF",
+      isActive: true,
+    },
+  });
+
+  try {
+    const overlapPickup = baseDate(90, 10);
+    const overlapReturn = baseDate(92, 10);
+    const bookingOnA = await createBlockingBooking({
+      vehicleId,
+      vehicleUnitId: unitA,
+      pickup: overlapPickup,
+      returnAt: overlapReturn,
+      licensePlate: plateA.licensePlate,
+    });
+    await createBlockingBooking({
+      vehicleId,
+      vehicleUnitId: unitB,
+      pickup: baseDate(91, 10),
+      returnAt: baseDate(93, 10),
+      licensePlate: plateB.licensePlate,
+    });
+
+    const conflicted = await handOverVehicle(
+      bookingOnA,
+      {
+        paymentReceivedAmount: 25,
+        paymentMethod: "CASH",
+        paymentConfirmed: true,
+        securityDepositCollectedAmount: 0,
+        depositCollectedConfirmed: true,
+        handoverDateTime: overlapPickup,
+        vehicleUnitId: unitB,
+      },
+      adminForConflict.id,
+    );
+    assert.equal(conflicted.ok, false);
+    if (!conflicted.ok) {
+      assert.equal(conflicted.reason, "occupancy_conflict");
+    }
+  } finally {
+    await prisma.bookingStatusHistory.deleteMany({ where: { changedByAdminId: adminForConflict.id } });
+    await prisma.adminUser.delete({ where: { id: adminForConflict.id } }).catch(() => undefined);
+  }
+
+  logPass("K) Handover unit change syncs occupancy");
+}
+
 async function main(): Promise<void> {
   await cleanup();
 
@@ -1349,6 +1470,9 @@ async function main(): Promise<void> {
   await cleanup();
 
   await runRestoreCancelledBookingTests();
+  await cleanup();
+
+  await runHandoverUnitChangeTests();
   await cleanup();
 
   console.log("All booking/availability audit tests passed.");
