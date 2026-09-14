@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   INSURANCE_PLAN_CODES,
@@ -42,10 +43,10 @@ export function InsurancePlanOptions({
         return (
           <label
             key={code}
-            className={`flex cursor-pointer gap-3 rounded-lg border p-3 transition ${
+            className={`relative flex cursor-pointer gap-3 rounded-[var(--r-card)] border p-3.5 transition duration-[var(--dur-base)] ease-[var(--ease-standard)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue-500 has-[:focus-visible]:ring-offset-2 ${
               selected
-                ? "border-[var(--brand-blue)] bg-[var(--brand-blue)]/5 ring-1 ring-[var(--brand-blue)]/30"
-                : "border-slate-200 hover:border-slate-300"
+                ? "border-blue-400 bg-blue-50/70 ring-2 ring-blue-500/25 shadow-[var(--elev-2)]"
+                : "border-[var(--line)] bg-[var(--surface-card)] hover:border-[var(--line-strong)] hover:bg-[var(--surface-soft)]"
             }`}
           >
             <input
@@ -54,24 +55,42 @@ export function InsurancePlanOptions({
               value={code}
               checked={selected}
               onChange={() => onSelect(code)}
-              className="mt-1 shrink-0"
+              className="mt-1 h-4 w-4 shrink-0 accent-[var(--blue-500)] focus:outline-none"
             />
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                <span className="text-sm font-semibold text-slate-900">
+                <span
+                  className={`flex items-center gap-1.5 text-sm font-semibold tracking-[-0.01em] ${
+                    selected ? "text-blue-800" : "text-[var(--text-primary)]"
+                  }`}
+                >
+                  {selected ? (
+                    <span
+                      className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white"
+                      aria-hidden
+                    >
+                      <Check className="h-2.5 w-2.5" strokeWidth={4} />
+                    </span>
+                  ) : null}
                   {t(`insurancePlan.${code}.name`)}
                 </span>
-                <span className="text-sm font-medium text-slate-800">
+                <span className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
                   {dailyRate === 0
                     ? t("insuranceFree")
                     : t("insurancePerDay", { amount: formatEur(dailyRate) })}
                 </span>
               </span>
-              <span className="mt-1 block text-xs text-slate-600">
+              <span className="mt-1 block text-xs leading-relaxed text-[var(--text-secondary)]">
                 {t(`insurancePlan.${code}.coverage`)}
               </span>
               {days !== null && total !== null ? (
-                <span className="mt-1.5 block text-xs font-medium text-slate-700">
+                <span
+                  className={`mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums ${
+                    selected
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-[var(--surface-sunken)] text-[var(--text-secondary)]"
+                  }`}
+                >
                   {t("insuranceTotalLine", {
                     days,
                     rate: formatEur(dailyRate),

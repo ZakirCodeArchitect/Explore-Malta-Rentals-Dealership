@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { StepShell } from "@/features/booking-flow/components/step-shell";
@@ -116,7 +117,7 @@ export function ColorSelectorStep() {
     <StepShell title={t("title")} description={t("description")}>
       <fieldset className="space-y-3">
         <legend className="sr-only">{t("title")}</legend>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {availableColors.map((option) => {
             const isSelected = colorsMatch(state.rental.selectedColor, option.label);
             return (
@@ -126,19 +127,33 @@ export function ColorSelectorStep() {
                 aria-pressed={isSelected}
                 onClick={() => updateSection("rental", { selectedColor: option.label })}
                 className={[
-                  "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                  "inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold tracking-[-0.01em] transition duration-[var(--dur-base)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
                   isSelected
-                    ? "border-[#3a7ca5] bg-[#3a7ca5] text-white"
-                    : "border-slate-200 bg-white text-slate-800 hover:border-[#3a7ca5]/40",
+                    ? "border-blue-500 bg-blue-50 text-blue-800 ring-2 ring-blue-500/25 shadow-[var(--elev-2)]"
+                    : "border-[var(--line)] bg-[var(--surface-card)] text-[var(--text-primary)] shadow-[var(--elev-1)] hover:border-[var(--line-strong)] hover:bg-[var(--surface-soft)]",
                 ].join(" ")}
               >
+                <span
+                  className={[
+                    "flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors",
+                    isSelected
+                      ? "bg-blue-500 text-white"
+                      : "border border-[var(--line-strong)] bg-transparent text-transparent",
+                  ].join(" ")}
+                  aria-hidden
+                >
+                  <Check className="h-2.5 w-2.5" strokeWidth={4} />
+                </span>
                 {option.label}
               </button>
             );
           })}
         </div>
         {colorError ? (
-          <p className="text-sm font-medium text-rose-700" role="alert">
+          <p
+            className="rounded-[var(--r-field)] border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+            role="alert"
+          >
             {colorError}
           </p>
         ) : null}

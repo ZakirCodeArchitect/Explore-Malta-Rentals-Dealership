@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Suspense, startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
 import {
@@ -30,15 +31,37 @@ function navLinkIsActive(href: string, pathname: string, hash: string): boolean 
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-const navLinkBaseClass =
-  "text-sm font-semibold tracking-[-0.02em] transition-colors";
-const navLinkInactiveClass = `${navLinkBaseClass} text-slate-800 hover:opacity-70`;
-const navLinkActiveClass = `${navLinkBaseClass} text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]`;
+const navLinkClass = joinClasses(
+  "group relative inline-flex items-center py-1.5 text-sm font-semibold tracking-[-0.02em]",
+  "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-4 focus-visible:ring-offset-transparent",
+);
+
+/**
+ * Underline indicator. Scales in from the leading edge on hover and stays
+ * pinned open for the current page — cheaper than a shared layout animation
+ * and it works identically under `domAnimation`.
+ */
+const navUnderlineClass = joinClasses(
+  "pointer-events-none absolute inset-x-0 -bottom-0.5 h-[2px] rounded-full bg-[var(--orange-400)]",
+  "origin-left transition-transform duration-[var(--dur-base)] ease-[var(--ease-out-expo)] motion-reduce:transition-none",
+);
+
+const mobileLinkClass = joinClasses(
+  "relative block rounded-[var(--r-field)] px-3 py-2.5 text-sm font-semibold tracking-[-0.02em]",
+  "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+  "hover:bg-[var(--surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]",
+);
+
+const switcherFallbackClass =
+  "h-9 w-[6.5rem] rounded-full bg-[var(--surface-sunken)] shadow-[inset_0_0_0_1px_var(--line-subtle)]";
 
 export function SiteNavbar() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
+  const reduceMotion = useReducedMotion();
   const [hash, setHash] = useState("");
+  const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
@@ -63,6 +86,13 @@ export function SiteNavbar() {
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
   }, [pathname]);
+
+  useEffect(() => {
+    const sync = () => setScrolled(window.scrollY > 4);
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    return () => window.removeEventListener("scroll", sync);
+  }, []);
 
   useEffect(() => {
     startTransition(() => {
@@ -99,21 +129,40 @@ export function SiteNavbar() {
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0px,env(safe-area-inset-top))]">
       <nav
         aria-label={t("primary")}
-        className="site-navbar pointer-events-auto w-full max-w-full border-b border-slate-200/90 bg-slate-100 text-[var(--foreground)] shadow-[0_1px_0_rgba(15,23,42,0.04)]"
+        data-scrolled={scrolled ? "true" : undefined}
+        className={joinClasses(
+          "site-navbar pointer-events-auto w-full max-w-full text-[var(--text-primary)]",
+          "backdrop-blur-xl backdrop-saturate-150",
+          "transition-[background-color,box-shadow] duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+          // The hairline is a box-shadow rather than a border so toggling it on
+          // scroll never nudges the layout by a pixel.
+          scrolled
+            ? "bg-white/96 supports-[backdrop-filter:blur(0px)]:bg-white/86 shadow-[0_1px_0_0_var(--line),var(--elev-2)]"
+            : "bg-white/94 supports-[backdrop-filter:blur(0px)]:bg-white/70 shadow-[0_1px_0_0_transparent]",
+        )}
       >
-        <div className="h-0.5 w-full shrink-0 bg-red-600" aria-hidden />
+        {/* Brand hairline: blue → orange, reads as an intentional accent rather
+            than the leftover red artifact it replaces. */}
+        <div
+          className="h-0.5 w-full shrink-0 bg-[linear-gradient(90deg,var(--blue-600),var(--blue-400)_38%,var(--orange-400)_78%,var(--orange-500))]"
+          aria-hidden
+        />
         <div className={SITE_SHELL_OUTER}>
           <div className={SITE_SHELL_CONTAINER}>
             <div
               className={joinClasses(
                 SITE_SHELL_INNER_PAD,
-                "grid min-h-10 w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-x-3 gap-y-1.5 py-1 sm:min-h-11 sm:gap-y-2 sm:py-1",
-                "md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-x-4",
+                "grid min-h-16 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-2 sm:gap-y-2",
+                "md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-x-6",
               )}
             >
               <Link
                 href="/"
-                className="relative flex min-w-0 max-w-[min(22rem,calc(100vw-9rem))] justify-self-start overflow-hidden"
+                className={joinClasses(
+                  "relative flex min-w-0 max-w-[min(22rem,calc(100vw-9rem))] justify-self-start overflow-hidden rounded-[var(--r-field)]",
+                  "transition-opacity duration-[var(--dur-fast)] ease-[var(--ease-standard)] hover:opacity-80",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-2",
+                )}
               >
                 <Image
                   src={LOGO_SRC}
@@ -128,7 +177,7 @@ export function SiteNavbar() {
 
               <ul
                 className={joinClasses(
-                  "hidden list-none items-center justify-center justify-self-center gap-5 md:flex",
+                  "hidden list-none items-center justify-center justify-self-center gap-6 md:flex",
                   "lg:gap-8",
                 )}
               >
@@ -138,19 +187,33 @@ export function SiteNavbar() {
                     <li key={href}>
                       <Link
                         href={href}
-                        className={active ? navLinkActiveClass : navLinkInactiveClass}
+                        className={joinClasses(
+                          navLinkClass,
+                          active
+                            ? "text-[var(--ink-950)]"
+                            : "text-[var(--text-secondary)] hover:text-[var(--ink-950)]",
+                        )}
                         aria-current={active ? "page" : undefined}
                       >
                         {t(labelKey)}
+                        <span
+                          aria-hidden
+                          className={joinClasses(
+                            navUnderlineClass,
+                            active
+                              ? "scale-x-100"
+                              : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100",
+                          )}
+                        />
                       </Link>
                     </li>
                   );
                 })}
               </ul>
 
-              <div className="flex shrink-0 items-center justify-self-end gap-2">
+              <div className="flex shrink-0 items-center justify-self-end gap-2 sm:gap-2.5">
                 <div className="hidden md:block">
-                  <Suspense fallback={<div className="h-8 w-[5.5rem] rounded-full border border-slate-200/80 bg-white/60" aria-hidden />}>
+                  <Suspense fallback={<div className={switcherFallbackClass} aria-hidden />}>
                     <LanguageSwitcher />
                   </Suspense>
                 </div>
@@ -160,9 +223,14 @@ export function SiteNavbar() {
                     type="button"
                     id={`${mobileMenuId}-trigger`}
                     className={joinClasses(
-                      "flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-md border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs font-semibold tracking-[-0.02em] text-slate-800 hover:bg-slate-50 sm:text-sm",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue)] focus-visible:ring-offset-2",
-                      mobileNavOpen ? "border-slate-400 bg-slate-50" : undefined,
+                      "flex min-h-9 min-w-9 cursor-pointer items-center justify-center rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-[-0.02em] sm:text-sm",
+                      "bg-white text-[var(--ink-900)] shadow-[inset_0_0_0_1px_var(--line),var(--elev-1)]",
+                      "transition-[background-color,box-shadow,transform] duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+                      "hover:bg-[var(--surface-soft)] hover:shadow-[inset_0_0_0_1px_var(--line-strong),var(--elev-2)] active:scale-[0.97]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-2",
+                      mobileNavOpen
+                        ? "bg-[var(--surface-soft)] shadow-[inset_0_0_0_1px_var(--line-strong),var(--elev-2)]"
+                        : undefined,
                     )}
                     aria-expanded={mobileNavOpen}
                     aria-controls={mobileMenuId}
@@ -170,53 +238,82 @@ export function SiteNavbar() {
                   >
                     {mobileNavOpen ? t("close") : t("menu")}
                   </button>
-                  <div
-                    ref={mobilePanelRef}
-                    id={mobileMenuId}
-                    role="region"
-                    aria-label={t("primary")}
-                    className={joinClasses(
-                      "absolute right-0 top-[calc(100%+0.5rem)] w-[min(18rem,calc(100vw-1.5rem))] origin-top-right rounded-xl border border-slate-200 bg-white py-2 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.22)]",
-                      mobileNavOpen ? undefined : "hidden",
-                    )}
-                  >
-                    <div className="border-b border-slate-100 px-4 py-3">
-                      <Suspense fallback={<div className="h-8 w-full rounded-full border border-slate-200/80 bg-slate-50" aria-hidden />}>
-                        <LanguageSwitcher />
-                      </Suspense>
-                    </div>
-                    <ul className="m-0 list-none p-0">
-                      {navLinks.map(({ href, labelKey }) => {
-                        const active = navLinkIsActive(href, pathname, hash);
-                        return (
-                          <li key={href}>
-                            <Link
-                              href={href}
-                              className={joinClasses(
-                                "block px-4 py-2.5 text-sm font-semibold tracking-[-0.02em] transition-colors hover:bg-slate-50",
-                                active
-                                  ? "text-[var(--brand-orange)] hover:text-[var(--brand-orange-strong)]"
-                                  : "text-slate-800",
-                              )}
-                              aria-current={active ? "page" : undefined}
-                              onClick={closeMobileNav}
-                            >
-                              {t(labelKey)}
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
+                  <AnimatePresence initial={false}>
+                    {mobileNavOpen ? (
+                      <m.div
+                        ref={mobilePanelRef}
+                        id={mobileMenuId}
+                        role="region"
+                        aria-label={t("primary")}
+                        initial={reduceMotion ? false : { opacity: 0, y: -8, scaleY: 0.94 }}
+                        animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scaleY: 0.96 }}
+                        transition={{
+                          duration: reduceMotion ? 0.01 : 0.24,
+                          ease: [0.16, 1, 0.3, 1],
+                        }}
+                        style={{ transformOrigin: "top right" }}
+                        className={joinClasses(
+                          "absolute end-0 top-[calc(100%+0.6rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden",
+                          "rounded-[var(--r-panel)] bg-[var(--surface-card)] p-2",
+                          "shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-4)]",
+                        )}
+                      >
+                        <div className="px-2 pb-2.5 pt-1.5">
+                          <Suspense
+                            fallback={
+                              <div
+                                className="h-9 w-full rounded-full bg-[var(--surface-sunken)] shadow-[inset_0_0_0_1px_var(--line-subtle)]"
+                                aria-hidden
+                              />
+                            }
+                          >
+                            <LanguageSwitcher />
+                          </Suspense>
+                        </div>
+                        <hr className="rule-fade mx-2 my-1" />
+                        <ul className="m-0 list-none p-0">
+                          {navLinks.map(({ href, labelKey }) => {
+                            const active = navLinkIsActive(href, pathname, hash);
+                            return (
+                              <li key={href}>
+                                <Link
+                                  href={href}
+                                  className={joinClasses(
+                                    mobileLinkClass,
+                                    active
+                                      ? "bg-[var(--orange-50)] text-[var(--ink-950)] hover:bg-[var(--orange-50)]"
+                                      : "text-[var(--text-secondary)] hover:text-[var(--ink-950)]",
+                                  )}
+                                  aria-current={active ? "page" : undefined}
+                                  onClick={closeMobileNav}
+                                >
+                                  {active ? (
+                                    <span
+                                      aria-hidden
+                                      className="absolute inset-y-1.5 start-0 w-[3px] rounded-full bg-[var(--orange-400)]"
+                                    />
+                                  ) : null}
+                                  {t(labelKey)}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </m.div>
+                    ) : null}
+                  </AnimatePresence>
                 </div>
 
                 <Link
                   href="/booking"
                   className={joinClasses(
-                    "inline-flex min-h-8 min-w-[2.5rem] items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold tracking-[-0.03em] text-white sm:min-h-8 sm:px-3.5 sm:py-2 sm:text-sm",
-                    "bg-[var(--brand-orange)] shadow-[0_10px_28px_-12px_rgba(255,147,15,0.85)] transition-colors",
-                    "hover:bg-[var(--brand-orange-strong)]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2",
+                    "inline-flex min-h-9 min-w-[2.5rem] items-center justify-center rounded-full px-4 py-2 text-xs font-semibold tracking-[-0.02em] sm:min-h-10 sm:px-5 sm:text-sm",
+                    "bg-[var(--orange-400)] text-[var(--ink-950)] shadow-[var(--elev-orange)]",
+                    "transition-[transform,box-shadow,background-color] duration-[var(--dur-base)] ease-[var(--ease-out-expo)] motion-reduce:transition-none",
+                    "hover:bg-[var(--orange-500)] hover:shadow-[var(--elev-orange-lift)] motion-safe:hover:-translate-y-0.5",
+                    "active:translate-y-0 active:bg-[var(--orange-600)] active:shadow-[var(--elev-orange)]",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orange-600)] focus-visible:ring-offset-2",
                   )}
                 >
                   {t("bookNow")}

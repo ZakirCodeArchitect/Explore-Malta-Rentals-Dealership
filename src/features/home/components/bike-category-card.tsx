@@ -33,67 +33,70 @@ export function BikeCategoryCard({ cat }: BikeCategoryCardProps) {
   });
 
   return (
-    <div
-      className={`group relative min-w-0 overflow-hidden rounded-2xl border border-slate-200 p-4 shadow-[0_18px_50px_-35px_rgba(2,6,23,0.12)] transition-[background-color,box-shadow] duration-300 ease-out hover:shadow-[0_22px_55px_-30px_rgba(2,6,23,0.16)] sm:p-6 ${
-        tone === "white" ? "bg-white" : "bg-[#f8fafc]"
-      }`}
-    >
-      <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+    <div className="group surface-card lift flex h-full min-w-0 flex-col overflow-hidden">
+      {/* Full-bleed photo plate — tonal so cut-out bike shots read as product shots. */}
+      <div
+        className={`relative isolate flex min-w-0 items-end justify-center overflow-hidden ${
+          tone === "white"
+            ? "bg-[linear-gradient(175deg,#ffffff_0%,#f7f9fb_58%,var(--surface-sunken)_100%)]"
+            : "bg-[linear-gradient(175deg,var(--blue-50)_0%,#f4f7fa_55%,var(--surface-sunken)_100%)]"
+        }`}
+      >
         <div
-          aria-hidden="true"
-          className="absolute -left-20 -top-24 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_center,rgba(58,124,165,0.12),transparent_60%)]"
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-24 z-0 mx-auto h-64 w-[75%] rounded-full bg-[radial-gradient(ellipse_at_center,rgb(58_124_165_/_0.10),transparent_70%)] blur-2xl"
         />
         <div
-          aria-hidden="true"
-          className="absolute -right-20 -bottom-24 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,169,57,0.12),transparent_60%)]"
+          aria-hidden
+          className="pointer-events-none absolute -bottom-20 right-[-10%] z-0 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgb(255_169_57_/_0.16),transparent_65%)] blur-2xl"
         />
-      </div>
-
-      <div className="relative flex min-w-0 flex-col-reverse gap-5 md:flex-row md:items-start md:gap-5 lg:gap-6">
-        <div className="relative z-10 min-w-0 flex-1 basis-0">
-          <div>
-            <h3 className="text-lg font-bold tracking-[-0.03em] text-slate-950 sm:text-xl">
-              {title}
-            </h3>
-            <p className="mt-0.5 text-[10px] font-medium tracking-wide text-slate-400 sm:text-[11px]">
-              {subtitle}
-            </p>
-          </div>
-
-          <div className="mt-6 sm:mt-8">
-            <p className="text-xs leading-relaxed text-slate-600 sm:text-sm">
-              {description}
-            </p>
-
-            <ul className="mt-3 space-y-1.5">
-              {[bullet1, bullet2].map((b) => (
-                <li key={b} className="flex items-start gap-2 text-xs text-slate-700 sm:text-sm">
-                  <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-slate-200">
-                    <span className="h-1 w-1 rounded-full bg-[var(--brand-orange)]" aria-hidden />
-                  </span>
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-4">
-              <ButtonLink
-                href="/vehicles"
-                variant="primary"
-                className="!min-h-7 !gap-1 !rounded !px-2.5 !py-0.5 !text-[11px] !font-medium !leading-tight !text-white sm:!min-h-7 sm:!px-2.5 sm:!py-0.5 sm:!text-[11px]"
-              >
-                <span>{tHome("heroViewFleet")}</span>
-                <ArrowRight className="size-3 shrink-0" aria-hidden />
-              </ButtonLink>
-            </div>
-          </div>
-        </div>
-
         <BikeCategoryImageCarousel
           images={cat.images}
           title={title}
           onCardToneChange={setTone}
         />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-px bg-[var(--line-subtle)]"
+        />
+      </div>
+
+      <div className="relative flex min-w-0 flex-1 flex-col p-6 sm:p-7 lg:p-8">
+        <p className="type-eyebrow text-orange-600">{subtitle}</p>
+        <h3 className="type-h3 mt-3 text-ink-900">{title}</h3>
+
+        <p className="mt-3 text-[0.9375rem] leading-[1.65] text-ink-600">
+          {description}
+        </p>
+
+        <ul className="mt-6 space-y-2.5 border-t border-[var(--line-subtle)] pt-6">
+          {[bullet1, bullet2].map((b) => (
+            <li
+              key={b}
+              className="flex items-start gap-3 text-sm font-medium leading-[1.55] text-ink-700"
+            >
+              <span
+                aria-hidden
+                className="mt-[0.3rem] inline-flex size-[0.4375rem] shrink-0 rounded-full bg-orange-400 ring-4 ring-[color-mix(in_srgb,var(--orange-400)_16%,transparent)]"
+              />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-8 flex flex-1 items-end">
+          <ButtonLink
+            href="/vehicles"
+            variant="primary"
+            className="!min-h-10 !gap-2 !rounded-[var(--r-field)] !px-4 !py-0 !text-sm !text-ink-950 !shadow-[var(--elev-orange)] !duration-[var(--dur-base)] hover:!shadow-[var(--elev-orange-lift)] active:!scale-[0.985] sm:!min-h-11 sm:!px-5 sm:!text-sm"
+          >
+            <span>{tHome("heroViewFleet")}</span>
+            <ArrowRight
+              className="size-4 shrink-0 transition-transform duration-[var(--dur-base)] ease-[var(--ease-out-expo)] group-hover:translate-x-0.5"
+              aria-hidden
+            />
+          </ButtonLink>
+        </div>
       </div>
     </div>
   );

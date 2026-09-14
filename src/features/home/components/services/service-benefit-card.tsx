@@ -13,36 +13,24 @@ function joinClasses(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-/**
- * Hover uses transform-only: animating box-shadow/border causes repaint “steps” and jerk.
- * Long ease-in-out curve + no competing icon scale = one smooth motion.
- */
-const smoothMove =
-  "duration-[700ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:duration-180 motion-reduce:ease-linear";
+const focusRing =
+  "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--blue-500)]";
 
-const baseCard = joinClasses(
-  "group relative flex h-full flex-col rounded-lg border border-white/60 bg-white/30 text-left",
-  "shadow-[0_8px_32px_rgba(255,169,57,0.14),inset_0_1px_0_rgba(255,255,255,0.72)]",
-  "backdrop-blur-xl backdrop-saturate-150",
-  "transform-gpu transition-transform",
-  smoothMove,
-  "motion-safe:hover:-translate-y-[6px]",
-  "focus-within:ring-2 focus-within:ring-[var(--brand-orange)]/35 focus-within:ring-offset-2",
+/** Hairline is drawn as an inset ring so it never doubles up with the shadow. */
+const cardShell = joinClasses(
+  "group relative flex h-full flex-col text-left",
+  "bg-[var(--surface-card)]",
+  "transition-[transform,box-shadow] duration-[var(--dur-slow)] ease-[var(--ease-out-expo)]",
+  "motion-reduce:transition-none",
+  focusRing,
 );
 
-const iconGlass = joinClasses(
-  "border border-white/65 bg-white/40 text-slate-700 backdrop-blur-md",
-  "shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] ring-1 ring-white/35",
-);
-
-const iconWrapFeatured = joinClasses(
-  "flex h-14 w-14 items-center justify-center rounded-lg",
-  iconGlass,
-);
-
-const iconWrapCompact = joinClasses(
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
-  iconGlass,
+const iconPlate = joinClasses(
+  "flex items-center justify-center rounded-[var(--r-field)]",
+  "bg-[color-mix(in_srgb,var(--orange-400)_14%,white)] text-orange-700",
+  "shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--orange-400)_28%,transparent)]",
+  "transition-[transform,background-color] duration-[var(--dur-base)] ease-[var(--ease-out-expo)]",
+  "motion-reduce:transition-none",
 );
 
 export function ServiceBenefitCard({
@@ -56,27 +44,36 @@ export function ServiceBenefitCard({
     return (
       <article
         className={joinClasses(
-          baseCard,
-          "overflow-hidden p-8 sm:p-9 lg:p-10",
-          "before:pointer-events-none before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-white/45 before:via-white/10 before:to-[var(--brand-orange)]/[0.08]",
+          cardShell,
+          "overflow-hidden rounded-[var(--r-feature)] p-8 sm:p-9 lg:p-10",
+          "shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-3)]",
+          "motion-safe:hover:-translate-y-1 hover:shadow-[inset_0_0_0_1px_var(--line),var(--elev-4)]",
         )}
       >
         <div
-          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[var(--brand-orange)]/[0.18] blur-3xl"
           aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_0%_0%,color-mix(in_srgb,var(--orange-400)_11%,transparent),transparent_62%)]"
         />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 -right-16 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_center,color-mix(in_srgb,var(--blue-400)_16%,transparent),transparent_66%)] blur-2xl"
+        />
+
         <div className="relative flex flex-1 flex-col">
-          <div className={iconWrapFeatured}>
+          <div
+            className={joinClasses(
+              iconPlate,
+              "size-14 motion-safe:group-hover:scale-[1.04]",
+            )}
+          >
             <Icon className="h-7 w-7" strokeWidth={1.75} aria-hidden />
           </div>
-          <h3 className="mt-6 text-2xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-[1.65rem]">
-            {title}
-          </h3>
-          <p className="mt-3 flex-1 text-base leading-relaxed text-slate-600 sm:text-[1.05rem]">
+          <h3 className="type-h3 mt-8 text-ink-900">{title}</h3>
+          <p className="mt-4 flex-1 text-[length:var(--text-lead)] leading-[1.62] text-ink-600">
             {description}
           </p>
           {featuredFootnote ? (
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-orange)]">
+            <p className="type-eyebrow mt-8 border-t border-[var(--line-subtle)] pt-6 text-orange-600">
               {featuredFootnote}
             </p>
           ) : null}
@@ -88,20 +85,26 @@ export function ServiceBenefitCard({
   return (
     <article
       className={joinClasses(
-        baseCard,
-        "p-6 sm:p-7",
-        "before:pointer-events-none before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-white/40 before:via-transparent before:to-[var(--brand-orange)]/[0.06]",
+        cardShell,
+        "rounded-[var(--r-card)] p-6 sm:p-7",
+        "shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-1)]",
+        "motion-safe:hover:-translate-y-1 hover:shadow-[inset_0_0_0_1px_var(--line),var(--elev-3)]",
       )}
     >
       <div className="relative flex gap-4">
-        <div className={iconWrapCompact}>
+        <div
+          className={joinClasses(
+            iconPlate,
+            "size-11 shrink-0 motion-safe:group-hover:scale-[1.05]",
+          )}
+        >
           <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-base font-semibold tracking-[-0.02em] text-slate-950 sm:text-[1.05rem]">
+          <h3 className="text-[1.0625rem] font-semibold leading-[1.25] tracking-[-0.02em] text-ink-900">
             {title}
           </h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
+          <p className="mt-2 text-sm leading-[1.6] text-ink-600">{description}</p>
         </div>
       </div>
     </article>

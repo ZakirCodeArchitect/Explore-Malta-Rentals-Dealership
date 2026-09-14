@@ -21,11 +21,14 @@ export const heroContent = {
      */
     videoSrc: "/Untitled-1.mp4",
     /**
-     * Poster shown before the video loads (and on mobile / slow connections).
-     * Must be a compressed JPEG/WebP for fast LCP — ideally < 80 KB.
-     * Using a road/Malta scene that matches the video content.
+     * Poster shown before the video loads (and on mobile / reduced-motion /
+     * slow connections, where `HeroVideoBackground` skips the video entirely).
+     *
+     * This is a still frame taken from `videoSrc` itself (t≈5s), so the poster
+     * and the video are the same scene and there is no visual jump when the
+     * video fades in. Re-cut it from the video if the footage ever changes.
      */
-    posterSrc: "/empty-road-1.jpg",
+    posterSrc: "/hero-poster.jpg",
   },
 } as const;
 

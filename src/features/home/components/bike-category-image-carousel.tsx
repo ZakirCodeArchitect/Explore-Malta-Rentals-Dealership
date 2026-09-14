@@ -14,6 +14,22 @@ function bikeImageSrc(fileName: string) {
   return `${BIKE_IMAGES_BASE}/${encodeURIComponent(fileName)}`;
 }
 
+/**
+ * Circular hairline control. Hidden at rest on pointer devices and revealed on
+ * card hover, but always painted for keyboard focus and touch (no hover state).
+ */
+const arrowButtonClass = [
+  "inline-flex size-9 items-center justify-center rounded-full",
+  "bg-white/85 text-ink-700 backdrop-blur-sm",
+  "shadow-[inset_0_0_0_1px_var(--line),var(--elev-2)]",
+  "transition-[opacity,transform,color,background-color] duration-[var(--dur-base)] ease-[var(--ease-out-expo)]",
+  "hover:bg-white hover:text-ink-950 active:scale-95",
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--blue-500)]",
+  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+  "[@media(hover:none)]:opacity-100",
+  "motion-reduce:transition-none",
+].join(" ");
+
 type CardTone = "default" | "white";
 
 type BikeCategoryImageCarouselProps = {
@@ -76,16 +92,9 @@ export function BikeCategoryImageCarousel({
   return (
     <div
       className={[
-        "relative z-0 shrink-0",
-        /* Stacked / narrow: full-width strip */
-        "mx-auto h-44 w-full max-w-[min(100%,18rem)] sm:h-52 sm:max-w-[min(100%,22rem)]",
-        /*
-         * Side-by-side with copy (flex row on card): percentage + max cap so narrow grid
-         * columns and wide columns both get a predictable rail — never overlaps text.
-         */
-        "md:mx-0 md:h-56 md:w-[min(42%,13.75rem)] md:max-w-[13.75rem]",
-        "lg:h-60 lg:w-[min(40%,15rem)] lg:max-w-[15rem]",
-        "xl:h-[15.5rem] xl:w-[min(38%,17.5rem)] xl:max-w-[17.5rem]",
+        "relative z-[1] w-full",
+        /* Full-bleed photo stage inside the card's tonal plate. */
+        "h-56 sm:h-64 lg:h-[17.5rem] xl:h-72",
       ].join(" ")}
       role="region"
       aria-roledescription="carousel"
@@ -97,37 +106,35 @@ export function BikeCategoryImageCarousel({
         pauseRef.current = false;
       }}
     >
-      <div className="relative h-full w-full">
-        {parsed.map(({ file }, i) => (
-          <div
-            key={file}
-            className={`absolute inset-0 transition-opacity duration-500 ease-out ${
-              i === safeIndex ? "z-[1] opacity-100" : "z-0 opacity-0"
-            }`}
-            aria-hidden={i !== safeIndex}
-          >
-            <Image
-              src={bikeImageSrc(file)}
-              alt={`${title} — ${file.replace(/\.[^.]+$/, "")}`}
-              fill
-              sizes="(min-width: 1280px) 280px, (min-width: 1024px) 240px, (min-width: 768px) 200px, (min-width: 640px) 352px, 288px"
-              className="object-contain object-bottom md:object-right md:object-bottom"
-              priority={i === 0}
-            />
-          </div>
-        ))}
-      </div>
+      {parsed.map(({ file }, i) => (
+        <div
+          key={file}
+          className={`absolute inset-x-6 bottom-5 top-7 transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out-expo)] motion-reduce:transition-none ${
+            i === safeIndex ? "z-[1] opacity-100" : "z-0 opacity-0"
+          }`}
+          aria-hidden={i !== safeIndex}
+        >
+          <Image
+            src={bikeImageSrc(file)}
+            alt={`${title} — ${file.replace(/\.[^.]+$/, "")}`}
+            fill
+            sizes="(min-width: 1024px) 44vw, (min-width: 768px) 46vw, 92vw"
+            className="origin-bottom object-contain object-bottom transition-transform duration-[var(--dur-slower)] ease-[var(--ease-out-expo)] motion-safe:group-hover:scale-[1.045] motion-reduce:transition-none"
+            priority={i === 0}
+          />
+        </div>
+      ))}
 
       {n > 1 && (
         <div
-          className="pointer-events-auto absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-0.5 md:left-auto md:right-1.5 md:translate-x-0"
+          className="absolute bottom-4 right-4 z-[2] flex items-center gap-2"
           role="group"
           aria-label={`${title} photos`}
         >
           <button
             type="button"
             onClick={() => go(-1)}
-            className="inline-flex items-center justify-center rounded-md bg-transparent p-0.5 text-slate-600 transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
+            className={arrowButtonClass}
             aria-label="Previous bike photo"
           >
             <ChevronIcon dir="left" />
@@ -135,7 +142,7 @@ export function BikeCategoryImageCarousel({
           <button
             type="button"
             onClick={() => go(1)}
-            className="inline-flex items-center justify-center rounded-md bg-transparent p-0.5 text-slate-600 transition hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
+            className={arrowButtonClass}
             aria-label="Next bike photo"
           >
             <ChevronIcon dir="right" />
@@ -151,7 +158,7 @@ function ChevronIcon({ dir }: { dir: "left" | "right" }) {
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className="h-3.5 w-3.5"
+      className="h-4 w-4"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"

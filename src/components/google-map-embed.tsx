@@ -27,7 +27,7 @@ export function GoogleMapEmbed({ className }: GoogleMapEmbedProps) {
       <iframe
         title={t("mapEmbedTitle")}
         src={src}
-        className="h-full w-full flex-1 border-0"
+        className="h-full w-full flex-1 border-0 grayscale-[0.15] saturate-[0.92]"
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         allowFullScreen
@@ -36,7 +36,7 @@ export function GoogleMapEmbed({ className }: GoogleMapEmbedProps) {
         href={SITE_GOOGLE_MAPS_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-end gap-1.5 bg-white/90 px-3 py-1.5 text-[0.7rem] font-semibold text-[#1a73e8] hover:underline"
+        className="flex items-center justify-end gap-1.5 border-t border-[var(--line-subtle)] bg-[var(--surface-card)] px-4 py-2.5 text-[0.7rem] font-semibold tracking-[0.02em] text-blue-600 transition-colors duration-[var(--dur-fast)] hover:bg-[var(--surface-soft)] hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--blue-500)]"
         aria-label={t("mapOpenAria")}
       >
         <svg viewBox="0 0 24 24" className="h-3 w-3 shrink-0 fill-current" aria-hidden>

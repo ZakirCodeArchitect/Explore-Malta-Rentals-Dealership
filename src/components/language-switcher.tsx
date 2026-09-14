@@ -53,11 +53,14 @@ function LocalePill({
     <button
       type="button"
       onClick={() => onSelect(loc)}
-      className={
+      className={joinClasses(
+        "min-h-7 min-w-8 cursor-pointer rounded-full px-2 py-1 sm:min-w-9",
+        "transition-[background-color,color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]",
         active
-          ? "min-h-7 min-w-8 rounded-full bg-[var(--brand-orange)] px-2 py-1 text-white sm:min-w-9"
-          : "min-h-7 min-w-8 rounded-full px-2 py-1 text-slate-600 transition hover:bg-slate-100 sm:min-w-9"
-      }
+          ? "bg-[var(--orange-400)] text-[var(--ink-950)] shadow-[var(--elev-1)]"
+          : "text-[var(--text-secondary)] hover:bg-[var(--surface-sunken)] hover:text-[var(--ink-900)]",
+      )}
       aria-current={active ? "true" : undefined}
       lang={loc}
     >
@@ -113,7 +116,10 @@ export function LanguageSwitcher() {
       role="group"
       aria-label={t("language")}
       data-testid="language-switcher"
-      className="relative flex items-center gap-0.5 rounded-full border border-slate-300/90 bg-white/90 p-0.5 text-[0.65rem] font-bold tracking-wide text-slate-700 shadow-sm sm:text-xs"
+      className={joinClasses(
+        "relative flex items-center gap-0.5 rounded-full bg-white/90 p-1 text-[0.65rem] font-bold tracking-wide sm:text-xs",
+        "text-[var(--text-secondary)] shadow-[inset_0_0_0_1px_var(--line),var(--elev-1)] backdrop-blur-sm",
+      )}
     >
       <LocalePill loc={primary} active={locale === primary} onSelect={switchLocale} />
       <LocalePill loc={secondary} active={locale === secondary} onSelect={switchLocale} />
@@ -128,8 +134,11 @@ export function LanguageSwitcher() {
           aria-label={t("selectLanguage")}
           onClick={() => setOpen((v) => !v)}
           className={joinClasses(
-            "flex min-h-7 min-w-8 items-center justify-center rounded-full px-1.5 py-1 text-slate-600 transition hover:bg-slate-100 sm:min-w-9",
-            open ? "bg-slate-100 text-slate-800" : undefined,
+            "flex min-h-7 min-w-8 cursor-pointer items-center justify-center rounded-full px-1.5 py-1 sm:min-w-9",
+            "text-[var(--text-muted)] transition-[background-color,color] duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+            "hover:bg-[var(--surface-sunken)] hover:text-[var(--ink-900)]",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]",
+            open ? "bg-[var(--surface-sunken)] text-[var(--ink-900)]" : undefined,
           )}
         >
           <GlobeIcon />
@@ -140,7 +149,11 @@ export function LanguageSwitcher() {
             id={`${menuId}-listbox`}
             role="listbox"
             aria-labelledby={`${menuId}-trigger`}
-            className="language-switcher-dropdown absolute end-0 top-[calc(100%+0.35rem)] z-50 max-h-[min(18rem,70vh)] min-w-[11.5rem] overflow-y-auto overscroll-contain rounded-md border border-slate-200/90 bg-white py-1 text-[0.7rem] font-semibold text-slate-800 shadow-lg sm:text-xs"
+            className={joinClasses(
+              "language-switcher-dropdown absolute end-0 top-[calc(100%+0.5rem)] z-50 max-h-[min(18rem,70vh)] min-w-[12rem] overflow-y-auto overscroll-contain sm:text-xs",
+              "rounded-[var(--r-card)] bg-[var(--surface-card)] p-1 text-[0.7rem] font-semibold text-[var(--ink-900)]",
+              "shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-4)]",
+            )}
           >
             {localeList.map(({ code, label, nativeLabel }) => {
               const active = code === locale;
@@ -153,14 +166,16 @@ export function LanguageSwitcher() {
                     lang={code}
                     onClick={() => switchLocale(code)}
                     className={joinClasses(
-                      "flex w-full items-center justify-between gap-3 px-3 py-2 text-start transition",
+                      "flex w-full cursor-pointer items-center justify-between gap-3 rounded-[var(--r-field)] px-3 py-2 text-start",
+                      "transition-[background-color,color] duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]",
                       active
-                        ? "bg-[var(--brand-orange)]/12 text-[var(--brand-orange-strong)]"
-                        : "hover:bg-slate-50",
+                        ? "bg-[var(--orange-50)] text-[var(--orange-700)]"
+                        : "hover:bg-[var(--surface-soft)]",
                     )}
                   >
                     <span>{label}</span>
-                    <span className="text-[0.65rem] tracking-wide text-slate-500">
+                    <span className="text-[0.65rem] tracking-wide text-[var(--text-faint)]">
                       {nativeLabel}
                     </span>
                   </button>
