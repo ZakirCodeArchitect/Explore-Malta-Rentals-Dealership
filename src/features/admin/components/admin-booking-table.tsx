@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { buildBookingPaymentSummary } from "@/lib/booking/build-booking-payment-summary";
 import type { AdminBookingListItem, AdminBookingListResult } from "@/lib/admin/bookings/types";
+import { formatMaltaDateTime } from "@/lib/format-malta-datetime";
 
 type AdminBookingTableProps = Readonly<{
   locale: string;
@@ -19,24 +20,6 @@ function formatEur(amount: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
-}
-
-function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
-
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
 }
 
 function statusBadgeClass(status: string): string {
@@ -134,10 +117,10 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
                     ) : null}
                   </td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-slate-700">
-                    {formatDateTime(booking.pickupDateTime)}
+                    {formatMaltaDateTime(booking.pickupDateTime)}
                   </td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-slate-700">
-                    {formatDateTime(booking.returnDateTime)}
+                    {formatMaltaDateTime(booking.returnDateTime)}
                   </td>
                   <td className="px-3 py-2.5">
                     <span
@@ -166,7 +149,7 @@ export function AdminBookingTable({ locale, result, searchParams }: AdminBooking
                     {booking.hotelCode ?? "—"}
                   </td>
                   <td className="px-3 py-2.5 whitespace-nowrap text-slate-700">
-                    {formatDate(booking.createdAt)}
+                    {formatMaltaDateTime(booking.createdAt)}
                   </td>
                   <td className="px-3 py-2.5">
                     <a

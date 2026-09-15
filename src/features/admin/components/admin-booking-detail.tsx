@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 
 import { AdminBookingPriceBuildup } from "@/features/admin/components/admin-booking-price-buildup";
 import type { AdminBookingDetail } from "@/lib/admin/bookings/types";
+import { formatMaltaDate, formatMaltaDateTime } from "@/lib/format-malta-datetime";
 
 type AdminBookingDetailViewProps = Readonly<{
   locale: string;
@@ -24,24 +25,6 @@ function formatEur(amount: number | null): string {
 function formatPercent(value: number | null): string {
   if (value === null) return "—";
   return `${value}%`;
-}
-
-function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
-
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
 }
 
 function formatCoordinates(latitude: number | null, longitude: number | null): string {
@@ -195,8 +178,8 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
               </span>
             }
           />
-          <DetailRow label={t("details.fields.createdAt")} value={formatDateTime(booking.createdAt)} />
-          <DetailRow label={t("details.fields.updatedAt")} value={formatDateTime(booking.updatedAt)} />
+          <DetailRow label={t("details.fields.createdAt")} value={formatMaltaDateTime(booking.createdAt)} />
+          <DetailRow label={t("details.fields.updatedAt")} value={formatMaltaDateTime(booking.updatedAt)} />
           <DetailRow
             label={t("details.fields.securityDepositMethod")}
             value={t(`depositMethod.${booking.depositMethod}` as "depositMethod.ONLINE")}
@@ -215,7 +198,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
           />
           <DetailRow
             label={t("details.fields.confirmationEmailSentAt")}
-            value={booking.confirmationEmailSentAt ? formatDateTime(booking.confirmationEmailSentAt) : "—"}
+            value={booking.confirmationEmailSentAt ? formatMaltaDateTime(booking.confirmationEmailSentAt) : "—"}
           />
         </dl>
       </DetailSection>
@@ -227,7 +210,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
             <DetailRow label={t("details.fields.email")} value={booking.customerEmail} />
             <DetailRow label={t("details.fields.phone")} value={booking.customerPhone} />
             <DetailRow label={t("details.fields.nationality")} value={booking.customerNationality} />
-            <DetailRow label={t("details.fields.dateOfBirth")} value={formatDate(booking.customerDateOfBirth)} />
+            <DetailRow label={t("details.fields.dateOfBirth")} value={formatMaltaDate(booking.customerDateOfBirth)} />
             <DetailRow label={t("details.fields.licenseCategory")} value={booking.customerLicenseCategory} />
             <DetailRow
               label={t("details.fields.licenseUpload")}
@@ -279,8 +262,8 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
               label={t("details.fields.vehicleTypeSnapshot")}
               value={booking.vehicleTypeSnapshot ?? "—"}
             />
-            <DetailRow label={t("details.fields.pickup")} value={formatDateTime(booking.pickupDateTime)} />
-            <DetailRow label={t("details.fields.return")} value={formatDateTime(booking.returnDateTime)} />
+            <DetailRow label={t("details.fields.pickup")} value={formatMaltaDateTime(booking.pickupDateTime)} />
+            <DetailRow label={t("details.fields.return")} value={formatMaltaDateTime(booking.returnDateTime)} />
             <DetailRow label={t("details.fields.billableDays")} value={booking.billableDays} />
             <DetailRow
               label={t("details.fields.actualDurationHours")}
@@ -342,7 +325,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
               label={t("details.fields.dateOfBirth")}
               value={
                 booking.additionalDriverDateOfBirth
-                  ? formatDate(booking.additionalDriverDateOfBirth)
+                  ? formatMaltaDate(booking.additionalDriverDateOfBirth)
                   : "—"
               }
             />
@@ -407,7 +390,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
         <DetailSection title={t("details.sections.lifecycle")}>
           <dl>
             {booking.handoverDateTime ? (
-              <DetailRow label={t("details.fields.handoverDateTime")} value={formatDateTime(booking.handoverDateTime)} />
+              <DetailRow label={t("details.fields.handoverDateTime")} value={formatMaltaDateTime(booking.handoverDateTime)} />
             ) : null}
             {booking.paymentReceivedAmount !== null ? (
               <DetailRow label={t("details.fields.paymentReceivedAmount")} value={formatEur(booking.paymentReceivedAmount)} />
@@ -434,7 +417,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
               <DetailRow label={t("details.fields.handoverNotes")} value={booking.handoverNotes} />
             ) : null}
             {booking.returnRecordedAt ? (
-              <DetailRow label={t("details.fields.returnRecordedAt")} value={formatDateTime(booking.returnRecordedAt)} />
+              <DetailRow label={t("details.fields.returnRecordedAt")} value={formatMaltaDateTime(booking.returnRecordedAt)} />
             ) : null}
             {booking.returnNotes?.trim() ? (
               <DetailRow label={t("details.fields.returnNotes")} value={booking.returnNotes} />
@@ -462,7 +445,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
           <DetailRow label={t("details.fields.termsAccepted")} value={formatYesNo(booking.termsAccepted)} />
           <DetailRow
             label={t("details.fields.termsAcceptedAt")}
-            value={booking.termsAcceptedAt ? formatDateTime(booking.termsAcceptedAt) : "—"}
+            value={booking.termsAcceptedAt ? formatMaltaDateTime(booking.termsAcceptedAt) : "—"}
           />
           <DetailRow label={t("details.fields.termsVersion")} value={booking.termsVersion ?? "—"} />
           <DetailRow label={t("details.fields.consentSource")} value={booking.consentSource ?? "—"} />
@@ -486,7 +469,7 @@ export async function AdminBookingDetailView({ locale, booking }: AdminBookingDe
               <tbody>
                 {booking.statusHistory.map((entry) => (
                   <tr key={entry.id} className="border-t border-slate-100">
-                    <td className="py-2 pr-3 text-slate-700">{formatDateTime(entry.createdAt)}</td>
+                    <td className="py-2 pr-3 text-slate-700">{formatMaltaDateTime(entry.createdAt)}</td>
                     <td className="py-2 pr-3 text-slate-700">
                       {entry.oldStatus
                         ? t(`status.${entry.oldStatus}` as "status.CONFIRMED")
