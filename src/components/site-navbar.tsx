@@ -2,15 +2,25 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { X } from "lucide-react";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { Link, usePathname } from "@/i18n/navigation";
-import { Suspense, startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  Suspense,
+  startTransition,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 import {
   SITE_SHELL_OUTER,
   SITE_SHELL_CONTAINER,
   SITE_SHELL_INNER_PAD,
 } from "@/components/site-shell";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { LanguageSwitcher, MobileLanguageList } from "@/components/language-switcher";
 
 const LOGO_SRC = "/explore%20malta%20rentals%20logo.png";
 
@@ -47,12 +57,6 @@ const navUnderlineClass = joinClasses(
   "origin-left transition-transform duration-[var(--dur-base)] ease-[var(--ease-out-expo)] motion-reduce:transition-none",
 );
 
-const mobileLinkClass = joinClasses(
-  "relative block rounded-[var(--r-field)] px-3 py-2.5 text-sm font-semibold tracking-[-0.02em]",
-  "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
-  "hover:bg-[var(--surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]",
-);
-
 const switcherFallbackClass =
   "h-9 w-[6.5rem] rounded-full bg-[var(--surface-sunken)] shadow-[inset_0_0_0_1px_var(--line-subtle)]";
 
@@ -63,9 +67,12 @@ export function SiteNavbar() {
   const [hash, setHash] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [languageListOpen, setLanguageListOpen] = useState(false);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuId = useId();
+  const [portalReady, setPortalReady] = useState(false);
 
   const navLinks = [
     { href: "/" as const, labelKey: "home" as const },
@@ -78,7 +85,14 @@ export function SiteNavbar() {
     { href: "/#services" as const, labelKey: "services" as const },
   ] as const;
 
-  const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
+  const closeMobileNav = useCallback(() => {
+    setMobileNavOpen(false);
+    setLanguageListOpen(false);
+  }, []);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
 
   useEffect(() => {
     const sync = () => setHash(typeof window !== "undefined" ? window.location.hash : "");
@@ -103,13 +117,19 @@ export function SiteNavbar() {
   useEffect(() => {
     if (!mobileNavOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeMobileNav();
+      if (e.key !== "Escape") return;
+      if (languageListOpen) {
+        setLanguageListOpen(false);
+        return;
+      }
+      closeMobileNav();
     };
     const onPointerDown = (e: PointerEvent) => {
-      const root = mobileNavRef.current;
-      if (root && !root.contains(e.target as Node)) {
-        closeMobileNav();
+      const target = e.target as Node;
+      if (mobileNavRef.current?.contains(target) || mobilePanelRef.current?.contains(target)) {
+        return;
       }
+      closeMobileNav();
     };
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown, true);
@@ -117,12 +137,25 @@ export function SiteNavbar() {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown, true);
     };
-  }, [mobileNavOpen, closeMobileNav]);
+  }, [mobileNavOpen, languageListOpen, closeMobileNav]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) closeMobileNav();
+    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [closeMobileNav]);
 
   useEffect(() => {
     if (!mobileNavOpen) return;
-    const link = mobilePanelRef.current?.querySelector<HTMLElement>("a[href]");
-    requestAnimationFrame(() => link?.focus());
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => closeButtonRef.current?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, [mobileNavOpen]);
 
   return (
@@ -236,74 +269,122 @@ export function SiteNavbar() {
                     aria-controls={mobileMenuId}
                     onClick={() => setMobileNavOpen((open) => !open)}
                   >
-                    {mobileNavOpen ? t("close") : t("menu")}
+                    {t("menu")}
                   </button>
-                  <AnimatePresence initial={false}>
-                    {mobileNavOpen ? (
-                      <m.div
-                        ref={mobilePanelRef}
-                        id={mobileMenuId}
-                        role="region"
-                        aria-label={t("primary")}
-                        initial={reduceMotion ? false : { opacity: 0, y: -8, scaleY: 0.94 }}
-                        animate={{ opacity: 1, y: 0, scaleY: 1 }}
-                        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scaleY: 0.96 }}
-                        transition={{
-                          duration: reduceMotion ? 0.01 : 0.24,
-                          ease: [0.16, 1, 0.3, 1],
-                        }}
-                        style={{ transformOrigin: "top right" }}
-                        className={joinClasses(
-                          "absolute end-0 top-[calc(100%+0.6rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden",
-                          "rounded-[var(--r-panel)] bg-[var(--surface-card)] p-2",
-                          "shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-4)]",
-                        )}
-                      >
-                        <div className="px-2 pb-2.5 pt-1.5">
-                          <Suspense
-                            fallback={
-                              <div
-                                className="h-9 w-full rounded-full bg-[var(--surface-sunken)] shadow-[inset_0_0_0_1px_var(--line-subtle)]"
-                                aria-hidden
-                              />
-                            }
-                          >
-                            <LanguageSwitcher />
-                          </Suspense>
-                        </div>
-                        <hr className="rule-fade mx-2 my-1" />
-                        <ul className="m-0 list-none p-0">
-                          {navLinks.map(({ href, labelKey }) => {
-                            const active = navLinkIsActive(href, pathname, hash);
-                            return (
-                              <li key={href}>
-                                <Link
-                                  href={href}
-                                  className={joinClasses(
-                                    mobileLinkClass,
-                                    active
-                                      ? "bg-[var(--orange-50)] text-[var(--ink-950)] hover:bg-[var(--orange-50)]"
-                                      : "text-[var(--text-secondary)] hover:text-[var(--ink-950)]",
-                                  )}
-                                  aria-current={active ? "page" : undefined}
-                                  onClick={closeMobileNav}
-                                >
-                                  {active ? (
-                                    <span
-                                      aria-hidden
-                                      className="absolute inset-y-1.5 start-0 w-[3px] rounded-full bg-[var(--orange-400)]"
-                                    />
-                                  ) : null}
-                                  {t(labelKey)}
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </m.div>
-                    ) : null}
-                  </AnimatePresence>
                 </div>
+                {portalReady
+                  ? createPortal(
+                      <AnimatePresence initial={false}>
+                        {mobileNavOpen ? (
+                          <m.div
+                            ref={mobilePanelRef}
+                            id={mobileMenuId}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label={t("primary")}
+                            initial={reduceMotion ? false : { opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: reduceMotion ? 0.01 : 0.28, ease: [0.16, 1, 0.3, 1] }}
+                            className="fixed inset-0 z-[80] flex flex-col bg-[#f6f1ea]/58 text-[var(--ink-950)] backdrop-blur-[28px] backdrop-saturate-150 supports-[not_((backdrop-filter:blur(1px)))]:bg-[#f6f1ea]/94"
+                          >
+                            <div className={SITE_SHELL_OUTER}>
+                              <div className={SITE_SHELL_CONTAINER}>
+                                <div
+                                  className={joinClasses(
+                                    SITE_SHELL_INNER_PAD,
+                                    "flex items-center justify-between gap-4 pb-2 pt-[max(0.85rem,env(safe-area-inset-top))]",
+                                  )}
+                                >
+                                  <Link
+                                    href="/"
+                                    onClick={closeMobileNav}
+                                    className="relative flex min-w-0 max-w-[min(16rem,calc(100vw-6.5rem))] overflow-hidden rounded-[var(--r-field)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-2"
+                                  >
+                                    <Image
+                                      src={LOGO_SRC}
+                                      alt={t("logoAlt")}
+                                      width={320}
+                                      height={56}
+                                      className="h-10 w-auto max-w-full object-contain object-left"
+                                      style={{ width: "auto" }}
+                                    />
+                                  </Link>
+                                  <button
+                                    ref={closeButtonRef}
+                                    type="button"
+                                    onClick={closeMobileNav}
+                                    aria-label={t("close")}
+                                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white/55 text-[var(--ink-800)] shadow-[0_1px_2px_rgba(16,24,40,0.06)] backdrop-blur-md transition-colors hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-2"
+                                  >
+                                    <X className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            <ul className="m-0 min-h-0 flex-1 list-none overflow-y-auto px-7 pb-6 pt-8 sm:px-10">
+                              {languageListOpen ? (
+                                <Suspense fallback={null}>
+                                  <MobileLanguageList onSelect={closeMobileNav} />
+                                </Suspense>
+                              ) : (
+                                navLinks.map(({ href, labelKey }, index) => {
+                                  const active = navLinkIsActive(href, pathname, hash);
+                                  return (
+                                    <m.li
+                                      key={href}
+                                      className="border-b border-black/10"
+                                      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{
+                                        duration: reduceMotion ? 0.01 : 0.35,
+                                        delay: reduceMotion ? 0 : 0.04 + index * 0.035,
+                                        ease: [0.16, 1, 0.3, 1],
+                                      }}
+                                    >
+                                      <Link
+                                        href={href}
+                                        className="block py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-4 sm:py-4"
+                                        aria-current={active ? "page" : undefined}
+                                        onClick={closeMobileNav}
+                                      >
+                                        <span className="block text-[0.68rem] font-medium tabular-nums tracking-[0.08em] text-[var(--text-muted)]">
+                                          {String(index + 1).padStart(2, "0")}
+                                        </span>
+                                        <span
+                                          className={joinClasses(
+                                            "mt-1 block text-[1.65rem] font-medium leading-none tracking-[-0.03em] sm:text-[1.85rem]",
+                                            active ? "text-[var(--ink-950)]" : "text-[var(--ink-800)]",
+                                          )}
+                                        >
+                                          {t(labelKey)}
+                                        </span>
+                                      </Link>
+                                    </m.li>
+                                  );
+                                })
+                              )}
+                            </ul>
+
+                            <div className="px-7 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 sm:px-10">
+                              <Suspense
+                                fallback={
+                                  <div className={joinClasses(switcherFallbackClass, "w-full")} aria-hidden />
+                                }
+                              >
+                                <LanguageSwitcher
+                                  languageListOpen={languageListOpen}
+                                  onLanguageListToggle={() => setLanguageListOpen((open) => !open)}
+                                />
+                              </Suspense>
+                            </div>
+                          </m.div>
+                        ) : null}
+                      </AnimatePresence>,
+                      document.body,
+                    )
+                  : null}
 
                 <Link
                   href="/booking"

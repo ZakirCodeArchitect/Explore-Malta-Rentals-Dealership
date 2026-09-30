@@ -82,9 +82,9 @@ const textareaClass =
    The hero variant sits on dark photography, so it uses a glass treatment;
    the default variant sits on the bone-white canvas. */
 const quickFilterGroupClassByTone = {
-  hero: "inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-[var(--line-inverse)] bg-white/10 p-1.5 shadow-[var(--elev-3)] backdrop-blur-md",
+  hero: "inline-flex max-w-full flex-wrap items-center justify-center gap-1 rounded-full border border-[var(--line-inverse)] bg-white/10 p-1 shadow-[var(--elev-3)] backdrop-blur-md sm:gap-1.5 sm:p-1.5",
   default:
-    "inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-card)] p-1.5 shadow-[var(--elev-2)]",
+    "inline-flex max-w-full flex-wrap items-center justify-center gap-1 rounded-full border border-[var(--line)] bg-[var(--surface-card)] p-1 shadow-[var(--elev-2)] sm:gap-1.5 sm:p-1.5",
 } as const;
 
 const quickFilterChipClassByTone = {
@@ -105,7 +105,7 @@ const quickFilterIconClassByTone = {
 } as const;
 
 const quickFilterChipClass =
-  "group inline-flex h-12 items-center justify-center gap-2.5 rounded-full px-5 text-sm font-semibold tracking-[-0.01em] transition-[background-color,color] duration-[var(--dur-base)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:text-base";
+  "group inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold tracking-[-0.01em] transition-[background-color,color] duration-[var(--dur-base)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:h-12 sm:gap-2.5 sm:px-5 sm:text-sm md:text-base";
 
 /* ── Segmented control (vehicle type) ──────────────────────────────────────── */
 const segmentGroupClass =
@@ -415,7 +415,7 @@ export function BookingSearchForm({
             width={56}
             height={48}
             unoptimized
-            className={`h-11 w-13 shrink-0 object-contain ${quickFilterIconClassByTone[quickFilterTone]}`}
+            className={`h-6 w-7 shrink-0 object-contain sm:h-11 sm:w-13 ${quickFilterIconClassByTone[quickFilterTone]}`}
             aria-hidden
           />
           <span className="tabular-nums">{tSearch("chip50")}</span>
@@ -430,7 +430,7 @@ export function BookingSearchForm({
             width={36}
             height={36}
             unoptimized
-            className={`h-8 w-8 shrink-0 object-contain ${quickFilterIconClassByTone[quickFilterTone]}`}
+            className={`h-6 w-6 shrink-0 object-contain sm:h-8 sm:w-8 ${quickFilterIconClassByTone[quickFilterTone]}`}
             aria-hidden
           />
           <span className="tabular-nums">{tSearch("chip125")}</span>
@@ -746,9 +746,11 @@ export function BookingSearchForm({
                 </Popover.Trigger>
                 <Popover.Portal>
                   <Popover.Content
+                    side="bottom"
                     sideOffset={8}
-                    align="start"
-                    className="z-[100] rounded-[var(--r-panel)] border border-[var(--line)] bg-[var(--surface-card)] p-3 shadow-[var(--elev-4)]"
+                    align="center"
+                    collisionPadding={{ top: 72, right: 16, bottom: 16, left: 16 }}
+                    className="z-[100] max-h-[var(--radix-popover-content-available-height)] w-max max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-[var(--line)] bg-[var(--surface-card)] p-2.5 shadow-[var(--elev-3)] sm:rounded-[var(--r-panel)] sm:p-3 sm:shadow-[var(--elev-4)]"
                   >
                     <DayPicker
                       mode="range"

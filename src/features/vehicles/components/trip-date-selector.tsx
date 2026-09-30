@@ -94,9 +94,11 @@ export function TripDateSelector({
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
+            side="bottom"
             sideOffset={8}
-            align="start"
-            className="z-[100] rounded-[var(--r-panel)] bg-[var(--surface-card)] p-3 shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-4)]"
+            align="center"
+            collisionPadding={{ top: 72, right: 16, bottom: 16, left: 16 }}
+            className="z-[100] max-h-[var(--radix-popover-content-available-height)] w-max max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-[var(--line)] bg-[var(--surface-card)] p-2.5 shadow-[var(--elev-3)] sm:rounded-[var(--r-panel)] sm:p-3 sm:shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-4)]"
           >
             <DayPicker
               mode="range"

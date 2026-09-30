@@ -14,15 +14,15 @@ export function BookingSearchFormSkeleton({
 }: BookingSearchFormSkeletonProps) {
   const quickFilterClass =
     tone === "hero"
-      ? "inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-[var(--line-inverse)] bg-white/10 p-1.5 shadow-[var(--elev-3)] backdrop-blur-md"
-      : "inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-card)] p-1.5 shadow-[var(--elev-2)]";
+      ? "inline-flex max-w-full flex-wrap items-center justify-center gap-1 rounded-full border border-[var(--line-inverse)] bg-white/10 p-1 shadow-[var(--elev-3)] backdrop-blur-md sm:gap-1.5 sm:p-1.5"
+      : "inline-flex max-w-full flex-wrap items-center justify-center gap-1 rounded-full border border-[var(--line)] bg-[var(--surface-card)] p-1 shadow-[var(--elev-2)] sm:gap-1.5 sm:p-1.5";
 
   return (
     <div className="flex flex-col gap-6" aria-hidden>
       <div className={`${quickFilterClass} mx-auto`}>
-        <div className="skeleton h-12 w-28 rounded-full" />
-        <div className="skeleton h-12 w-28 rounded-full" />
-        <div className="skeleton h-12 w-32 rounded-full" />
+        <div className="skeleton h-9 w-20 rounded-full sm:h-12 sm:w-28" />
+        <div className="skeleton h-9 w-20 rounded-full sm:h-12 sm:w-28" />
+        <div className="skeleton h-9 w-28 rounded-full sm:h-12 sm:w-32" />
       </div>
 
       <div className="relative isolate">

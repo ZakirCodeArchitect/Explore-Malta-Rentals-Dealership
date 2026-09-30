@@ -69,7 +69,16 @@ function LocalePill({
   );
 }
 
-export function LanguageSwitcher() {
+type LanguageSwitcherProps = Readonly<{
+  /** When set, the globe reveals a list rendered by the parent instead of a dropdown. */
+  languageListOpen?: boolean;
+  onLanguageListToggle?: () => void;
+}>;
+
+export function LanguageSwitcher({
+  languageListOpen = false,
+  onLanguageListToggle,
+}: LanguageSwitcherProps = {}) {
   const locale = useLocale() as AppLocale;
   const t = useTranslations("Nav");
   const pathname = usePathname();
@@ -129,22 +138,30 @@ export function LanguageSwitcher() {
           type="button"
           id={`${menuId}-trigger`}
           aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-controls={`${menuId}-listbox`}
+          aria-expanded={onLanguageListToggle ? languageListOpen : open}
+          aria-controls={onLanguageListToggle ? undefined : `${menuId}-listbox`}
           aria-label={t("selectLanguage")}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            if (onLanguageListToggle) {
+              onLanguageListToggle();
+              return;
+            }
+            setOpen((v) => !v);
+          }}
           className={joinClasses(
             "flex min-h-7 min-w-8 cursor-pointer items-center justify-center rounded-full px-1.5 py-1 sm:min-w-9",
             "text-[var(--text-muted)] transition-[background-color,color] duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
             "hover:bg-[var(--surface-sunken)] hover:text-[var(--ink-900)]",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]",
-            open ? "bg-[var(--surface-sunken)] text-[var(--ink-900)]" : undefined,
+            (onLanguageListToggle ? languageListOpen : open)
+              ? "bg-[var(--surface-sunken)] text-[var(--ink-900)]"
+              : undefined,
           )}
         >
           <GlobeIcon />
         </button>
 
-        {open ? (
+        {open && !onLanguageListToggle ? (
           <ul
             id={`${menuId}-listbox`}
             role="listbox"
@@ -186,5 +203,57 @@ export function LanguageSwitcher() {
         ) : null}
       </div>
     </div>
+  );
+}
+
+/** Full language list for the mobile menu. Replaces the nav links while open. */
+export function MobileLanguageList({
+  onSelect,
+}: Readonly<{ onSelect?: () => void }>) {
+  const locale = useLocale() as AppLocale;
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const query = searchParams.toString();
+  const hrefSuffix = query ? `?${query}` : "";
+
+  const switchLocale = (loc: AppLocale) => {
+    router.replace(`${pathname}${hrefSuffix}`, { locale: loc });
+    onSelect?.();
+  };
+
+  return (
+    <>
+      {localeList.map(({ code, label, shortLabel, nativeLabel }) => {
+        const active = code === locale;
+        return (
+          <li key={code} className="border-b border-black/10">
+            <button
+              type="button"
+              lang={code}
+              aria-current={active ? "true" : undefined}
+              onClick={() => switchLocale(code)}
+              className="block w-full py-3.5 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-4 sm:py-4"
+            >
+              <span className="block text-[0.68rem] font-medium tracking-[0.08em] text-[var(--text-muted)]">
+                {shortLabel}
+              </span>
+              <span
+                className={joinClasses(
+                  "mt-1 block text-[1.65rem] font-medium leading-none tracking-[-0.03em] sm:text-[1.85rem]",
+                  active ? "text-[var(--ink-950)]" : "text-[var(--ink-800)]",
+                )}
+              >
+                {label}
+              </span>
+              {nativeLabel !== label ? (
+                <span className="mt-1.5 block text-sm text-[var(--text-muted)]">{nativeLabel}</span>
+              ) : null}
+            </button>
+          </li>
+        );
+      })}
+    </>
   );
 }
