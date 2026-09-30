@@ -66,36 +66,23 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
     <main className="flex flex-1 flex-col">
       <section
         aria-labelledby="booking-heading"
-        className="relative isolate flex min-h-dvh scroll-mt-28 flex-col overflow-hidden border-b border-slate-200/70 bg-[var(--surface-elevated)]"
+        className="relative isolate scroll-mt-28 overflow-hidden border-b border-[var(--line-subtle)] bg-[var(--surface-band)] pt-[calc(var(--site-header-offset)+3rem)] pb-20 sm:pt-[calc(var(--site-header-offset)+4rem)] sm:pb-24 lg:pb-28"
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-sky-100 via-blue-50 to-slate-100"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-white/35"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.12] via-transparent to-white/[0.08]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-gradient-to-b from-blue-50 via-[var(--surface-band)] to-transparent"
         />
 
-        <Container className="relative z-10 flex min-h-0 flex-1 flex-col justify-end pt-20 pb-10 sm:pt-24 sm:pb-14">
-          <div className="relative z-10 mx-auto w-full max-w-5xl">
+        <Container className="relative z-10">
+          <div className="mx-auto w-full max-w-5xl">
             <header className="text-center sm:text-left">
-              <h1
-                id="booking-heading"
-                className="text-4xl font-bold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl"
-              >
+              <h1 id="booking-heading" className="type-h1 text-[var(--text-primary)]">
                 {t("heading")}
               </h1>
-              <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600 sm:mx-0 sm:text-lg">
-                {t("intro")}
-              </p>
+              <p className="type-lead mx-auto mt-4 max-w-3xl sm:mx-0">{t("intro")}</p>
             </header>
 
-            <div className="mt-10">
+            <div className="mt-10 sm:mt-12">
               <BookingFlow
                 initialVehicleSlug={vehicle}
                 initialRental={{
@@ -117,25 +104,25 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
 
       <section
         aria-labelledby="booking-indicative-rates-heading"
-        className="scroll-mt-28 border-t border-slate-200/70 bg-[var(--surface-soft)] py-12 sm:py-16"
+        className="scroll-mt-28 border-t border-[var(--line-subtle)] bg-[var(--surface-card)] py-20 sm:py-24 lg:py-32"
       >
         <Container>
           <div className="mx-auto max-w-5xl">
             <h2
               id="booking-indicative-rates-heading"
-              className="text-2xl font-bold tracking-[-0.03em] text-slate-950 sm:text-3xl"
+              className="type-h2 text-[var(--text-primary)]"
             >
               {t("ratesHeading")}
             </h2>
-            <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-600">{t("ratesDescription")}</p>
-            <div className="mt-8 w-full">
+            <p className="type-lead mt-3 max-w-2xl">{t("ratesDescription")}</p>
+            <div className="mt-10 w-full">
               <IndicativeDailyRatesCard />
             </div>
-            <p className="mt-8 text-center text-sm text-slate-600 sm:text-left">
+            <p className="mt-10 text-center text-sm text-[var(--text-secondary)] sm:text-left">
               {t("ratesLinkLead")}{" "}
               <Link
                 href="/#services"
-                className="font-semibold text-slate-900 underline decoration-[var(--brand-orange)]/45 underline-offset-4 transition-colors hover:text-[var(--brand-orange-strong)] hover:decoration-[var(--brand-orange)]"
+                className="font-semibold text-[var(--text-primary)] underline decoration-orange-400/45 underline-offset-4 transition-colors duration-[var(--dur-fast)] hover:text-orange-600 hover:decoration-orange-400"
               >
                 {t("ratesLink")}
               </Link>

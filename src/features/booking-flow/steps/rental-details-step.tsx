@@ -7,7 +7,7 @@ import { PricingStep } from "@/features/booking-flow/steps/pricing-step";
 
 export function RentalDetailsStep() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <SelectVehicleStep />
       <RentalDatesStep />
       <ColorSelectorStep />

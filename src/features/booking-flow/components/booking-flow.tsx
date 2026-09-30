@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowRight } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { BookingFlowProvider, useBookingFlow } from "@/features/booking-flow/context/booking-flow-context";
 import { useVehicles } from "@/features/vehicles/lib/use-vehicles";
@@ -502,7 +502,7 @@ function BookingFlowBody({
   }, [bookingSessionId, releaseReservationHold, resetBookingForm, resetSubmitAttempt, router]);
 
   return (
-    <div ref={flowContainerRef} className="space-y-5">
+    <div ref={flowContainerRef} className="space-y-5 sm:space-y-6">
       <BookingLookupPanel
         initialReference={bookingLookupReference}
         initialEmail={bookingLookupEmail}
@@ -512,12 +512,16 @@ function BookingFlowBody({
         <div
           role="status"
           aria-live="polite"
-          className="fixed right-4 bottom-4 z-50 w-[min(92vw,24rem)] rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 shadow-lg"
+          className="fixed right-4 bottom-4 z-50 w-[min(92vw,24rem)] rounded-[var(--r-card)] border border-emerald-200 bg-emerald-50 px-4 py-3.5 text-sm text-emerald-950 shadow-[var(--elev-5)]"
         >
-          <p className="font-semibold">{tLookup("toastTitle")}</p>
+          <p className="flex items-center gap-2 font-semibold tracking-[-0.01em]">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
+            {tLookup("toastTitle")}
+          </p>
           <p className="mt-1 text-emerald-900">{tLookup("toastBody")}</p>
-          <p className="mt-2 text-xs text-emerald-900/90">
-            {tLookup("referenceLabel")}: <span className="font-mono">{bookingLookupReference}</span>
+          <p className="mt-2.5 text-xs text-emerald-900/90">
+            {tLookup("referenceLabel")}:{" "}
+            <span className="font-mono font-semibold tabular-nums">{bookingLookupReference}</span>
           </p>
           {bookedVehicleLabel ? (
             <p className="text-xs text-emerald-900/90">
@@ -537,7 +541,8 @@ function BookingFlowBody({
       ) : null}
 
       {heartbeatWarning ? (
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+        <p className="flex items-start gap-2.5 rounded-[var(--r-card)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 shadow-[var(--elev-1)]">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden />
           {heartbeatWarning}
         </p>
       ) : null}
@@ -545,13 +550,23 @@ function BookingFlowBody({
       <div>{activeStep}</div>
 
       {stepErrors[activeStepId] ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+        <p
+          role="alert"
+          className="flex items-start gap-2.5 rounded-[var(--r-card)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow-[var(--elev-1)]"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" aria-hidden />
           {stepErrors[activeStepId]}
         </p>
       ) : null}
 
       {submitError ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">{submitError}</p>
+        <p
+          role="alert"
+          className="flex items-start gap-2.5 rounded-[var(--r-card)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow-[var(--elev-1)]"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" aria-hidden />
+          {submitError}
+        </p>
       ) : null}
 
       <InsurancePromptModal

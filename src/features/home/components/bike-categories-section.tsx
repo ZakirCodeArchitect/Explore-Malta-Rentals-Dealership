@@ -2,6 +2,8 @@ import { Container } from "@/components/ui/container";
 import { bikeCategories } from "@/features/home/data/home-sections";
 import { SectionHeader } from "@/features/home/components/section-header";
 import { BikeCategoryCard } from "@/features/home/components/bike-category-card";
+import { Reveal } from "@/components/motion/reveal";
+import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { getTranslations } from "next-intl/server";
 
 export async function BikeCategoriesSection() {
@@ -11,24 +13,37 @@ export async function BikeCategoriesSection() {
     <section
       id="fleet-preview"
       aria-labelledby="bike-categories-title"
-      className="scroll-mt-28 border-t border-slate-200/70 bg-white py-0"
+      className="scroll-mt-28 bg-[var(--surface-page)] py-20 sm:py-24 lg:py-32"
     >
-      <div className="relative overflow-hidden">
-        <Container className="relative z-10 py-6 sm:py-8">
+      <Container className="relative">
+        <Reveal as="div" y={22}>
           <SectionHeader
             titleId="bike-categories-title"
             title={t("sectionBikePickerTitle")}
             description={t("sectionBikePickerDescription")}
             tone="light"
           />
+        </Reveal>
 
-          <div className="mt-6 grid min-w-0 gap-5 sm:mt-8 md:grid-cols-2">
-            {bikeCategories.map((cat) => (
-              <BikeCategoryCard key={cat.id} cat={cat} />
-            ))}
-          </div>
-        </Container>
-      </div>
+        <Stagger
+          as="ul"
+          step={0.09}
+          delay={0.05}
+          className="mt-14 grid min-w-0 list-none gap-6 p-0 md:grid-cols-2 lg:gap-8"
+        >
+          {bikeCategories.map((cat) => (
+            <StaggerItem
+              as="li"
+              key={cat.id}
+              className="min-w-0"
+              y={26}
+              scale={0.985}
+            >
+              <BikeCategoryCard cat={cat} />
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </Container>
     </section>
   );
 }

@@ -46,31 +46,113 @@ import { getPricingTierForDays } from "@/lib/pricing/pricing-tiers";
 import { pricingService } from "@/lib/pricing/service";
 import { SITE_GOOGLE_MAPS_URL } from "@/lib/site-brand-copy";
 
-const inputShell =
-  "flex w-full min-h-[3rem] items-center gap-2 rounded-lg border border-slate-200/90 bg-white px-3.5 py-2 text-left text-sm font-medium text-slate-900 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] transition hover:border-slate-300 focus-within:border-[var(--brand-blue)] focus-within:ring-2 focus-within:ring-[var(--brand-blue)]/25";
+/* ── Field system ───────────────────────────────────────────────────────────
+   Every control in the panel (location, brand, date range, both times) shares
+   this shell so they read as siblings: hairline border, `--r-field`, ink value
+   text, blue focus ring. */
+const inputShell = [
+  "group flex w-full min-h-12 items-center gap-2 rounded-[var(--r-field)] border border-[var(--line)]",
+  "bg-[var(--surface-card)] px-3.5 py-2 text-left text-sm font-semibold tracking-[-0.01em] text-[var(--ink-900)]",
+  "shadow-[var(--elev-1)] transition-[border-color,box-shadow,background-color] duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+  "hover:border-[var(--line-strong)]",
+  "focus-within:border-[var(--blue-500)] focus-within:ring-2 focus-within:ring-[var(--blue-500)]/25",
+  "focus-visible:border-[var(--blue-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)]/30",
+  "data-[state=open]:border-[var(--blue-500)] data-[state=open]:ring-2 data-[state=open]:ring-[var(--blue-500)]/25",
+].join(" ");
+
+const inputShellDisabledClass =
+  "cursor-not-allowed bg-[var(--surface-sunken)] text-[var(--text-faint)] shadow-none hover:border-[var(--line)]";
+
+const inputShellErrorClass =
+  "border-red-400 ring-2 ring-red-500/15 hover:border-red-400";
+
+const fieldLabelClass = "type-spec mb-2 block text-[var(--text-muted)]";
+
+const fieldErrorClass = "mt-1.5 text-xs font-medium text-red-600";
+
+const fieldIconClass = "h-4 w-4 shrink-0 text-[var(--orange-500)]";
+
+const changeAffordanceClass =
+  "type-spec shrink-0 text-[var(--text-muted)] transition-colors duration-[var(--dur-fast)] group-hover:text-[var(--ink-800)]";
 
 const textareaClass =
-  "mt-2 w-full min-h-[5rem] rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-inner outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-[var(--brand-blue)]/20";
+  "mt-2 w-full min-h-[5rem] rounded-[var(--r-field)] border border-[var(--line)] bg-[var(--surface-card)] px-3.5 py-2.5 text-sm leading-relaxed text-[var(--ink-900)] shadow-[var(--elev-1)] outline-none transition-[border-color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease-standard)] placeholder:text-[var(--ink-400)] hover:border-[var(--line-strong)] focus:border-[var(--blue-500)] focus:ring-2 focus:ring-[var(--blue-500)]/25";
 
-const quickFilterGroupClass =
-  "inline-flex max-w-full flex-wrap items-center gap-2 rounded-md border-[3px] border-[var(--brand-orange-strong)] bg-white/95 p-2 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.55)] backdrop-blur-md";
+/* ── Quick-link chips (50cc / 125cc / services) ─────────────────────────────
+   The hero variant sits on dark photography, so it uses a glass treatment;
+   the default variant sits on the bone-white canvas. */
+const quickFilterGroupClassByTone = {
+  hero: "inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-[var(--line-inverse)] bg-white/10 p-1.5 shadow-[var(--elev-3)] backdrop-blur-md",
+  default:
+    "inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface-card)] p-1.5 shadow-[var(--elev-2)]",
+} as const;
+
+const quickFilterChipClassByTone = {
+  hero: "text-white/90 hover:bg-white/15 hover:text-white focus-visible:ring-white/70 focus-visible:ring-offset-[var(--ink-950)]",
+  default:
+    "text-[var(--ink-800)] hover:bg-[var(--surface-sunken)] hover:text-[var(--ink-950)] focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-[var(--surface-card)]",
+} as const;
 
 const quickFilterCcIconByCc = {
   "50": "/landing page/50cc.png",
   "125": "/landing page/125cc.png",
 } as const;
 
+/* Source art is black line work, so it needs inverting to read on the hero video. */
+const quickFilterIconClassByTone = {
+  hero: "brightness-0 invert",
+  default: "",
+} as const;
+
 const quickFilterChipClass =
-  "group inline-flex h-12 items-center justify-center gap-2.5 rounded-md border border-transparent px-5 text-base font-semibold tracking-[-0.01em] text-slate-800 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
+  "group inline-flex h-12 items-center justify-center gap-2.5 rounded-full px-5 text-sm font-semibold tracking-[-0.01em] transition-[background-color,color] duration-[var(--dur-base)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:text-base";
 
-const quickFilterChipLabelClass =
-  "transition-colors duration-200 group-hover:text-[var(--brand-orange)]";
+/* ── Segmented control (vehicle type) ──────────────────────────────────────── */
+const segmentGroupClass =
+  "grid grid-cols-2 gap-1.5 rounded-[var(--r-card)] border border-[var(--line)] bg-[var(--surface-sunken)] p-1.5 sm:flex sm:items-stretch";
 
-const formShellGlowClass =
-  "pointer-events-none absolute -inset-3 z-0 rounded-2xl opacity-80 blur-2xl bg-[radial-gradient(ellipse_75%_60%_at_0%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_0%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_0%_100%,rgba(255,169,57,0.42),transparent),radial-gradient(ellipse_75%_60%_at_100%_100%,rgba(255,169,57,0.42),transparent)] sm:-inset-4";
+const segmentClass = [
+  "group relative flex min-h-[3.25rem] flex-1 items-center justify-center gap-2.5 rounded-[calc(var(--r-card)-0.375rem)] px-3 py-2",
+  "text-left transition-[background-color,box-shadow,color] duration-[var(--dur-base)] ease-[var(--ease-out-expo)]",
+  "focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-sunken)]",
+].join(" ");
 
+const segmentSelectedClass =
+  "bg-[var(--surface-card)] text-[var(--ink-950)] shadow-[var(--elev-1)]";
+
+const segmentIdleClass =
+  "text-[var(--text-secondary)] hover:bg-white/60 hover:text-[var(--ink-900)]";
+
+/* ── Panel ─────────────────────────────────────────────────────────────────
+   Floats above the hero photograph: panel radius, inset hairline, `--elev-5`. */
 const formShellClass =
-  "relative z-10 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] sm:p-5 lg:p-6";
+  "relative z-10 overflow-hidden rounded-[var(--r-panel)] bg-[var(--surface-card)] p-4 shadow-[inset_0_0_0_1px_var(--line-subtle),var(--elev-5)] sm:p-5 lg:p-6";
+
+const summaryBandClass =
+  "-mx-4 -mb-4 mt-5 border-t border-[var(--line-subtle)] bg-[var(--surface-band)] px-4 py-4 sm:-mx-5 sm:-mb-5 sm:px-5 lg:-mx-6 lg:-mb-6 lg:px-6";
+
+const submitButtonClass = [
+  "inline-flex min-h-12 min-w-[11.5rem] shrink-0 items-center justify-center gap-2 rounded-full",
+  "bg-[var(--orange-400)] px-7 text-sm font-semibold tracking-[-0.01em] text-[var(--ink-950)] shadow-[var(--elev-orange)]",
+  "transition-[transform,box-shadow,background-color] duration-[var(--dur-base)] ease-[var(--ease-out-expo)]",
+  "hover:bg-[var(--orange-500)] hover:shadow-[var(--elev-orange-lift)] motion-safe:hover:-translate-y-0.5",
+  "active:translate-y-0 active:bg-[var(--orange-600)] active:shadow-[var(--elev-orange)]",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orange-500)] focus-visible:ring-offset-2",
+  "disabled:translate-y-0 disabled:cursor-wait disabled:bg-[var(--orange-300)] disabled:shadow-[var(--elev-orange)]",
+  "motion-reduce:transition-none sm:min-h-13 sm:min-w-[13rem] sm:text-base",
+].join(" ");
+
+const selectionCardClass =
+  "flex cursor-pointer items-start gap-3 rounded-[var(--r-card)] border p-4 text-left transition-[border-color,background-color,box-shadow] duration-[var(--dur-base)] ease-[var(--ease-standard)]";
+
+const selectionCardSelectedClass =
+  "border-[var(--orange-300)] bg-[var(--orange-50)] shadow-[var(--elev-1)]";
+
+const selectionCardIdleClass =
+  "border-[var(--line)] bg-[var(--surface-card)] hover:border-[var(--line-strong)] hover:bg-[var(--ink-50)]";
+
+const selectionCheckboxClass =
+  "mt-0.5 h-[1.05rem] w-[1.05rem] shrink-0 rounded-[0.3rem] border-[var(--line-strong)] accent-[var(--orange-500)] text-[var(--orange-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue-500)] focus-visible:ring-offset-2";
 
 const vehicleTypeIconByType: Record<
   (typeof VEHICLE_TYPES)[number],
@@ -111,7 +193,7 @@ function makeBrandDropdownIndicator(changeLabel: string) {
   ) {
     return (
       <selectComponents.DropdownIndicator {...props}>
-        <span className="shrink-0 text-xs font-semibold text-slate-500">
+        <span className="type-spec shrink-0 text-[var(--text-muted)]">
           {changeLabel}
         </span>
       </selectComponents.DropdownIndicator>
@@ -301,6 +383,11 @@ export function BookingSearchForm({
     ];
   }, [brandChoices, tFilters]);
 
+  /* Presentation-only mirrors of the select's own `isDisabled` expression and
+     the resolver's date errors, so the shell can show matching states. */
+  const isBrandSelectDisabled = isBrandsLoading && brandChoices.length === 0;
+  const hasDateError = Boolean(errors.pickupDate || errors.dropoffDate);
+
   const brandSelectComponents = useMemo(
     () => ({
       DropdownIndicator: makeBrandDropdownIndicator(tCommon("change")),
@@ -315,48 +402,58 @@ export function BookingSearchForm({
       onSubmit={handleSubmit(onSubmit)}
       className="flex scroll-mt-28 flex-col gap-6"
     >
-      <div className={`${quickFilterGroupClass} mx-auto`}>
-        <Link href="/vehicles?cc=50&type=scooter" className={quickFilterChipClass}>
+      <div
+        className={`${quickFilterGroupClassByTone[quickFilterTone]} mx-auto`}
+      >
+        <Link
+          href="/vehicles?cc=50&type=scooter"
+          className={`${quickFilterChipClass} ${quickFilterChipClassByTone[quickFilterTone]}`}
+        >
           <Image
             src={quickFilterCcIconByCc["50"]}
             alt=""
             width={56}
             height={48}
             unoptimized
-            className="h-12 w-14 shrink-0 object-contain"
+            className={`h-11 w-13 shrink-0 object-contain ${quickFilterIconClassByTone[quickFilterTone]}`}
             aria-hidden
           />
-          <span className={`tabular-nums ${quickFilterChipLabelClass}`}>{tSearch("chip50")}</span>
+          <span className="tabular-nums">{tSearch("chip50")}</span>
         </Link>
-        <Link href="/vehicles?cc=125&type=scooter" className={quickFilterChipClass}>
+        <Link
+          href="/vehicles?cc=125&type=scooter"
+          className={`${quickFilterChipClass} ${quickFilterChipClassByTone[quickFilterTone]}`}
+        >
           <Image
             src={quickFilterCcIconByCc["125"]}
             alt=""
             width={36}
             height={36}
             unoptimized
-            className="h-9 w-9 shrink-0 object-contain"
+            className={`h-8 w-8 shrink-0 object-contain ${quickFilterIconClassByTone[quickFilterTone]}`}
             aria-hidden
           />
-          <span className={`tabular-nums ${quickFilterChipLabelClass}`}>{tSearch("chip125")}</span>
+          <span className="tabular-nums">{tSearch("chip125")}</span>
         </Link>
-        <Link href="/#services" className={quickFilterChipClass}>
-          <span className={quickFilterChipLabelClass}>{tSearch("chipServices")}</span>
+        <Link
+          href="/#services"
+          className={`${quickFilterChipClass} ${quickFilterChipClassByTone[quickFilterTone]}`}
+        >
+          <span>{tSearch("chipServices")}</span>
         </Link>
       </div>
 
       <div className="relative isolate">
-        <div className={formShellGlowClass} aria-hidden />
         <div className={formShellClass}>
         <div className="flex flex-col gap-5">
-          <div className="flex items-center gap-4 rounded-lg border border-slate-100 bg-white px-4 py-3">
+          <div className="flex items-center gap-4 rounded-[var(--r-card)] border border-[var(--line-subtle)] bg-[var(--surface-sunken)] px-4 py-3.5">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-slate-500">{tSearch("pickupLocationTitle")}</p>
-              <p className="mt-1 flex items-start gap-2 text-sm font-semibold text-slate-900">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
+              <p className="type-spec text-[var(--text-muted)]">{tSearch("pickupLocationTitle")}</p>
+              <p className="mt-1.5 flex items-start gap-2 text-sm font-semibold tracking-[-0.01em] text-[var(--ink-900)]">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[var(--orange-500)]" aria-hidden />
                 {tSearch("shopPickupLine")}
               </p>
-              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              <p className="mt-2 text-xs leading-relaxed tabular-nums text-[var(--text-secondary)]">
                 {tSearch("pickupHoursNote", { openTime: "09:30", closeTime: "19:00" })}
               </p>
             </div>
@@ -364,7 +461,7 @@ export function BookingSearchForm({
               href={SITE_GOOGLE_MAPS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 text-xs font-semibold text-[#1a73e8] underline-offset-2 transition hover:underline"
+              className="type-spec shrink-0 text-[var(--blue-600)] underline-offset-4 transition-colors duration-[var(--dur-fast)] hover:text-[var(--blue-700)] hover:underline"
               aria-label={tCommon("mapOpenAria")}
             >
               {tCommon("mapViewOnMaps")}
@@ -372,15 +469,23 @@ export function BookingSearchForm({
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-left">
+            <label
+              className={`${selectionCardClass} ${
+                alternatePickupRequested
+                  ? selectionCardSelectedClass
+                  : selectionCardIdleClass
+              }`}
+            >
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)]"
+                className={selectionCheckboxClass}
                 {...register("alternatePickupRequested")}
               />
               <span>
-                <span className="text-sm font-semibold text-slate-900">{tSearch("alternatePickupTitle")}</span>
-                <span className="mt-1 block text-xs leading-relaxed text-slate-600">
+                <span className="text-sm font-semibold tracking-[-0.01em] text-[var(--ink-900)]">
+                  {tSearch("alternatePickupTitle")}
+                </span>
+                <span className="mt-1 block text-xs leading-relaxed tabular-nums text-[var(--text-secondary)]">
                   {tSearch("alternatePickupHelp", { fee: singleLegOffSiteQuote.perLegFeeEur })}
                 </span>
               </span>
@@ -390,16 +495,22 @@ export function BookingSearchForm({
               name="differentDropoff"
               control={control}
               render={({ field }) => (
-                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-left">
+                <label
+                  className={`${selectionCardClass} ${
+                    field.value ? selectionCardSelectedClass : selectionCardIdleClass
+                  }`}
+                >
                   <input
                     type="checkbox"
-                    className="mt-1 h-4 w-4 rounded border-slate-300 text-[var(--brand-orange)]"
+                    className={selectionCheckboxClass}
                     checked={field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
                   />
                   <span>
-                    <span className="text-sm font-semibold text-slate-900">{tSearch("differentDropoffTitle")}</span>
-                    <span className="mt-1 block text-xs leading-relaxed text-slate-600">
+                    <span className="text-sm font-semibold tracking-[-0.01em] text-[var(--ink-900)]">
+                      {tSearch("differentDropoffTitle")}
+                    </span>
+                    <span className="mt-1 block text-xs leading-relaxed tabular-nums text-[var(--text-secondary)]">
                       {tSearch("differentDropoffHelp", { fee: singleLegOffSiteQuote.perLegFeeEur })}
                     </span>
                   </span>
@@ -410,54 +521,58 @@ export function BookingSearchForm({
 
           {alternatePickupRequested ? (
             <div>
-              <label htmlFor="alternate-pickup-address" className="text-xs font-semibold text-slate-500">
+              <label htmlFor="alternate-pickup-address" className={fieldLabelClass}>
                 {tSearch("exactPickupLabel")}
               </label>
               <textarea
                 id="alternate-pickup-address"
                 placeholder={tSearch("addressPlaceholder")}
-                className={textareaClass}
+                className={`${textareaClass} ${
+                  errors.alternatePickupAddress ? inputShellErrorClass : ""
+                }`}
                 {...register("alternatePickupAddress")}
               />
               {errors.alternatePickupAddress ? (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.alternatePickupAddress.message}</p>
+                <p className={fieldErrorClass}>{errors.alternatePickupAddress.message}</p>
               ) : null}
               {alternatePickupAddress?.trim() ? (
-                <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                <div className="mt-3 overflow-hidden rounded-[var(--r-card)] border border-[var(--line)] shadow-[var(--elev-1)]">
                   <GoogleMapEmbed query={alternatePickupAddress} className="aspect-[16/9] min-h-[180px] w-full" />
                 </div>
               ) : (
-                <p className="mt-2 text-xs text-slate-500">{tSearch("mapPreviewHint")}</p>
+                <p className="mt-2 text-xs text-[var(--text-muted)]">{tSearch("mapPreviewHint")}</p>
               )}
             </div>
           ) : null}
 
           {differentDropoff ? (
             <div>
-              <label htmlFor="dropoff-address" className="text-xs font-semibold text-slate-500">
+              <label htmlFor="dropoff-address" className={fieldLabelClass}>
                 {tSearch("exactDropoffLabel")}
               </label>
               <textarea
                 id="dropoff-address"
                 placeholder={tSearch("addressPlaceholder")}
-                className={textareaClass}
+                className={`${textareaClass} ${
+                  errors.dropoffAddress ? inputShellErrorClass : ""
+                }`}
                 {...register("dropoffAddress")}
               />
               {errors.dropoffAddress ? (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffAddress.message}</p>
+                <p className={fieldErrorClass}>{errors.dropoffAddress.message}</p>
               ) : null}
               {dropoffAddress?.trim() ? (
-                <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                <div className="mt-3 overflow-hidden rounded-[var(--r-card)] border border-[var(--line)] shadow-[var(--elev-1)]">
                   <GoogleMapEmbed query={dropoffAddress} className="aspect-[16/9] min-h-[180px] w-full" />
                 </div>
               ) : (
-                <p className="mt-2 text-xs text-slate-500">{tSearch("mapPreviewHint")}</p>
+                <p className="mt-2 text-xs text-[var(--text-muted)]">{tSearch("mapPreviewHint")}</p>
               )}
             </div>
           ) : null}
 
           {offSiteQuote.selectedLegs > 0 ? (
-            <p className="rounded-xl border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-xs text-amber-950">
+            <p className="rounded-[var(--r-field)] border border-[var(--orange-200)] bg-[var(--orange-50)] px-3.5 py-2.5 text-xs leading-relaxed tabular-nums text-[var(--orange-950)]">
               {tSearch("offSiteTotalLine", {
                 total: offSiteQuote.totalEur,
                 legs: offSiteQuote.selectedLegs,
@@ -468,7 +583,7 @@ export function BookingSearchForm({
           ) : null}
 
           <fieldset className="min-w-0">
-            <legend className="mb-3 text-base font-bold tracking-[-0.02em] text-slate-950">
+            <legend className={fieldLabelClass}>
               {tSearch("vehicleTypeLabel")}
             </legend>
             <Controller
@@ -478,60 +593,59 @@ export function BookingSearchForm({
                 <div>
                   <input ref={field.ref} type="hidden" name={field.name} value={field.value ?? "all"} readOnly />
                   <div
-                    className="flex flex-col gap-3 lg:flex-row lg:items-center"
+                    className={segmentGroupClass}
                     role="radiogroup"
                     aria-label={tSearch("vehicleTypeLabel")}
                   >
-                    <div className="grid overflow-hidden rounded-lg border border-slate-200/90 bg-white shadow-[0_14px_32px_-26px_rgba(15,23,42,0.55)] sm:grid-cols-2 lg:flex lg:w-[min(100%,52rem)]">
-                      {vehicleTypeCards.map((option, index) => {
-                        const selected = (field.value ?? "all") === option.value;
-                        const isLast = index === vehicleTypeCards.length - 1;
-                        const separatorClass = [
-                          index < 2 ? "border-b" : "",
-                          index % 2 === 0 ? "border-r" : "",
-                          "lg:border-b-0",
-                          !isLast ? "lg:border-r" : "lg:border-r-0",
-                        ].join(" ");
+                    {vehicleTypeCards.map((option) => {
+                      const selected = (field.value ?? "all") === option.value;
 
-                        return (
-                          <button
-                            key={option.value}
-                            type="button"
-                            role="radio"
-                            aria-checked={selected}
-                            onBlur={field.onBlur}
-                            onClick={() => field.onChange(option.value)}
-                            className={[
-                              "group relative flex min-h-[4.5rem] flex-1 items-center gap-2.5 border-slate-200 px-3.5 py-2.5 text-left transition duration-200 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2",
-                              separatorClass,
-                              selected
-                                ? "bg-[var(--brand-orange)] text-white"
-                                : "bg-white text-slate-900 hover:bg-orange-50/70",
-                            ].join(" ")}
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={selected}
+                          onBlur={field.onBlur}
+                          onClick={() => field.onChange(option.value)}
+                          className={[
+                            segmentClass,
+                            selected ? segmentSelectedClass : segmentIdleClass,
+                          ].join(" ")}
+                        >
+                          <span
+                            className="relative flex h-9 w-12 shrink-0 items-center justify-center overflow-hidden"
+                            aria-hidden
                           >
-                            <span
-                              className="relative flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden"
-                              aria-hidden
-                            >
-                              <Image
-                                src={option.imageSrc}
-                                alt=""
-                                width={96}
-                                height={64}
-                                sizes="96px"
-                                className={[
-                                  "h-9 w-14 object-contain transition duration-200 group-hover:scale-105",
-                                  option.imageClassName ?? "",
-                                ].join(" ")}
-                              />
+                            <Image
+                              src={option.imageSrc}
+                              alt=""
+                              width={96}
+                              height={64}
+                              sizes="96px"
+                              className={[
+                                "h-8 w-12 object-contain transition-[transform,opacity] duration-[var(--dur-base)] ease-[var(--ease-out-expo)] motion-safe:group-hover:scale-105",
+                                selected ? "opacity-100" : "opacity-80",
+                                option.imageClassName ?? "",
+                              ].join(" ")}
+                            />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold tracking-[-0.01em]">
+                              {option.label}
                             </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-sm font-bold tracking-[-0.01em]">{option.label}</span>
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                          </span>
+                          <span
+                            aria-hidden
+                            className={[
+                              "pointer-events-none absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-[var(--orange-400)]",
+                              "transition-opacity duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                              selected ? "opacity-100" : "opacity-0",
+                            ].join(" ")}
+                          />
+                        </button>
+                      );
+                    })}
                     <button
                       type="button"
                       role="radio"
@@ -539,14 +653,25 @@ export function BookingSearchForm({
                       onBlur={field.onBlur}
                       onClick={() => field.onChange("all")}
                       className={[
-                        "inline-flex items-center justify-end gap-1.5 self-end rounded-full px-1 py-2 text-sm font-bold capitalize tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 lg:self-center",
+                        segmentClass,
+                        "max-sm:col-span-2 sm:flex-none sm:px-5",
                         (field.value ?? "all") === "all"
-                          ? "text-[var(--brand-orange)]"
-                          : "text-slate-700 hover:text-slate-950",
+                          ? segmentSelectedClass
+                          : segmentIdleClass,
                       ].join(" ")}
                     >
-                      <span>{tSearch("vehicleTypeAll")}</span>
-                      <SlidersHorizontal className="h-4 w-4" aria-hidden />
+                      <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden />
+                      <span className="text-sm font-semibold capitalize tracking-[-0.01em]">
+                        {tSearch("vehicleTypeAll")}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={[
+                          "pointer-events-none absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-[var(--orange-400)]",
+                          "transition-opacity duration-[var(--dur-base)] ease-[var(--ease-standard)]",
+                          (field.value ?? "all") === "all" ? "opacity-100" : "opacity-0",
+                        ].join(" ")}
+                      />
                     </button>
                   </div>
                 </div>
@@ -556,18 +681,19 @@ export function BookingSearchForm({
 
           {brandChoices.length > 0 ? (
             <div className="min-w-0">
-              <label
-                htmlFor="booking-search-brand"
-                className="mb-1.5 block text-xs font-semibold text-slate-500"
-              >
+              <label htmlFor="booking-search-brand" className={fieldLabelClass}>
                 {tSearch("brandLabel")}
               </label>
               <Controller
                 name="brand"
                 control={control}
                 render={({ field }) => (
-                  <div className={inputShell}>
-                    <Tag className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
+                  <div
+                    className={`${inputShell} ${
+                      isBrandSelectDisabled ? inputShellDisabledClass : ""
+                    }`}
+                  >
+                    <Tag className={fieldIconClass} aria-hidden />
                     {isMounted ? (
                       <Select<BookingOption, false>
                         inputId="booking-search-brand"
@@ -578,7 +704,7 @@ export function BookingSearchForm({
                         onBlur={field.onBlur}
                         options={brandSelectOptions}
                         isSearchable={false}
-                        isDisabled={isBrandsLoading && brandChoices.length === 0}
+                        isDisabled={isBrandSelectDisabled}
                         styles={vehicleFilterReactSelectStyles}
                         components={brandSelectComponents}
                         menuPortalTarget={document.body}
@@ -588,7 +714,7 @@ export function BookingSearchForm({
                       />
                     ) : (
                       <div
-                        className="min-h-[2.5rem] min-w-0 flex-1 rounded-md border border-slate-200/90 bg-white/80"
+                        className="skeleton min-h-[2.5rem] min-w-0 flex-1 rounded-[var(--r-field)]"
                         aria-hidden
                       />
                     )}
@@ -600,22 +726,29 @@ export function BookingSearchForm({
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_minmax(0,1fr)] lg:items-start">
             <div className="min-w-0">
-              <label className="mb-1.5 block text-xs font-semibold text-slate-500">{tSearch("tripDatesLabel")}</label>
+              <label className={fieldLabelClass}>{tSearch("tripDatesLabel")}</label>
               <Popover.Root open={calOpen} onOpenChange={setCalOpen}>
                 <Popover.Trigger asChild>
-                  <button type="button" className={`${inputShell} justify-between`}>
+                  <button
+                    type="button"
+                    className={`${inputShell} justify-between ${
+                      hasDateError ? inputShellErrorClass : ""
+                    }`}
+                  >
                     <span className="flex min-w-0 items-center gap-2">
-                      <CalendarDays className="h-4 w-4 shrink-0 text-[var(--brand-orange)]" aria-hidden />
-                      <span className="truncate">{dateSummary}</span>
+                      <CalendarDays className={fieldIconClass} aria-hidden />
+                      <span className="truncate text-[0.9375rem] font-semibold tabular-nums">
+                        {dateSummary}
+                      </span>
                     </span>
-                    <span className="shrink-0 text-xs font-semibold text-slate-500">{tCommon("change")}</span>
+                    <span className={changeAffordanceClass}>{tCommon("change")}</span>
                   </button>
                 </Popover.Trigger>
                 <Popover.Portal>
                   <Popover.Content
                     sideOffset={8}
                     align="start"
-                    className="z-[100] rounded-2xl border border-slate-200 bg-white p-3 shadow-xl"
+                    className="z-[100] rounded-[var(--r-panel)] border border-[var(--line)] bg-[var(--surface-card)] p-3 shadow-[var(--elev-4)]"
                   >
                     <DayPicker
                       mode="range"
@@ -644,14 +777,14 @@ export function BookingSearchForm({
                   </Popover.Content>
                 </Popover.Portal>
               </Popover.Root>
-              <p className="mt-1.5 text-xs text-slate-500">
+              <p className="mt-1.5 text-xs tabular-nums text-[var(--text-muted)]">
                 {tSearch("tripLengthNote", { min: TRIP_MIN_SPAN_DAYS, max: TRIP_MAX_SPAN_DAYS })}
               </p>
               {errors.pickupDate ? (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.pickupDate.message}</p>
+                <p className={fieldErrorClass}>{errors.pickupDate.message}</p>
               ) : null}
               {errors.dropoffDate ? (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.dropoffDate.message}</p>
+                <p className={fieldErrorClass}>{errors.dropoffDate.message}</p>
               ) : null}
             </div>
 
@@ -659,7 +792,7 @@ export function BookingSearchForm({
               <div>
                 <label
                   id="booking-pickup-time-label"
-                  className="mb-1.5 block text-xs font-semibold text-slate-500"
+                  className={fieldLabelClass}
                 >
                   {tSearch("pickupTime")}
                 </label>
@@ -682,7 +815,7 @@ export function BookingSearchForm({
               <div>
                 <label
                   id="booking-dropoff-time-label"
-                  className="mb-1.5 block text-xs font-semibold text-slate-500"
+                  className={fieldLabelClass}
                 >
                   {tSearch("dropoffTime")}
                 </label>
@@ -706,46 +839,48 @@ export function BookingSearchForm({
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-4 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-slate-900">
-              {tSearch("summaryLine", {
-                days: durationDays,
-                offPickup: alternatePickupRequested ? tSearch("offPickup") : "",
-                offDropoff: differentDropoff ? tSearch("offDropoff") : "",
-                offSite:
-                  offSiteQuote.selectedLegs > 0
-                    ? tSearch("offSiteExtra", { amount: offSiteQuote.totalEur })
-                    : "",
-              })}
-            </p>
-            <p className="mt-0.5 text-xs text-slate-600">
-              {matchedTier
-                ? tSearch("durationDiscountSummary", {
-                    days: durationDays,
-                    dayLabel: summaryDayLabel,
-                    percent: matchedTier.discountPercent,
-                  })
-                : tSearch("durationDiscountSummaryMax", { percent: 40 })}
-            </p>
+        <div className={summaryBandClass}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold tracking-[-0.01em] tabular-nums text-[var(--ink-900)]">
+                {tSearch("summaryLine", {
+                  days: durationDays,
+                  offPickup: alternatePickupRequested ? tSearch("offPickup") : "",
+                  offDropoff: differentDropoff ? tSearch("offDropoff") : "",
+                  offSite:
+                    offSiteQuote.selectedLegs > 0
+                      ? tSearch("offSiteExtra", { amount: offSiteQuote.totalEur })
+                      : "",
+                })}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed tabular-nums text-[var(--text-secondary)]">
+                {matchedTier
+                  ? tSearch("durationDiscountSummary", {
+                      days: durationDays,
+                      dayLabel: summaryDayLabel,
+                      percent: matchedTier.discountPercent,
+                    })
+                  : tSearch("durationDiscountSummaryMax", { percent: 40 })}
+              </p>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={submitButtonClass}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                  {tSearch("submitSearching")}
+                </>
+              ) : (
+                <>
+                  <Search className="h-4 w-4 shrink-0" aria-hidden />
+                  {tSearch("submitIdle")}
+                </>
+              )}
+            </button>
           </div>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--brand-orange)] px-7 text-sm font-semibold text-white shadow-[0_14px_36px_-16px_rgba(255,147,15,0.85)] transition hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:opacity-70"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                {tSearch("submitSearching")}
-              </>
-            ) : (
-            <>
-              <Search className="h-4 w-4" aria-hidden />
-              {tSearch("submitIdle")}
-            </>
-            )}
-          </button>
         </div>
         </div>
       </div>

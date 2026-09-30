@@ -26,8 +26,13 @@ function joinClasses(...classes: Array<string | undefined>) {
 }
 
 /**
- * Full-bleed cinematic closing CTA: Malta-themed backdrop, dark overlays,
- * staggered fade-up (see `globals.css`), subtle Ken Burns on hover.
+ * Full-bleed cinematic closing CTA.
+ *
+ * The backdrop is deliberately treated as *texture*, not imagery: callers pass
+ * anything from a photograph to the brand logo, so the image sits on a wrapper
+ * that scales, desaturates and heavily blurs it before a multi-stop ink scrim
+ * lands on top. Type contrast therefore never depends on what was passed in.
+ * Staggered entrance lives in `globals.css` (`final-cta-fade-up`).
  */
 export function FinalConversionCta({
   titleId,
@@ -46,14 +51,20 @@ export function FinalConversionCta({
   return (
     <section
       aria-labelledby={titleId}
-      className="group relative isolate flex min-h-[min(88vh,56rem)] w-full scroll-mt-28 items-center overflow-hidden bg-slate-950 py-20 sm:py-24 md:min-h-[min(90vh,60rem)] md:py-28"
+      className="group grain relative isolate flex min-h-[min(88vh,56rem)] w-full scroll-mt-28 items-center overflow-hidden bg-[var(--surface-inverse)] py-20 sm:py-24 md:min-h-[min(90vh,60rem)] md:py-28 lg:py-32"
     >
       <div className="pointer-events-none absolute inset-0 z-0">
+        {/*
+         * Blur + desaturation + low opacity happen on the wrapper so a caller's
+         * `imageClassName` (object-fit / position) can never weaken the stack.
+         */}
         <div
           className={joinClasses(
-            "absolute inset-0 origin-center motion-safe:transition-transform motion-safe:duration-[2.6s] motion-safe:ease-out",
-            "motion-safe:group-hover:scale-[1.04]",
-            "motion-reduce:transition-none motion-reduce:group-hover:scale-100",
+            "absolute inset-0 origin-center scale-[1.35] opacity-[0.18]",
+            "blur-[72px] saturate-[0.3] contrast-[0.85]",
+            "motion-safe:transition-transform motion-safe:duration-[2.6s] motion-safe:ease-out",
+            "motion-safe:group-hover:scale-[1.42]",
+            "motion-reduce:transition-none motion-reduce:group-hover:scale-[1.35]",
           )}
         >
           <Image
@@ -62,23 +73,36 @@ export function FinalConversionCta({
             fill
             sizes="100vw"
             loading="lazy"
-            quality={80}
+            quality={60}
             className={imageClassName ?? "object-cover object-[center_35%]"}
             aria-hidden={decorativeImage}
             priority={false}
           />
         </div>
-        {/* Readability stack — dark gradient + cool tint */}
+
+        {/* Readability stack — ink scrim first, brand light second, vignette last. */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/35"
+          className="absolute inset-0 bg-[radial-gradient(125%_95%_at_50%_-10%,rgb(10_20_32_/_0.62),rgb(10_20_32_/_0.93)_68%)]"
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-gradient-to-br from-[var(--brand-blue)]/[0.22] via-transparent to-[var(--brand-orange)]/[0.12]"
+          className="absolute inset-0 bg-gradient-to-t from-[var(--ink-950)] via-[rgb(10_20_32_/_0.88)] to-[rgb(10_20_32_/_0.74)]"
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_120%,rgba(0,0,0,0.65),transparent)]"
+          className="absolute inset-0 bg-[radial-gradient(72%_55%_at_16%_8%,color-mix(in_srgb,var(--blue-500)_26%,transparent),transparent_72%)]"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-[radial-gradient(62%_48%_at_88%_98%,color-mix(in_srgb,var(--orange-500)_18%,transparent),transparent_72%)]"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_92%_62%_at_50%_120%,rgb(0_0_0_/_0.6),transparent)]"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-x-0 top-0 h-px bg-[var(--line-inverse)]"
           aria-hidden
         />
       </div>
@@ -88,7 +112,7 @@ export function FinalConversionCta({
           {kicker ? (
             <p
               className={joinClasses(
-                "final-cta-fade-up final-cta-delay-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-orange)]",
+                "final-cta-fade-up final-cta-delay-1 type-eyebrow text-orange-300",
               )}
             >
               {kicker}
@@ -97,19 +121,19 @@ export function FinalConversionCta({
           <h2
             id={titleId}
             className={joinClasses(
-              "final-cta-fade-up final-cta-delay-2 mt-3 text-balance text-4xl font-semibold tracking-[-0.045em] text-white sm:text-5xl md:text-6xl md:leading-[1.08]",
+              "final-cta-fade-up final-cta-delay-2 type-h1 mt-5 text-balance text-white [text-shadow:0_1px_28px_rgb(10_20_32_/_0.55)]",
               kicker ? "" : "final-cta-delay-1",
             )}
           >
             {title}
           </h2>
           {secondaryCta ? (
-            <p className="final-cta-fade-up final-cta-delay-3 mt-5">
+            <p className="final-cta-fade-up final-cta-delay-3 mt-6">
               <Link
                 href={secondaryCta.href}
                 className={joinClasses(
-                  "text-sm font-semibold tracking-wide text-white/90 underline decoration-white/35 underline-offset-[0.35em] transition-colors duration-300",
-                  "hover:text-white hover:decoration-[var(--brand-orange)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 rounded-sm",
+                  "rounded-[0.25rem] text-sm font-semibold tracking-wide text-white/85 underline decoration-white/30 underline-offset-[0.35em] transition-colors duration-[var(--dur-base)]",
+                  "hover:text-white hover:decoration-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400",
                 )}
               >
                 {secondaryCta.label}
@@ -118,7 +142,7 @@ export function FinalConversionCta({
           ) : null}
           <p
             className={joinClasses(
-              "final-cta-fade-up mt-6 max-w-2xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg md:text-xl md:leading-relaxed",
+              "final-cta-fade-up mt-6 max-w-2xl text-pretty text-base leading-[1.7] text-white/75 sm:text-lg md:text-xl",
               secondaryCta ? "final-cta-delay-4" : "final-cta-delay-3",
             )}
           >
@@ -127,15 +151,18 @@ export function FinalConversionCta({
 
           <div
             className={joinClasses(
-              "final-cta-fade-up mt-10 flex w-full max-w-md flex-col items-stretch sm:max-w-none sm:flex-row sm:justify-center",
+              "final-cta-fade-up mt-11 flex w-full max-w-md flex-col items-stretch sm:max-w-none sm:flex-row sm:justify-center",
               secondaryCta ? "final-cta-delay-5" : "final-cta-delay-4",
             )}
           >
             <ButtonLink
               href={primaryCta.href}
               className={joinClasses(
-                "w-full min-w-[12rem] justify-center shadow-[0_22px_50px_-18px_rgba(255,147,15,0.65)] transition-[transform,box-shadow] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.4,0,0.2,1)] motion-safe:hover:scale-[1.03] motion-safe:hover:shadow-[0_26px_56px_-16px_rgba(255,147,15,0.75)] motion-reduce:hover:scale-100 sm:w-auto",
-                "focus-visible:ring-offset-4 focus-visible:ring-offset-black/50",
+                "w-full min-w-[12rem] justify-center !text-ink-950 !shadow-[var(--elev-orange)] sm:w-auto",
+                "transition-[transform,box-shadow,background-color] motion-safe:duration-[var(--dur-base)] motion-safe:ease-[var(--ease-out-expo)]",
+                "motion-safe:hover:-translate-y-0.5 hover:!shadow-[var(--elev-orange-lift)] motion-safe:active:translate-y-0 active:scale-[0.985]",
+                "motion-reduce:hover:translate-y-0",
+                "focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--ink-950)]",
               )}
             >
               {primaryCta.label}
@@ -144,7 +171,7 @@ export function FinalConversionCta({
 
           <p
             className={joinClasses(
-              "final-cta-fade-up mt-8 text-xs text-white/50",
+              "final-cta-fade-up mt-10 text-xs tracking-[0.04em] text-white/45",
               secondaryCta ? "final-cta-delay-6" : "final-cta-delay-4",
             )}
           >

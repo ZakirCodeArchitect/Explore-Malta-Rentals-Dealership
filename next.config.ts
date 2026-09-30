@@ -38,9 +38,13 @@ function loadPublicAssetRewriteEntries(): Array<{ source: string; destination: s
 
 const nextConfig: NextConfig = {
   experimental: {
+    /* Lets the App Router wrap client navigations in `document.startViewTransition`,
+       so the crossfade in globals.css runs on route changes. */
+    viewTransition: true,
     optimizePackageImports: [
       "lucide-react",
       "date-fns",
+      "motion",
       "@mui/material",
       "@mui/x-date-pickers",
     ],
@@ -64,7 +68,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     /* Default in Next 16 is [75]; `quality={80}` in components must be listed here */
-    qualities: [75, 80],
+    qualities: [60, 75, 80],
     remotePatterns: [
       /* Unsplash stock photos */
       {

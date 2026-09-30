@@ -40,16 +40,22 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
   // If already paid (user came back to cancel URL by mistake)
   if (booking?.paymentStatus === "PAID") {
     return (
-      <main className="flex min-h-[calc(100dvh-var(--site-header-offset))] items-center justify-center bg-[var(--surface-elevated)] px-4 py-16">
-        <div className="mx-auto max-w-md rounded-3xl border border-emerald-200 bg-white p-8 shadow-sm text-center">
-          <p className="text-5xl">✅</p>
-          <h1 className="mt-4 text-xl font-bold text-slate-900">This booking is already paid</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Your rental <span className="font-mono font-bold">{bookingReference}</span> is confirmed.
+      <main className="flex min-h-[calc(100dvh-var(--site-header-offset))] items-center justify-center bg-[var(--background)] px-4 pt-[calc(var(--site-header-offset)+3rem)] pb-20 sm:pb-24">
+        <div className="surface-panel mx-auto w-full max-w-md p-8 text-center sm:p-10">
+          <p className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-4xl ring-8 ring-emerald-50/60 mx-auto">
+            ✅
+          </p>
+          <h1 className="type-h3 mt-6 text-[var(--text-primary)]">This booking is already paid</h1>
+          <p className="type-lead mt-3">
+            Your rental{" "}
+            <span className="font-mono font-bold tabular-nums text-[var(--text-primary)]">
+              {bookingReference}
+            </span>{" "}
+            is confirmed.
           </p>
           <Link
             href={`/${locale}/booking?ref=${encodeURIComponent(bookingReference ?? "")}&submitted=1`}
-            className="mt-6 flex items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)]"
+            className="mt-8 flex min-h-[3.25rem] items-center justify-center gap-2 rounded-full bg-orange-500 px-6 text-sm font-semibold text-white shadow-[var(--elev-orange)] transition duration-[var(--dur-base)] ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-[var(--elev-orange-lift)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
           >
             View My Booking
           </Link>
@@ -61,17 +67,26 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
   // Checkout window expired / payment failed — vehicle already released
   if (booking?.status === "CANCELLED") {
     return (
-      <main className="flex min-h-[calc(100dvh-var(--site-header-offset))] items-center justify-center bg-[var(--surface-elevated)] px-4 py-16">
-        <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
-          <XCircle className="mx-auto h-12 w-12 text-slate-400" />
-          <h1 className="mt-4 text-xl font-bold text-slate-900">Payment window expired</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Booking <span className="font-mono font-bold">{bookingReference}</span> was cancelled
-            because payment was not completed in time. The vehicle has been released for other customers.
+      <main className="flex min-h-[calc(100dvh-var(--site-header-offset))] items-center justify-center bg-[var(--background)] px-4 pt-[calc(var(--site-header-offset)+3rem)] pb-20 sm:pb-24">
+        <div className="surface-panel mx-auto w-full max-w-md p-8 text-center sm:p-10">
+          <span
+            className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[var(--surface-sunken)] text-[var(--text-faint)] ring-8 ring-[var(--surface-band)]"
+            aria-hidden
+          >
+            <XCircle className="h-10 w-10" />
+          </span>
+          <h1 className="type-h3 mt-6 text-[var(--text-primary)]">Payment window expired</h1>
+          <p className="type-lead mt-3">
+            Booking{" "}
+            <span className="font-mono font-bold tabular-nums text-[var(--text-primary)]">
+              {bookingReference}
+            </span>{" "}
+            was cancelled because payment was not completed in time. The vehicle has been released
+            for other customers.
           </p>
           <Link
             href={`/${locale}/vehicles`}
-            className="mt-6 flex items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-orange-strong)]"
+            className="mt-8 flex min-h-[3.25rem] items-center justify-center gap-2 rounded-full bg-orange-500 px-6 text-sm font-semibold text-white shadow-[var(--elev-orange)] transition duration-[var(--dur-base)] ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-[var(--elev-orange-lift)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
           >
             Browse vehicles
           </Link>
@@ -86,31 +101,34 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
     (booking.status === "PENDING_PAYMENT" || booking.status === "CONFIRMED");
 
   return (
-    <main className="min-h-[calc(100dvh-var(--site-header-offset))] bg-gradient-to-b from-red-50/60 via-[var(--surface-elevated)] to-[var(--background)] px-4 py-10 sm:py-16">
+    <main className="min-h-[calc(100dvh-var(--site-header-offset))] bg-[var(--background)] px-4 pt-[calc(var(--site-header-offset)+3rem)] pb-20 sm:pt-[calc(var(--site-header-offset)+4rem)] sm:pb-24">
       <div className="mx-auto max-w-xl space-y-5">
 
-        <div className="overflow-hidden rounded-3xl border border-red-200/60 bg-white shadow-sm">
-          <div className="flex items-center gap-4 bg-gradient-to-r from-red-500 to-red-600 px-6 py-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20">
-              <XCircle className="h-7 w-7 text-white" strokeWidth={2} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-red-100">Payment not completed</p>
-              <h1 className="text-xl font-bold text-white sm:text-2xl">
-                Payment cancelled
-              </h1>
-            </div>
-          </div>
+        <header className="flex flex-col items-center text-center">
+          <span
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 ring-8 ring-red-50"
+            aria-hidden
+          >
+            <XCircle className="h-10 w-10" strokeWidth={2} />
+          </span>
+          <p className="type-eyebrow mt-6 text-red-700">Payment not completed</p>
+          <h1 className="type-h1 mt-3 text-[var(--text-primary)]">Payment cancelled</h1>
+        </header>
 
-          <div className="p-6">
-            <p className="text-sm text-slate-600">
+        <div className="surface-panel overflow-hidden">
+          <div className="p-6 sm:p-7">
+            <p className="type-lead">
               You left the payment page before completing the transaction. Your booking is held
               temporarily — complete payment now to confirm your rental.
             </p>
 
-            <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" strokeWidth={2} />
-              <p className="text-sm text-amber-900">
+            <div className="mt-5 flex items-start gap-3 rounded-[var(--r-card)] border border-amber-200 bg-amber-50 px-4 py-3.5">
+              <AlertTriangle
+                className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <p className="text-sm leading-relaxed text-amber-900">
                 <span className="font-semibold">Vehicle held for 30 minutes.</span>{" "}
                 If payment is not completed within the checkout window, this booking is cancelled
                 automatically and the vehicle is released.
@@ -120,52 +138,52 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
         </div>
 
         {booking && (
-          <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 px-6 py-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-                Awaiting Payment
-              </p>
-              <p className="mt-0.5 font-mono text-xl font-bold text-slate-900">
+          <div className="surface-panel">
+            <div className="border-b border-[var(--line-subtle)] px-6 py-4">
+              <p className="type-spec text-[var(--text-muted)]">Awaiting Payment</p>
+              <p className="mt-1.5 font-mono text-xl font-bold tracking-wider tabular-nums text-[var(--text-primary)]">
                 {booking.bookingReference}
               </p>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-[var(--line-subtle)]">
               <div className="flex justify-between gap-4 px-6 py-3 text-sm">
-                <span className="text-slate-500">Vehicle</span>
-                <span className="font-semibold text-slate-900 text-right">
+                <span className="text-[var(--text-secondary)]">Vehicle</span>
+                <span className="text-right font-semibold text-[var(--text-primary)]">
                   {booking.vehicleNameSnapshot ?? "—"}
                 </span>
               </div>
               <div className="flex justify-between gap-4 px-6 py-3 text-sm">
-                <span className="text-slate-500">Pickup</span>
-                <span className="font-semibold text-slate-900 text-right">
+                <span className="text-[var(--text-secondary)]">Pickup</span>
+                <span className="text-right font-semibold tabular-nums text-[var(--text-primary)]">
                   {format(booking.pickupDateTime, "EEE d MMM, HH:mm")}
                 </span>
               </div>
               <div className="flex justify-between gap-4 px-6 py-3 text-sm">
-                <span className="text-slate-500">Return</span>
-                <span className="font-semibold text-slate-900 text-right">
+                <span className="text-[var(--text-secondary)]">Return</span>
+                <span className="text-right font-semibold tabular-nums text-[var(--text-primary)]">
                   {format(booking.returnDateTime, "EEE d MMM, HH:mm")}
                 </span>
               </div>
               <div className="flex justify-between gap-4 px-6 py-3 text-sm">
-                <span className="text-slate-500">Duration</span>
-                <span className="font-semibold text-slate-900">
+                <span className="text-[var(--text-secondary)]">Duration</span>
+                <span className="font-semibold tabular-nums text-[var(--text-primary)]">
                   {booking.billableDays} {booking.billableDays === 1 ? "day" : "days"}
                 </span>
               </div>
               {amountDue && (
-                <div className="flex justify-between gap-4 px-6 py-3 text-sm">
-                  <span className="text-slate-500">Amount due</span>
-                  <span className="text-lg font-bold text-slate-900">€{amountDue}</span>
+                <div className="flex items-baseline justify-between gap-4 px-6 py-3.5 text-sm">
+                  <span className="text-[var(--text-secondary)]">Amount due</span>
+                  <span className="text-lg font-bold tabular-nums tracking-[-0.02em] text-[var(--text-primary)]">
+                    €{amountDue}
+                  </span>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-3 pt-1">
           {canRetry && bookingReference ? (
             <RetryPaymentButton
               bookingReference={bookingReference}
@@ -176,33 +194,35 @@ export default async function PaymentCancelPage({ params, searchParams }: Props)
 
           <Link
             href={`/${locale}/vehicles`}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
+            className="flex min-h-[3.25rem] w-full items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--surface-card)] px-6 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--elev-1)] transition duration-[var(--dur-base)] ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:shadow-[var(--elev-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" aria-hidden />
             Browse vehicles instead
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
-          <p className="text-sm font-semibold text-slate-900">Need help?</p>
-          <p className="mt-1 text-sm text-slate-600">
+        <div className="surface-card px-6 py-5">
+          <p className="text-sm font-semibold tracking-[-0.01em] text-[var(--text-primary)]">
+            Need help?
+          </p>
+          <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">
             If your card was declined or you hit an issue, contact us and we&apos;ll sort it out.
           </p>
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
             <a
               href="mailto:info@exploremaltarentals.com"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--r-field)] border border-[var(--line)] bg-[var(--surface-sunken)] px-4 text-sm font-semibold text-[var(--text-primary)] transition duration-[var(--dur-fast)] hover:border-[var(--line-strong)] hover:bg-[var(--surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4" aria-hidden />
               Email us
             </a>
             <a
               href="https://wa.me/35677506799"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+              className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--r-field)] border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition duration-[var(--dur-fast)] hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
             >
-              <Phone className="h-4 w-4" />
+              <Phone className="h-4 w-4" aria-hidden />
               WhatsApp
             </a>
           </div>

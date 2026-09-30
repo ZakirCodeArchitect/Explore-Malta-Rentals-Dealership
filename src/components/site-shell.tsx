@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /** Primary white surfaces (navbar, booking panel) — keep in sync. */
-export const SITE_SURFACE_RADIUS = "rounded-lg sm:rounded-xl";
+export const SITE_SURFACE_RADIUS = "rounded-[var(--r-card)] sm:rounded-[var(--r-panel)]";
 
 /** Horizontal layout shared by `SiteNavbar` and hero so edges line up. */
 export const SITE_SHELL_OUTER = "px-3 sm:px-5";

@@ -17,6 +17,33 @@ type VehicleCardProps = Readonly<{
   returnTime?: string | null;
 }>;
 
+/* Photo plate sits on a tonal gradient so cut-out product shots never float on flat grey. */
+const photoPlateClass =
+  "relative aspect-[4/3] overflow-hidden bg-[linear-gradient(155deg,var(--ink-50)_0%,var(--surface-sunken)_58%,var(--ink-100)_100%)]";
+
+const floatingChipClass =
+  "type-spec absolute left-3 top-3 inline-flex items-center rounded-full border border-white/60 bg-white/85 px-2.5 py-1.5 text-[var(--ink-800)] shadow-sm backdrop-blur-md";
+
+const statusChipClass =
+  "type-spec absolute right-3 top-3 inline-flex items-center rounded-full px-2.5 py-1.5 shadow-sm";
+
+const specRibbonClass =
+  "mt-4 grid grid-cols-2 divide-x divide-[var(--line-subtle)] border-y border-[var(--line-subtle)]";
+
+const specCellClass = "type-spec flex items-center py-2.5 text-[var(--text-muted)]";
+
+const ghostActionClass =
+  "inline-flex min-h-10 flex-1 items-center justify-center rounded-[var(--r-field)] border border-[var(--line)] bg-[var(--surface-card)] px-3 text-[0.8125rem] font-semibold text-[var(--ink-800)] transition-[background-color,border-color,color,transform] duration-[var(--dur-fast)] ease-[var(--ease-standard)] hover:border-[var(--line-strong)] hover:bg-[var(--surface-soft)] hover:text-[var(--ink-950)] active:scale-[0.985]";
+
+const primaryActionClass =
+  "inline-flex min-h-10 w-full items-center justify-center rounded-[var(--r-field)] bg-[var(--orange-400)] px-3 text-[0.8125rem] font-semibold text-[var(--ink-950)] shadow-[var(--elev-orange)] transition-[background-color,box-shadow,transform] duration-[var(--dur-fast)] ease-[var(--ease-standard)] hover:bg-[var(--orange-500)] hover:shadow-[var(--elev-orange-lift)] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-70 disabled:shadow-none";
+
+const primaryActionBusyClass =
+  "inline-flex min-h-10 w-full cursor-not-allowed items-center justify-center rounded-[var(--r-field)] bg-[var(--orange-300)] px-3 text-[0.8125rem] font-semibold text-[var(--ink-950)] opacity-90 transition-colors duration-[var(--dur-fast)]";
+
+const disabledActionClass =
+  "inline-flex min-h-10 flex-1 cursor-not-allowed items-center justify-center rounded-[var(--r-field)] border border-[var(--line-subtle)] bg-[var(--surface-sunken)] px-3 text-[0.8125rem] font-semibold text-[var(--text-faint)]";
+
 export function VehicleCard({
   vehicle,
   bookingHref = "/booking",
@@ -43,104 +70,124 @@ export function VehicleCard({
   const completeBookingHref = buildBookingUrlWithVehicle(bookingHref, vehicle.slug);
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-slate-200/85 bg-white shadow-[0_20px_50px_-36px_rgba(15,23,42,0.35)] transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] motion-safe:hover:-translate-y-1">
-      <div className="relative aspect-[4/3] overflow-hidden">
+    <article className="surface-card lift group flex h-full flex-col overflow-hidden">
+      <div className={photoPlateClass}>
         {mainImage ? (
           <Image
             src={mainImage}
             alt={vehicle.name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.05]"
+            className="object-cover transition-transform duration-[var(--dur-slower)] ease-[var(--ease-out-expo)] will-change-transform motion-safe:group-hover:scale-[1.06]"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">
+          <div className="type-spec flex h-full items-center justify-center px-6 text-center text-[var(--text-faint)]">
             {t("imageSoon")}
           </div>
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
-        <span className="absolute left-3 top-3 rounded-full bg-white/92 px-3 py-1 text-xs font-semibold text-slate-900">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(to_top,rgb(10_20_32/0.28),transparent)]"
+        />
+        <span className={floatingChipClass}>
           {formatVehicleTypeLabel(vehicle.apiVehicleType)}
         </span>
         {status === "reserved_other" ? (
-          <span className="absolute right-3 top-3 rounded-full bg-amber-500/95 px-3 py-1 text-xs font-semibold text-slate-950 shadow-sm">
+          <span
+            className={`${statusChipClass} bg-[var(--orange-400)] text-[var(--ink-950)]`}
+          >
             {t("reserved")}
           </span>
         ) : null}
         {status === "reserved_you" ? (
-          <span className="absolute right-3 top-3 rounded-full bg-emerald-600/95 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+          <span className={`${statusChipClass} bg-emerald-600 text-white`}>
             {t("yourHold")}
           </span>
         ) : null}
         {status === "unavailable" ? (
-          <span className="absolute right-3 top-3 rounded-full bg-slate-800/92 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+          <span
+            className={`${statusChipClass} bg-[var(--surface-inverse)] text-white`}
+          >
             {t("unavailable")}
           </span>
         ) : null}
       </div>
 
-      <div className="p-5">
+      <div className="flex flex-1 flex-col p-5">
         <div>
-          <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-950">{vehicle.name}</h3>
-          <p className="mt-1 text-sm text-slate-600">{vehicle.shortDescription ?? vehicle.tagline}</p>
+          <h3 className="text-[1.0625rem] font-semibold leading-snug tracking-[-0.025em] text-[var(--ink-950)]">
+            {vehicle.name}
+          </h3>
+          <p className="mt-1.5 line-clamp-2 text-[0.8125rem] leading-relaxed text-[var(--text-secondary)]">
+            {vehicle.shortDescription ?? vehicle.tagline}
+          </p>
           {brandModel ? (
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-2 text-xs font-medium text-[var(--text-faint)]">
               {brandModel}
               {colorLabel}
             </p>
           ) : availableColorLabels.length > 0 ? (
-            <p className="mt-1 text-xs text-slate-500">{availableColorLabels.join(", ")}</p>
+            <p className="mt-2 text-xs font-medium text-[var(--text-faint)]">
+              {availableColorLabels.join(", ")}
+            </p>
           ) : null}
           {status === "reserved_you" ? (
-            <p className="mt-2 text-xs font-medium text-emerald-800">{t("holdNotice")}</p>
+            <p className="mt-3 rounded-[var(--r-field)] bg-emerald-50 px-3 py-2 text-xs font-medium leading-relaxed text-emerald-900">
+              {t("holdNotice")}
+            </p>
           ) : null}
           {status === "reserved_other" ? (
-            <p className="mt-2 text-xs font-medium text-amber-900">{t("reservedOtherNotice")}</p>
+            <p className="mt-3 rounded-[var(--r-field)] bg-[var(--orange-50)] px-3 py-2 text-xs font-medium leading-relaxed text-[var(--orange-900)]">
+              {t("reservedOtherNotice")}
+            </p>
           ) : null}
           {status === "unavailable" ? (
-            <p className="mt-2 text-xs font-medium text-slate-700">{t("unavailableWindow")}</p>
+            <p className="mt-3 rounded-[var(--r-field)] bg-[var(--surface-soft)] px-3 py-2 text-xs font-medium leading-relaxed text-[var(--text-secondary)]">
+              {t("unavailableWindow")}
+            </p>
           ) : null}
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-slate-800">
+        <ul className={specRibbonClass}>
+          <li className={`${specCellClass} pr-3`}>
             {t("helmetsInline", { count: vehicle.helmetIncludedCount })}
-          </span>
-          <div className="text-right">
-            {vehicle.pricePerDay > 0 ? (
-              <p className="text-sm font-semibold text-slate-900">
-                {t("fromPerDay", { price: vehicle.pricePerDay })}
-              </p>
-            ) : (
-              <p className="text-xs font-medium text-slate-500">{t("priceOnRequest")}</p>
-            )}
-            <p className="text-xs text-slate-600">
-              {vehicle.supportsStorageBox ? t("storageYes") : t("storageNo")}
-            </p>
-          </div>
-        </div>
+          </li>
+          <li className={`${specCellClass} pl-3`}>
+            {vehicle.supportsStorageBox ? t("storageYes") : t("storageNo")}
+          </li>
+        </ul>
 
-        <div className="mt-5 flex justify-end border-t border-slate-200 pt-3">
-          <div className="flex items-center gap-2">
+        <div className="mt-auto pt-4">
+          {vehicle.pricePerDay > 0 ? (
+            <p
+              data-numeric
+              className="text-[1.3125rem] font-bold leading-none tracking-[-0.035em] text-[var(--ink-950)]"
+            >
+              {t("fromPerDay", { price: vehicle.pricePerDay })}
+            </p>
+          ) : (
+            <p className="text-sm font-semibold text-[var(--text-muted)]">
+              {t("priceOnRequest")}
+            </p>
+          )}
+
+          <div className="mt-4 flex items-stretch gap-2">
             <Link
               href={detailsHref ?? `/vehicles/${vehicle.slug}`}
-              className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
+              className={ghostActionClass}
             >
               {t("viewDetails")}
             </Link>
             {status === "reserved_you" ? (
               <Link
                 href={completeBookingHref}
-                className="inline-flex items-center rounded-md bg-[var(--brand-orange)] px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2"
+                className={`${primaryActionClass} flex-1`}
               >
                 {t("completeBooking")}
               </Link>
             ) : status === "reserved_other" || status === "unavailable" ? (
-              <span
-                aria-disabled
-                className="inline-flex cursor-not-allowed items-center rounded-md border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500"
-              >
+              <span aria-disabled className={disabledActionClass}>
                 {status === "reserved_other" ? t("onHold") : t("unavailableShort")}
               </span>
             ) : (
@@ -153,8 +200,8 @@ export function VehicleCard({
                 returnDate={returnDate}
                 pickupTime={pickupTime}
                 returnTime={returnTime}
-                className="inline-flex items-center rounded-md bg-[var(--brand-orange)] px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors duration-300 hover:bg-[var(--brand-orange-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-orange-strong)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
-                busyClassName="inline-flex items-center rounded-md bg-[var(--brand-orange)]/80 px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-90"
+                className={primaryActionClass}
+                busyClassName={primaryActionBusyClass}
               />
             )}
           </div>

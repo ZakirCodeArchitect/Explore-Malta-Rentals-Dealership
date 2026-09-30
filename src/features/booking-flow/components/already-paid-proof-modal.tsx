@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { m, useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { DocumentUploadField } from "@/features/booking-flow/components/document-upload-field";
 
@@ -22,6 +23,7 @@ export function AlreadyPaidProofModal({
   onConfirm,
 }: AlreadyPaidProofModalProps) {
   const t = useTranslations("BookingWizard.bookingSummary");
+  const reduceMotion = useReducedMotion();
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,21 +72,26 @@ export function AlreadyPaidProofModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 p-4 sm:p-6">
-      <div
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[var(--ink-950)]/55 p-4 backdrop-blur-md sm:p-6">
+      <m.div
         role="dialog"
         aria-modal="true"
         aria-labelledby="already-paid-proof-title"
-        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-xl sm:max-h-[calc(100dvh-3rem)]"
+        initial={reduceMotion ? undefined : { opacity: 0, y: 12, scale: 0.985 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-[var(--r-panel)] bg-[var(--surface-card)] shadow-[var(--elev-5)] ring-1 ring-[var(--line)] sm:max-h-[calc(100dvh-3rem)]"
       >
-        <header className="border-b border-slate-200 px-5 py-4">
-          <h3 id="already-paid-proof-title" className="text-lg font-bold text-slate-900">
+        <header className="border-b border-[var(--line-subtle)] px-5 py-4 sm:px-6 sm:py-5">
+          <h3 id="already-paid-proof-title" className="type-h3 text-[var(--text-primary)]">
             {t("alreadyPaidModalTitle")}
           </h3>
-          <p className="mt-1 text-sm text-slate-600">{t("alreadyPaidModalDescription")}</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">
+            {t("alreadyPaidModalDescription")}
+          </p>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 sm:px-6">
           <DocumentUploadField
             label={t("alreadyPaidUploadLabel")}
             description={t("alreadyPaidUploadHint")}
@@ -98,14 +105,21 @@ export function AlreadyPaidProofModal({
             name="paymentProof"
             data-field="payment.proofPath"
           />
-          {localError ? <p className="mt-2 text-xs font-medium text-red-600">{localError}</p> : null}
+          {localError ? (
+            <p
+              role="alert"
+              className="mt-2 rounded-[var(--r-field)] border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700"
+            >
+              {localError}
+            </p>
+          ) : null}
         </div>
 
-        <footer className="flex flex-wrap justify-end gap-2 border-t border-slate-200 px-5 py-4">
+        <footer className="flex flex-col-reverse gap-2 border-t border-[var(--line-subtle)] bg-[var(--surface-soft)] px-5 py-4 sm:flex-row sm:justify-end sm:px-6 sm:py-5">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-400"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line-strong)] bg-[var(--surface-card)] px-5 text-sm font-semibold text-[var(--text-primary)] transition duration-[var(--dur-fast)] hover:border-[var(--ink-400)] hover:bg-[var(--surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
             {t("alreadyPaidModalCancel")}
           </button>
@@ -118,12 +132,12 @@ export function AlreadyPaidProofModal({
               }
               onConfirm();
             }}
-            className="rounded-full bg-[var(--brand-blue)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-blue-500 px-6 text-sm font-semibold text-white shadow-[var(--elev-3)] transition duration-[var(--dur-base)] ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-[var(--elev-4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
             {t("alreadyPaidModalConfirm")}
           </button>
         </footer>
-      </div>
+      </m.div>
     </div>
   );
 }

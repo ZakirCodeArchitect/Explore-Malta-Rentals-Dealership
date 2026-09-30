@@ -118,17 +118,20 @@ export function PricingStep() {
 
   return (
     <StepShell title="Pricing" description="Section: Pricing Preview">
-      <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/70 p-4 text-sm text-slate-700">
+      <div className="space-y-4 rounded-[var(--r-card)] border border-[var(--line)] bg-[var(--surface-sunken)] p-4 text-sm text-[var(--text-secondary)] sm:p-5">
         <p>
-          Vehicle: {state.rental.vehicleName || selectedVehicle?.name || "Not selected yet"}
-          {(state.rental.vehicleType || selectedVehicle?.apiVehicleType)
-            ? ` (${state.rental.vehicleType || selectedVehicle?.apiVehicleType})`
-            : ""}
+          Vehicle:{" "}
+          <span className="font-semibold text-[var(--text-primary)]">
+            {state.rental.vehicleName || selectedVehicle?.name || "Not selected yet"}
+            {(state.rental.vehicleType || selectedVehicle?.apiVehicleType)
+              ? ` (${state.rental.vehicleType || selectedVehicle?.apiVehicleType})`
+              : ""}
+          </span>
         </p>
         {pricing ? (
           <div className="space-y-2">
-            <p className="font-semibold text-slate-900">Pricing Summary</p>
-            <ul className="list-disc space-y-1 pl-5 text-sm">
+            <p className="type-spec text-[var(--text-muted)]">Pricing Summary</p>
+            <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed tabular-nums marker:text-[var(--orange-400)]">
               <li>
                 Duration: {pricing.rentalDays} day(s) billed ({pricing.tierRange})
               </li>
@@ -142,9 +145,9 @@ export function PricingStep() {
             </ul>
           </div>
         ) : (
-          <p className="text-xs text-slate-500">{emptyReason}</p>
+          <p className="text-xs leading-relaxed text-[var(--text-muted)]">{emptyReason}</p>
         )}
-        <label className="flex items-start gap-2">
+        <label className="flex cursor-pointer items-start gap-2.5 rounded-[var(--r-field)] border border-[var(--line-subtle)] bg-[var(--surface-card)] px-3.5 py-3 leading-relaxed shadow-[var(--elev-1)] transition duration-[var(--dur-fast)] hover:border-[var(--line-strong)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue-500 has-[:focus-visible]:ring-offset-2">
           <input
             type="checkbox"
             name="rental.pricingAcknowledged"
@@ -153,7 +156,7 @@ export function PricingStep() {
             onChange={(event) =>
               updateSection("rental", { pricingAcknowledged: event.target.checked })
             }
-            className="mt-0.5 h-4 w-4"
+            className="mt-0.5 h-4 w-4 shrink-0 rounded-sm accent-[var(--blue-500)] focus:outline-none"
           />
           <span>
             I reviewed this estimated pricing summary and final cost will be decided at the end based
@@ -161,7 +164,10 @@ export function PricingStep() {
           </span>
         </label>
         {getFieldError("rental.pricingAcknowledged") ? (
-          <p className="text-sm font-medium text-rose-700" role="alert">
+          <p
+            className="rounded-[var(--r-field)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-700"
+            role="alert"
+          >
             {getFieldError("rental.pricingAcknowledged")}
           </p>
         ) : null}

@@ -18,7 +18,8 @@ export async function QuickBookingCtaSection() {
       secondaryCta={{ href: "/#contact", label: t("quickCtaSecondary") }}
       imageSrc={LOGO_PATH}
       imageAlt={tNav("logoAlt")}
-      imageClassName="object-contain object-center scale-[0.92] opacity-[0.97]"
+      /* Logo is only a texture here — spread it wide so the CTA reads as light, not artwork. */
+      imageClassName="object-contain object-center scale-[1.15]"
       footerLine={footerLine}
     />
   );

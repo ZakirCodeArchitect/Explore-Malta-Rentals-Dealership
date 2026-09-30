@@ -162,7 +162,7 @@ export function BookNowButton({
   };
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex min-w-0 flex-1 flex-col items-stretch gap-1.5">
       <button
         type="button"
         onClick={() => {
@@ -184,7 +184,7 @@ export function BookNowButton({
         {isReserving ? "Reserving..." : disabled ? "Checking…" : "Book now"}
       </button>
       {error ? (
-        <span className="max-w-56 text-right text-[11px] font-medium text-rose-700">{error}</span>
+        <span className="text-[11px] font-medium leading-snug text-rose-700">{error}</span>
       ) : null}
     </div>
   );

@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import type { Vehicle } from "@/features/vehicles/data/vehicles";
 import { VehicleCardServer } from "@/features/vehicles/components/vehicle-card-server";
 
@@ -23,21 +24,25 @@ export async function VehicleGridServer({
   returnTime,
 }: VehicleGridServerProps) {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+    <Stagger
+      className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-3"
+      step={0.06}
+    >
       {vehicles.map((vehicle, index) => (
-        <VehicleCardServer
-          key={vehicle.slug}
-          vehicle={vehicle}
-          bookingHref={bookingHref}
-          detailsHref={`/vehicles/${vehicle.slug}${detailsDateQuery}`}
-          tripDatesCommitted={tripDatesCommitted}
-          pickupDate={pickupDate}
-          returnDate={returnDate}
-          pickupTime={pickupTime}
-          returnTime={returnTime}
-          priorityImage={index < 2}
-        />
+        <StaggerItem key={vehicle.slug} className="h-full" y={18}>
+          <VehicleCardServer
+            vehicle={vehicle}
+            bookingHref={bookingHref}
+            detailsHref={`/vehicles/${vehicle.slug}${detailsDateQuery}`}
+            tripDatesCommitted={tripDatesCommitted}
+            pickupDate={pickupDate}
+            returnDate={returnDate}
+            pickupTime={pickupTime}
+            returnTime={returnTime}
+            priorityImage={index < 2}
+          />
+        </StaggerItem>
       ))}
-    </div>
+    </Stagger>
   );
 }
